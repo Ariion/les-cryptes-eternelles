@@ -1,0 +1,120 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/HUD.gd" id="1"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1")
+
+; --- HAUT : PV + Or + Étage ---
+[node name="Top" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+offset_bottom = 60.0
+theme_override_constants/separation = 12
+
+[node name="HpBar" type="ProgressBar" parent="Top"]
+custom_minimum_size = Vector2(200, 30)
+value = 100.0
+
+[node name="HpLabel" type="Label" parent="Top/HpBar"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100 / 100"
+
+[node name="GoldLabel" type="Label" parent="Top"]
+text = "Or: 0"
+
+[node name="FloorLabel" type="Label" parent="Top"]
+text = "Étage 1"
+
+[node name="RoomLabel" type="Label" parent="Top"]
+text = "Entrée"
+
+[node name="StatusBar" type="HBoxContainer" parent="Top"]
+custom_minimum_size = Vector2(0, 24)
+theme_override_constants/separation = 4
+
+; --- MILIEU : log, ennemis, messages ---
+[node name="Middle" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_top = 0.15
+anchor_right = 1.0
+anchor_bottom = 0.75
+grow_vertical = 2
+
+[node name="EnemyContainer" type="HBoxContainer" parent="Middle"]
+custom_minimum_size = Vector2(0, 80)
+alignment = 1
+
+[node name="LogScroll" type="ScrollContainer" parent="Middle"]
+size_flags_vertical = 3
+
+[node name="LogContainer" type="VBoxContainer" parent="Middle/LogScroll"]
+size_flags_horizontal = 3
+
+[node name="MessageLabel" type="Label" parent="Middle"]
+horizontal_alignment = 1
+text = ""
+
+[node name="DoubleLootPanel" type="Panel" parent="Middle"]
+visible = false
+custom_minimum_size = Vector2(0, 100)
+
+[node name="VBox" type="VBoxContainer" parent="Middle/DoubleLootPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="Label" type="Label" parent="Middle/DoubleLootPanel/VBox"]
+horizontal_alignment = 1
+text = "Doubler le butin ?"
+
+[node name="WatchAdBtn" type="Button" parent="Middle/DoubleLootPanel/VBox"]
+text = "Regarder une pub (+30s)"
+script = null
+
+[node name="SkipBtn" type="Button" parent="Middle/DoubleLootPanel/VBox"]
+text = "Non merci"
+
+; --- BAS : boutons de combat ---
+[node name="Bottom" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_top = 0.75
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_vertical = 2
+
+[node name="CombatPanel" type="Panel" parent="Bottom"]
+size_flags_vertical = 3
+
+[node name="Grid" type="GridContainer" parent="Bottom/CombatPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="AttackBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Attaquer"
+
+[node name="DefendBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Défendre"
+
+[node name="ItemBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Objet"
+
+[node name="FleeBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Fuir"

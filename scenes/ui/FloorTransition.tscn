@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/FloorTransition.gd" id="1"]
+
+[node name="FloorTransition" type="CanvasLayer"]
+script = ExtResource("1")
+layer = 10
+visible = false
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.027, 0.016, 0.047, 1)
+modulate = Color(1, 1, 1, 0)
+
+; Runes décoratives en haut
+[node name="RuneLabel" type="Label" parent="Overlay"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -140.0
+offset_top = 160.0
+offset_right = 140.0
+offset_bottom = 200.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.35, 0.28, 0.12, 0.7)
+text = "ᚱ ᚢ ᚦ ᚨ ᚲ ᚷ ᚹ ᚺ"
+
+; Numéro d'étage
+[node name="FloorLabel" type="Label" parent="Overlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.45
+anchor_right = 0.5
+anchor_bottom = 0.45
+offset_left = -150.0
+offset_top = -24.0
+offset_right = 150.0
+offset_bottom = 20.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.784, 0.588, 0.227)
+text = "— ÉTAGE  1 —"
+
+; Citation d'ambiance
+[node name="SubtitleLabel" type="Label" parent="Overlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.56
+anchor_right = 0.5
+anchor_bottom = 0.56
+offset_left = -160.0
+offset_top = 0.0
+offset_right = 160.0
+offset_bottom = 40.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.65, 0.62, 0.56)
+autowrap_mode = 3
+text = "\"La première marche est toujours la plus longue.\""

@@ -1,0 +1,30 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; but the file format allows editing it directly.
+
+[application]
+
+config/name="DungeonRoguelite"
+run/main_scene="res://scenes/ui/MainMenu.tscn"
+config/features=PackedStringArray("4.2", "Mobile")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameTheme="*res://autoloads/GameTheme.gd"
+GameManager="*res://autoloads/GameManager.gd"
+AdManager="*res://autoloads/AdManager.gd"
+SoundManager="*res://autoloads/SoundManager.gd"
+MusicPlaylist="*res://autoloads/MusicPlaylist.gd"
+ItemDatabase="*res://scenes/game/ItemDatabase.gd"
+
+[display]
+
+window/size/viewport_width=390
+window/size/viewport_height=844
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[rendering]
+
+renderer/rendering_method="mobile"
