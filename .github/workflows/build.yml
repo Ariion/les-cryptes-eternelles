@@ -61,6 +61,16 @@ jobs:
       - name: Create build directories
         run: mkdir -p build/web
 
+      - name: Test aapt2 execution
+        run: |
+          AAPT2=/usr/lib/android-sdk/build-tools/33.0.2/aapt2
+          echo "=== aapt2 binary info ==="
+          file "$AAPT2"
+          echo "=== aapt2 version ==="
+          "$AAPT2" version || echo "aapt2 FAILED (exit $?)"
+          echo "=== ldd aapt2 ==="
+          ldd "$AAPT2" || echo "ldd failed"
+
       - name: Export Android APK
         id: android_export
         continue-on-error: true
