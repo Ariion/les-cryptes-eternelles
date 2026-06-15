@@ -70,6 +70,11 @@ jobs:
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
 
+      - name: Patch Web build for GitHub Pages (Cross-Origin Isolation)
+        run: |
+          cp web_static/coi-serviceworker.js build/web/
+          sed -i 's|<head>|<head>\n<script src="coi-serviceworker.js"></script>|' build/web/index.html
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
