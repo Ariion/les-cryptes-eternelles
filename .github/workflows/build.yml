@@ -39,16 +39,6 @@ jobs:
             -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
-          # Stub apksigner if missing (Godot 4.2 checks for it even with signed=false)
-          APKSIGNER=/usr/lib/android-sdk/build-tools/33.0.2/apksigner
-          if [ ! -f "$APKSIGNER" ]; then
-            echo "==> Creating apksigner stub"
-            printf '#!/bin/sh\nexit 0\n' > "$APKSIGNER"
-            chmod +x "$APKSIGNER"
-          fi
-          echo "=== apksigner ==="
-          ls -la "$APKSIGNER"
-
           mkdir -p $HOME/.config/godot
           {
             echo '[gd_resource type="EditorSettings" format=3]'
@@ -61,11 +51,8 @@ jobs:
             echo 'export/android/debug_keystore_pass = "android"'
           } > $HOME/.config/godot/editor_settings-4.tres
 
-          # Inject keystore into preset options (Godot 4.2 reads from preset, not just editor settings)
+          # Godot 4.2 reads keystore from preset options (not just editor settings)
           sed -i "s|^\[preset.0.options\]|\[preset.0.options\]\nkeystore/debug=\"$KEYSTORE\"\nkeystore/debug_user=\"androiddebugkey\"\nkeystore/debug_password=\"android\"|" export_presets.cfg
-
-          echo "=== Preset keystore section ==="
-          grep -A5 "keystore" export_presets.cfg || echo "no keystore in preset"
 
       - name: Fix Android SDK target SDK mismatch
         run: |
@@ -78,21 +65,18 @@ jobs:
         run: mkdir -p build/web
 
       - name: Export Android APK
-        id: android_export
-        continue-on-error: true
         run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1
 
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
 
       - name: Upload APK artifact
-        if: steps.android_export.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: CryptesEternelles-Android
           path: build/CryptesEternelles.apk
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload Web artifact (GitHub Pages)
         uses: actions/upload-pages-artifact@v3
