@@ -57,18 +57,19 @@ jobs:
           echo "=== editor_settings-4.tres ==="
           cat $HOME/.config/godot/editor_settings-4.tres
 
-      - name: Diagnose Android SDK
+      - name: Fix Android SDK target SDK mismatch
         run: |
-          echo "=== Build tools ==="
+          # Godot 4.2.2 defaults to targetSdk=34 but only android-33 is in the image.
+          # Symlink android-33 as android-34 so the platform jar is found.
+          ln -sf /usr/lib/android-sdk/platforms/android-33 \
+                 /usr/lib/android-sdk/platforms/android-34
+          # Same for build-tools so the version lookup doesn't warn/fail.
+          ln -sf /usr/lib/android-sdk/build-tools/33.0.2 \
+                 /usr/lib/android-sdk/build-tools/34.0.0
+          echo "=== Platforms now ==="
+          ls /usr/lib/android-sdk/platforms/
+          echo "=== Build tools now ==="
           ls /usr/lib/android-sdk/build-tools/
-          echo "=== Build tools 33.0.2 ==="
-          ls /usr/lib/android-sdk/build-tools/33.0.2/ | head -20
-          echo "=== Platforms ==="
-          ls /usr/lib/android-sdk/platforms/ 2>/dev/null || echo "NO PLATFORMS DIR"
-          echo "=== Platform tools ==="
-          ls /usr/lib/android-sdk/platform-tools/ 2>/dev/null || echo "NO PLATFORM-TOOLS DIR"
-          echo "=== Export templates (android files) ==="
-          ls $HOME/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android
 
       - name: Create build directories
         run: mkdir -p build/web
