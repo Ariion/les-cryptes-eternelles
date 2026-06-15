@@ -27,25 +27,39 @@ jobs:
           mv /root/.local/share/godot/export_templates/4.2.2.stable \
              $HOME/.local/share/godot/export_templates/4.2.2.stable
 
-      - name: Diagnose templates and Android SDK
+      - name: Diagnose Android SDK
         run: |
-          echo "=== HOME ==="
-          echo "$HOME"
-          echo "=== Export templates ==="
-          ls -la $HOME/.local/share/godot/export_templates/4.2.2.stable/ | head -30
-          echo "=== Android SDK platforms ==="
-          ls /usr/lib/android-sdk/platforms/ 2>/dev/null || echo "No platforms dir"
-          echo "=== Android SDK build-tools ==="
-          ls /usr/lib/android-sdk/build-tools/ 2>/dev/null || echo "No build-tools dir"
-          echo "=== aapt2 test ==="
-          AAPT2=/usr/lib/android-sdk/build-tools/33.0.2/aapt2
-          ls -la "$AAPT2" || echo "aapt2 not found"
-          "$AAPT2" version 2>&1 || echo "aapt2 FAILED (exit $?)"
+          echo "=== SDK root ==="
+          ls /usr/lib/android-sdk/
+          echo "=== platform-tools ==="
+          ls /usr/lib/android-sdk/platform-tools/ 2>/dev/null || echo "NO platform-tools dir"
+          echo "=== adb in PATH ==="
+          which adb 2>/dev/null || echo "adb not in PATH"
+          adb version 2>/dev/null || echo "adb not available"
+          echo "=== javac ==="
+          which javac 2>/dev/null || echo "javac not in PATH"
+          javac -version 2>&1 || echo "javac FAILED"
+          echo "=== java home candidates ==="
+          dirname $(dirname $(readlink -f $(which java)))
+          ls $(dirname $(dirname $(readlink -f $(which java))))/bin/ | grep -E "javac|java$" || echo "no javac in java home"
 
       - name: Setup Android SDK, keystore and editor settings
         run: |
           KEYSTORE=$HOME/.android/debug.keystore
           JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+
+          # Create platform-tools with adb stub if missing
+          if [ ! -f /usr/lib/android-sdk/platform-tools/adb ]; then
+            echo "==> Creating adb stub in platform-tools"
+            mkdir -p /usr/lib/android-sdk/platform-tools
+            if which adb > /dev/null 2>&1; then
+              cp $(which adb) /usr/lib/android-sdk/platform-tools/adb
+            else
+              # Create a minimal stub that returns success
+              printf '#!/bin/sh\nexit 0\n' > /usr/lib/android-sdk/platform-tools/adb
+              chmod +x /usr/lib/android-sdk/platform-tools/adb
+            fi
+          fi
 
           mkdir -p $HOME/.android
           keytool -genkey -v \
@@ -68,6 +82,8 @@ jobs:
 
           echo "=== Editor settings ==="
           cat $HOME/.config/godot/editor_settings-4.tres
+          echo "=== platform-tools/adb ==="
+          ls -la /usr/lib/android-sdk/platform-tools/adb
 
       - name: Fix Android SDK target SDK mismatch
         run: |
@@ -82,7 +98,7 @@ jobs:
       - name: Export Android APK
         id: android_export
         continue-on-error: true
-        run: godot --headless --verbose --export-debug "Android" build/CryptesEternelles.apk 2>&1
+        run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1
 
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
