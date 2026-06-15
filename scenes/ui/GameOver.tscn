@@ -33,12 +33,12 @@ theme_override_constants/separation = 20
 horizontal_alignment = 1
 text = "VOUS ÊTES MORT"
 theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.9, 0.2, 0.2)
+theme_override_colors/font_color = Color(0.9, 0.2, 0.2, 1)
 
 [node name="GoldLabel" type="Label" parent="Panel/VBox"]
 horizontal_alignment = 1
 text = "Or collecté : 0"
-theme_override_colors/font_color = Color(1, 0.84, 0)
+theme_override_colors/font_color = Color(1, 0.84, 0, 1)
 
 [node name="Separator" type="HSeparator" parent="Panel/VBox"]
 
