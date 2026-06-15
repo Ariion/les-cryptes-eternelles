@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -88,6 +88,18 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: build/web/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "Build #${{ github.run_number }}"
+          body: |
+            Build automatique du ${{ github.event.head_commit.timestamp }}
+
+            **Commit :** ${{ github.event.head_commit.message }}
+          files: build/CryptesEternelles.apk
+          make_latest: true
 
   deploy-pages:
     name: Deploy to GitHub Pages
