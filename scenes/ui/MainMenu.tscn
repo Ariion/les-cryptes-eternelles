@@ -82,3 +82,7 @@ horizontal_alignment = 1
 text = "v0.1 — Music: Kevin MacLeod (CC BY 4.0)"
 theme_override_font_sizes/font_size = 10
 theme_override_colors/font_color = Color(0.3, 0.28, 0.25)
+
+[connection signal="pressed" from="VBox/PlayBtn" to="." method="_on_play_btn_pressed"]
+[connection signal="pressed" from="VBox/ShopBtn" to="." method="_on_shop_btn_pressed"]
+[connection signal="pressed" from="VBox/SettingsBtn" to="." method="_on_settings_btn_pressed"]

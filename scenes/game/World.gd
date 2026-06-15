@@ -60,15 +60,15 @@ func _handle_combat_room(room: Dictionary) -> void:
 		_go_to_next_room()
 		return
 
-	var is_boss := room["type"] == DungeonGenerator.RoomType.BOSS
+	var is_boss: bool = (room["type"] == DungeonGenerator.RoomType.BOSS)
 	if is_boss:
 		SoundManager.play_music("boss")
 
-	var enemy_nodes := []
+	var enemy_nodes: Array = []
 	for enemy_name in room["enemies"]:
-		var e = preload("res://scenes/enemies/Enemy.tscn").instantiate()
+		var e: EnemyEntity = preload("res://scenes/enemies/Enemy.tscn").instantiate() as EnemyEntity
 		enemy_row.add_child(e)
-		e.setup(enemy_name, GameManager.current_floor)
+		e.setup(str(enemy_name), GameManager.current_floor)
 		enemy_nodes.append(e)
 
 	hud.update_enemy_display(enemy_nodes)
@@ -80,8 +80,8 @@ func _handle_combat_room(room: Dictionary) -> void:
 func _handle_treasure_room(room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
 	var loot: Dictionary = room["loot"]
-	var gold := loot.get("gold", 0)
-	var item := loot.get("item", "")
+	var gold: int = int(loot.get("gold", 0))
+	var item: String = str(loot.get("item", ""))
 
 	if gold > 0:
 		player.collect_gold(gold)
@@ -95,7 +95,7 @@ func _handle_treasure_room(room: Dictionary) -> void:
 
 func _handle_rest_room() -> void:
 	hud.show_combat_buttons(false)
-	var heal_amount := int(player.stats["max_hp"] * 0.3)
+	var heal_amount: int = int(int(player.stats.get("max_hp", 100)) * 0.3)
 	player.heal(heal_amount)
 	hud.show_message("Tu te reposes et récupères %d PV." % heal_amount)
 	await get_tree().create_timer(1.8).timeout
@@ -108,8 +108,8 @@ func _on_combat_ended(victory: bool, gold_earned: int, room: Dictionary) -> void
 		return
 
 	room["cleared"] = true
-	var item_name := room["loot"].get("item", "")
-	var is_boss := room["type"] == DungeonGenerator.RoomType.BOSS
+	var item_name: String = str(room["loot"].get("item", ""))
+	var is_boss: bool = (room["type"] == DungeonGenerator.RoomType.BOSS)
 
 	if item_name != "":
 		player.pick_up_item(item_name)

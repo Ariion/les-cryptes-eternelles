@@ -42,3 +42,5 @@ grow_vertical = 2
 [node name="ItemContainer" type="VBoxContainer" parent="ScrollContainer"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
+
+[connection signal="pressed" from="Top/BackBtn" to="." method="_on_back_btn_pressed"]

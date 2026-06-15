@@ -46,11 +46,11 @@ func _build_upgrade_list() -> void:
 
 	for upgrade in UPGRADES:
 		var current_level: int = GameManager.permanent_upgrades.get(upgrade["id"], 0)
-		var cost := _get_cost(upgrade, current_level)
-		var maxed := current_level >= upgrade["max_level"]
+		var cost: int = _get_cost(upgrade, current_level)
+		var maxed: bool = current_level >= int(upgrade.get("max_level", 0))
 
 		var row := HBoxContainer.new()
-		row.theme_override_constants_separation = 12
+		row.add_theme_constant_override("separation", 12)
 
 		var info := VBoxContainer.new()
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL

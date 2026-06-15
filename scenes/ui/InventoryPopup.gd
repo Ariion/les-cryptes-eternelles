@@ -40,7 +40,7 @@ func _refresh_list() -> void:
 	for item_name in counts:
 		var data := ItemDatabase.get_item(item_name)
 		var row := HBoxContainer.new()
-		row.theme_override_constants_separation = 10
+		row.add_theme_constant_override("separation", 10)
 
 		var info := VBoxContainer.new()
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL

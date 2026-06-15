@@ -73,6 +73,21 @@ func play_sfx(sfx_name: String) -> void:
 	_sfx_player.stream = load(SFX[sfx_name])
 	_sfx_player.play()
 
+func play_music_file(path: String) -> void:
+	if not ResourceLoader.exists(path):
+		return
+	if _music_player.playing and _music_player.stream and \
+			_music_player.stream.resource_path == path:
+		return
+	var tween := create_tween()
+	tween.tween_property(_music_player, "volume_db", -40.0, 0.5)
+	tween.tween_callback(func():
+		_music_player.stream = load(path)
+		_music_player.play()
+		var t2 := create_tween()
+		t2.tween_property(_music_player, "volume_db", linear_to_db(music_volume), 0.5)
+	)
+
 func stop_music() -> void:
 	var tween := create_tween()
 	tween.tween_property(_music_player, "volume_db", -40.0, 0.8)

@@ -1,13 +1,18 @@
-name: Build Android APK
+name: Build – Android APK + Web Preview
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build-android:
-    name: Build Android APK
+  build:
+    name: Build
     runs-on: ubuntu-latest
     container:
       image: barichello/godot-ci:4.2.2
@@ -22,16 +27,59 @@ jobs:
           mv /root/.local/share/godot/export_templates/4.2.2.stable \
              ~/.local/share/godot/export_templates/4.2.2.stable
 
-      - name: Create build directory
-        run: mkdir -p build
+      - name: Generate debug keystore
+        run: |
+          mkdir -p /root/.android
+          keytool -genkey -v \
+            -keystore /root/.android/debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Setup Godot editor settings
+        run: |
+          mkdir -p /root/.config/godot
+          cat > /root/.config/godot/editor_settings-4.tres << 'EOF'
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "/usr/lib/android-sdk"
+          export/android/debug_keystore = "/root/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+
+      - name: Create build directories
+        run: mkdir -p build/web
 
       - name: Export Android debug APK
         run: godot --headless --export-debug "Android" build/CryptesEternelles-debug.apk 2>&1
 
-      - name: Upload APK
+      - name: Export Web
+        run: godot --headless --export-release "Web" build/web/index.html 2>&1
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: CryptesEternelles-Android
           path: build/CryptesEternelles-debug.apk
           retention-days: 30
           if-no-files-found: error
+
+      - name: Upload Web artifact (GitHub Pages)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web/
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4

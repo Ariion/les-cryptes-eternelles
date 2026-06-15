@@ -1,3 +1,4 @@
+class_name DungeonGenerator
 extends Node
 
 # Génère une séquence de salles pour un étage complet

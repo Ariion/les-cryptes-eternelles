@@ -65,7 +65,7 @@ func _play_next() -> void:
 	var tracks: Array = PLAYLIST.get(_current_context, [])
 	if tracks.is_empty():
 		return
-	var track := tracks[_playlist_index % tracks.size()]
+	var track: String = str(tracks[_playlist_index % tracks.size()])
 	if ResourceLoader.exists(track):
 		SoundManager.play_music_file(track)
 		_playlist_index += 1

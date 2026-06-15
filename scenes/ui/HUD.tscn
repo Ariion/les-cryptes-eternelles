@@ -118,3 +118,10 @@ text = "Objet"
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Fuir"
+
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
+[connection signal="pressed" from="Middle/DoubleLootPanel/VBox/WatchAdBtn" to="." method="_on_watch_ad_btn_pressed"]
+[connection signal="pressed" from="Middle/DoubleLootPanel/VBox/SkipBtn" to="." method="_on_skip_btn_pressed"]

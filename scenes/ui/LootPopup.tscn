@@ -54,3 +54,6 @@ text = "Doubler l'or — Voir une pub"
 [node name="ContinueBtn" type="Button" parent="Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 text = "Continuer"
+
+[connection signal="pressed" from="Panel/VBox/DoubleBtn" to="." method="_on_double_btn_pressed"]
+[connection signal="pressed" from="Panel/VBox/ContinueBtn" to="." method="_on_continue_btn_pressed"]

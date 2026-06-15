@@ -54,3 +54,6 @@ text = "Regarder une pub pour revivre"
 [node name="QuitButton" type="Button" parent="Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)
 text = "Retour au menu"
+
+[connection signal="pressed" from="Panel/VBox/ReviveButton" to="." method="_on_revive_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/QuitButton" to="." method="_on_quit_button_pressed"]

@@ -48,3 +48,5 @@ grow_vertical = 2
 [node name="ItemList" type="VBoxContainer" parent="Panel/Scroll"]
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
+
+[connection signal="pressed" from="Panel/Header/CloseBtn" to="." method="_on_close_btn_pressed"]
