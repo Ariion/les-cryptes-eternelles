@@ -73,7 +73,8 @@ jobs:
       - name: Patch Web build for GitHub Pages (Cross-Origin Isolation)
         run: |
           cp web_static/coi-serviceworker.js build/web/
-          python3 web_static/patch_html.py build/web/index.html
+          cp web_static/coi-init.js build/web/
+          sed -i 's|<head>|<head><script src="coi-init.js"></script>|' build/web/index.html
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
