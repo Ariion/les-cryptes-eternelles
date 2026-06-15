@@ -27,6 +27,21 @@ jobs:
           mv /root/.local/share/godot/export_templates/4.2.2.stable \
              $HOME/.local/share/godot/export_templates/4.2.2.stable
 
+      - name: Diagnose templates and Android SDK
+        run: |
+          echo "=== HOME ==="
+          echo "$HOME"
+          echo "=== Export templates ==="
+          ls -la $HOME/.local/share/godot/export_templates/4.2.2.stable/ | head -30
+          echo "=== Android SDK platforms ==="
+          ls /usr/lib/android-sdk/platforms/ 2>/dev/null || echo "No platforms dir"
+          echo "=== Android SDK build-tools ==="
+          ls /usr/lib/android-sdk/build-tools/ 2>/dev/null || echo "No build-tools dir"
+          echo "=== aapt2 test ==="
+          AAPT2=/usr/lib/android-sdk/build-tools/33.0.2/aapt2
+          ls -la "$AAPT2" || echo "aapt2 not found"
+          "$AAPT2" version 2>&1 || echo "aapt2 FAILED (exit $?)"
+
       - name: Setup Android SDK, keystore and editor settings
         run: |
           KEYSTORE=$HOME/.android/debug.keystore
@@ -51,6 +66,9 @@ jobs:
             echo 'export/android/debug_keystore_pass = "android"'
           } > $HOME/.config/godot/editor_settings-4.tres
 
+          echo "=== Editor settings ==="
+          cat $HOME/.config/godot/editor_settings-4.tres
+
       - name: Fix Android SDK target SDK mismatch
         run: |
           ln -sf /usr/lib/android-sdk/platforms/android-33 \
@@ -61,20 +79,10 @@ jobs:
       - name: Create build directories
         run: mkdir -p build/web
 
-      - name: Test aapt2 execution
-        run: |
-          AAPT2=/usr/lib/android-sdk/build-tools/33.0.2/aapt2
-          echo "=== aapt2 binary info ==="
-          file "$AAPT2"
-          echo "=== aapt2 version ==="
-          "$AAPT2" version || echo "aapt2 FAILED (exit $?)"
-          echo "=== ldd aapt2 ==="
-          ldd "$AAPT2" || echo "ldd failed"
-
       - name: Export Android APK
         id: android_export
         continue-on-error: true
-        run: godot --headless --export-release "Android" build/CryptesEternelles.apk 2>&1
+        run: godot --headless --verbose --export-debug "Android" build/CryptesEternelles.apk 2>&1
 
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
