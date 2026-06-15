@@ -73,20 +73,7 @@ jobs:
       - name: Patch Web build for GitHub Pages (Cross-Origin Isolation)
         run: |
           cp web_static/coi-serviceworker.js build/web/
-          python3 - <<'EOF'
-          html = open("build/web/index.html").read()
-          sw_script = """<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('coi-serviceworker.js');
-  if (!crossOriginIsolated) {
-    navigator.serviceWorker.ready.then(() => location.reload());
-  }
-}
-</script>
-"""
-          html = html.replace("<head>", "<head>\n" + sw_script, 1)
-          open("build/web/index.html", "w").write(html)
-          EOF
+          python3 web_static/patch_html.py build/web/index.html
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
