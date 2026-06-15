@@ -57,6 +57,19 @@ jobs:
           echo "=== editor_settings-4.tres ==="
           cat $HOME/.config/godot/editor_settings-4.tres
 
+      - name: Diagnose Android SDK
+        run: |
+          echo "=== Build tools ==="
+          ls /usr/lib/android-sdk/build-tools/
+          echo "=== Build tools 33.0.2 ==="
+          ls /usr/lib/android-sdk/build-tools/33.0.2/ | head -20
+          echo "=== Platforms ==="
+          ls /usr/lib/android-sdk/platforms/ 2>/dev/null || echo "NO PLATFORMS DIR"
+          echo "=== Platform tools ==="
+          ls /usr/lib/android-sdk/platform-tools/ 2>/dev/null || echo "NO PLATFORM-TOOLS DIR"
+          echo "=== Export templates (android files) ==="
+          ls $HOME/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android
+
       - name: Create build directories
         run: mkdir -p build/web
 
