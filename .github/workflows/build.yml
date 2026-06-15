@@ -27,14 +27,22 @@ jobs:
           mv /root/.local/share/godot/export_templates/4.2.2.stable \
              $HOME/.local/share/godot/export_templates/4.2.2.stable
 
-      - name: Setup Android SDK and editor settings
+      - name: Setup Android SDK, keystore and editor settings
         run: |
           ANDROID_SDK=/usr/lib/android-sdk
           JAVA=/usr/lib/jvm/java-17-openjdk-amd64
+          KEYSTORE=$HOME/.android/debug.keystore
+
+          mkdir -p $HOME/.android
+          keytool -genkey -v \
+            -keystore "$KEYSTORE" \
+            -storepass android -alias androiddebugkey \
+            -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
 
           mkdir -p $HOME/.config/godot
-          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "%s"\nexport/android/java_sdk_path = "%s"\n' \
-            "$ANDROID_SDK" "$JAVA" \
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "%s"\nexport/android/java_sdk_path = "%s"\nexport/android/debug_keystore = "%s"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' \
+            "$ANDROID_SDK" "$JAVA" "$KEYSTORE" \
             > $HOME/.config/godot/editor_settings-4.tres
 
       - name: Create build directories
