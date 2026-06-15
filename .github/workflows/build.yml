@@ -63,6 +63,11 @@ jobs:
           mkdir -p android/build
           unzip -q "$TEMPLATES/android_source.zip" -d android/build/
           touch android/build/.gdignore
+          echo "4.2.2.stable" > android/.build_version
+          echo "=== android/ ==="
+          ls android/
+          echo "=== android/build/ (top 20) ==="
+          ls android/build/ | head -20
 
       - name: Create build directories
         run: mkdir -p build/web
