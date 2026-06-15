@@ -27,7 +27,7 @@ jobs:
           mv /root/.local/share/godot/export_templates/4.2.2.stable \
              ~/.local/share/godot/export_templates/4.2.2.stable
 
-      - name: Generate debug keystore
+      - name: Setup Android keystore and editor settings
         run: |
           mkdir -p /root/.android
           keytool -genkey -v \
@@ -36,25 +36,39 @@ jobs:
             -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
-      - name: Setup Godot editor settings
-        run: |
-          ANDROID_SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/lib/android-sdk}}"
-          JAVA_SDK="${JAVA_HOME:-$(dirname $(dirname $(readlink -f $(which java))))}"
-          echo "Android SDK: $ANDROID_SDK"
-          echo "Java SDK:    $JAVA_SDK"
-          mkdir -p /root/.config/godot
-          {
-            echo '[gd_resource type="EditorSettings" format=3]'
-            echo ''
-            echo '[resource]'
-            echo "export/android/android_sdk_path = \"$ANDROID_SDK\""
-            echo "export/android/java_sdk_path = \"$JAVA_SDK\""
-            echo 'export/android/debug_keystore = "/root/.android/debug.keystore"'
-            echo 'export/android/debug_keystore_user = "androiddebugkey"'
-            echo 'export/android/debug_keystore_pass = "android"'
-          } > /root/.config/godot/editor_settings-4.tres
-          echo "--- editor_settings-4.tres ---"
-          cat /root/.config/godot/editor_settings-4.tres
+          SETTINGS=/root/.config/godot/editor_settings-4.tres
+
+          echo "=== Existing editor settings ==="
+          if [ -f "$SETTINGS" ]; then cat "$SETTINGS"; else echo "(aucun)"; fi
+
+          python3 - "$SETTINGS" << 'PYEOF'
+          import sys, os, re
+          path = sys.argv[1]
+          os.makedirs(os.path.dirname(path), exist_ok=True)
+          try:
+              content = open(path).read()
+          except FileNotFoundError:
+              content = '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
+          java_home = os.environ.get('JAVA_HOME', '')
+          android_sdk = os.environ.get('ANDROID_SDK_ROOT', os.environ.get('ANDROID_HOME', '/usr/lib/android-sdk'))
+          for key in ['export/android/debug_keystore', 'export/android/debug_keystore_user',
+                      'export/android/debug_keystore_pass', 'export/android/android_sdk_path',
+                      'export/android/java_sdk_path']:
+              content = re.sub(rf'^{re.escape(key)} = .*\n', '', content, flags=re.MULTILINE)
+          inject = (
+              f'export/android/android_sdk_path = "{android_sdk}"\n'
+              f'export/android/java_sdk_path = "{java_home}"\n'
+              'export/android/debug_keystore = "/root/.android/debug.keystore"\n'
+              'export/android/debug_keystore_user = "androiddebugkey"\n'
+              'export/android/debug_keystore_pass = "android"\n'
+          )
+          if '[resource]' in content:
+              content = content.replace('[resource]\n', '[resource]\n' + inject, 1)
+          else:
+              content += inject
+          open(path, 'w').write(content)
+          print(content)
+          PYEOF
 
       - name: Create build directories
         run: mkdir -p build/web
