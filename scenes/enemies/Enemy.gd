@@ -16,8 +16,18 @@ const ENEMY_DATA := {
 	"Boss":     {"max_hp": 200, "attack": 25, "defense": 10, "gold": 100, "abilities": ["regen", "stun_strike", "weaken"]},
 }
 
+const SPRITE_PATHS := {
+	"Goblin":   "res://assets/sprites/goblin.svg",
+	"Skeleton": "res://assets/sprites/skeleton.svg",
+	"Orc":      "res://assets/sprites/orc.svg",
+	"Boss":     "res://assets/sprites/boss.svg",
+}
+
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
+	if has_node("Body"):
+		var sprite_path: String = SPRITE_PATHS.get(p_name, SPRITE_PATHS["Goblin"])
+		$Body.texture = load(sprite_path)
 	var base: Dictionary = (ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"]) as Dictionary).duplicate()
 	var scale: float = 1.0 + (floor_number - 1) * 0.15
 	stats = {
