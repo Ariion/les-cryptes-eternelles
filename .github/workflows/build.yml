@@ -74,7 +74,8 @@ jobs:
         run: |
           cp web_static/coi-serviceworker.js build/web/
           cp web_static/coi-init.js build/web/
-          sed -i 's|<head>|<head><script src="coi-init.js"></script>|' build/web/index.html
+          cp web_static/fullscreen.css build/web/
+          sed -i 's|<head>|<head><link rel="stylesheet" href="fullscreen.css"><script src="coi-init.js"></script>|' build/web/index.html
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

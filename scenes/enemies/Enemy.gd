@@ -28,6 +28,8 @@ func setup(p_name: String, floor_number: int) -> void:
 	if has_node("Body"):
 		var sprite_path: String = SPRITE_PATHS.get(p_name, SPRITE_PATHS["Goblin"])
 		$Body.texture = load(sprite_path)
+	if has_node("NameLabel"):
+		$NameLabel.text = p_name
 	var base: Dictionary = (ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"]) as Dictionary).duplicate()
 	var scale: float = 1.0 + (floor_number - 1) * 0.15
 	stats = {
