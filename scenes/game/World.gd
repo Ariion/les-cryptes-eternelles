@@ -7,7 +7,7 @@ extends Node2D
 @onready var floor_transition: CanvasLayer = $FloorTransition
 @onready var loot_popup: CanvasLayer = $LootPopup
 @onready var inventory_popup: CanvasLayer = $InventoryPopup
-@onready var enemy_row: HBoxContainer = $CombatArea/EnemyRow
+@onready var enemy_row: Node2D = $CombatArea/EnemyRow
 @onready var player_spot: Node2D = $CombatArea/PlayerSpot
 @onready var room_name_label: Label = $CombatArea/RoomNameLabel
 
@@ -65,10 +65,14 @@ func _handle_combat_room(room: Dictionary) -> void:
 		SoundManager.play_music("boss")
 
 	var enemy_nodes: Array = []
-	for enemy_name in room["enemies"]:
+	var count: int = room["enemies"].size()
+	var spacing: float = 90.0
+	var start_x: float = -(count - 1) * spacing * 0.5
+	for i in range(count):
 		var e: EnemyEntity = preload("res://scenes/enemies/Enemy.tscn").instantiate() as EnemyEntity
+		e.position = Vector2(start_x + i * spacing, 0)
 		enemy_row.add_child(e)
-		e.setup(str(enemy_name), GameManager.current_floor)
+		e.setup(str(room["enemies"][i]), GameManager.current_floor)
 		enemy_nodes.append(e)
 
 	hud.update_enemy_display(enemy_nodes)
