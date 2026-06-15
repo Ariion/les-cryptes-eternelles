@@ -43,7 +43,7 @@ func attack_enemy(enemy: Node) -> Dictionary:
 		hit_count = 2
 
 	for _i in hit_count:
-		enemy.take_damage(damage)
+		enemy.take_damage(damage, is_crit)
 
 	if equipment["weapon"] == "Flame Sword":
 		enemy.apply_status(StatusEffect.create(StatusEffect.Type.BURN, 3, 5))

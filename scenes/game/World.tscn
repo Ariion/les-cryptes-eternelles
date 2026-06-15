@@ -42,10 +42,10 @@ theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
 text = "Entrée"
 
 [node name="EnemyRow" type="Node2D" parent="CombatArea"]
-position = Vector2(195, 160)
+position = Vector2(195, 180)
 
 [node name="PlayerSpot" type="Node2D" parent="CombatArea"]
-position = Vector2(195, 560)
+position = Vector2(195, 520)
 
 ; --- UI LAYERS ---
 [node name="HUD" parent="." instance=ExtResource("4")]

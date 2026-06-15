@@ -41,15 +41,25 @@ func setup(p_name: String, floor_number: int) -> void:
 		"abilities": base.get("abilities", []),
 	}
 
-func take_damage(amount: int) -> void:
+const _DMG_SCRIPT := preload("res://scenes/ui/DamageNumber.gd")
+
+func take_damage(amount: int, is_crit: bool = false) -> void:
 	var reduced: int = max(1, amount - int(stats.get("defense", 0)) - _get_shield_bonus())
 	stats["hp"] = max(0, int(stats.get("hp", 0)) - reduced)
+	_spawn_damage_number(reduced, is_crit)
 	if has_node("HpBar"):
 		var ratio: float = float(int(stats.get("hp", 0))) / float(int(stats.get("max_hp", 1)))
 		$HpBar.scale.x = ratio
 	emit_signal("hp_changed", int(stats.get("hp", 0)), int(stats.get("max_hp", 1)))
 	if int(stats.get("hp", 0)) == 0:
 		emit_signal("enemy_died", int(stats.get("gold", 0)))
+
+func _spawn_damage_number(amount: int, is_crit: bool) -> void:
+	var node := Node2D.new()
+	node.set_script(_DMG_SCRIPT)
+	get_parent().add_child(node)
+	node.global_position = (self as Node2D).global_position + Vector2(0, -80)
+	node.show_damage(amount, is_crit)
 
 func choose_action() -> Dictionary:
 	if is_stunned():

@@ -50,6 +50,16 @@ func _apply_theme() -> void:
 	hp_bar.add_theme_stylebox_override("fill", hp_fill)
 	hp_bar.add_theme_stylebox_override("background", hp_bg)
 
+	# Log scroll background
+	var log_style := StyleBoxFlat.new()
+	log_style.bg_color = Color(0.04, 0.02, 0.08, 0.75)
+	log_style.set_corner_radius_all(6)
+	log_style.content_margin_left = 6.0
+	log_style.content_margin_right = 6.0
+	log_style.content_margin_top = 4.0
+	log_style.content_margin_bottom = 4.0
+	$Middle/LogScroll.add_theme_stylebox_override("panel", log_style)
+
 	# Bottom panel
 	var bot_style := StyleBoxFlat.new()
 	bot_style.bg_color = Color(0.05, 0.03, 0.1, 0.92)
