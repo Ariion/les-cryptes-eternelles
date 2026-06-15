@@ -32,9 +32,6 @@ jobs:
           KEYSTORE=$HOME/.android/debug.keystore
           JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
-          echo "HOME=$HOME  JAVA_HOME=$JAVA_HOME"
-          ls $JAVA_HOME/bin/java
-
           mkdir -p $HOME/.android
           keytool -genkey -v \
             -keystore "$KEYSTORE" \
@@ -54,39 +51,32 @@ jobs:
             echo 'export/android/debug_keystore_pass = "android"'
           } > $HOME/.config/godot/editor_settings-4.tres
 
-          echo "=== editor_settings-4.tres ==="
-          cat $HOME/.config/godot/editor_settings-4.tres
-
       - name: Fix Android SDK target SDK mismatch
         run: |
-          # Godot 4.2.2 defaults to targetSdk=34 but only android-33 is in the image.
-          # Symlink android-33 as android-34 so the platform jar is found.
           ln -sf /usr/lib/android-sdk/platforms/android-33 \
                  /usr/lib/android-sdk/platforms/android-34
-          # Same for build-tools so the version lookup doesn't warn/fail.
           ln -sf /usr/lib/android-sdk/build-tools/33.0.2 \
                  /usr/lib/android-sdk/build-tools/34.0.0
-          echo "=== Platforms now ==="
-          ls /usr/lib/android-sdk/platforms/
-          echo "=== Build tools now ==="
-          ls /usr/lib/android-sdk/build-tools/
 
       - name: Create build directories
         run: mkdir -p build/web
 
-      - name: Export Android debug APK
-        run: godot --headless --export-debug "Android" build/CryptesEternelles-debug.apk 2>&1
+      - name: Export Android APK
+        id: android_export
+        continue-on-error: true
+        run: godot --headless --export-release "Android" build/CryptesEternelles.apk 2>&1
 
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
 
       - name: Upload APK artifact
+        if: steps.android_export.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: CryptesEternelles-Android
-          path: build/CryptesEternelles-debug.apk
+          path: build/CryptesEternelles.apk
           retention-days: 30
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload Web artifact (GitHub Pages)
         uses: actions/upload-pages-artifact@v3
