@@ -29,31 +29,26 @@ jobs:
 
       - name: Setup Android SDK, keystore and editor settings
         run: |
-          ANDROID_SDK=/usr/lib/android-sdk
-          JAVA_HOME_PATH=/usr/lib/jvm/java-17-openjdk-amd64
-          KEYSTORE=/root/.android/debug.keystore
-
           mkdir -p /root/.android
           keytool -genkey -v \
-            -keystore "$KEYSTORE" \
+            -keystore /root/.android/debug.keystore \
             -storepass android -alias androiddebugkey \
             -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
           mkdir -p /root/.config/godot
-          python3 - << PYEOF
-import os
-path = "/root/.config/godot/editor_settings-4.tres"
-content = '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'
-content += f'export/android/android_sdk_path = "{os.environ.get("ANDROID_SDK", "/usr/lib/android-sdk")}"\n'
-content += 'export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"\n'
-content += 'export/android/debug_keystore = "/root/.android/debug.keystore"\n'
-content += 'export/android/debug_keystore_user = "androiddebugkey"\n'
-content += 'export/android/debug_keystore_pass = "android"\n'
-open(path, "w").write(content)
-print("=== editor_settings-4.tres ===")
-print(content)
-PYEOF
+          {
+            echo '[gd_resource type="EditorSettings" format=3]'
+            echo ''
+            echo '[resource]'
+            echo 'export/android/android_sdk_path = "/usr/lib/android-sdk"'
+            echo 'export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"'
+            echo 'export/android/debug_keystore = "/root/.android/debug.keystore"'
+            echo 'export/android/debug_keystore_user = "androiddebugkey"'
+            echo 'export/android/debug_keystore_pass = "android"'
+          } > /root/.config/godot/editor_settings-4.tres
+
+          cat /root/.config/godot/editor_settings-4.tres
 
       - name: Create build directories
         run: mkdir -p build/web
