@@ -57,6 +57,13 @@ jobs:
           echo "=== editor_settings-4.tres ==="
           cat $HOME/.config/godot/editor_settings-4.tres
 
+      - name: Install Android build template
+        run: |
+          TEMPLATES=$HOME/.local/share/godot/export_templates/4.2.2.stable
+          mkdir -p android/build
+          unzip -q "$TEMPLATES/android_source.zip" -d android/build/
+          touch android/build/.gdignore
+
       - name: Create build directories
         run: mkdir -p build/web
 
