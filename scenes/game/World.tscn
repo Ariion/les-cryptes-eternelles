@@ -18,42 +18,22 @@ position = Vector2(195, 422)
 z_index = -1
 texture = ExtResource("9")
 
-; --- GESTIONNAIRES ---
 [node name="DungeonGenerator" type="Node" parent="."]
 script = ExtResource("2")
 
 [node name="CombatManager" type="Node" parent="."]
 script = ExtResource("3")
 
-; --- ZONE VISUELLE DU COMBAT ---
 [node name="CombatArea" type="Node2D" parent="."]
 
-[node name="RoomNameLabel" type="Label" parent="CombatArea"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -100.0
-offset_top = 20.0
-offset_right = 100.0
-offset_bottom = 46.0
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
-text = "Entrée"
-
 [node name="EnemyRow" type="Node2D" parent="CombatArea"]
-position = Vector2(195, 180)
+position = Vector2(195, 270)
 
 [node name="PlayerSpot" type="Node2D" parent="CombatArea"]
-position = Vector2(195, 520)
+position = Vector2(195, 540)
 
-; --- UI LAYERS ---
 [node name="HUD" parent="." instance=ExtResource("4")]
-
 [node name="GameOver" parent="." instance=ExtResource("5")]
-
 [node name="FloorTransition" parent="." instance=ExtResource("6")]
-
 [node name="LootPopup" parent="." instance=ExtResource("7")]
-
 [node name="InventoryPopup" parent="." instance=ExtResource("8")]

@@ -91,7 +91,7 @@ func _start_enemy_turn() -> void:
 		return
 
 	await get_tree().create_timer(0.7).timeout
-	_process_all_enemies()
+	await _process_all_enemies()
 
 func _process_all_enemies() -> void:
 	for enemy in enemies:

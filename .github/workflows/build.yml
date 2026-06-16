@@ -51,7 +51,6 @@ jobs:
             echo 'export/android/debug_keystore_pass = "android"'
           } > $HOME/.config/godot/editor_settings-4.tres
 
-          # Godot 4.2 reads keystore from preset options (not just editor settings)
           sed -i "s|^\[preset.0.options\]|\[preset.0.options\]\nkeystore/debug=\"$KEYSTORE\"\nkeystore/debug_user=\"androiddebugkey\"\nkeystore/debug_password=\"android\"|" export_presets.cfg
 
       - name: Fix Android SDK target SDK mismatch
@@ -66,6 +65,9 @@ jobs:
 
       - name: Create build directories
         run: mkdir -p build/web
+
+      - name: Import project assets
+        run: godot --headless --editor --quit 2>&1 || true
 
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1

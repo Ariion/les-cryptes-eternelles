@@ -9,7 +9,6 @@ extends Node2D
 @onready var inventory_popup: CanvasLayer = $InventoryPopup
 @onready var enemy_row: Node2D = $CombatArea/EnemyRow
 @onready var player_spot: Node2D = $CombatArea/PlayerSpot
-@onready var room_name_label: Label = $CombatArea/RoomNameLabel
 
 var player: Node
 var rooms: Array = []
@@ -36,7 +35,6 @@ func _generate_new_floor() -> void:
 
 func _enter_room(room: Dictionary) -> void:
 	hud.update_room_info(room["type"], current_room_index, rooms.size())
-	_update_room_label(room["type"])
 	_clear_enemies()
 
 	match room["type"]:
@@ -65,14 +63,15 @@ func _handle_combat_room(room: Dictionary) -> void:
 		SoundManager.play_music("boss")
 
 	var enemy_nodes: Array = []
-	var count: int = room["enemies"].size()
-	var spacing: float = 90.0
+	var enemies_list: Array = room["enemies"]
+	var count: int = enemies_list.size()
+	var spacing: float = 105.0
 	var start_x: float = -(count - 1) * spacing * 0.5
 	for i in range(count):
 		var e: EnemyEntity = preload("res://scenes/enemies/Enemy.tscn").instantiate() as EnemyEntity
-		e.position = Vector2(start_x + i * spacing, 0)
 		enemy_row.add_child(e)
-		e.setup(str(room["enemies"][i]), GameManager.current_floor)
+		e.position = Vector2(start_x + i * spacing, 0)
+		e.setup(str(enemies_list[i]), GameManager.current_floor)
 		enemy_nodes.append(e)
 
 	hud.update_enemy_display(enemy_nodes)
@@ -138,8 +137,3 @@ func _on_player_died() -> void:
 func _clear_enemies() -> void:
 	for child in enemy_row.get_children():
 		child.queue_free()
-
-func _update_room_label(type: int) -> void:
-	var names := ["Entrée", "Combat", "Trésor", "Repos", "BOSS"]
-	room_name_label.text = names[type] if type < names.size() else ""
-	room_name_label.modulate = Color(1, 0.4, 0.4) if type == DungeonGenerator.RoomType.BOSS else Color.WHITE

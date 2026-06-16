@@ -52,7 +52,7 @@ func take_damage(amount: int, is_crit: bool = false) -> void:
 	_spawn_damage_number(reduced, is_crit)
 	if has_node("HpBar"):
 		var ratio: float = float(int(stats.get("hp", 0))) / float(int(stats.get("max_hp", 1)))
-		$HpBar.scale.x = ratio
+		$HpBar.offset_right = -50.0 + 100.0 * ratio
 	emit_signal("hp_changed", int(stats.get("hp", 0)), int(stats.get("max_hp", 1)))
 	if int(stats.get("hp", 0)) == 0:
 		emit_signal("enemy_died", int(stats.get("gold", 0)))
