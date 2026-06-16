@@ -17,6 +17,7 @@ AdManager="*res://autoloads/AdManager.gd"
 SoundManager="*res://autoloads/SoundManager.gd"
 MusicPlaylist="*res://autoloads/MusicPlaylist.gd"
 ItemDatabase="*res://scenes/game/ItemDatabase.gd"
+EquipmentDatabase="*res://scenes/game/EquipmentDatabase.gd"
 UpdateChecker="*res://autoloads/UpdateChecker.gd"
 
 [display]

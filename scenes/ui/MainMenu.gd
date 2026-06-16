@@ -28,6 +28,11 @@ func _ready() -> void:
 	# reste hérite du thème global défini dans GameTheme.
 	play_btn.add_theme_font_size_override("font_size", 18)
 
+	# Le bouton « boutique » mène désormais à l'écran Personnage
+	# (Stats / Inventaire / Marché).
+	shop_btn.text = "Personnage"
+	runs_label.text = "Niveau %d  ·  Expéditions : %d" % [GameManager.level, GameManager.run_count]
+
 	# Pulsation dorée du titre
 	var tween := create_tween().set_loops()
 	tween.tween_property(title_label, "modulate", Color(1.0, 0.84, 0.30), 2.0).set_ease(Tween.EASE_IN_OUT)
@@ -46,7 +51,7 @@ func _on_play_btn_pressed() -> void:
 	)
 
 func _on_shop_btn_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/ui/Shop.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/CharacterMenu.tscn")
 
 func _on_settings_btn_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/ui/Settings.tscn")

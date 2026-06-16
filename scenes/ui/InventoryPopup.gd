@@ -28,13 +28,7 @@ func _refresh_list() -> void:
 
 	_add_section_header("Inventaire")
 
-	var usable_items: Array = _player.inventory.filter(func(n):
-		var d = ItemDatabase.get_item(n)
-		return d.get("type") in [ItemDatabase.ItemType.POTION, ItemDatabase.ItemType.PASSIVE]
-			or d.get("type") in [ItemDatabase.ItemType.WEAPON, ItemDatabase.ItemType.SHIELD]
-	)
-
-	if usable_items.is_empty():
+	if _player.inventory.is_empty():
 		var lbl := Label.new()
 		lbl.text = "Inventaire vide."
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
