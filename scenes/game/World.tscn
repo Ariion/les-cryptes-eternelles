@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scenes/game/World.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/game/DungeonGenerator.gd" id="2"]
@@ -8,16 +8,15 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/FloorTransition.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/LootPopup.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/InventoryPopup.tscn" id="8"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/dungeon_room.svg" id="9"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(195, 422)
 z_index = -1
-color = Color(0.05, 0.03, 0.09, 1)
+texture = ExtResource("9")
 
 [node name="DungeonGenerator" type="Node" parent="."]
 script = ExtResource("2")
@@ -25,18 +24,14 @@ script = ExtResource("2")
 [node name="CombatManager" type="Node" parent="."]
 script = ExtResource("3")
 
-; ─── Zone de combat 2D ───────────────────
 [node name="CombatArea" type="Node2D" parent="."]
 
-; Rang des ennemis — centré horizontalement, dans la moitié haute
 [node name="EnemyRow" type="Node2D" parent="CombatArea"]
 position = Vector2(195, 270)
 
-; Joueur — en bas de zone
 [node name="PlayerSpot" type="Node2D" parent="CombatArea"]
 position = Vector2(195, 540)
 
-; ─── Couches UI ──────────────────────────
 [node name="HUD" parent="." instance=ExtResource("4")]
 [node name="GameOver" parent="." instance=ExtResource("5")]
 [node name="FloorTransition" parent="." instance=ExtResource("6")]

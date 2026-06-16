@@ -6,7 +6,7 @@
 
 config/name="Les Cryptes Éternelles"
 run/main_scene="res://scenes/ui/MainMenu.tscn"
-config/features=PackedStringArray("4.2", "Mobile")
+config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -17,6 +17,7 @@ AdManager="*res://autoloads/AdManager.gd"
 SoundManager="*res://autoloads/SoundManager.gd"
 MusicPlaylist="*res://autoloads/MusicPlaylist.gd"
 ItemDatabase="*res://scenes/game/ItemDatabase.gd"
+UpdateChecker="*res://autoloads/UpdateChecker.gd"
 
 [display]
 
@@ -27,4 +28,6 @@ window/stretch/aspect="expand"
 
 [rendering]
 
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

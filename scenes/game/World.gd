@@ -35,7 +35,6 @@ func _generate_new_floor() -> void:
 
 func _enter_room(room: Dictionary) -> void:
 	hud.update_room_info(room["type"], current_room_index, rooms.size())
-	_update_room_label(room["type"])
 	_clear_enemies()
 
 	match room["type"]:
@@ -138,6 +137,3 @@ func _on_player_died() -> void:
 func _clear_enemies() -> void:
 	for child in enemy_row.get_children():
 		child.queue_free()
-
-func _update_room_label(_type: int) -> void:
-	pass

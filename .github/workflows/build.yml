@@ -29,9 +29,8 @@ jobs:
 
       - name: Setup Android SDK, keystore and editor settings
         run: |
-          ANDROID_SDK=/usr/lib/android-sdk
-          JAVA=/usr/lib/jvm/java-17-openjdk-amd64
           KEYSTORE=$HOME/.android/debug.keystore
+          JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
 
           mkdir -p $HOME/.android
           keytool -genkey -v \
@@ -41,9 +40,16 @@ jobs:
             -dname "CN=Android Debug,O=Android,C=US"
 
           mkdir -p $HOME/.config/godot
-          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "%s"\nexport/android/java_sdk_path = "%s"\nexport/android/debug_keystore = "%s"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' \
-            "$ANDROID_SDK" "$JAVA" "$KEYSTORE" \
-            > $HOME/.config/godot/editor_settings-4.tres
+          {
+            echo '[gd_resource type="EditorSettings" format=3]'
+            echo ''
+            echo '[resource]'
+            echo 'export/android/android_sdk_path = "/usr/lib/android-sdk"'
+            echo "export/android/java_sdk_path = \"$JAVA_HOME\""
+            echo "export/android/debug_keystore = \"$KEYSTORE\""
+            echo 'export/android/debug_keystore_user = "androiddebugkey"'
+            echo 'export/android/debug_keystore_pass = "android"'
+          } > $HOME/.config/godot/editor_settings-4.tres
 
           sed -i "s|^\[preset.0.options\]|\[preset.0.options\]\nkeystore/debug=\"$KEYSTORE\"\nkeystore/debug_user=\"androiddebugkey\"\nkeystore/debug_password=\"android\"|" export_presets.cfg
 
@@ -63,8 +69,8 @@ jobs:
       - name: Import project assets
         run: godot --headless --editor --quit 2>&1 || true
 
-      - name: Export Android debug APK
-        run: godot --headless --export-debug "Android" build/CryptesEternelles-debug.apk 2>&1
+      - name: Export Android APK
+        run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1
 
       - name: Export Web
         run: godot --headless --export-release "Web" build/web/index.html 2>&1
@@ -80,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CryptesEternelles-Android
-          path: build/CryptesEternelles-debug.apk
+          path: build/CryptesEternelles.apk
           retention-days: 30
           if-no-files-found: error
 
@@ -98,7 +104,7 @@ jobs:
             Build automatique du ${{ github.event.head_commit.timestamp }}
 
             **Commit :** ${{ github.event.head_commit.message }}
-          files: build/CryptesEternelles-debug.apk
+          files: build/CryptesEternelles.apk
           make_latest: true
 
   deploy-pages:
