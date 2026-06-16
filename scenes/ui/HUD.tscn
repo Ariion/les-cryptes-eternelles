@@ -5,27 +5,15 @@
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1")
 
-<<<<<<< HEAD
-; ═══════════════════════════════════════
-; BARRE HAUTE — PV + Or + Étage
-; ═══════════════════════════════════════
 [node name="Top" type="Panel" parent="."]
 anchors_preset = 13
 anchor_right = 1.0
 offset_bottom = 68.0
-=======
-; --- HAUT ---
-[node name="Top" type="Panel" parent="."]
-anchors_preset = 13
-anchor_right = 1.0
-offset_bottom = 52.0
->>>>>>> origin/main
 
 [node name="HBox" type="HBoxContainer" parent="Top"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-<<<<<<< HEAD
 offset_left = 10.0
 offset_right = -10.0
 offset_top = 6.0
@@ -46,32 +34,15 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 show_percentage = false
-=======
-offset_left = 8.0
-offset_right = -8.0
-offset_top = 4.0
-offset_bottom = -4.0
-theme_override_constants/separation = 8
-
-[node name="HpBar" type="ProgressBar" parent="Top/HBox"]
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(120, 28)
->>>>>>> origin/main
 value = 100.0
-show_percentage = false
 
-<<<<<<< HEAD
 [node name="HpLabel" type="Label" parent="Top/HBox/HpBarWrap/HpBar"]
-=======
-[node name="HpLabel" type="Label" parent="Top/HBox/HpBar"]
->>>>>>> origin/main
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 12
-<<<<<<< HEAD
 theme_override_colors/font_color = Color(1.0, 0.9, 0.9, 1)
 text = "100 / 100"
 
@@ -101,9 +72,6 @@ theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.7, 0.7, 1.0, 1)
 text = "Étage 1"
 
-; ═══════════════════════════════════════
-; INFO-BAR — type de salle
-; ═══════════════════════════════════════
 [node name="RoomBar" type="Panel" parent="."]
 anchors_preset = 13
 anchor_right = 1.0
@@ -119,52 +87,18 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 13
 text = "Entrée"
 
-; ═══════════════════════════════════════
-; ZONE CENTRALE — ennemis + log
-; ═══════════════════════════════════════
 [node name="Middle" type="VBoxContainer" parent="."]
 anchors_preset = 15
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 0.0
 offset_top = 94.0
-offset_bottom = 558.0
+offset_bottom = 618.0
 grow_vertical = 2
 theme_override_constants/separation = 6
 
 [node name="EnemyContainer" type="HBoxContainer" parent="Middle"]
 custom_minimum_size = Vector2(0, 72)
-=======
-text = "100 / 100"
-
-[node name="GoldLabel" type="Label" parent="Top/HBox"]
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1)
-text = "Or: 0"
-
-[node name="FloorLabel" type="Label" parent="Top/HBox"]
-size_flags_horizontal = 3
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.7, 0.7, 1.0, 1)
-text = "Etage 1 - 1/7"
-
-[node name="StatusBar" type="HBoxContainer" parent="Top/HBox"]
-custom_minimum_size = Vector2(0, 24)
-theme_override_constants/separation = 4
-
-; --- MILIEU ---
-[node name="Middle" type="VBoxContainer" parent="."]
-anchors_preset = 15
-anchor_top = 0.07
-anchor_right = 1.0
-anchor_bottom = 0.72
-grow_vertical = 2
-offset_top = 4.0
-
-[node name="EnemyContainer" type="HBoxContainer" parent="Middle"]
-custom_minimum_size = Vector2(0, 48)
->>>>>>> origin/main
 alignment = 1
 theme_override_constants/separation = 16
 
@@ -204,68 +138,52 @@ text = "Regarder une pub (+30s)"
 [node name="SkipBtn" type="Button" parent="Middle/DoubleLootPanel/VBox"]
 text = "Non merci"
 
-<<<<<<< HEAD
-; ═══════════════════════════════════════
-; BARRE BAS — boutons de combat
-; ═══════════════════════════════════════
 [node name="Bottom" type="VBoxContainer" parent="."]
 anchors_preset = 15
 anchor_top = 1.0
-=======
-; --- BAS : boutons de combat ---
-[node name="Bottom" type="Panel" parent="."]
-anchors_preset = 15
-anchor_top = 0.72
->>>>>>> origin/main
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_vertical = 0
-offset_top = -224.0
+offset_top = -226.0
 
-[node name="Grid" type="GridContainer" parent="Bottom"]
+[node name="CombatPanel" type="Panel" parent="Bottom"]
+size_flags_vertical = 3
+
+[node name="Grid" type="GridContainer" parent="Bottom/CombatPanel"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-<<<<<<< HEAD
 offset_left = 10.0
 offset_right = -10.0
-=======
-offset_left = 8.0
-offset_right = -8.0
->>>>>>> origin/main
 offset_top = 8.0
 offset_bottom = -8.0
 columns = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 
-[node name="AttackBtn" type="Button" parent="Bottom/Grid"]
+[node name="AttackBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "⚔  Attaquer"
 
-[node name="DefendBtn" type="Button" parent="Bottom/Grid"]
+[node name="DefendBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-<<<<<<< HEAD
 text = "🛡  Défendre"
-=======
-text = "Defendre"
->>>>>>> origin/main
 
-[node name="ItemBtn" type="Button" parent="Bottom/Grid"]
+[node name="ItemBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "🧪  Objet"
 
-[node name="FleeBtn" type="Button" parent="Bottom/Grid"]
+[node name="FleeBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "💨  Fuir"
 
-[connection signal="pressed" from="Bottom/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
+[connection signal="pressed" from="Bottom/CombatPanel/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
 [connection signal="pressed" from="Middle/DoubleLootPanel/VBox/WatchAdBtn" to="." method="_on_watch_ad_btn_pressed"]
 [connection signal="pressed" from="Middle/DoubleLootPanel/VBox/SkipBtn" to="." method="_on_skip_btn_pressed"]
