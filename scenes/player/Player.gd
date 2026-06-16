@@ -79,6 +79,26 @@ func pick_up_item(item_name: String) -> void:
 			equipment["shield"] = item_name
 			stats["defense"] = int(stats.get("defense", 5)) + int(data.get("defense_bonus", 0))
 
+func equip_item(item_name: String) -> void:
+	if not item_name in inventory:
+		return
+	var data: Dictionary = ItemDatabase.get_item(item_name)
+	if data.is_empty():
+		return
+	var item_type: int = data.get("type", -1)
+	if item_type == ItemDatabase.ItemType.WEAPON:
+		if equipment["weapon"] != "":
+			var old: Dictionary = ItemDatabase.get_item(equipment["weapon"])
+			stats["attack"] = int(stats.get("attack", 10)) - int(old.get("attack_bonus", 0))
+		equipment["weapon"] = item_name
+		stats["attack"] = int(stats.get("attack", 10)) + int(data.get("attack_bonus", 0))
+	elif item_type == ItemDatabase.ItemType.SHIELD:
+		if equipment["shield"] != "":
+			var old: Dictionary = ItemDatabase.get_item(equipment["shield"])
+			stats["defense"] = int(stats.get("defense", 5)) - int(old.get("defense_bonus", 0))
+		equipment["shield"] = item_name
+		stats["defense"] = int(stats.get("defense", 5)) + int(data.get("defense_bonus", 0))
+
 func use_item(item_name: String) -> void:
 	if not item_name in inventory:
 		return
