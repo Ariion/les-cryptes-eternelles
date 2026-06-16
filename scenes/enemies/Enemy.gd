@@ -17,10 +17,10 @@ const ENEMY_DATA := {
 }
 
 const SPRITE_PATHS := {
-	"Goblin":   "res://assets/sprites/goblin.svg",
-	"Skeleton": "res://assets/sprites/skeleton.svg",
-	"Orc":      "res://assets/sprites/orc.svg",
-	"Boss":     "res://assets/sprites/boss.svg",
+	"Goblin":   "res://assets/sprites/monsters/pipo-enemy003.png",
+	"Skeleton": "res://assets/sprites/monsters/pipo-enemy008.png",
+	"Orc":      "res://assets/sprites/monsters/pipo-enemy025.png",
+	"Boss":     "res://assets/sprites/monsters/pipo-boss001.png",
 }
 
 func setup(p_name: String, floor_number: int) -> void:
@@ -28,6 +28,9 @@ func setup(p_name: String, floor_number: int) -> void:
 	if has_node("Body"):
 		var sprite_path: String = SPRITE_PATHS.get(p_name, SPRITE_PATHS["Goblin"])
 		$Body.texture = load(sprite_path)
+		if p_name == "Boss":
+			$Body.hframes = 4
+			$Body.frame = 0
 	if has_node("NameLabel"):
 		$NameLabel.text = p_name
 	var base: Dictionary = (ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"]) as Dictionary).duplicate()
