@@ -16,19 +16,26 @@ const ENEMY_DATA := {
 	"Boss":     {"max_hp": 380, "attack": 22, "defense": 10, "gold": 120, "abilities": ["regen", "stun_strike", "weaken"]},
 }
 
-# Les SVG sont des dépendances dures (preload) → toujours inclus dans le build
-# exporté, sans nécessiter de passe d'import PNG séparée.
-const SPRITE_TEXTURES := {
-	"Goblin":   preload("res://assets/sprites/monsters/goblin.svg"),
-	"Skeleton": preload("res://assets/sprites/monsters/skeleton.svg"),
-	"Orc":      preload("res://assets/sprites/monsters/orc.svg"),
-	"Boss":     preload("res://assets/sprites/monsters/boss.svg"),
-}
+# Les textures sont assignées via la scène (.tscn) en tant qu'ext_resource :
+# c'est la SEULE méthode garantie d'inclusion dans le build exporté. Les
+# preload()/load() dans un script ne sont pas packagés de façon fiable par
+# le CI, ce qui rendait les monstres invisibles.
+@export var tex_goblin: Texture2D
+@export var tex_skeleton: Texture2D
+@export var tex_orc: Texture2D
+@export var tex_boss: Texture2D
+
+func _sprite_for(p_name: String) -> Texture2D:
+	match p_name:
+		"Skeleton": return tex_skeleton
+		"Orc":      return tex_orc
+		"Boss":     return tex_boss
+		_:          return tex_goblin
 
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
 	if has_node("Body"):
-		$Body.texture = SPRITE_TEXTURES.get(p_name, SPRITE_TEXTURES["Goblin"])
+		$Body.texture = _sprite_for(p_name)
 		if p_name == "Boss":
 			$Body.scale = Vector2(1.4, 1.4)
 	if has_node("NameLabel"):

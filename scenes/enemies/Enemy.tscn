@@ -1,12 +1,21 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/enemies/Enemy.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/monsters/goblin.svg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/monsters/skeleton.svg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/monsters/orc.svg" id="4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/monsters/boss.svg" id="5"]
 
 [node name="Enemy" type="Node2D"]
 script = ExtResource("1")
+tex_goblin = ExtResource("2")
+tex_skeleton = ExtResource("3")
+tex_orc = ExtResource("4")
+tex_boss = ExtResource("5")
 
 [node name="Body" type="Sprite2D" parent="."]
 position = Vector2(0, -10)
+texture = ExtResource("2")
 texture_filter = 2
 
 [node name="NameLabel" type="Label" parent="."]
