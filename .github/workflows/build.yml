@@ -61,6 +61,9 @@ jobs:
           ln -sf /usr/lib/android-sdk/build-tools/33.0.2 \
                  /usr/lib/android-sdk/build-tools/34.0.0
 
+      - name: Set build version
+        run: sed -i "s/const BUILD_NUMBER = [0-9]*/const BUILD_NUMBER = ${{ github.run_number }}/" autoloads/UpdateChecker.gd
+
       - name: Create build directories
         run: mkdir -p build/web
 
