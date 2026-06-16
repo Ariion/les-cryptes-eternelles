@@ -57,7 +57,7 @@ func _build_upgrade_list() -> void:
 
 		var name_lbl := Label.new()
 		name_lbl.text = "%s  %s  (niv. %d/%d)" % [upgrade["icon"], upgrade["name"], current_level, upgrade["max_level"]]
-		name_lbl.theme_override_font_sizes_font_size = 16
+		name_lbl.add_theme_font_size_override("font_size", 16)
 
 		var desc_lbl := Label.new()
 		desc_lbl.text = upgrade["description"]

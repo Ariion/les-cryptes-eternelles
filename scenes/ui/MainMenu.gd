@@ -24,9 +24,9 @@ func _ready() -> void:
 	runs_label.text = "Expéditions : %d" % GameManager.run_count
 	subtitle_label.text = SUBTITLES[randi() % SUBTITLES.size()]
 
-	_style_play_btn(play_btn)
-	_style_secondary_btn(shop_btn)
-	_style_secondary_btn(settings_btn)
+	# Le bouton principal est mis en avant (plus grand, plus haut) ; tout le
+	# reste hérite du thème global défini dans GameTheme.
+	play_btn.add_theme_font_size_override("font_size", 18)
 
 	# Pulsation dorée du titre
 	var tween := create_tween().set_loops()
@@ -37,38 +37,6 @@ func _ready() -> void:
 	var v_tween := create_tween().set_loops()
 	v_tween.tween_property(vignette, "modulate:a", 0.6, 3.0).set_ease(Tween.EASE_IN_OUT)
 	v_tween.tween_property(vignette, "modulate:a", 0.4, 3.0).set_ease(Tween.EASE_IN_OUT)
-
-func _style_play_btn(btn: Button) -> void:
-	btn.add_theme_font_size_override("font_size", 18)
-	btn.add_theme_color_override("font_color", Color(0.08, 0.04, 0.02))
-	var gold := Color(0.85, 0.65, 0.15)
-	var n := _flat(gold.darkened(0.1), Color(1.0, 0.82, 0.30), 2, 14)
-	var h := _flat(gold.lightened(0.2), Color(1.0, 0.9, 0.5), 2, 14)
-	var p := _flat(gold.darkened(0.3), Color(0.9, 0.7, 0.1), 2, 14)
-	btn.add_theme_stylebox_override("normal",  n)
-	btn.add_theme_stylebox_override("hover",   h)
-	btn.add_theme_stylebox_override("pressed", p)
-
-func _style_secondary_btn(btn: Button) -> void:
-	btn.add_theme_font_size_override("font_size", 15)
-	btn.add_theme_color_override("font_color", Color(0.85, 0.80, 1.0))
-	var purple := Color(0.35, 0.18, 0.62)
-	var n := _flat(Color(0.10, 0.06, 0.18), purple, 1, 10)
-	var h := _flat(purple.darkened(0.3), purple.lightened(0.2), 1, 10)
-	var p := _flat(purple.darkened(0.5), purple, 1, 10)
-	btn.add_theme_stylebox_override("normal",  n)
-	btn.add_theme_stylebox_override("hover",   h)
-	btn.add_theme_stylebox_override("pressed", p)
-
-func _flat(bg: Color, border: Color, border_w: int, radius: int) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = bg
-	s.border_color = border
-	s.set_border_width_all(border_w)
-	s.set_corner_radius_all(radius)
-	s.content_margin_left  = 12
-	s.content_margin_right = 12
-	return s
 
 func _on_play_btn_pressed() -> void:
 	var tween := create_tween()

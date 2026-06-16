@@ -1,190 +1,192 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/HUD.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="LogStyle"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.035, 0.027, 0.067, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.784, 0.588, 0.227, 0.55)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1")
 
+; ───────────── BARRE HAUTE : PV / statuts / or / étage ─────────────
 [node name="Top" type="Panel" parent="."]
-anchors_preset = 13
 anchor_right = 1.0
-offset_bottom = 68.0
+offset_bottom = 56.0
 
 [node name="HBox" type="HBoxContainer" parent="Top"]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_right = -10.0
+offset_left = 12.0
 offset_top = 6.0
+offset_right = -12.0
 offset_bottom = -6.0
 theme_override_constants/separation = 10
 
-[node name="HeartIcon" type="Label" parent="Top/HBox"]
+[node name="PvLabel" type="Label" parent="Top/HBox"]
 text = "PV"
 theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.9, 0.4, 0.4, 1)
 
-[node name="HpBarWrap" type="Panel" parent="Top/HBox"]
+[node name="HpBar" type="ProgressBar" parent="Top/HBox"]
+custom_minimum_size = Vector2(0, 26)
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 28)
-
-[node name="HpBar" type="ProgressBar" parent="Top/HBox/HpBarWrap"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-show_percentage = false
+size_flags_vertical = 4
 value = 100.0
+show_percentage = false
 
-[node name="HpLabel" type="Label" parent="Top/HBox/HpBarWrap/HpBar"]
-anchors_preset = 15
+[node name="HpLabel" type="Label" parent="Top/HBox/HpBar"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(1.0, 0.9, 0.9, 1)
 text = "100 / 100"
 
 [node name="StatusBar" type="HBoxContainer" parent="Top/HBox"]
-custom_minimum_size = Vector2(0, 28)
-theme_override_constants/separation = 3
-
-[node name="Sep" type="VSeparator" parent="Top/HBox"]
-custom_minimum_size = Vector2(1, 20)
-
-[node name="CoinIcon" type="Label" parent="Top/HBox"]
-text = "Or"
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1)
+theme_override_constants/separation = 4
 
 [node name="GoldLabel" type="Label" parent="Top/HBox"]
 theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1)
-text = "0"
-
-[node name="Sep2" type="VSeparator" parent="Top/HBox"]
-custom_minimum_size = Vector2(1, 20)
+theme_override_colors/font_color = Color(1.0, 0.84, 0.3, 1)
+text = "Or : 0"
 
 [node name="FloorLabel" type="Label" parent="Top/HBox"]
-size_flags_horizontal = 3
-horizontal_alignment = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.7, 0.7, 1.0, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.75, 0.75, 0.95, 1)
 text = "Étage 1"
 
+; ───────────── BANDEAU : nom de la salle ─────────────
 [node name="RoomBar" type="Panel" parent="."]
-anchors_preset = 13
 anchor_right = 1.0
-offset_top = 68.0
-offset_bottom = 94.0
+offset_top = 56.0
+offset_bottom = 88.0
 
 [node name="RoomLabel" type="Label" parent="RoomBar"]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Entrée"
 
-[node name="Middle" type="VBoxContainer" parent="."]
-anchors_preset = 15
-anchor_top = 0.0
+; ───────────── MESSAGE central transitoire ─────────────
+[node name="MessageLabel" type="Label" parent="."]
+anchor_left = 0.0
+anchor_top = 0.30
 anchor_right = 1.0
-anchor_bottom = 0.0
-offset_top = 94.0
-offset_bottom = 618.0
-grow_vertical = 2
-theme_override_constants/separation = 6
-
-[node name="EnemyContainer" type="HBoxContainer" parent="Middle"]
-custom_minimum_size = Vector2(0, 72)
-alignment = 1
-theme_override_constants/separation = 16
-
-[node name="LogScroll" type="ScrollContainer" parent="Middle"]
-size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 80)
-
-[node name="LogContainer" type="VBoxContainer" parent="Middle/LogScroll"]
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="MessageLabel" type="Label" parent="Middle"]
+anchor_bottom = 0.30
+offset_top = -20.0
+offset_bottom = 20.0
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 15
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 21
 theme_override_colors/font_color = Color(1.0, 0.9, 0.5, 1)
 text = ""
 
-[node name="DoubleLootPanel" type="Panel" parent="Middle"]
-visible = false
-custom_minimum_size = Vector2(0, 100)
+; ───────────── JOURNAL de combat ─────────────
+[node name="LogPanel" type="Panel" parent="."]
+anchor_left = 0.0
+anchor_top = 0.55
+anchor_right = 1.0
+anchor_bottom = 0.735
+offset_left = 10.0
+offset_right = -10.0
+theme_override_styles/panel = SubResource("LogStyle")
 
-[node name="VBox" type="VBoxContainer" parent="Middle/DoubleLootPanel"]
-anchors_preset = 15
+[node name="LogScroll" type="ScrollContainer" parent="LogPanel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-alignment = 1
-theme_override_constants/separation = 8
+horizontal_scroll_mode = 0
 
-[node name="Label" type="Label" parent="Middle/DoubleLootPanel/VBox"]
+[node name="LogContainer" type="VBoxContainer" parent="LogPanel/LogScroll"]
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+; ───────────── OFFRE pub (doubler le butin) ─────────────
+[node name="DoubleLootPanel" type="Panel" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.4
+anchor_right = 0.5
+anchor_bottom = 0.4
+offset_left = -150.0
+offset_top = -70.0
+offset_right = 150.0
+offset_bottom = 70.0
+
+[node name="VBox" type="VBoxContainer" parent="DoubleLootPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="DoubleLootPanel/VBox"]
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 14
 text = "Doubler le butin ?"
 
-[node name="WatchAdBtn" type="Button" parent="Middle/DoubleLootPanel/VBox"]
-text = "Regarder une pub (+30s)"
+[node name="WatchAdBtn" type="Button" parent="DoubleLootPanel/VBox"]
+text = "Regarder une pub"
 
-[node name="SkipBtn" type="Button" parent="Middle/DoubleLootPanel/VBox"]
+[node name="SkipBtn" type="Button" parent="DoubleLootPanel/VBox"]
 text = "Non merci"
 
-[node name="Bottom" type="VBoxContainer" parent="."]
-anchors_preset = 15
+; ───────────── BARRE BASSE : actions de combat ─────────────
+[node name="Bottom" type="Panel" parent="."]
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_vertical = 0
-offset_top = -226.0
+offset_top = -216.0
 
-[node name="CombatPanel" type="Panel" parent="Bottom"]
-size_flags_vertical = 3
-
-[node name="Grid" type="GridContainer" parent="Bottom/CombatPanel"]
-anchors_preset = 15
+[node name="Grid" type="GridContainer" parent="Bottom"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_right = -10.0
-offset_top = 8.0
-offset_bottom = -8.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
 columns = 2
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
 
-[node name="AttackBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+[node name="AttackBtn" type="Button" parent="Bottom/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Attaquer"
 
-[node name="DefendBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+[node name="DefendBtn" type="Button" parent="Bottom/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "Defendre"
+text = "Défendre"
 
-[node name="ItemBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+[node name="ItemBtn" type="Button" parent="Bottom/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Objet"
 
-[node name="FleeBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
+[node name="FleeBtn" type="Button" parent="Bottom/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Fuir"
 
-[connection signal="pressed" from="Bottom/CombatPanel/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
-[connection signal="pressed" from="Bottom/CombatPanel/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
-[connection signal="pressed" from="Bottom/CombatPanel/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
-[connection signal="pressed" from="Bottom/CombatPanel/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
-[connection signal="pressed" from="Middle/DoubleLootPanel/VBox/WatchAdBtn" to="." method="_on_watch_ad_btn_pressed"]
-[connection signal="pressed" from="Middle/DoubleLootPanel/VBox/SkipBtn" to="." method="_on_skip_btn_pressed"]
+[connection signal="pressed" from="DoubleLootPanel/VBox/WatchAdBtn" to="." method="_on_watch_ad_btn_pressed"]
+[connection signal="pressed" from="DoubleLootPanel/VBox/SkipBtn" to="." method="_on_skip_btn_pressed"]
+[connection signal="pressed" from="Bottom/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
+[connection signal="pressed" from="Bottom/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
+[connection signal="pressed" from="Bottom/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
+[connection signal="pressed" from="Bottom/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]

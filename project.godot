@@ -24,7 +24,7 @@ UpdateChecker="*res://autoloads/UpdateChecker.gd"
 window/size/viewport_width=390
 window/size/viewport_height=844
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep"
 
 [rendering]
 

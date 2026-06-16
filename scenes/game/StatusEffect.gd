@@ -28,13 +28,23 @@ static func _get_label(t: Type) -> String:
 
 static func get_icon(t: Type) -> String:
 	match t:
-		Type.BURN:     return "🔥"
-		Type.POISON:   return "☠"
-		Type.STUN:     return "💫"
-		Type.REGEN:    return "💚"
-		Type.SHIELD:   return "🛡"
-		Type.WEAKNESS: return "↓"
+		Type.BURN:     return "FEU"
+		Type.POISON:   return "PSN"
+		Type.STUN:     return "ETD"
+		Type.REGEN:    return "RGN"
+		Type.SHIELD:   return "DEF"
+		Type.WEAKNESS: return "AFF"
 	return "?"
+
+static func get_color(t: Type) -> Color:
+	match t:
+		Type.BURN:     return Color(0.95, 0.45, 0.15)
+		Type.POISON:   return Color(0.55, 0.85, 0.25)
+		Type.STUN:     return Color(0.95, 0.85, 0.30)
+		Type.REGEN:    return Color(0.30, 0.85, 0.40)
+		Type.SHIELD:   return Color(0.45, 0.65, 0.95)
+		Type.WEAKNESS: return Color(0.75, 0.55, 0.85)
+	return Color.WHITE
 
 # Appelé à chaque tour ; retourne les dégâts (négatif) ou le soin (positif)
 func tick() -> int:

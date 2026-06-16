@@ -1,16 +1,24 @@
+/* Le jeu est conçu en portrait 390x844 avec stretch "keep" : Godot centre
+   automatiquement le rendu et ajoute des bandes noires sur les côtés quand
+   la fenêtre est plus large (desktop). On se contente donc d'occuper toute
+   la fenêtre avec un fond sombre et sans barres de défilement. */
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 html, body {
-  width: 100%; height: 100%;
-  background: #0a0610;
+  width: 100%;
+  height: 100%;
+  background: #07040d;
   overflow: hidden;
+}
+
+body {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 canvas {
   display: block;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: none !important;
-  max-height: none !important;
+  background: #07040d;
+  outline: none;
 }

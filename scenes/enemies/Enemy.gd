@@ -29,8 +29,11 @@ func setup(p_name: String, floor_number: int) -> void:
 		var sprite_path: String = SPRITE_PATHS.get(p_name, SPRITE_PATHS["Goblin"])
 		$Body.texture = load(sprite_path)
 		if p_name == "Boss":
+			# pipo-boss001.png est une planche de 4 frames (1280x600) ; on
+			# affiche la première et on agrandit le boss.
 			$Body.hframes = 4
 			$Body.frame = 0
+			$Body.scale = Vector2(0.34, 0.34)
 	if has_node("NameLabel"):
 		$NameLabel.text = p_name
 	var base: Dictionary = (ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"]) as Dictionary).duplicate()

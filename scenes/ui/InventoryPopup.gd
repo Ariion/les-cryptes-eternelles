@@ -52,7 +52,7 @@ func _refresh_list() -> void:
 		var desc_lbl := Label.new()
 		desc_lbl.text = data.get("description", "")
 		desc_lbl.modulate = Color(0.7, 0.7, 0.7)
-		desc_lbl.theme_override_font_sizes_font_size = 12
+		desc_lbl.add_theme_font_size_override("font_size", 12)
 
 		info.add_child(name_lbl)
 		info.add_child(desc_lbl)

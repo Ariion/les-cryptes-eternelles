@@ -67,7 +67,12 @@ jobs:
         run: mkdir -p build/web
 
       - name: Import project assets
-        run: godot --headless --editor --quit 2>&1 || true
+        # --import bloque jusqu'à la fin de l'import de toutes les ressources
+        # (PNG, SVG…) et génère les .import + .godot/imported nécessaires à
+        # l'export. Indispensable car le dépôt ne versionne pas les .import.
+        run: |
+          godot --headless --import 2>&1 || true
+          godot --headless --import 2>&1 || true
 
       - name: Export Android APK
         run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1

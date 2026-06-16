@@ -65,7 +65,7 @@ func _handle_combat_room(room: Dictionary) -> void:
 	var enemy_nodes: Array = []
 	var enemies_list: Array = room["enemies"]
 	var count: int = enemies_list.size()
-	var spacing: float = 105.0
+	var spacing: float = 118.0
 	var start_x: float = -(count - 1) * spacing * 0.5
 	for i in range(count):
 		var e: EnemyEntity = preload("res://scenes/enemies/Enemy.tscn").instantiate() as EnemyEntity
@@ -74,7 +74,6 @@ func _handle_combat_room(room: Dictionary) -> void:
 		e.setup(str(enemies_list[i]), GameManager.current_floor)
 		enemy_nodes.append(e)
 
-	hud.update_enemy_display(enemy_nodes)
 	hud.show_combat_buttons(true)
 
 	combat_manager.combat_ended.connect(_on_combat_ended.bind(room), CONNECT_ONE_SHOT)
