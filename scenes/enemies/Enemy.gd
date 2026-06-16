@@ -16,18 +16,22 @@ const ENEMY_DATA := {
 	"Boss":     {"max_hp": 200, "attack": 25, "defense": 10, "gold": 100, "abilities": ["regen", "stun_strike", "weaken"]},
 }
 
-const SPRITE_PATHS := {
-	"Goblin":   "res://assets/sprites/monsters/pipo-enemy003.png",
-	"Skeleton": "res://assets/sprites/monsters/pipo-enemy008.png",
-	"Orc":      "res://assets/sprites/monsters/pipo-enemy025.png",
-	"Boss":     "res://assets/sprites/monsters/pipo-boss001.png",
+# IMPORTANT : on utilise preload() et non load(string). Le scanner de
+# dépendances de l'export Godot suit les preload() (dépendances dures) mais
+# IGNORE les chemins passés en chaîne à load(). Avec load(string) les PNG
+# n'étaient jamais inclus dans le PCK exporté → texture null → monstres
+# invisibles. Avec preload() ils sont garantis présents et importés.
+const SPRITE_TEXTURES := {
+	"Goblin":   preload("res://assets/sprites/monsters/pipo-enemy003.png"),
+	"Skeleton": preload("res://assets/sprites/monsters/pipo-enemy008.png"),
+	"Orc":      preload("res://assets/sprites/monsters/pipo-enemy025.png"),
+	"Boss":     preload("res://assets/sprites/monsters/pipo-boss001.png"),
 }
 
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
 	if has_node("Body"):
-		var sprite_path: String = SPRITE_PATHS.get(p_name, SPRITE_PATHS["Goblin"])
-		$Body.texture = load(sprite_path)
+		$Body.texture = SPRITE_TEXTURES.get(p_name, SPRITE_TEXTURES["Goblin"])
 		if p_name == "Boss":
 			# pipo-boss001.png est une planche de 4 frames (1280x600) ; on
 			# affiche la première et on agrandit le boss.
