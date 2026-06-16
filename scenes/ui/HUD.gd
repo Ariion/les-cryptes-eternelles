@@ -33,6 +33,7 @@ func _ready() -> void:
 
 func bind_player(player: Node) -> void:
 	player.hp_changed.connect(_on_hp_changed)
+	player.player_hit.connect(_on_player_hit)
 	player.status_applied.connect(_on_status_applied)
 	player.status_removed.connect(_on_status_removed)
 	_on_hp_changed(player.stats["hp"], player.stats["max_hp"])
@@ -128,6 +129,25 @@ func _on_hp_changed(current: int, maximum: int) -> void:
 	# Teinte la barre en rouge si < 25% PV
 	var ratio := float(current) / float(maximum)
 	hp_bar.modulate = Color(1, ratio * 2, ratio * 2) if ratio < 0.5 else Color.WHITE
+
+func _on_player_hit(damage: int) -> void:
+	var overlay := ColorRect.new()
+	overlay.color = Color(0.9, 0.1, 0.1, 0.35)
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(overlay)
+	var lbl := Label.new()
+	lbl.text = "-%d" % damage
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	lbl.set_anchors_preset(Control.PRESET_CENTER)
+	lbl.add_theme_font_size_override("font_size", 28)
+	lbl.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+	add_child(lbl)
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(overlay, "color:a", 0.0, 0.4)
+	tween.tween_property(lbl, "modulate:a", 0.0, 0.4).set_delay(0.15)
+	tween.chain().tween_callback(func(): overlay.queue_free(); lbl.queue_free())
 
 func _on_gold_changed(amount: int) -> void:
 	gold_label.text = "Or: %d" % amount

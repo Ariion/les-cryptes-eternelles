@@ -20,10 +20,13 @@ func _ready() -> void:
 		"defense": int(base.get("defense", 5)),
 	}
 
+signal player_hit(damage: int)
+
 func take_damage(amount: int) -> void:
 	var shield: int = _get_shield_bonus()
 	var reduced: int = max(1, amount - int(stats.get("defense", 0)) - shield)
 	stats["hp"] = max(0, int(stats.get("hp", 0)) - reduced)
+	emit_signal("player_hit", reduced)
 	emit_signal("hp_changed", int(stats.get("hp", 0)), int(stats.get("max_hp", 1)))
 	if int(stats.get("hp", 0)) == 0:
 		emit_signal("player_died")
