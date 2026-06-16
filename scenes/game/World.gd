@@ -58,6 +58,9 @@ func _handle_combat_room(room: Dictionary) -> void:
 		_go_to_next_room()
 		return
 
+	# Vue en face de l'ennemi : on cache le sprite du joueur.
+	player.get_node("Body").visible = false
+
 	var is_boss: bool = (room["type"] == DungeonGenerator.RoomType.BOSS)
 	if is_boss:
 		SoundManager.play_music("boss")
@@ -105,6 +108,7 @@ func _handle_rest_room() -> void:
 
 func _on_combat_ended(victory: bool, gold_earned: int, room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
+	player.get_node("Body").visible = true
 	if not victory:
 		_on_player_died()
 		return

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150">
+  <!-- Boots -->
+  <ellipse cx="34" cy="138" rx="14" ry="8" fill="#3a2800"/>
+  <ellipse cx="66" cy="138" rx="14" ry="8" fill="#3a2800"/>
+  <!-- Legs (armored greaves) -->
+  <rect x="22" y="104" width="22" height="38" rx="8" fill="#4a8f30"/>
+  <rect x="56" y="104" width="22" height="38" rx="8" fill="#4a8f30"/>
+  <rect x="24" y="108" width="18" height="12" rx="3" fill="#5a3f10"/>
+  <rect x="58" y="108" width="18" height="12" rx="3" fill="#5a3f10"/>
+  <!-- Body (broad, armored) -->
+  <ellipse cx="50" cy="84" rx="34" ry="36" fill="#4a8f30"/>
+  <!-- Chest plate -->
+  <ellipse cx="50" cy="80" rx="26" ry="28" fill="#5a3f10"/>
+  <line x1="50" y1="52" x2="50" y2="106" stroke="#7a5a20" stroke-width="2"/>
+  <line x1="26" y1="72" x2="74" y2="72" stroke="#7a5a20" stroke-width="2"/>
+  <!-- Pauldrons (shoulder guards) -->
+  <ellipse cx="18" cy="60" rx="14" ry="10" fill="#5a3f10"/>
+  <ellipse cx="82" cy="60" rx="14" ry="10" fill="#5a3f10"/>
+  <!-- Arms (massive) -->
+  <rect x="2" y="58" width="18" height="44" rx="8" fill="#4a8f30"/>
+  <rect x="80" y="58" width="18" height="44" rx="8" fill="#4a8f30"/>
+  <!-- Left fist -->
+  <ellipse cx="11" cy="106" rx="11" ry="9" fill="#3d7526"/>
+  <!-- Right hand with axe -->
+  <ellipse cx="89" cy="106" rx="11" ry="9" fill="#3d7526"/>
+  <rect x="88" y="60" width="6" height="42" rx="2" fill="#6b4f10"/>
+  <polygon points="85,36 100,50 94,58 79,44" fill="#aaa"/>
+  <polygon points="85,36 72,22 79,14 92,28" fill="#888"/>
+  <!-- Neck -->
+  <rect x="40" y="36" width="20" height="18" rx="6" fill="#4a8f30"/>
+  <!-- Head (broad, tusked) -->
+  <ellipse cx="50" cy="28" rx="30" ry="26" fill="#5aaa3c"/>
+  <!-- Brow / mohawk -->
+  <polygon points="38,6 50,0 62,6 58,14 42,14" fill="#2d6010"/>
+  <polygon points="44,4 50,0 56,4 54,10 46,10" fill="#3a7a1c"/>
+  <!-- Eyes (red, angry) -->
+  <ellipse cx="36" cy="26" rx="8" ry="7" fill="#cc0000"/>
+  <ellipse cx="64" cy="26" rx="8" ry="7" fill="#cc0000"/>
+  <ellipse cx="36" cy="27" rx="4" ry="4" fill="#111"/>
+  <ellipse cx="64" cy="27" rx="4" ry="4" fill="#111"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="36" rx="7" ry="5" fill="#3d7526"/>
+  <circle cx="46" cy="36" r="2" fill="#2d5a1e"/>
+  <circle cx="54" cy="36" r="2" fill="#2d5a1e"/>
+  <!-- Mouth with tusks -->
+  <path d="M32 44 Q50 54 68 44" stroke="#1a3f10" stroke-width="2.5" fill="none"/>
+  <rect x="36" y="44" width="7" height="12" rx="3" fill="#ddd"/>
+  <rect x="57" y="44" width="7" height="12" rx="3" fill="#ddd"/>
+</svg>

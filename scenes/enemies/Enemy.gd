@@ -10,22 +10,19 @@ signal enemy_died(loot_gold: int)
 signal status_applied(effect: StatusEffect)
 
 const ENEMY_DATA := {
-	"Goblin":   {"max_hp": 30,  "attack": 8,  "defense": 2,  "gold": 10,  "abilities": ["poison_dart"]},
-	"Skeleton": {"max_hp": 45,  "attack": 12, "defense": 4,  "gold": 15,  "abilities": ["weaken"]},
-	"Orc":      {"max_hp": 70,  "attack": 15, "defense": 6,  "gold": 25,  "abilities": ["stun_strike"]},
-	"Boss":     {"max_hp": 200, "attack": 25, "defense": 10, "gold": 100, "abilities": ["regen", "stun_strike", "weaken"]},
+	"Goblin":   {"max_hp": 60,  "attack": 7,  "defense": 2,  "gold": 12,  "abilities": ["poison_dart"]},
+	"Skeleton": {"max_hp": 90,  "attack": 11, "defense": 4,  "gold": 18,  "abilities": ["weaken"]},
+	"Orc":      {"max_hp": 140, "attack": 14, "defense": 6,  "gold": 28,  "abilities": ["stun_strike"]},
+	"Boss":     {"max_hp": 380, "attack": 22, "defense": 10, "gold": 120, "abilities": ["regen", "stun_strike", "weaken"]},
 }
 
-# IMPORTANT : on utilise preload() et non load(string). Le scanner de
-# dépendances de l'export Godot suit les preload() (dépendances dures) mais
-# IGNORE les chemins passés en chaîne à load(). Avec load(string) les PNG
-# n'étaient jamais inclus dans le PCK exporté → texture null → monstres
-# invisibles. Avec preload() ils sont garantis présents et importés.
+# Les SVG sont des dépendances dures (preload) → toujours inclus dans le build
+# exporté, sans nécessiter de passe d'import PNG séparée.
 const SPRITE_TEXTURES := {
-	"Goblin":   preload("res://assets/sprites/monsters/pipo-enemy003.png"),
-	"Skeleton": preload("res://assets/sprites/monsters/pipo-enemy008.png"),
-	"Orc":      preload("res://assets/sprites/monsters/pipo-enemy025.png"),
-	"Boss":     preload("res://assets/sprites/monsters/pipo-boss001.png"),
+	"Goblin":   preload("res://assets/sprites/monsters/goblin.svg"),
+	"Skeleton": preload("res://assets/sprites/monsters/skeleton.svg"),
+	"Orc":      preload("res://assets/sprites/monsters/orc.svg"),
+	"Boss":     preload("res://assets/sprites/monsters/boss.svg"),
 }
 
 func setup(p_name: String, floor_number: int) -> void:
@@ -33,11 +30,7 @@ func setup(p_name: String, floor_number: int) -> void:
 	if has_node("Body"):
 		$Body.texture = SPRITE_TEXTURES.get(p_name, SPRITE_TEXTURES["Goblin"])
 		if p_name == "Boss":
-			# pipo-boss001.png est une planche de 4 frames (1280x600) ; on
-			# affiche la première et on agrandit le boss.
-			$Body.hframes = 4
-			$Body.frame = 0
-			$Body.scale = Vector2(0.34, 0.34)
+			$Body.scale = Vector2(1.4, 1.4)
 	if has_node("NameLabel"):
 		$NameLabel.text = p_name
 	var base: Dictionary = (ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"]) as Dictionary).duplicate()
