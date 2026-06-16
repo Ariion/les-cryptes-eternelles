@@ -1,10 +1,11 @@
 extends CanvasLayer
 
-@onready var hp_bar: ProgressBar = $Top/HpBar
-@onready var hp_label: Label = $Top/HpBar/HpLabel
-@onready var gold_label: Label = $Top/GoldLabel
-@onready var floor_label: Label = $Top/FloorLabel
-@onready var room_label: Label = $Top/RoomLabel
+@onready var hp_bar: ProgressBar = $Top/HBox/HpBarWrap/HpBar
+@onready var hp_label: Label = $Top/HBox/HpBarWrap/HpBar/HpLabel
+@onready var gold_label: Label = $Top/HBox/GoldLabel
+@onready var floor_label: Label = $Top/HBox/FloorLabel
+@onready var room_label: Label = $RoomBar/RoomLabel
+@onready var status_bar: HBoxContainer = $Top/HBox/StatusBar
 
 @onready var combat_panel: Panel = $Bottom/CombatPanel
 @onready var attack_btn: Button = $Bottom/CombatPanel/Grid/AttackBtn
@@ -16,21 +17,90 @@ extends CanvasLayer
 @onready var log_container: VBoxContainer = $Middle/LogScroll/LogContainer
 @onready var double_loot_panel: Panel = $Middle/DoubleLootPanel
 @onready var enemy_container: HBoxContainer = $Middle/EnemyContainer
-@onready var status_bar: HBoxContainer = $Top/StatusBar
 
 var _double_loot_callback: Callable
 var _combat_manager: Node
 var _inventory_popup: CanvasLayer
 
+const C_BG       := Color(0.06, 0.03, 0.12, 0.96)   # fond sombre violet
+const C_BORDER   := Color(0.35, 0.20, 0.60, 1.0)     # violet clair
+const C_HP_FILL  := Color(0.85, 0.12, 0.12, 1.0)
+const C_HP_LOW   := Color(1.00, 0.05, 0.05, 1.0)
+const C_HP_BG    := Color(0.20, 0.04, 0.04, 1.0)
+const C_LOG_BG   := Color(0.03, 0.02, 0.08, 0.82)
+const C_ATTACK   := Color(0.80, 0.10, 0.10)
+const C_DEFEND   := Color(0.10, 0.30, 0.80)
+const C_ITEM     := Color(0.10, 0.55, 0.20)
+const C_FLEE     := Color(0.30, 0.30, 0.30)
+
 func _ready() -> void:
 	double_loot_panel.hide()
 	combat_panel.hide()
 	message_label.text = ""
+	_apply_theme()
 	GameManager.gold_changed.connect(_on_gold_changed)
 	GameManager.floor_changed.connect(_on_floor_changed)
 	_on_gold_changed(GameManager.gold)
 	_on_floor_changed(GameManager.current_floor)
 
+func _apply_theme() -> void:
+	_panel_style($Top, C_BG, C_BORDER, 0, 2)
+	_panel_style($RoomBar, Color(0.10, 0.05, 0.18, 0.90), Color(0.4, 0.25, 0.65), 0, 0)
+
+	var log_style := _make_flat(C_LOG_BG, C_BORDER, 1, 6)
+	log_style.content_margin_left = 8
+	log_style.content_margin_right = 8
+	log_style.content_margin_top = 6
+	log_style.content_margin_bottom = 6
+	$Middle/LogScroll.add_theme_stylebox_override("panel", log_style)
+
+	_panel_style(combat_panel, C_BG, C_BORDER, 2, 0)
+
+	var hp_fill := _make_flat(C_HP_FILL, Color.TRANSPARENT, 0, 4)
+	var hp_bg   := _make_flat(C_HP_BG,   Color.TRANSPARENT, 0, 4)
+	hp_bar.add_theme_stylebox_override("fill",       hp_fill)
+	hp_bar.add_theme_stylebox_override("background", hp_bg)
+
+	_style_btn(attack_btn, C_ATTACK)
+	_style_btn(defend_btn, C_DEFEND)
+	_style_btn(item_btn,   C_ITEM)
+	_style_btn(flee_btn,   C_FLEE)
+
+func _make_flat(bg: Color, border: Color, border_w: int, radius: int) -> StyleBoxFlat:
+	var s := StyleBoxFlat.new()
+	s.bg_color = bg
+	s.border_color = border
+	s.set_border_width_all(border_w)
+	s.set_corner_radius_all(radius)
+	return s
+
+func _panel_style(panel: Control, bg: Color, border: Color, top_border: int, bot_border: int) -> void:
+	var s := StyleBoxFlat.new()
+	s.bg_color = bg
+	s.border_color = border
+	s.set_border_width_all(0)
+	s.border_width_top = top_border
+	s.border_width_bottom = bot_border
+	panel.add_theme_stylebox_override("panel", s)
+
+func _style_btn(btn: Button, color: Color) -> void:
+	btn.add_theme_font_size_override("font_size", 18)
+	btn.add_theme_color_override("font_color", Color.WHITE)
+	btn.add_theme_color_override("font_disabled_color", Color(0.45, 0.45, 0.45))
+
+	var normal   := _make_flat(color.darkened(0.55), color, 2, 12)
+	var hover    := _make_flat(color.darkened(0.25), color.lightened(0.2), 2, 12)
+	var pressed  := _make_flat(color.lightened(0.15), color.lightened(0.4), 2, 12)
+	var disabled := _make_flat(Color(0.08, 0.08, 0.10), Color(0.25, 0.25, 0.25), 2, 12)
+	for s in [normal, hover, pressed, disabled]:
+		s.content_margin_left  = 8
+		s.content_margin_right = 8
+	btn.add_theme_stylebox_override("normal",   normal)
+	btn.add_theme_stylebox_override("hover",    hover)
+	btn.add_theme_stylebox_override("pressed",  pressed)
+	btn.add_theme_stylebox_override("disabled", disabled)
+
+# ────────────────────────────────────────
 func bind_player(player: Node) -> void:
 	player.hp_changed.connect(_on_hp_changed)
 	player.player_hit.connect(_on_player_hit)
@@ -47,10 +117,11 @@ func set_inventory_popup(popup: CanvasLayer) -> void:
 	_inventory_popup = popup
 
 func update_room_info(room_type: int, index: int, total: int) -> void:
-	var names := ["Entrée", "Combat", "Trésor", "Repos", "Boss"]
+	var names := ["Entrée", "Combat", "Trésor", "Repos", "⚠ BOSS"]
 	room_label.text = names[room_type] if room_type < names.size() else "?"
-	floor_label.text = "Étage %d — %d/%d" % [GameManager.current_floor, index + 1, total]
-	# Vide le log entre les salles
+	room_label.add_theme_color_override("font_color",
+		Color(1.0, 0.4, 0.4) if room_type == 4 else Color(0.85, 0.75, 1.0))
+	floor_label.text = "Étage %d  %d/%d" % [GameManager.current_floor, index + 1, total]
 	for child in log_container.get_children():
 		child.queue_free()
 
@@ -73,41 +144,55 @@ func update_enemy_display(enemies: Array) -> void:
 		child.queue_free()
 	for enemy in enemies:
 		var col := VBoxContainer.new()
-		col.custom_minimum_size = Vector2(80, 0)
+		col.custom_minimum_size = Vector2(86, 0)
+		col.alignment = BoxContainer.ALIGNMENT_CENTER
+		col.theme_override_constants_separation = 4
 
 		var name_lbl := Label.new()
 		name_lbl.text = enemy.enemy_name
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_lbl.theme_override_font_sizes_font_size = 12
+		name_lbl.add_theme_font_size_override("font_size", 12)
+		name_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.55))
 
-		var bar := ProgressBar.new()
-		bar.max_value = enemy.stats["max_hp"]
-		bar.value = enemy.stats["hp"]
-		bar.custom_minimum_size = Vector2(80, 12)
-		bar.show_percentage = false
+		var bar_bg := Panel.new()
+		bar_bg.custom_minimum_size = Vector2(82, 12)
+		var bar_bg_style := StyleBoxFlat.new()
+		bar_bg_style.bg_color = Color(0.18, 0.04, 0.04)
+		bar_bg_style.set_corner_radius_all(4)
+		bar_bg.add_theme_stylebox_override("panel", bar_bg_style)
+
+		var bar := ColorRect.new()
+		bar.color = Color(0.85, 0.12, 0.12)
+		bar.set_anchors_preset(Control.PRESET_FULL_RECT)
+
+		bar_bg.add_child(bar)
 
 		var hp_lbl := Label.new()
 		hp_lbl.text = "%d/%d" % [enemy.stats["hp"], enemy.stats["max_hp"]]
 		hp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		hp_lbl.theme_override_font_sizes_font_size = 11
+		hp_lbl.add_theme_font_size_override("font_size", 10)
+		hp_lbl.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75))
 
 		col.add_child(name_lbl)
-		col.add_child(bar)
+		col.add_child(bar_bg)
 		col.add_child(hp_lbl)
 		enemy_container.add_child(col)
 
-		enemy.hp_changed.connect(func(cur, max_hp):
-			bar.value = cur
+		var max_hp: int = enemy.stats["max_hp"]
+		enemy.hp_changed.connect(func(cur: int, _max: int) -> void:
+			bar.scale.x = float(cur) / float(max(1, max_hp))
+			bar.pivot_offset = Vector2.ZERO
 			hp_lbl.text = "%d/%d" % [cur, max_hp]
 		)
 
 func _append_log(message: String) -> void:
 	var lbl := Label.new()
-	lbl.text = message
+	lbl.text = "▸ " + message
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
-	lbl.theme_override_font_sizes_font_size = 13
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.82, 0.82, 0.95))
 	log_container.add_child(lbl)
-	if log_container.get_child_count() > 7:
+	if log_container.get_child_count() > 9:
 		log_container.get_child(0).queue_free()
 
 func _on_status_applied(effect: StatusEffect) -> void:
@@ -115,6 +200,7 @@ func _on_status_applied(effect: StatusEffect) -> void:
 	lbl.name = "status_%d" % effect.type
 	lbl.text = StatusEffect.get_icon(effect.type)
 	lbl.tooltip_text = effect.get_description()
+	lbl.add_theme_font_size_override("font_size", 18)
 	status_bar.add_child(lbl)
 
 func _on_status_removed(effect: StatusEffect) -> void:
@@ -126,40 +212,42 @@ func _on_hp_changed(current: int, maximum: int) -> void:
 	hp_bar.max_value = maximum
 	hp_bar.value = current
 	hp_label.text = "%d / %d" % [current, maximum]
-	# Teinte la barre en rouge si < 25% PV
-	var ratio := float(current) / float(maximum)
-	hp_bar.modulate = Color(1, ratio * 2, ratio * 2) if ratio < 0.5 else Color.WHITE
+	var ratio := float(current) / float(max(1, maximum))
+	var fill := _make_flat(C_HP_LOW if ratio < 0.3 else C_HP_FILL, Color.TRANSPARENT, 0, 4)
+	hp_bar.add_theme_stylebox_override("fill", fill)
 
 func _on_player_hit(damage: int) -> void:
 	var overlay := ColorRect.new()
-	overlay.color = Color(0.9, 0.1, 0.1, 0.35)
+	overlay.color = Color(0.85, 0.05, 0.05, 0.30)
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(overlay)
 	var lbl := Label.new()
 	lbl.text = "-%d" % damage
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	lbl.set_anchors_preset(Control.PRESET_CENTER)
-	lbl.add_theme_font_size_override("font_size", 28)
-	lbl.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+	lbl.add_theme_font_size_override("font_size", 36)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+	lbl.position = Vector2(-60, -40)
 	add_child(lbl)
-	var tween := create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(overlay, "color:a", 0.0, 0.4)
-	tween.tween_property(lbl, "modulate:a", 0.0, 0.4).set_delay(0.15)
-	tween.chain().tween_callback(func(): overlay.queue_free(); lbl.queue_free())
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(overlay, "color:a", 0.0, 0.5)
+	tw.tween_property(lbl, "position:y", lbl.position.y - 30, 0.5).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.5).set_delay(0.2)
+	tw.chain().tween_callback(func(): overlay.queue_free(); lbl.queue_free())
 
 func _on_gold_changed(amount: int) -> void:
-	gold_label.text = "Or: %d" % amount
+	gold_label.text = str(amount)
 
-func _on_floor_changed(floor: int) -> void:
-	floor_label.text = "Étage %d" % floor
+func _on_floor_changed(floor_num: int) -> void:
+	floor_label.text = "Étage %d" % floor_num
 
 func _on_turn_started(is_player: bool) -> void:
 	attack_btn.disabled = not is_player
 	defend_btn.disabled = not is_player
-	item_btn.disabled = not is_player
-	flee_btn.disabled = not is_player
+	item_btn.disabled   = not is_player
+	flee_btn.disabled   = not is_player
 
 func _on_attack_btn_pressed() -> void:
 	SoundManager.play_sfx("button")

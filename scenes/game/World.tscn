@@ -17,52 +17,28 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 z_index = -1
-color = Color(0.06, 0.04, 0.10, 1)
+color = Color(0.05, 0.03, 0.09, 1)
 
-; --- GESTIONNAIRES ---
 [node name="DungeonGenerator" type="Node" parent="."]
 script = ExtResource("2")
 
 [node name="CombatManager" type="Node" parent="."]
 script = ExtResource("3")
 
-; --- ZONE VISUELLE DU COMBAT ---
+; ─── Zone de combat 2D ───────────────────
 [node name="CombatArea" type="Node2D" parent="."]
 
-[node name="RoomNameLabel" type="Label" parent="CombatArea"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -100.0
-offset_top = 20.0
-offset_right = 100.0
-offset_bottom = 46.0
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
-text = "Entrée"
+; Rang des ennemis — centré horizontalement, dans la moitié haute
+[node name="EnemyRow" type="Node2D" parent="CombatArea"]
+position = Vector2(195, 270)
 
-[node name="EnemyRow" type="HBoxContainer" parent="CombatArea"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -160.0
-offset_top = 60.0
-offset_right = 160.0
-offset_bottom = 200.0
-alignment = 1
-theme_override_constants/separation = 20
-
+; Joueur — en bas de zone
 [node name="PlayerSpot" type="Node2D" parent="CombatArea"]
-position = Vector2(195, 560)
+position = Vector2(195, 540)
 
-; --- UI LAYERS ---
+; ─── Couches UI ──────────────────────────
 [node name="HUD" parent="." instance=ExtResource("4")]
-
 [node name="GameOver" parent="." instance=ExtResource("5")]
-
 [node name="FloorTransition" parent="." instance=ExtResource("6")]
-
 [node name="LootPopup" parent="." instance=ExtResource("7")]
-
 [node name="InventoryPopup" parent="." instance=ExtResource("8")]
