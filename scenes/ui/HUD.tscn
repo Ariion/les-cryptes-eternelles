@@ -21,9 +21,9 @@ offset_bottom = -6.0
 theme_override_constants/separation = 10
 
 [node name="HeartIcon" type="Label" parent="Top/HBox"]
-text = "❤"
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.9, 0.2, 0.2, 1)
+text = "PV"
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.9, 0.4, 0.4, 1)
 
 [node name="HpBarWrap" type="Panel" parent="Top/HBox"]
 size_flags_horizontal = 3
@@ -54,8 +54,9 @@ theme_override_constants/separation = 3
 custom_minimum_size = Vector2(1, 20)
 
 [node name="CoinIcon" type="Label" parent="Top/HBox"]
-text = "🪙"
-theme_override_font_sizes/font_size = 18
+text = "Or"
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1)
 
 [node name="GoldLabel" type="Label" parent="Top/HBox"]
 theme_override_font_sizes/font_size = 14
@@ -164,22 +165,22 @@ theme_override_constants/v_separation = 10
 [node name="AttackBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "⚔  Attaquer"
+text = "Attaquer"
 
 [node name="DefendBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "🛡  Défendre"
+text = "Defendre"
 
 [node name="ItemBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "🧪  Objet"
+text = "Objet"
 
 [node name="FleeBtn" type="Button" parent="Bottom/CombatPanel/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "💨  Fuir"
+text = "Fuir"
 
 [connection signal="pressed" from="Bottom/CombatPanel/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
 [connection signal="pressed" from="Bottom/CombatPanel/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]

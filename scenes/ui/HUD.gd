@@ -115,7 +115,7 @@ func set_inventory_popup(popup: CanvasLayer) -> void:
 	_inventory_popup = popup
 
 func update_room_info(room_type: int, index: int, total: int) -> void:
-	var names := ["Entrée", "Combat", "Trésor", "Repos", "⚠ BOSS"]
+	var names := ["Entree", "Combat", "Tresor", "Repos", ">>> BOSS <<<"]
 	room_label.text = names[room_type] if room_type < names.size() else "?"
 	room_label.add_theme_color_override("font_color",
 		Color(1.0, 0.4, 0.4) if room_type == 4 else Color(0.85, 0.75, 1.0))
@@ -141,12 +141,15 @@ func update_enemy_display(enemies: Array) -> void:
 	for child in enemy_container.get_children():
 		child.queue_free()
 	for enemy in enemies:
+		var e: EnemyEntity = enemy as EnemyEntity
+		if e == null:
+			continue
 		var col := VBoxContainer.new()
 		col.custom_minimum_size = Vector2(86, 0)
 		col.alignment = BoxContainer.ALIGNMENT_CENTER
 
 		var name_lbl := Label.new()
-		name_lbl.text = enemy.enemy_name
+		name_lbl.text = e.enemy_name
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_lbl.add_theme_font_size_override("font_size", 12)
 		name_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.55))
@@ -164,7 +167,7 @@ func update_enemy_display(enemies: Array) -> void:
 		bar_bg.add_child(bar)
 
 		var hp_lbl := Label.new()
-		hp_lbl.text = "%d/%d" % [enemy.stats["hp"], enemy.stats["max_hp"]]
+		hp_lbl.text = "%d/%d" % [e.stats["hp"], e.stats["max_hp"]]
 		hp_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		hp_lbl.add_theme_font_size_override("font_size", 10)
 		hp_lbl.add_theme_color_override("font_color", Color(0.75, 0.75, 0.75))
@@ -174,8 +177,8 @@ func update_enemy_display(enemies: Array) -> void:
 		col.add_child(hp_lbl)
 		enemy_container.add_child(col)
 
-		var max_hp: int = enemy.stats["max_hp"]
-		enemy.hp_changed.connect(func(cur: int, _max: int) -> void:
+		var max_hp: int = e.stats["max_hp"]
+		e.hp_changed.connect(func(cur: int, _max: int) -> void:
 			bar.scale.x = float(cur) / float(max(1, max_hp))
 			bar.pivot_offset = Vector2.ZERO
 			hp_lbl.text = "%d/%d" % [cur, max_hp]
