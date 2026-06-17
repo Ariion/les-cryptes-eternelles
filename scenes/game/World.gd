@@ -60,15 +60,18 @@ func _handle_entrance() -> void:
 	hud.show_message("Étage %d — En avant !" % GameManager.current_floor)
 	hud.show_combat_buttons(false)
 	player.get_node("Body").visible = true
-	await _walk_player_in()
-	await get_tree().create_timer(0.6).timeout
-	_go_to_next_room()
-
-func _walk_player_in() -> void:
 	player_spot.position.x = -220.0
 	var tw := create_tween()
 	tw.tween_property(player_spot, "position:x", 0.0, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	await tw.finished
+	tw.finished.connect(func():
+		get_tree().create_timer(0.6).timeout.connect(_go_to_next_room, CONNECT_ONE_SHOT)
+	, CONNECT_ONE_SHOT)
+
+func _walk_player_in(on_done: Callable) -> void:
+	player_spot.position.x = -220.0
+	var tw := create_tween()
+	tw.tween_property(player_spot, "position:x", 0.0, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.finished.connect(on_done, CONNECT_ONE_SHOT)
 
 func _handle_combat_room(room: Dictionary) -> void:
 	if room["cleared"]:
@@ -92,28 +95,24 @@ func _handle_combat_room(room: Dictionary) -> void:
 		(e as Node2D).modulate.a = 0.0
 		enemy_nodes.append(e)
 
-	# Walk animation: player enters from the left
+	# Joueur entre depuis la gauche
 	player.get_node("Body").visible = true
-	player_spot.position.x = -220.0
-	var walk_tween := create_tween()
-	walk_tween.tween_property(player_spot, "position:x", 0.0, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	await walk_tween.finished
-
-	# Player arrives — enemies fade in, player hides
-	player.get_node("Body").visible = false
-	var fade_tween := create_tween().set_parallel(true)
-	for e in enemy_nodes:
-		fade_tween.tween_property(e as Node2D, "modulate:a", 1.0, 0.35)
-	await fade_tween.finished
-
-	hud.show_combat_buttons(true)
-	combat_manager.combat_ended.connect(_on_combat_ended.bind(room), CONNECT_ONE_SHOT)
-	combat_manager.start_combat(player, enemy_nodes)
+	_walk_player_in(func():
+		# Le joueur arrive : les ennemis apparaissent, le joueur se cache
+		player.get_node("Body").visible = false
+		var fade := create_tween().set_parallel(true)
+		for en in enemy_nodes:
+			fade.tween_property(en as Node2D, "modulate:a", 1.0, 0.35)
+		fade.finished.connect(func():
+			hud.show_combat_buttons(true)
+			combat_manager.combat_ended.connect(_on_combat_ended.bind(room), CONNECT_ONE_SHOT)
+			combat_manager.start_combat(player, enemy_nodes)
+		, CONNECT_ONE_SHOT)
+	)
 
 func _handle_treasure_room(room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
 	player.get_node("Body").visible = true
-	await _walk_player_in()
 	var loot: Dictionary = room["loot"]
 	var gold: int = int(loot.get("gold", 0))
 	var item: String = str(loot.get("item", ""))
@@ -129,12 +128,10 @@ func _handle_treasure_room(room: Dictionary) -> void:
 func _handle_rest_room() -> void:
 	hud.show_combat_buttons(false)
 	player.get_node("Body").visible = true
-	await _walk_player_in()
 	var heal_amount: int = int(int(player.stats.get("max_hp", 100)) * 0.35)
 	player.heal(heal_amount)
 	hud.show_message("Repos — +%d PV récupérés." % heal_amount)
-	await get_tree().create_timer(1.8).timeout
-	_go_to_next_room()
+	get_tree().create_timer(1.8).timeout.connect(_go_to_next_room, CONNECT_ONE_SHOT)
 
 func _on_combat_ended(victory: bool, gold_earned: int, room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
