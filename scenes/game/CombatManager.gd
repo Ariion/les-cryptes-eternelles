@@ -86,6 +86,12 @@ func _start_enemy_turn() -> void:
 	for msg in player_msgs:
 		emit_signal("combat_log", str(msg))
 
+	# Regen passif (Philosopher's Stone)
+	var passive_regen: int = player._get_passive_regen()
+	if passive_regen > 0:
+		player.heal(passive_regen)
+		emit_signal("combat_log", "Regen passif : +%d PV" % passive_regen)
+
 	if int(player.stats.get("hp", 0)) == 0:
 		_end_combat(false)
 		return
@@ -122,9 +128,10 @@ func _process_single_enemy(enemy: Node) -> void:
 		"attack":
 			var damage: int = int(action.get("value", 0))
 			if _player_defending:
-				damage = int(damage * 0.5)
+				damage = max(1, int(damage * 0.5))
 			var reflect: int = player.reflect_damage()
 			player.take_damage(damage)
+			GameManager.run_stats["damage_taken"] += damage
 			emit_signal("combat_log", "%s t'inflige %d dégâts." % [enemy.enemy_name, damage])
 			SoundManager.play_sfx("hit")
 			if reflect > 0:
@@ -157,6 +164,7 @@ func _process_single_enemy(enemy: Node) -> void:
 func _on_enemy_defeated(enemy: Node) -> void:
 	emit_signal("combat_log", "%s est vaincu !" % enemy.enemy_name)
 	SoundManager.play_sfx("victory")
+	GameManager.run_stats["kills"] += 1
 	player.collect_gold(int(enemy.stats.get("gold", 0)))
 
 	var all_dead: bool = true

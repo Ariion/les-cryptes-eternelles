@@ -3,53 +3,60 @@
 [ext_resource type="Script" path="res://scenes/ui/GameOver.gd" id="1"]
 
 [node name="GameOver" type="CanvasLayer"]
-script = ExtResource("1")
 visible = false
+script = ExtResource("1")
 
 [node name="Overlay" type="ColorRect" parent="."]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.75)
+color = Color(0.0, 0.0, 0.0, 0.80)
 
 [node name="Panel" type="Panel" parent="."]
-anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -220.0
-offset_right = 180.0
-offset_bottom = 220.0
+offset_left = -170.0
+offset_top = -240.0
+offset_right = 170.0
+offset_bottom = 240.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/separation = 20
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+alignment = 1
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="Panel/VBox"]
 horizontal_alignment = 1
-text = "VOUS ÊTES MORT"
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.9, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.85, 0.15, 0.15, 1)
+text = "VOUS ETES MORT"
 
-[node name="GoldLabel" type="Label" parent="Panel/VBox"]
+[node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
+
+[node name="StatsLabel" type="Label" parent="Panel/VBox"]
 horizontal_alignment = 1
-text = "Or collecté : 0"
-theme_override_colors/font_color = Color(1, 0.84, 0, 1)
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
+text = "Étage 1  ·  Ennemis vaincus : 0"
 
-[node name="Separator" type="HSeparator" parent="Panel/VBox"]
+[node name="HSeparator2" type="HSeparator" parent="Panel/VBox"]
 
 [node name="ReviveLabel" type="Label" parent="Panel/VBox"]
 horizontal_alignment = 1
-text = "Continuer avec 50% de vie ?"
 autowrap_mode = 3
+theme_override_font_sizes/font_size = 13
+text = "Revivre avec 50% de PV ?"
 
 [node name="ReviveButton" type="Button" parent="Panel/VBox"]
 custom_minimum_size = Vector2(0, 55)
-text = "Regarder une pub pour revivre"
+text = "Regarder une pub"
 
 [node name="QuitButton" type="Button" parent="Panel/VBox"]
 custom_minimum_size = Vector2(0, 50)

@@ -37,9 +37,9 @@ func heal(amount: int) -> void:
 
 func attack_enemy(enemy: Node) -> Dictionary:
 	var weakness_debuff: int = _get_weakness_penalty()
-	var base_dmg: int = int(stats.get("attack", 10)) - weakness_debuff + randi_range(-2, 2)
-	var is_crit: bool = randf() < 0.1
-	var damage: int = int(base_dmg * 1.5) if is_crit else base_dmg
+	var base_dmg: int = max(1, int(stats.get("attack", 10)) - weakness_debuff + randi_range(-2, 2))
+	var is_crit: bool = randf() < 0.12
+	var damage: int = max(1, int(base_dmg * 1.5)) if is_crit else base_dmg
 
 	var hit_count: int = 1
 	if equipment["weapon"] == "Shadow Blade" and randf() < 0.35:
@@ -48,8 +48,11 @@ func attack_enemy(enemy: Node) -> Dictionary:
 	for _i in hit_count:
 		enemy.take_damage(damage, is_crit)
 
-	if equipment["weapon"] == "Flame Sword":
-		enemy.apply_status(StatusEffect.create(StatusEffect.Type.BURN, 3, 5))
+	match equipment["weapon"]:
+		"Flame Sword":
+			enemy.apply_status(StatusEffect.create(StatusEffect.Type.BURN, 3, 5))
+		"Cursed Dagger":
+			enemy.apply_status(StatusEffect.create(StatusEffect.Type.POISON, 3, 6))
 
 	return {"damage": damage * hit_count, "is_crit": is_crit, "hits": hit_count}
 
@@ -111,6 +114,13 @@ func use_item(item_name: String) -> void:
 		if data.get("clears_status", false):
 			_clear_negative_statuses()
 		inventory.erase(item_name)
+
+func _get_passive_regen() -> int:
+	for item in inventory:
+		var d := ItemDatabase.get_item(str(item))
+		if d.has("regen_per_turn"):
+			return int(d["regen_per_turn"])
+	return 0
 
 func apply_status(effect: StatusEffect) -> void:
 	for item in status_effects:

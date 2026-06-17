@@ -1,40 +1,46 @@
 extends CanvasLayer
-## Interface de jeu. Toute l'apparence (boutons, panneaux, barres) vient du
-## thème global défini dans l'autoload GameTheme — ce script ne fait que de
-## la logique : brancher les signaux et mettre à jour les textes.
 
-@onready var hp_bar: ProgressBar      = $Top/HBox/HpBar
-@onready var hp_label: Label          = $Top/HBox/HpBar/HpLabel
-@onready var gold_label: Label        = $Top/HBox/GoldLabel
-@onready var floor_label: Label       = $Top/HBox/FloorLabel
-@onready var status_bar: HBoxContainer = $Top/HBox/StatusBar
-@onready var room_label: Label        = $RoomBar/RoomLabel
-@onready var message_label: Label     = $MessageLabel
-@onready var log_panel: Panel         = $LogPanel
-@onready var log_scroll: ScrollContainer = $LogPanel/LogScroll
+@onready var hp_bar: ProgressBar          = $Top/HBox/HpBar
+@onready var hp_label: Label              = $Top/HBox/HpBar/HpLabel
+@onready var gold_label: Label            = $Top/HBox/GoldLabel
+@onready var floor_label: Label           = $Top/HBox/FloorLabel
+@onready var status_bar: HBoxContainer    = $Top/HBox/StatusBar
+@onready var room_label: Label            = $RoomBar/RoomLabel
+@onready var message_label: Label         = $MessageLabel
+@onready var log_panel: Panel             = $LogPanel
+@onready var log_scroll: ScrollContainer  = $LogPanel/LogScroll
 @onready var log_container: VBoxContainer = $LogPanel/LogScroll/LogContainer
-@onready var double_loot_panel: Panel = $DoubleLootPanel
-@onready var combat_panel: Panel      = $Bottom
-@onready var attack_btn: Button       = $Bottom/Grid/AttackBtn
-@onready var defend_btn: Button       = $Bottom/Grid/DefendBtn
-@onready var item_btn: Button         = $Bottom/Grid/ItemBtn
-@onready var flee_btn: Button         = $Bottom/Grid/FleeBtn
+@onready var combat_panel: Panel          = $Bottom
+@onready var attack_btn: Button           = $Bottom/Grid/AttackBtn
+@onready var defend_btn: Button           = $Bottom/Grid/DefendBtn
+@onready var item_btn: Button             = $Bottom/Grid/ItemBtn
+@onready var flee_btn: Button             = $Bottom/Grid/FleeBtn
 
 const ROOM_NAMES := ["Entrée", "Combat", "Trésor", "Repos", "BOSS"]
 
-var _double_loot_callback: Callable
 var _combat_manager: Node
 var _inventory_popup: CanvasLayer
+var _pause_menu: CanvasLayer
+var _pause_btn: Button
 
 func _ready() -> void:
-	double_loot_panel.hide()
 	combat_panel.hide()
 	log_panel.hide()
 	message_label.text = ""
 	GameManager.gold_changed.connect(_on_gold_changed)
 	GameManager.floor_changed.connect(_on_floor_changed)
+	GameManager.leveled_up.connect(_on_leveled_up)
 	_on_gold_changed(GameManager.gold)
 	_on_floor_changed(GameManager.current_floor)
+	_build_pause_button()
+
+func _build_pause_button() -> void:
+	_pause_btn = Button.new()
+	_pause_btn.text = "II"
+	_pause_btn.custom_minimum_size = Vector2(44, 44)
+	_pause_btn.position = Vector2(336, 6)
+	_pause_btn.pressed.connect(_on_pause_pressed)
+	add_child(_pause_btn)
 
 # ─────────────────────────── Branchements ───────────────────────────
 func bind_player(player: Node) -> void:
@@ -52,6 +58,9 @@ func bind_combat_manager(cm: Node) -> void:
 func set_inventory_popup(popup: CanvasLayer) -> void:
 	_inventory_popup = popup
 
+func set_pause_menu(menu: CanvasLayer) -> void:
+	_pause_menu = menu
+
 # ─────────────────────────── Salles & messages ──────────────────────
 func update_room_info(room_type: int, index: int, total: int) -> void:
 	var is_boss := room_type == DungeonGenerator.RoomType.BOSS
@@ -66,17 +75,12 @@ func show_message(text: String) -> void:
 	message_label.text = text
 	message_label.modulate.a = 1.0
 	var tween := create_tween()
-	tween.tween_interval(2.0)
+	tween.tween_interval(2.2)
 	tween.tween_property(message_label, "modulate:a", 0.0, 0.5)
 
 func show_combat_buttons(visible: bool) -> void:
 	combat_panel.visible = visible
-	log_panel.visible = visible
-
-func show_double_loot_offer(gold_amount: int, callback: Callable) -> void:
-	_double_loot_callback = callback
-	double_loot_panel.get_node("VBox/Label").text = "Doubler les %d or ?" % gold_amount
-	double_loot_panel.show()
+	log_panel.visible    = visible
 
 # ─────────────────────────── Journal de combat ──────────────────────
 func _append_log(message: String) -> void:
@@ -109,15 +113,14 @@ func _on_status_removed(effect: StatusEffect) -> void:
 # ─────────────────────────── PV du joueur ───────────────────────────
 func _on_hp_changed(current: int, maximum: int) -> void:
 	hp_bar.max_value = maximum
-	hp_bar.value = current
-	hp_label.text = "%d / %d" % [current, maximum]
+	hp_bar.value     = current
+	hp_label.text    = "%d / %d" % [current, maximum]
 	var ratio := float(current) / float(max(1, maximum))
 	hp_bar.modulate = Color(1, 1, 1) if ratio > 0.3 else Color(1.0, 0.55, 0.55)
 
 func _on_player_hit(damage: int) -> void:
-	# Flash rouge plein écran + chiffre des dégâts subis.
 	var flash := ColorRect.new()
-	flash.color = Color(0.8, 0.05, 0.05, 0.28)
+	flash.color = Color(0.8, 0.05, 0.05, 0.25)
 	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(flash)
@@ -126,25 +129,27 @@ func _on_player_hit(damage: int) -> void:
 	lbl.text = "-%d" % damage
 	lbl.set_anchors_preset(Control.PRESET_CENTER)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.add_theme_font_size_override("font_size", 40)
-	lbl.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
-	lbl.position = Vector2(-40, -60)
+	lbl.add_theme_font_size_override("font_size", 42)
+	lbl.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+	lbl.position = Vector2(-50, -80)
 	add_child(lbl)
 
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(flash, "color:a", 0.0, 0.5)
-	tw.tween_property(lbl, "position:y", lbl.position.y - 36, 0.6).set_trans(Tween.TRANS_CUBIC)
-	tw.tween_property(lbl, "modulate:a", 0.0, 0.6).set_delay(0.2)
-	tw.chain().tween_callback(func() -> void:
-		flash.queue_free()
-		lbl.queue_free())
+	tw.tween_property(flash, "color:a", 0.0, 0.45)
+	tw.tween_property(lbl, "position:y", lbl.position.y - 40, 0.55).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(lbl, "modulate:a", 0.0, 0.55).set_delay(0.15)
+	tw.chain().tween_callback(func():
+		flash.queue_free(); lbl.queue_free())
 
-# ─────────────────────────── Or / étage ─────────────────────────────
+# ─────────────────────────── Or / étage / niveau ────────────────────
 func _on_gold_changed(amount: int) -> void:
 	gold_label.text = "Or : %d" % amount
 
 func _on_floor_changed(floor_num: int) -> void:
 	floor_label.text = "Étage %d" % floor_num
+
+func _on_leveled_up(new_level: int) -> void:
+	show_message("Niveau %d !" % new_level)
 
 # ─────────────────────────── Tour de jeu ────────────────────────────
 func _on_turn_started(is_player: bool) -> void:
@@ -170,11 +175,13 @@ func _on_flee_btn_pressed() -> void:
 	SoundManager.play_sfx("button")
 	_combat_manager.player_flee()
 
+func _on_pause_pressed() -> void:
+	if _pause_menu:
+		_pause_menu.open()
+
 func _on_watch_ad_btn_pressed() -> void:
-	double_loot_panel.hide()
-	if _double_loot_callback.is_valid():
-		_double_loot_callback.call()
+	$DoubleLootPanel.hide()
 
 func _on_skip_btn_pressed() -> void:
-	double_loot_panel.hide()
+	$DoubleLootPanel.hide()
 	get_parent()._go_to_next_room()

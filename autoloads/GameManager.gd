@@ -1,50 +1,62 @@
 extends Node
 
-# État global persistant entre les runs
+# ─────────────────────────── État persistant ────────────────────────
 var gold: int = 0
 var total_gold_earned: int = 0
 var run_count: int = 0
 var current_floor: int = 1
 
-# Stats permanentes (débloquées avec l'or entre les runs)
-var permanent_upgrades := {
-	"max_hp": 0,
-	"attack": 0,
-	"defense": 0,
-}
+var permanent_upgrades := {"max_hp": 0, "attack": 0, "defense": 0}
 
-# Progression du personnage (persistante)
 var level: int = 1
 var xp: int = 0
 
-# Le Marché n'est accessible qu'à partir de ce niveau.
 const MARKET_UNLOCK_LEVEL := 2
 
-# Équipement porté (paper-doll). Le héros commence quasi nu : juste un haillon.
 var equipment := {
 	"head": "", "neck": "", "arm_right": "", "arm_left": "",
 	"body": "Haillon", "belt": "", "legs": "", "feet": "",
 }
-
-# Pièces d'équipement possédées (achetées au Marché, hors run).
 var owned_gear: Array = ["Haillon"]
 
+# ─────────────────────────── Stats run en cours ──────────────────────
+var run_stats := {"floor": 1, "kills": 0, "gold_collected": 0, "damage_dealt": 0, "damage_taken": 0}
+
+# ─────────────────────────── Signaux ────────────────────────────────
 signal gold_changed(new_amount: int)
 signal floor_changed(new_floor: int)
-signal xp_changed(current_xp: int, needed: int, level: int)
+signal xp_changed(current_xp: int, needed: int, lvl: int)
 signal leveled_up(new_level: int)
 
+# ─────────────────────────── Or ─────────────────────────────────────
 func add_gold(amount: int) -> void:
 	gold += amount
 	total_gold_earned += amount
+	run_stats["gold_collected"] += amount
 	emit_signal("gold_changed", gold)
-	# L'or gagné nourrit aussi l'expérience du héros.
-	gain_xp(amount)
+	gain_xp(max(1, amount / 3))
+
+func spend_gold(amount: int) -> bool:
+	if gold < amount:
+		return false
+	gold -= amount
+	emit_signal("gold_changed", gold)
+	return true
+
+# ─────────────────────────── Étage ──────────────────────────────────
+func next_floor() -> void:
+	current_floor += 1
+	run_stats["floor"] = current_floor
+	emit_signal("floor_changed", current_floor)
+
+func start_new_run() -> void:
+	current_floor = 1
+	run_count += 1
+	run_stats = {"floor": 1, "kills": 0, "gold_collected": 0, "damage_dealt": 0, "damage_taken": 0}
 
 # ─────────────────────────── Niveau / XP ────────────────────────────
 func xp_for_level(lvl: int) -> int:
-	# Courbe douce : 50, 90, 140, 200, ...
-	return int(40 + lvl * 20 + lvl * lvl * 5)
+	return int(50 + lvl * 30 + lvl * lvl * 8)
 
 func gain_xp(amount: int) -> void:
 	if amount <= 0:
@@ -84,7 +96,6 @@ func buy_gear(gear_name: String) -> bool:
 	save_game()
 	return true
 
-# Bonus cumulés de tout l'équipement porté.
 func equipment_bonus() -> Dictionary:
 	var b := {"max_hp": 0, "attack": 0, "defense": 0}
 	for slot in equipment:
@@ -97,62 +108,49 @@ func equipment_bonus() -> Dictionary:
 		b["defense"] += int(data.get("defense", 0))
 	return b
 
-func spend_gold(amount: int) -> bool:
-	if gold < amount:
-		return false
-	gold -= amount
-	emit_signal("gold_changed", gold)
-	return true
-
-func next_floor() -> void:
-	current_floor += 1
-	emit_signal("floor_changed", current_floor)
-
-func start_new_run() -> void:
-	current_floor = 1
-	run_count += 1
-
+# ─────────────────────────── Stats de base joueur ───────────────────
 func get_player_base_stats() -> Dictionary:
 	var bonus: Dictionary = equipment_bonus()
-	# Le niveau du personnage augmente régulièrement les stats de base.
 	var lvl_gain: int = level - 1
 	return {
-		"max_hp": 80 + lvl_gain * 8 + permanent_upgrades["max_hp"] * 10 + bonus["max_hp"],
-		"attack": 8 + lvl_gain * 2 + permanent_upgrades["attack"] * 2 + bonus["attack"],
-		"defense": 3 + lvl_gain * 1 + permanent_upgrades["defense"] * 2 + bonus["defense"],
+		"max_hp":  80 + lvl_gain * 8  + permanent_upgrades["max_hp"] * 10 + bonus["max_hp"],
+		"attack":  8  + lvl_gain * 2  + permanent_upgrades["attack"]  * 2 + bonus["attack"],
+		"defense": 3  + lvl_gain * 1  + permanent_upgrades["defense"] * 2 + bonus["defense"],
 	}
 
+# ─────────────────────────── Sauvegarde ─────────────────────────────
 func save_game() -> void:
 	var save_data := {
-		"gold": gold,
-		"total_gold_earned": total_gold_earned,
-		"run_count": run_count,
-		"permanent_upgrades": permanent_upgrades,
-		"level": level,
-		"xp": xp,
-		"equipment": equipment,
-		"owned_gear": owned_gear,
+		"gold": gold, "total_gold_earned": total_gold_earned,
+		"run_count": run_count, "permanent_upgrades": permanent_upgrades,
+		"level": level, "xp": xp, "equipment": equipment, "owned_gear": owned_gear,
 	}
 	var file := FileAccess.open("user://save.json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(save_data))
+	if file:
+		file.store_string(JSON.stringify(save_data))
 
 func load_game() -> void:
 	if not FileAccess.file_exists("user://save.json"):
 		return
 	var file := FileAccess.open("user://save.json", FileAccess.READ)
-	var data: Dictionary = JSON.parse_string(file.get_as_text())
-	gold = data.get("gold", 0)
-	total_gold_earned = data.get("total_gold_earned", 0)
-	run_count = data.get("run_count", 0)
+	if not file:
+		return
+	var data = JSON.parse_string(file.get_as_text())
+	if not data is Dictionary:
+		return
+	gold               = int(data.get("gold", 0))
+	total_gold_earned  = int(data.get("total_gold_earned", 0))
+	run_count          = int(data.get("run_count", 0))
 	permanent_upgrades = data.get("permanent_upgrades", permanent_upgrades)
-	level = int(data.get("level", 1))
-	xp = int(data.get("xp", 0))
-	# Fusionne pour rester compatible si de nouveaux slots apparaissent.
+	level              = int(data.get("level", 1))
+	xp                 = int(data.get("xp", 0))
 	var saved_equip: Dictionary = data.get("equipment", {})
 	for slot in saved_equip:
 		if equipment.has(slot):
 			equipment[slot] = saved_equip[slot]
-	owned_gear = data.get("owned_gear", owned_gear)
+	var sg = data.get("owned_gear", [])
+	if not sg.is_empty():
+		owned_gear = sg
 
 func _ready() -> void:
 	load_game()
