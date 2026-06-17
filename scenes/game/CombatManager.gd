@@ -22,7 +22,7 @@ func start_combat(p: Node, enemy_list: Array) -> void:
 	_player_defending = false
 	SoundManager.play_music("dungeon")
 	emit_signal("turn_started", true)
-	emit_signal("combat_log", "Combat commencé ! À toi de jouer.")
+	emit_signal("combat_log", "Combat commencé ! %d ennemi(s) en face." % enemies.size())
 
 func player_attack() -> void:
 	if state != CombatState.PLAYER_TURN:
@@ -167,12 +167,12 @@ func _on_enemy_defeated(enemy: Node) -> void:
 	GameManager.run_stats["kills"] += 1
 	player.collect_gold(int(enemy.stats.get("gold", 0)))
 
-	var all_dead: bool = true
+	var alive_count: int = 0
 	for e in enemies:
 		if e.is_alive():
-			all_dead = false
-			break
-	if all_dead:
+			alive_count += 1
+	emit_signal("combat_log", "[DBG] vivants: %d / %d" % [alive_count, enemies.size()])
+	if alive_count == 0:
 		_end_combat(true)
 
 func _back_to_player_turn() -> void:
