@@ -60,12 +60,8 @@ func _handle_entrance() -> void:
 	hud.show_message("Étage %d — En avant !" % GameManager.current_floor)
 	hud.show_combat_buttons(false)
 	player.get_node("Body").visible = true
-	player_spot.position.x = -220.0
-	var tw := create_tween()
-	tw.tween_property(player_spot, "position:x", 0.0, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.finished.connect(func():
-		get_tree().create_timer(0.6).timeout.connect(_go_to_next_room, CONNECT_ONE_SHOT)
-	, CONNECT_ONE_SHOT)
+	await get_tree().create_timer(1.2).timeout
+	_go_to_next_room()
 
 func _walk_player_in(on_done: Callable) -> void:
 	player_spot.position.x = -220.0
@@ -131,7 +127,8 @@ func _handle_rest_room() -> void:
 	var heal_amount: int = int(int(player.stats.get("max_hp", 100)) * 0.35)
 	player.heal(heal_amount)
 	hud.show_message("Repos — +%d PV récupérés." % heal_amount)
-	get_tree().create_timer(1.8).timeout.connect(_go_to_next_room, CONNECT_ONE_SHOT)
+	await get_tree().create_timer(1.8).timeout
+	_go_to_next_room()
 
 func _on_combat_ended(victory: bool, gold_earned: int, room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
