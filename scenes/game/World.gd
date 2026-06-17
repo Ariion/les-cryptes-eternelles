@@ -63,16 +63,13 @@ func _handle_entrance() -> void:
 	await get_tree().create_timer(1.2).timeout
 	_go_to_next_room()
 
-func _walk_player_in(on_done: Callable) -> void:
-	player_spot.position.x = -220.0
-	var tw := create_tween()
-	tw.tween_property(player_spot, "position:x", 0.0, 0.85).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.finished.connect(on_done, CONNECT_ONE_SHOT)
 
 func _handle_combat_room(room: Dictionary) -> void:
 	if room["cleared"]:
 		_go_to_next_room()
 		return
+
+	player.get_node("Body").visible = false
 
 	var is_boss: bool = (room["type"] == DungeonGenerator.RoomType.BOSS)
 	if is_boss:
@@ -84,27 +81,15 @@ func _handle_combat_room(room: Dictionary) -> void:
 	var spacing: float = 120.0
 	var start_x: float = -(count - 1) * spacing * 0.5
 	for i in range(count):
-		var e: EnemyEntity = preload("res://scenes/enemies/Enemy.tscn").instantiate() as EnemyEntity
+		var e := preload("res://scenes/enemies/Enemy.tscn").instantiate()
 		enemy_row.add_child(e)
 		e.position = Vector2(start_x + i * spacing, 0)
 		e.setup(str(enemies_list[i]), GameManager.current_floor)
-		(e as Node2D).modulate.a = 0.0
 		enemy_nodes.append(e)
 
-	# Joueur entre depuis la gauche
-	player.get_node("Body").visible = true
-	_walk_player_in(func():
-		# Le joueur arrive : les ennemis apparaissent, le joueur se cache
-		player.get_node("Body").visible = false
-		var fade := create_tween().set_parallel(true)
-		for en in enemy_nodes:
-			fade.tween_property(en as Node2D, "modulate:a", 1.0, 0.35)
-		fade.finished.connect(func():
-			hud.show_combat_buttons(true)
-			combat_manager.combat_ended.connect(_on_combat_ended.bind(room), CONNECT_ONE_SHOT)
-			combat_manager.start_combat(player, enemy_nodes)
-		, CONNECT_ONE_SHOT)
-	)
+	hud.show_combat_buttons(true)
+	combat_manager.combat_ended.connect(_on_combat_ended.bind(room), CONNECT_ONE_SHOT)
+	combat_manager.start_combat(player, enemy_nodes)
 
 func _handle_treasure_room(room: Dictionary) -> void:
 	hud.show_combat_buttons(false)
