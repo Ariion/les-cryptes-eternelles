@@ -89,7 +89,7 @@ func _handle_combat_room(room: Dictionary) -> void:
 		enemy_row.add_child(e)
 		e.position = Vector2(start_x + i * spacing, 0)
 		e.setup(str(enemies_list[i]), GameManager.current_floor)
-		e.modulate.a = 0.0
+		(e as Node2D).modulate.a = 0.0
 		enemy_nodes.append(e)
 
 	# Walk animation: player enters from the left
@@ -103,7 +103,7 @@ func _handle_combat_room(room: Dictionary) -> void:
 	player.get_node("Body").visible = false
 	var fade_tween := create_tween().set_parallel(true)
 	for e in enemy_nodes:
-		fade_tween.tween_property(e, "modulate:a", 1.0, 0.35)
+		fade_tween.tween_property(e as Node2D, "modulate:a", 1.0, 0.35)
 	await fade_tween.finished
 
 	hud.show_combat_buttons(true)
