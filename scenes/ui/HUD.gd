@@ -11,15 +11,17 @@ extends CanvasLayer
 @onready var log_scroll: ScrollContainer  = $LogPanel/LogScroll
 @onready var log_container: VBoxContainer = $LogPanel/LogScroll/LogContainer
 @onready var combat_panel: Panel          = $Bottom
-@onready var attack_btn: Button           = $Bottom/Grid/AttackBtn
-@onready var defend_btn: Button           = $Bottom/Grid/DefendBtn
-@onready var item_btn: Button             = $Bottom/Grid/ItemBtn
-@onready var flee_btn: Button             = $Bottom/Grid/FleeBtn
+@onready var attack_btn: Button           = $Bottom/VBox/Grid/AttackBtn
+@onready var defend_btn: Button           = $Bottom/VBox/Grid/DefendBtn
+@onready var item_btn: Button             = $Bottom/VBox/Grid/ItemBtn
+@onready var flee_btn: Button             = $Bottom/VBox/Grid/FleeBtn
+@onready var competences_btn: Button      = $Bottom/VBox/CompetencesBtn
 
 const ROOM_NAMES := ["Entrée", "Combat", "Trésor", "Repos", "BOSS"]
 
 var _combat_manager: Node
 var _inventory_popup: CanvasLayer
+var _skills_popup: CanvasLayer
 var _pause_menu: CanvasLayer
 var _pause_btn: Button
 
@@ -57,6 +59,9 @@ func bind_combat_manager(cm: Node) -> void:
 
 func set_inventory_popup(popup: CanvasLayer) -> void:
 	_inventory_popup = popup
+
+func set_skills_popup(popup: CanvasLayer) -> void:
+	_skills_popup = popup
 
 func set_pause_menu(menu: CanvasLayer) -> void:
 	_pause_menu = menu
@@ -153,10 +158,11 @@ func _on_leveled_up(new_level: int) -> void:
 
 # ─────────────────────────── Tour de jeu ────────────────────────────
 func _on_turn_started(is_player: bool) -> void:
-	attack_btn.disabled = not is_player
-	defend_btn.disabled = not is_player
-	item_btn.disabled   = not is_player
-	flee_btn.disabled   = not is_player
+	attack_btn.disabled     = not is_player
+	defend_btn.disabled     = not is_player
+	item_btn.disabled       = not is_player
+	flee_btn.disabled       = not is_player
+	competences_btn.disabled = not is_player
 
 func _on_attack_btn_pressed() -> void:
 	SoundManager.play_sfx("button")
@@ -174,6 +180,11 @@ func _on_item_btn_pressed() -> void:
 func _on_flee_btn_pressed() -> void:
 	SoundManager.play_sfx("button")
 	_combat_manager.player_flee()
+
+func _on_competences_btn_pressed() -> void:
+	SoundManager.play_sfx("button")
+	if _skills_popup:
+		_skills_popup.open()
 
 func _on_pause_pressed() -> void:
 	if _pause_menu:

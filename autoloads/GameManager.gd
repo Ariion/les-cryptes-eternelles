@@ -11,6 +11,9 @@ var permanent_upgrades := {"max_hp": 0, "attack": 0, "defense": 0}
 var level: int = 1
 var xp: int = 0
 
+var selected_race: String = "Humain"
+var selected_class: String = "Guerrier"
+
 const MARKET_UNLOCK_LEVEL := 2
 
 var equipment := {
@@ -110,12 +113,14 @@ func equipment_bonus() -> Dictionary:
 
 # ─────────────────────────── Stats de base joueur ───────────────────
 func get_player_base_stats() -> Dictionary:
-	var bonus: Dictionary = equipment_bonus()
-	var lvl_gain: int = level - 1
+	var base := CharacterDatabase.get_combined_stats(selected_race, selected_class)
+	var bonus := equipment_bonus()
+	var lvl_gain := level - 1
 	return {
-		"max_hp":  80 + lvl_gain * 8  + permanent_upgrades["max_hp"] * 10 + bonus["max_hp"],
-		"attack":  8  + lvl_gain * 2  + permanent_upgrades["attack"]  * 2 + bonus["attack"],
-		"defense": 3  + lvl_gain * 1  + permanent_upgrades["defense"] * 2 + bonus["defense"],
+		"max_hp":  base["max_hp"]  + lvl_gain * 8  + permanent_upgrades["max_hp"]  * 10 + bonus["max_hp"],
+		"attack":  base["attack"]  + lvl_gain * 2  + permanent_upgrades["attack"]   * 2 + bonus["attack"],
+		"defense": base["defense"] + lvl_gain * 1  + permanent_upgrades["defense"]  * 2 + bonus["defense"],
+		"xp_bonus": base.get("xp_bonus", 0.0),
 	}
 
 # ─────────────────────────── Sauvegarde ─────────────────────────────
@@ -124,6 +129,7 @@ func save_game() -> void:
 		"gold": gold, "total_gold_earned": total_gold_earned,
 		"run_count": run_count, "permanent_upgrades": permanent_upgrades,
 		"level": level, "xp": xp, "equipment": equipment, "owned_gear": owned_gear,
+		"selected_race": selected_race, "selected_class": selected_class,
 	}
 	var file := FileAccess.open("user://save.json", FileAccess.WRITE)
 	if file:
@@ -151,6 +157,8 @@ func load_game() -> void:
 	var sg = data.get("owned_gear", [])
 	if not sg.is_empty():
 		owned_gear = sg
+	selected_race  = str(data.get("selected_race", "Humain"))
+	selected_class = str(data.get("selected_class", "Guerrier"))
 
 func _ready() -> void:
 	load_game()

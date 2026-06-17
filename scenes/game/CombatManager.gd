@@ -66,6 +66,23 @@ func player_use_item(item_name: String) -> void:
 	SoundManager.play_sfx("button")
 	_start_enemy_turn()
 
+func player_use_skill(skill: Dictionary) -> void:
+	if state != CombatState.PLAYER_TURN:
+		return
+	var skill_name: String = str(skill.get("name", ""))
+	if player.get_skill_cooldown(skill_name) > 0:
+		emit_signal("combat_log", "Compétence en recharge !")
+		return
+	var enemy: Node = _current_enemy()
+	var result: Dictionary = player.use_skill(skill, enemy)
+	player.skill_cooldowns[skill_name] = int(skill.get("cooldown", 2))
+	emit_signal("combat_log", str(result.get("message", "")))
+	SoundManager.play_sfx("attack")
+	if not enemy.is_alive():
+		_on_enemy_defeated(enemy)
+		return
+	_start_enemy_turn()
+
 func player_flee() -> void:
 	if state != CombatState.PLAYER_TURN:
 		return
@@ -82,6 +99,7 @@ func _start_enemy_turn() -> void:
 	_turn_count += 1
 	emit_signal("turn_started", false)
 
+	player.tick_skill_cooldowns()
 	var player_msgs: Array = player.process_status_effects()
 	for msg in player_msgs:
 		emit_signal("combat_log", str(msg))

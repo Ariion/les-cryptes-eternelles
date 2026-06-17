@@ -8,6 +8,7 @@ extends Node2D
 @onready var loot_popup: CanvasLayer        = $LootPopup
 @onready var inventory_popup: CanvasLayer   = $InventoryPopup
 @onready var pause_menu: CanvasLayer        = $PauseMenu
+@onready var skills_popup: CanvasLayer      = $SkillsPopup
 @onready var enemy_row: Node2D              = $CombatArea/EnemyRow
 @onready var player_spot: Node2D            = $CombatArea/PlayerSpot
 
@@ -23,7 +24,10 @@ func _ready() -> void:
 	hud.bind_player(player)
 	hud.bind_combat_manager(combat_manager)
 	hud.set_inventory_popup(inventory_popup)
+	hud.set_skills_popup(skills_popup)
 	hud.set_pause_menu(pause_menu)
+	skills_popup.setup(player)
+	skills_popup.skill_selected.connect(_on_skill_selected)
 	inventory_popup.setup(player, combat_manager)
 
 	GameManager.start_new_run()
@@ -139,6 +143,9 @@ func _go_to_next_room() -> void:
 		floor_transition.play(GameManager.current_floor, _generate_new_floor)
 	else:
 		_enter_room(rooms[current_room_index])
+
+func _on_skill_selected(skill: Dictionary) -> void:
+	combat_manager.player_use_skill(skill)
 
 func _on_player_died() -> void:
 	hud.show_combat_buttons(false)

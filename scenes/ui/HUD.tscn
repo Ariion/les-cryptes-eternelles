@@ -151,42 +151,52 @@ text = "Non merci"
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -216.0
+offset_top = -256.0
 
-[node name="Grid" type="GridContainer" parent="Bottom"]
+[node name="VBox" type="VBoxContainer" parent="Bottom"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = 12.0
+offset_top = 10.0
 offset_right = -12.0
-offset_bottom = -12.0
+offset_bottom = -10.0
+theme_override_constants/separation = 10
+
+[node name="Grid" type="GridContainer" parent="Bottom/VBox"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
 columns = 2
 theme_override_constants/h_separation = 12
 theme_override_constants/v_separation = 12
 
-[node name="AttackBtn" type="Button" parent="Bottom/Grid"]
+[node name="AttackBtn" type="Button" parent="Bottom/VBox/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Attaquer"
 
-[node name="DefendBtn" type="Button" parent="Bottom/Grid"]
+[node name="DefendBtn" type="Button" parent="Bottom/VBox/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Défendre"
 
-[node name="ItemBtn" type="Button" parent="Bottom/Grid"]
+[node name="ItemBtn" type="Button" parent="Bottom/VBox/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Objet"
 
-[node name="FleeBtn" type="Button" parent="Bottom/Grid"]
+[node name="FleeBtn" type="Button" parent="Bottom/VBox/Grid"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Fuir"
 
+[node name="CompetencesBtn" type="Button" parent="Bottom/VBox"]
+size_flags_horizontal = 3
+text = "⚡ Compétences"
+
 [connection signal="pressed" from="DoubleLootPanel/VBox/WatchAdBtn" to="." method="_on_watch_ad_btn_pressed"]
 [connection signal="pressed" from="DoubleLootPanel/VBox/SkipBtn" to="." method="_on_skip_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
-[connection signal="pressed" from="Bottom/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
+[connection signal="pressed" from="Bottom/VBox/Grid/AttackBtn" to="." method="_on_attack_btn_pressed"]
+[connection signal="pressed" from="Bottom/VBox/Grid/DefendBtn" to="." method="_on_defend_btn_pressed"]
+[connection signal="pressed" from="Bottom/VBox/Grid/ItemBtn" to="." method="_on_item_btn_pressed"]
+[connection signal="pressed" from="Bottom/VBox/Grid/FleeBtn" to="." method="_on_flee_btn_pressed"]
+[connection signal="pressed" from="Bottom/VBox/CompetencesBtn" to="." method="_on_competences_btn_pressed"]

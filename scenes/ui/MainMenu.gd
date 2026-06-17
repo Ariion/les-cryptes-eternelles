@@ -47,7 +47,7 @@ func _on_play_btn_pressed() -> void:
 	var tween := create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.4)
 	tween.tween_callback(func():
-		get_tree().change_scene_to_file("res://scenes/game/World.tscn")
+		get_tree().change_scene_to_file("res://scenes/ui/CharacterCreation.tscn")
 	)
 
 func _on_shop_btn_pressed() -> void:

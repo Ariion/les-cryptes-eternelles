@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scenes/game/World.gd" id="1"]
 [ext_resource type="Script" path="res://scenes/game/DungeonGenerator.gd" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/InventoryPopup.tscn" id="8"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="9"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/dungeon_room.svg" id="10"]
+[ext_resource type="PackedScene" path="res://scenes/ui/SkillsPopup.tscn" id="11"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1")
@@ -39,3 +40,4 @@ position = Vector2(195, 380)
 [node name="LootPopup" parent="." instance=ExtResource("7")]
 [node name="InventoryPopup" parent="." instance=ExtResource("8")]
 [node name="PauseMenu" parent="." instance=ExtResource("9")]
+[node name="SkillsPopup" parent="." instance=ExtResource("11")]
