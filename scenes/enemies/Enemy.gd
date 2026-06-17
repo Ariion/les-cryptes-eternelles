@@ -15,74 +15,21 @@ signal status_applied(effect: StatusEffect)
 # scale   : échelle supplémentaire du sprite (1.0 = par défaut)
 const ENEMY_DATA := {
 	# ─ Palier 1 (étages 1-2)
-	"Goblin": {
-		"max_hp": 60, "attack": 7, "defense": 2, "gold": 12,
-		"abilities": ["poison_dart"],
-		"sprite": "Goblin", "color": Color.WHITE, "scale": 1.0,
-	},
-	"Skeleton": {
-		"max_hp": 90, "attack": 11, "defense": 4, "gold": 18,
-		"abilities": ["weaken"],
-		"sprite": "Skeleton", "color": Color.WHITE, "scale": 1.0,
-	},
+	"Goblin":      {"max_hp": 60,  "attack": 7,  "defense": 2,  "gold": 12,  "abilities": ["poison_dart"]},
+	"Skeleton":    {"max_hp": 90,  "attack": 11, "defense": 4,  "gold": 18,  "abilities": ["weaken"]},
 	# ─ Palier 2 (étages 2-4)
-	"Spider": {
-		"max_hp": 55, "attack": 10, "defense": 1, "gold": 15,
-		"abilities": ["poison_dart", "poison_dart"],
-		"sprite": "Goblin", "color": Color(0.7, 0.4, 0.9), "scale": 0.85,
-	},
-	"Dark Archer": {
-		"max_hp": 75, "attack": 15, "defense": 2, "gold": 22,
-		"abilities": ["weaken", "poison_dart"],
-		"sprite": "Skeleton", "color": Color(0.5, 0.6, 1.0), "scale": 0.95,
-	},
-	"Orc": {
-		"max_hp": 140, "attack": 14, "defense": 6, "gold": 28,
-		"abilities": ["stun_strike"],
-		"sprite": "Orc", "color": Color.WHITE, "scale": 1.0,
-	},
+	"Spider":      {"max_hp": 55,  "attack": 10, "defense": 1,  "gold": 15,  "abilities": ["poison_dart", "poison_dart"]},
+	"Dark Archer": {"max_hp": 75,  "attack": 15, "defense": 2,  "gold": 22,  "abilities": ["weaken", "poison_dart"]},
+	"Orc":         {"max_hp": 140, "attack": 14, "defense": 6,  "gold": 28,  "abilities": ["stun_strike"]},
 	# ─ Palier 3 (étages 4-6)
-	"Troll": {
-		"max_hp": 200, "attack": 17, "defense": 9, "gold": 36,
-		"abilities": ["regen", "stun_strike"],
-		"sprite": "Orc", "color": Color(0.6, 0.7, 0.5), "scale": 1.15,
-	},
-	"Vampire": {
-		"max_hp": 130, "attack": 20, "defense": 6, "gold": 44,
-		"abilities": ["regen", "weaken"],
-		"sprite": "Boss", "color": Color(0.7, 0.3, 0.9), "scale": 0.65,
-	},
+	"Troll":       {"max_hp": 200, "attack": 17, "defense": 9,  "gold": 36,  "abilities": ["regen", "stun_strike"]},
+	"Vampire":     {"max_hp": 130, "attack": 20, "defense": 6,  "gold": 44,  "abilities": ["regen", "weaken"]},
 	# ─ Palier 4 (étages 6+)
-	"Golem": {
-		"max_hp": 280, "attack": 18, "defense": 15, "gold": 55,
-		"abilities": ["stun_strike", "defend"],
-		"sprite": "Orc", "color": Color(0.65, 0.65, 0.65), "scale": 1.3,
-	},
-	"Demon": {
-		"max_hp": 170, "attack": 26, "defense": 8, "gold": 60,
-		"abilities": ["poison_dart", "stun_strike", "weaken"],
-		"sprite": "Boss", "color": Color(1.0, 0.4, 0.2), "scale": 0.72,
-	},
+	"Golem":       {"max_hp": 280, "attack": 18, "defense": 15, "gold": 55,  "abilities": ["stun_strike", "defend"]},
+	"Demon":       {"max_hp": 170, "attack": 26, "defense": 8,  "gold": 60,  "abilities": ["poison_dart", "stun_strike", "weaken"]},
 	# ─ Boss
-	"Boss": {
-		"max_hp": 380, "attack": 22, "defense": 10, "gold": 120,
-		"abilities": ["regen", "stun_strike", "weaken"],
-		"sprite": "Boss", "color": Color.WHITE, "scale": 1.0,
-	},
+	"Boss":        {"max_hp": 380, "attack": 22, "defense": 10, "gold": 120, "abilities": ["regen", "stun_strike", "weaken"]},
 }
-
-# Les textures sont déclarées en ext_resource dans la scène → toujours packagées.
-@export var tex_goblin: Texture2D
-@export var tex_skeleton: Texture2D
-@export var tex_orc: Texture2D
-@export var tex_boss: Texture2D
-
-func _sprite_for(sprite_key: String) -> Texture2D:
-	match sprite_key:
-		"Skeleton": return tex_skeleton
-		"Orc":      return tex_orc
-		"Boss":     return tex_boss
-		_:          return tex_goblin
 
 const _DMG_SCRIPT := preload("res://scenes/ui/DamageNumber.gd")
 
@@ -90,12 +37,8 @@ func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
 	var data: Dictionary = ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"])
 
-	if has_node("Body"):
-		var sprite_key: String = data.get("sprite", "Goblin")
-		$Body.texture = _sprite_for(sprite_key)
-		var sc: float = float(data.get("scale", 1.0))
-		$Body.scale = Vector2(sc, sc)
-		$Body.modulate = data.get("color", Color.WHITE)
+	if has_node("Display"):
+		$Display.setup_type(p_name)
 
 	if has_node("NameLabel"):
 		$NameLabel.text = p_name
