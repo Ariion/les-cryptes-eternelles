@@ -7,6 +7,7 @@ var run_count: int = 0
 var current_floor: int = 1
 
 var permanent_upgrades := {"max_hp": 0, "attack": 0, "defense": 0}
+var materials: Dictionary = {}
 
 var level: int = 1
 var xp: int = 0
@@ -74,6 +75,30 @@ func gain_xp(amount: int) -> void:
 func market_unlocked() -> bool:
 	return level >= MARKET_UNLOCK_LEVEL
 
+# ─────────────────────────── Matériaux / Forge ──────────────────────────────
+func add_material(mat_name: String, qty: int = 1) -> void:
+	materials[mat_name] = int(materials.get(mat_name, 0)) + qty
+
+func get_material_count(mat_name: String) -> int:
+	return int(materials.get(mat_name, 0))
+
+func can_craft(recipe: Dictionary) -> bool:
+	for mat in recipe["ingredients"]:
+		if get_material_count(str(mat)) < int(recipe["ingredients"][mat]):
+			return false
+	return true
+
+func craft(recipe: Dictionary) -> bool:
+	if not can_craft(recipe):
+		return false
+	for mat in recipe["ingredients"]:
+		materials[str(mat)] = int(materials.get(str(mat), 0)) - int(recipe["ingredients"][mat])
+	var result: String = str(recipe["result"])
+	if result not in owned_gear:
+		owned_gear.append(result)
+	save_game()
+	return true
+
 # ─────────────────────────── Équipement ─────────────────────────────
 func equip_gear(gear_name: String) -> void:
 	var data: Dictionary = EquipmentDatabase.get_gear(gear_name)
@@ -130,6 +155,7 @@ func save_game() -> void:
 		"run_count": run_count, "permanent_upgrades": permanent_upgrades,
 		"level": level, "xp": xp, "equipment": equipment, "owned_gear": owned_gear,
 		"selected_race": selected_race, "selected_class": selected_class,
+		"materials": materials,
 	}
 	var file := FileAccess.open("user://save.json", FileAccess.WRITE)
 	if file:
@@ -159,6 +185,9 @@ func load_game() -> void:
 		owned_gear = sg
 	selected_race  = str(data.get("selected_race", "Humain"))
 	selected_class = str(data.get("selected_class", "Guerrier"))
+	var saved_mats = data.get("materials", {})
+	if saved_mats is Dictionary:
+		materials = saved_mats
 
 func _ready() -> void:
 	load_game()

@@ -144,13 +144,17 @@ func _handle_treasure_room(node: Dictionary) -> void:
 	var loot: Dictionary = node["loot"]
 	var gold: int = int(loot.get("gold", 0))
 	var item: String = str(loot.get("item", ""))
+	var mat: String = str(loot.get("material", ""))
+	var mat_qty: int = int(loot.get("material_qty", 0))
 	if gold > 0:
 		player.collect_gold(gold)
 	if item != "":
 		player.pick_up_item(item)
+	if mat != "" and mat_qty > 0:
+		GameManager.add_material(mat, mat_qty)
 	SoundManager.play_sfx("gold")
 	node["cleared"] = true
-	loot_popup.show_loot(gold, item, false, func(): _go_to_map())
+	loot_popup.show_loot(gold, item, false, func(): _go_to_map(), mat, mat_qty)
 
 func _handle_rest_room() -> void:
 	hud.show_combat_buttons(false)
@@ -174,10 +178,14 @@ func _on_combat_ended(victory: bool, gold_earned: int, node: Dictionary) -> void
 
 	node["cleared"] = true
 	var item_name: String = str(node["loot"].get("item", ""))
+	var mat: String = str(node["loot"].get("material", ""))
+	var mat_qty: int = int(node["loot"].get("material_qty", 0))
 	var is_boss: bool = (int(node["type"]) == DungeonGenerator.RoomType.BOSS)
 
 	if item_name != "":
 		player.pick_up_item(item_name)
+	if mat != "" and mat_qty > 0:
+		GameManager.add_material(mat, mat_qty)
 	SoundManager.play_sfx("gold")
 
 	loot_popup.show_loot(gold_earned, item_name, is_boss, func():
@@ -186,7 +194,7 @@ func _on_combat_ended(victory: bool, gold_earned: int, node: Dictionary) -> void
 			floor_transition.play(GameManager.current_floor, _generate_new_floor)
 		else:
 			_go_to_map()
-	)
+	, mat, mat_qty)
 
 func _on_skill_selected(skill: Dictionary) -> void:
 	combat_manager.player_use_skill(skill)

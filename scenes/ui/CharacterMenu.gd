@@ -55,8 +55,12 @@ func _build_tabs() -> void:
 	_tabs.add_child(_inv_tab)
 
 	_market_tab = ScrollContainer.new()
-	_market_tab.name = "Marché"
+	_market_tab.name = "Marche"
 	_tabs.add_child(_market_tab)
+
+	var forge_tab := ScrollContainer.new()
+	forge_tab.name = "Forge"
+	_tabs.add_child(forge_tab)
 
 func _refresh_all() -> void:
 	if _tabs == null:
@@ -65,6 +69,7 @@ func _refresh_all() -> void:
 		0: _build_stat_tab()
 		1: _build_inventory_tab()
 		2: _build_market_tab()
+		3: _build_forge_tab()
 
 # ─────────────────────────── Onglet STAT ────────────────────────────
 func _build_stat_tab() -> void:
@@ -266,6 +271,7 @@ func _close_chooser() -> void:
 		_chooser = null
 
 # ─────────────────────────── Onglet MARCHÉ ──────────────────────────
+
 func _build_market_tab() -> void:
 	for c in _market_tab.get_children():
 		c.queue_free()
@@ -335,5 +341,117 @@ func _build_market_tab() -> void:
 
 		row.add_child(info)
 		row.add_child(buy)
+		box.add_child(row)
+		box.add_child(HSeparator.new())
+
+# ─────────────────────────── Onglet FORGE ───────────────────────────
+func _build_forge_tab() -> void:
+	var forge_tab: ScrollContainer = _tabs.get_child(3)
+	for c in forge_tab.get_children():
+		c.queue_free()
+
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	forge_tab.add_child(margin)
+	margin.add_child(box)
+
+	# ─ Matériaux possédés ─
+	var mat_title := Label.new()
+	mat_title.text = "Materiaux"
+	mat_title.add_theme_font_size_override("font_size", 18)
+	mat_title.add_theme_color_override("font_color", Color(0.85, 0.7, 0.35))
+	box.add_child(mat_title)
+
+	var has_any_mat := false
+	for mat_name in CraftDatabase.MATERIALS:
+		var qty: int = GameManager.get_material_count(mat_name)
+		if qty <= 0:
+			continue
+		has_any_mat = true
+		var row := HBoxContainer.new()
+		var lbl := Label.new()
+		lbl.text = mat_name
+		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl.add_theme_color_override("font_color", CraftDatabase.material_rarity_color(mat_name))
+		var qty_lbl := Label.new()
+		qty_lbl.text = "x%d" % qty
+		qty_lbl.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+		row.add_child(lbl)
+		row.add_child(qty_lbl)
+		box.add_child(row)
+
+	if not has_any_mat:
+		var empty := Label.new()
+		empty.text = "Aucun materiau. Explore le donjon !"
+		empty.modulate = Color(0.55, 0.55, 0.55)
+		empty.autowrap_mode = TextServer.AUTOWRAP_WORD
+		box.add_child(empty)
+
+	box.add_child(HSeparator.new())
+
+	# ─ Recettes ─
+	var recipe_title := Label.new()
+	recipe_title.text = "Recettes"
+	recipe_title.add_theme_font_size_override("font_size", 18)
+	recipe_title.add_theme_color_override("font_color", Color(0.85, 0.7, 0.35))
+	box.add_child(recipe_title)
+
+	for recipe in CraftDatabase.RECIPES:
+		var result: String = str(recipe["result"])
+		var already_owned: bool = result in GameManager.owned_gear
+		var can_craft: bool = GameManager.can_craft(recipe) and not already_owned
+
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+
+		var info := VBoxContainer.new()
+		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		var result_data: Dictionary = EquipmentDatabase.get_gear(result)
+		var name_lbl := Label.new()
+		name_lbl.text = result
+		name_lbl.add_theme_color_override("font_color", EquipmentDatabase.rarity_color(result_data.get("rarity", "common")))
+		name_lbl.add_theme_font_size_override("font_size", 15)
+		info.add_child(name_lbl)
+
+		# Ingredients line
+		var ing_parts: Array = []
+		for mat in recipe["ingredients"]:
+			var have: int = GameManager.get_material_count(str(mat))
+			var need: int = int(recipe["ingredients"][mat])
+			var col: String = "[color=green]" if have >= need else "[color=red]"
+			ing_parts.append("%s%dx %s[/color]" % [col, need, mat])
+		var ing_lbl := RichTextLabel.new()
+		ing_lbl.bbcode_enabled = true
+		ing_lbl.text = "  ".join(ing_parts)
+		ing_lbl.fit_content = true
+		ing_lbl.scroll_active = false
+		ing_lbl.add_theme_font_size_override("normal_font_size", 11)
+		info.add_child(ing_lbl)
+
+		var craft_btn := Button.new()
+		craft_btn.custom_minimum_size = Vector2(96, 50)
+		if already_owned:
+			craft_btn.text = "Possede"
+			craft_btn.disabled = true
+			craft_btn.modulate = Color(0.5, 0.5, 0.5)
+		elif can_craft:
+			craft_btn.text = "Forger"
+			craft_btn.pressed.connect(func():
+				if GameManager.craft(recipe):
+					SoundManager.play_sfx("gold")
+					_build_forge_tab())
+		else:
+			craft_btn.text = "Forger"
+			craft_btn.disabled = true
+
+		row.add_child(info)
+		row.add_child(craft_btn)
 		box.add_child(row)
 		box.add_child(HSeparator.new())

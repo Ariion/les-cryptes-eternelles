@@ -163,14 +163,38 @@ func _generate_loot(type: RoomType, floor_number: int) -> Dictionary:
 		RoomType.TREASURE:
 			var gold := _rng.randi_range(20 + floor_number * 5, 50 + floor_number * 10)
 			var is_rare := floor_number >= 3 and _rng.randf() < 0.35
-			return {"gold": gold, "item": _random_item(is_rare)}
+			return {"gold": gold, "item": _random_item(is_rare), "material": "", "material_qty": 0}
 		RoomType.BOSS:
 			var gold := _rng.randi_range(80 + floor_number * 15, 150 + floor_number * 20)
-			return {"gold": gold, "item": _random_item(true)}
+			return {"gold": gold, "item": _random_item(true), "material": "Essence de boss", "material_qty": 1}
 		RoomType.COMBAT:
-			return {"gold": _rng.randi_range(5 + floor_number * 2, 20 + floor_number * 4)}
+			var gold := _rng.randi_range(5 + floor_number * 2, 20 + floor_number * 4)
+			var mat := ""
+			var mat_qty := 0
+			if _rng.randf() < 0.40:
+				mat = _random_material(floor_number)
+				mat_qty = 1
+			return {"gold": gold, "material": mat, "material_qty": mat_qty}
 		_:
-			return {}
+			return {"material": "", "material_qty": 0}
+
+func _random_material(floor_number: int) -> String:
+	var tier := min(4, 1 + (floor_number - 1) / 2)
+	var r := _rng.randf()
+	match tier:
+		1, 2:
+			return "Minerai de fer" if r < 0.60 else "Cuir tanne"
+		3:
+			if r < 0.40:
+				return "Cristal magique"
+			elif r < 0.75:
+				return "Minerai de fer"
+			else:
+				return "Cuir tanne"
+		4:
+			return "Ecaille de dragon" if r < 0.50 else "Cristal magique"
+		_:
+			return "Minerai de fer"
 
 func _random_item(is_rare: bool = false) -> String:
 	return ItemDatabase.get_random_item(is_rare)

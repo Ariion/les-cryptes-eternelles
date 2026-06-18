@@ -13,6 +13,7 @@ config/icon="res://icon.svg"
 
 GameTheme="*res://autoloads/GameTheme.gd"
 CharacterDatabase="*res://autoloads/CharacterDatabase.gd"
+CraftDatabase="*res://autoloads/CraftDatabase.gd"
 GameManager="*res://autoloads/GameManager.gd"
 AdManager="*res://autoloads/AdManager.gd"
 SoundManager="*res://autoloads/SoundManager.gd"

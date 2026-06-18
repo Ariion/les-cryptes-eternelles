@@ -11,7 +11,7 @@ var _gold_amount: int = 0
 var _base_gold: int = 0
 var _on_continue: Callable
 
-func show_loot(gold: int, item_name: String, is_boss: bool, on_continue: Callable) -> void:
+func show_loot(gold: int, item_name: String, is_boss: bool, on_continue: Callable, material: String = "", material_qty: int = 0) -> void:
 	_gold_amount = gold
 	_base_gold   = gold
 	_on_continue = on_continue
@@ -36,6 +36,20 @@ func show_loot(gold: int, item_name: String, is_boss: bool, on_continue: Callabl
 	else:
 		item_label.visible = false
 		item_desc.visible  = false
+
+	# Material drop display
+	var old_mat_lbl = $Panel/VBox.get_node_or_null("MaterialLabel")
+	if old_mat_lbl:
+		old_mat_lbl.queue_free()
+	if material != "" and material_qty > 0:
+		var mat_lbl := Label.new()
+		mat_lbl.name = "MaterialLabel"
+		mat_lbl.text = "+%d  %s" % [material_qty, material]
+		mat_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		mat_lbl.add_theme_font_size_override("font_size", 14)
+		mat_lbl.add_theme_color_override("font_color", CraftDatabase.material_rarity_color(material))
+		$Panel/VBox.add_child(mat_lbl)
+		$Panel/VBox.move_child(mat_lbl, 5)
 
 	double_btn.visible = gold > 0 and AdManager.can_show_ad()
 	double_btn.text    = "Doubler l'or (+%d)" % gold
