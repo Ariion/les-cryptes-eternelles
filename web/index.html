@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Les Cryptes Éternelles</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#C9A550">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cryptes">
+<link rel="apple-touch-icon" href="images/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -1390,7 +1398,7 @@ canvas#particles {
       </div>
       <div id="menu-btns">
         <button class="btn btn-primary" onclick="Nav.go('char-select')"><span class="ico">⚔</span>Nouvelle Partie</button>
-        <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()"><span class="ico">↩</span>Continuer</button>
+        <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()"><span class="ico">↩</span>Continuer la partie</button>
         <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
@@ -1999,14 +2007,55 @@ var CLASSES = [
 var State = {
   race: 'Humain',
   cls:  'Guerrier',
-  bag: [],       // legacy, replaced by inventory
-  inventory: [], // items carried during run (max 8)
-  equipped: {    // items equipped per slot
+  bag: [],
+  inventory: [],
+  equipped: {
     heaume:null, arme:null, bouclier:null, gants:null,
     bottes:null, ceinture:null, jambieres:null, collier:null, plastron:null
   },
   _heroFrom: 'inn-room',
   _currentZone: null,
+};
+
+// ── SAVE / LOAD RUN ─────────────────────────────────────────────
+State.saveRun = function() {
+  try {
+    localStorage.setItem('cge_run', JSON.stringify({
+      race: State.race, cls: State.cls,
+      hp: State.hp, hpMax: State.hpMax,
+      atk: State.atk, def: State.def,
+      floor: State.floor, gold: State.gold,
+      kills: State.kills, xp: State.xp, level: State.level,
+      potions: State.potions, regenPerFight: State.regenPerFight,
+      critBonus: State.critBonus, fleeBonus: State.fleeBonus,
+      _zoneMod: State._zoneMod, _currentZone: State._currentZone,
+      inventory: State.inventory || [],
+      equipped: State.equipped || {},
+      bag: State.bag || [],
+    }));
+  } catch(e) {}
+};
+
+State.loadRun = function() {
+  try {
+    var raw = localStorage.getItem('cge_run');
+    if (!raw) return false;
+    var d = JSON.parse(raw);
+    if (!d || !d.hp) return false;
+    Object.keys(d).forEach(function(k){ State[k] = d[k]; });
+    return true;
+  } catch(e) { return false; }
+};
+
+State.clearSave = function() {
+  localStorage.removeItem('cge_run');
+};
+
+State.hasSave = function() {
+  try {
+    var d = JSON.parse(localStorage.getItem('cge_run')||'{}');
+    return !!(d && d.hp);
+  } catch(e) { return false; }
 };
 
 // ── AUDIO & SETTINGS ─────────────────────────────────────────────
@@ -2086,12 +2135,21 @@ var Sfx = (function(){
       localStorage.setItem('cge_par', parOn?'1':'0');
     },
     confirmReset: function() {
-      if (confirm('Réinitialiser toute la progression méta ? Cette action est irréversible.')) {
-        localStorage.removeItem('cge_meta');
+      if (confirm('⚠ Réinitialiser TOUT ?\n\n• Méta-progression (or, kills, upgrades)\n• Coffre\n• Donjons nettoyés\n• Partie en cours\n\nCette action est irréversible.')) {
+        // Effacer toutes les clés localStorage du jeu
+        ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus'].forEach(function(k){ localStorage.removeItem(k); });
+        // Reset meta en mémoire
         Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
-        Meta.levels={}; Meta.bonuses={ atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 };
-        pub.nav();
-        alert('Progression réinitialisée.');
+        Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
+        Meta.clearedZones={}; Meta.chest=[];
+        // Reset state
+        State.hp=0; State.hpMax=0;
+        // Cacher bouton continuer
+        var btn = document.getElementById('btn-continue');
+        if (btn) btn.style.display='none';
+        // Retour menu
+        Nav.go('main-menu');
+        alert('✓ Tout a été réinitialisé.');
       }
     },
     load: function() {
@@ -4190,6 +4248,7 @@ var InnRoom = {
     var el = document.getElementById('inn-hero-name');
     if (el) el.textContent = (r.icon||'') + ' ' + r.name + ' ' + c.name;
     InnRoom.updateHp();
+    State.saveRun(); // auto-save à chaque retour à l'auberge
   },
   updateHp: function() {
     var hp = State.hp||0, hpMax = State.hpMax||1;
@@ -4305,6 +4364,7 @@ var WorldMap = {
 
 var App = {
   startRun: function() {
+    State.clearSave(); // efface toute save précédente
     var r = RACES.find(function(x){ return x.id===State.race; });
     var c = CLASSES.find(function(x){ return x.id===State.cls; });
     var b = Meta.bonuses;
@@ -4328,7 +4388,11 @@ var App = {
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
-  continueGame: function(){ alert('Continuer — prochain commit !'); },
+  continueGame: function() {
+    if (!State.loadRun()) { alert('Aucune partie en cours !'); return; }
+    Nav.go('inn-room');
+    setTimeout(function(){ InnRoom.enter(); }, 300);
+  },
   showHero: function(){ State._heroFrom='inn-room'; Meta.buildScreen(); Nav.go('hero-screen'); },
   showSettings: function(){ Sfx.nav(); Nav.go('settings-screen'); },
   retryRun: function() {
@@ -4364,6 +4428,28 @@ window.addEventListener('load', function(){
   Sfx.applyToggles();
   document.getElementById('st-mus-toggle').classList.toggle('on', Music.on);
   WorldMap.updateHotspots();
+
+  // Bouton Continuer si une save existe
+  var btnCont = document.getElementById('btn-continue');
+  if (btnCont) btnCont.style.display = State.hasSave() ? 'flex' : 'none';
+
+  // Enregistrement Service Worker (PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+      // Vérifier si une mise à jour est disponible
+      reg.onupdatefound = function() {
+        var sw = reg.installing;
+        sw.onstatechange = function() {
+          if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+            // Nouvelle version disponible → recharger
+            console.log('[CGE] Mise à jour disponible, rechargement...');
+            window.location.reload();
+          }
+        };
+      };
+    }).catch(function(e){ console.warn('[CGE] SW:', e); });
+  }
+
   runIntro();
 });
 </script>

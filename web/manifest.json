@@ -1,0 +1,16 @@
+{
+  "name": "Les Cryptes Éternelles",
+  "short_name": "Cryptes",
+  "description": "RPG roguelike heroic fantasy – Aardesign",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05030a",
+  "theme_color": "#C9A550",
+  "categories": ["games"],
+  "icons": [
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
