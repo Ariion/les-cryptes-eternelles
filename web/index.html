@@ -871,6 +871,63 @@ canvas#particles {
 
 /* critiques visuels */
 #dmg-float.crit { color:#FFD700 !important; font-size:32px !important; text-shadow:0 0 12px rgba(255,200,0,0.8); }
+
+/* ── CARTE VOYAGE ── */
+#travel-screen {
+  background:#07071c;
+  background-image:radial-gradient(ellipse 100% 70% at 50% 0%, rgba(30,10,60,0.7) 0%, transparent 65%);
+  flex-direction:column; align-items:center; justify-content:flex-start;
+}
+#tv-header {
+  width:100%; padding:18px 20px 0; display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+#tv-back {
+  width:38px; height:38px; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
+  color:rgba(201,165,80,0.7); font-size:18px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#tv-back:active { transform:scale(0.93); }
+#tv-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
+#tv-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:12px; color:rgba(201,165,80,0.4); margin-left:auto; }
+
+#tv-body { width:100%; flex:1; padding:20px 16px; display:flex; flex-direction:column; gap:12px; overflow-y:auto; scrollbar-width:none; }
+#tv-body::-webkit-scrollbar { display:none; }
+
+.tv-section-lbl {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:rgba(201,165,80,0.35); text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-top:4px;
+}
+.tv-section-lbl::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(201,165,80,0.15),transparent); }
+
+.tv-card {
+  display:flex; align-items:center; gap:16px; padding:16px 18px; border-radius:12px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.12);
+  cursor:pointer; transition:all 0.18s; -webkit-tap-highlight-color:transparent; position:relative; overflow:hidden;
+}
+.tv-card:active { transform:scale(0.98); border-color:rgba(201,165,80,0.4); }
+.tv-card.locked { opacity:0.4; pointer-events:none; }
+.tv-card-ico { font-size:32px; flex-shrink:0; }
+.tv-card-info { flex:1; }
+.tv-card-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
+.tv-card-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:3px; }
+.tv-card-badge {
+  font-family:'Cinzel',serif; font-size:10px; padding:4px 9px; border-radius:20px;
+  background:rgba(201,165,80,0.12); border:1px solid rgba(201,165,80,0.25); color:rgba(201,165,80,0.7);
+  flex-shrink:0;
+}
+.tv-card-badge.danger { background:rgba(180,30,30,0.15); border-color:rgba(200,60,60,0.3); color:rgba(220,100,100,0.8); }
+.tv-card-badge.safe   { background:rgba(30,100,30,0.15); border-color:rgba(60,160,60,0.3); color:rgba(100,200,100,0.8); }
+
+/* bouton campement dans la carte donjon */
+#dm-camp-btn {
+  position:absolute; bottom:14px; right:14px;
+  padding:9px 16px; border-radius:8px; border:none; cursor:pointer;
+  background:rgba(255,140,0,0.15); border:1px solid rgba(255,140,0,0.3);
+  font-family:'Cinzel',serif; font-size:10px; color:rgba(255,180,80,0.85);
+  letter-spacing:1px; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#dm-camp-btn:active { transform:scale(0.95); }
 </style>
 </head>
 <body>
@@ -1128,6 +1185,7 @@ canvas#particles {
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
+      <button id="dm-camp-btn" onclick="Travel.openMap()">🗺 Voyager</button>
     </div>
 
     <!-- ── LEVEL UP OVERLAY ── -->
@@ -1193,6 +1251,69 @@ canvas#particles {
         </div>
         <button class="st-reset-btn" onclick="Sfx.confirmReset()">⚠ Réinitialiser la progression</button>
         <div class="st-version">AARDESIGN · LES CRYPTES ÉTERNELLES · V1.2</div>
+      </div>
+    </div>
+
+    <!-- ── CARTE VOYAGE ── -->
+    <div id="travel-screen" class="screen">
+      <div id="tv-header">
+        <div id="tv-back" onclick="Nav.go('dungeon-map')">←</div>
+        <div id="tv-title">Carte du Monde</div>
+        <div id="tv-sub">Étage <span id="tv-floor-num">I</span></div>
+      </div>
+      <div id="tv-body">
+
+        <div class="tv-section-lbl">Repos &amp; Soins</div>
+
+        <div class="tv-card" onclick="Travel.goCamp()">
+          <div class="tv-card-ico">🔥</div>
+          <div class="tv-card-info">
+            <div class="tv-card-name">Campement</div>
+            <div class="tv-card-desc">Allume un feu et récupère 35% de tes PV</div>
+          </div>
+          <div class="tv-card-badge safe">Gratuit</div>
+        </div>
+
+        <div class="tv-section-lbl">Commerce</div>
+
+        <div class="tv-card" onclick="Travel.goTown()">
+          <div class="tv-card-ico">🏘</div>
+          <div class="tv-card-info">
+            <div class="tv-card-name">Village de Thornwall</div>
+            <div class="tv-card-desc">Marchands, forgeron et auberge — dépense ton or wisely</div>
+          </div>
+          <div class="tv-card-badge">Boutique</div>
+        </div>
+
+        <div class="tv-section-lbl">Autres Donjons</div>
+
+        <div class="tv-card" id="tv-cave" onclick="Travel.goAlternateDungeon('cave')">
+          <div class="tv-card-ico">🦇</div>
+          <div class="tv-card-info">
+            <div class="tv-card-name">Grotte des Chauves-souris</div>
+            <div class="tv-card-desc">Facile · Ennemis faibles, bon or pour débutants</div>
+          </div>
+          <div class="tv-card-badge safe">Niv. 1–2</div>
+        </div>
+
+        <div class="tv-card" id="tv-ruins" onclick="Travel.goAlternateDungeon('ruins')">
+          <div class="tv-card-ico">🏚</div>
+          <div class="tv-card-info">
+            <div class="tv-card-name">Ruines Maudites</div>
+            <div class="tv-card-desc">Difficile · Ennemis d'élite, trésors rares</div>
+          </div>
+          <div class="tv-card-badge danger">Niv. 3+</div>
+        </div>
+
+        <div class="tv-card" id="tv-abyss" onclick="Travel.goAlternateDungeon('abyss')">
+          <div class="tv-card-ico">🌑</div>
+          <div class="tv-card-info">
+            <div class="tv-card-name">L'Abîsse Sans Fond</div>
+            <div class="tv-card-desc">Extrême · Réservé aux héros légendaires</div>
+          </div>
+          <div class="tv-card-badge danger" id="tv-abyss-lock">Étage 5+</div>
+        </div>
+
       </div>
     </div>
 
@@ -2176,6 +2297,20 @@ var LEVEL_UP_CHOICES = [
   { ico:'🎯', name:'Précision',      desc:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
 ];
 
+function refreshCombatHp() {
+  var hp = State.hp||0, hpMax = State.hpMax||1;
+  var pct = Math.max(0, Math.min(100, Math.round(hp/hpMax*100)));
+  var inner = document.getElementById('cb-player-hp-inner');
+  var text  = document.getElementById('cb-player-hp-text');
+  if (inner) inner.style.width = pct+'%';
+  if (text)  text.textContent  = hp+'/'+hpMax;
+  if (inner) {
+    if (pct>60)      inner.style.background='linear-gradient(90deg,#7a1010,#c83030,#e05050)';
+    else if (pct>30) inner.style.background='linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
+    else             inner.style.background='linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
+  }
+}
+
 function gainXP(amount) {
   State.xp = (State.xp||0) + amount;
   State.level = State.level||1;
@@ -2207,9 +2342,10 @@ function triggerLevelUp() {
     d.className = 'lu-card';
     d.innerHTML = '<span class="lu-ico">'+choice.ico+'</span><div><div class="lu-name">'+choice.name+'</div><div class="lu-desc">'+choice.desc+'</div></div>';
     d.addEventListener('click', function(){
-      choice.effect();
-      Combat.updatePlayerUI();
+      try { choice.effect(); } catch(e){}
+      try { refreshCombatHp(); } catch(e){}
       document.getElementById('levelup-overlay').classList.remove('show');
+      updateXPBar();
     });
     cards.appendChild(d);
   });
@@ -2820,6 +2956,52 @@ function getSave(){ try{ return JSON.parse(localStorage.getItem('cge_save')); }c
 function setSave(d){ localStorage.setItem('cge_save', JSON.stringify(d)); }
 
 // ── APP ───────────────────────────────────────────────────────────
+// ── VOYAGE ───────────────────────────────────────────────────────
+var Travel = {
+  openMap: function() {
+    document.getElementById('tv-floor-num').textContent =
+      ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
+    // Verrouiller l'Abîsse avant étage 5
+    var abyss = document.getElementById('tv-abyss');
+    if ((State.floor||1) < 5) {
+      abyss.classList.add('locked');
+      document.getElementById('tv-abyss-lock').textContent = 'Étage 5+';
+    } else {
+      abyss.classList.remove('locked');
+      document.getElementById('tv-abyss-lock').textContent = 'Disponible';
+    }
+    Nav.go('travel-screen');
+  },
+
+  goCamp: function() {
+    var heal = Math.round(State.hpMax * 0.35);
+    State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
+    Sfx.heal();
+    Nav.go('rest-screen');
+    document.getElementById('rest-heal-val').textContent = '+'+heal+' PV';
+    updateMapHpBar();
+  },
+
+  goTown: function() {
+    Rooms.showShop();
+  },
+
+  goAlternateDungeon: function(type) {
+    var modifiers = {
+      cave:  { floorMod:0, atkMod:0.7,  defMod:0.7,  goldMod:0.8,  label:'Grotte' },
+      ruins: { floorMod:2, atkMod:1.4,  defMod:1.2,  goldMod:1.5,  label:'Ruines' },
+      abyss: { floorMod:4, atkMod:2.0,  defMod:1.8,  goldMod:2.5,  label:'Abîsse' },
+    };
+    var mod = modifiers[type];
+    State._dungeonMod = mod;
+    State.floor = 1;
+    Nav.go('dungeon-map');
+    setTimeout(function(){
+      DungeonMap.init(1 + mod.floorMod, State.hp, State.hpMax);
+    }, 300);
+  },
+};
+
 var App = {
   startRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; });
