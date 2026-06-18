@@ -578,16 +578,16 @@ canvas#particles {
 #loot-item-wrap {
   width:80%; max-width:280px; margin-bottom:32px;
   padding:16px 20px; border-radius:10px;
-  background:rgba(100,60,180,0.1); border:1px solid rgba(150,100,220,0.3);
+  background:rgba(120,70,200,0.18); border:1px solid rgba(180,130,255,0.45);
   display:flex; align-items:center; gap:14px;
   opacity:0; transform:translateY(10px);
   transition:opacity 0.5s ease 0.4s, transform 0.5s ease 0.4s;
 }
 #loot-item-wrap.show { opacity:1; transform:translateY(0); }
 #loot-item-wrap.hidden { display:none; }
-#loot-item-ico { font-size:32px; }
-#loot-item-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
-#loot-item-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(180,160,220,0.7); margin-top:2px; }
+#loot-item-ico { font-size:32px; flex-shrink:0; }
+#loot-item-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#F0EAFF; text-shadow:0 0 12px rgba(180,130,255,0.4); }
+#loot-item-desc { font-family:'Crimson Text',serif; font-size:13px; color:rgba(210,190,255,0.9); margin-top:2px; }
 #btn-loot-cont {
   padding:16px 40px; border-radius:8px;
   border:1px solid rgba(201,165,80,0.6);
@@ -727,7 +727,7 @@ canvas#particles {
 #levelup-overlay {
   position:absolute; inset:0; z-index:25;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background:rgba(0,0,0,0.88); opacity:0; pointer-events:none;
+  background:rgba(4,2,10,0.97); opacity:0; pointer-events:none;
   transition:opacity 0.4s ease; gap:16px;
   padding:24px;
 }
@@ -2692,7 +2692,8 @@ var SHOP_POOL = [
   { ico:'🗡', name:'Stylet Empoisonné', desc:'+2 ATQ +Poison', cost:40, effect:function(){ State.atk+=2; State.poisonAtk=true; } },
 ];
 
-Rooms.showShop = function() {
+Rooms.showShop = function(fromScreen) {
+  State._shopFrom = fromScreen || 'dungeon-map';
   // Sélection aléatoire de 3 items
   var pool = SHOP_POOL.slice();
   pool.sort(function(){ return Math.random()-0.5; });
@@ -2733,8 +2734,9 @@ Rooms.shopBuy = function(idx) {
 };
 
 Rooms.shopLeave = function() {
-  updateMapHpBar();
-  Nav.go('dungeon-map');
+  var dest = State._shopFrom || 'dungeon-map';
+  if (dest === 'dungeon-map') updateMapHpBar();
+  Nav.go(dest);
 };
 
 // ── TRANSITION ÉTAGE ──────────────────────────────────────────────
@@ -3298,8 +3300,7 @@ var TownScreen = {
     }
   },
   goShop: function(type) {
-    // Les deux types ouvrent la boutique (items différents selon contexte futur)
-    Rooms.showShop();
+    Rooms.showShop('town-screen');
   },
   goTemple: function() {
     // Soin partiel gratuit (une fois par visite)
