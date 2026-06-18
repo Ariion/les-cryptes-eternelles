@@ -1,4 +1,4 @@
-name: Build – Android APK + Web Preview
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -6,120 +6,24 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.2.2
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup export templates
-        run: |
-          mkdir -p $HOME/.local/share/godot/export_templates/
-          mv /root/.local/share/godot/export_templates/4.2.2.stable \
-             $HOME/.local/share/godot/export_templates/4.2.2.stable
-
-      - name: Setup Android SDK, keystore and editor settings
-        run: |
-          KEYSTORE=$HOME/.android/debug.keystore
-          JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
-
-          mkdir -p $HOME/.android
-          keytool -genkey -v \
-            -keystore "$KEYSTORE" \
-            -storepass android -alias androiddebugkey \
-            -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
-
-          mkdir -p $HOME/.config/godot
-          {
-            echo '[gd_resource type="EditorSettings" format=3]'
-            echo ''
-            echo '[resource]'
-            echo 'export/android/android_sdk_path = "/usr/lib/android-sdk"'
-            echo "export/android/java_sdk_path = \"$JAVA_HOME\""
-            echo "export/android/debug_keystore = \"$KEYSTORE\""
-            echo 'export/android/debug_keystore_user = "androiddebugkey"'
-            echo 'export/android/debug_keystore_pass = "android"'
-          } > $HOME/.config/godot/editor_settings-4.tres
-
-          sed -i "s|^\[preset.0.options\]|\[preset.0.options\]\nkeystore/debug=\"$KEYSTORE\"\nkeystore/debug_user=\"androiddebugkey\"\nkeystore/debug_password=\"android\"|" export_presets.cfg
-
-      - name: Fix Android SDK target SDK mismatch
-        run: |
-          ln -sf /usr/lib/android-sdk/platforms/android-33 \
-                 /usr/lib/android-sdk/platforms/android-34
-          ln -sf /usr/lib/android-sdk/build-tools/33.0.2 \
-                 /usr/lib/android-sdk/build-tools/34.0.0
-
-      - name: Set build version
-        run: sed -i "s/const BUILD_NUMBER = [0-9]*/const BUILD_NUMBER = ${{ github.run_number }}/" autoloads/UpdateChecker.gd
-
-      - name: Create build directories
-        run: mkdir -p build/web
-
-      - name: Import project assets
-        # --import bloque jusqu'à la fin de l'import de toutes les ressources
-        # (PNG, SVG…) et génère les .import + .godot/imported nécessaires à
-        # l'export. Indispensable car le dépôt ne versionne pas les .import.
-        run: |
-          godot --headless --import 2>&1 || true
-          godot --headless --import 2>&1 || true
-
-      - name: Export Android APK
-        run: godot --headless --export-debug "Android" build/CryptesEternelles.apk 2>&1
-
-      - name: Export Web
-        run: godot --headless --export-release "Web" build/web/index.html 2>&1
-
-      - name: Patch Web build for GitHub Pages (Cross-Origin Isolation)
-        run: |
-          cp web_static/coi-serviceworker.js build/web/
-          cp web_static/coi-init.js build/web/
-          cp web_static/fullscreen.css build/web/
-          sed -i 's|<head>|<head><link rel="stylesheet" href="fullscreen.css"><script src="coi-init.js"></script>|' build/web/index.html
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CryptesEternelles-Android
-          path: build/CryptesEternelles.apk
-          retention-days: 30
-          if-no-files-found: error
-
-      - name: Upload Web artifact (GitHub Pages)
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web/
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: "Build #${{ github.run_number }}"
-          body: |
-            Build automatique du ${{ github.event.head_commit.timestamp }}
-
-            **Commit :** ${{ github.event.head_commit.message }}
-          files: build/CryptesEternelles.apk
-          make_latest: true
-
-  deploy-pages:
-    name: Deploy to GitHub Pages
-    needs: build
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - name: Deploy
+      - uses: actions/checkout@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./web
+
+      - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v4
