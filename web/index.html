@@ -406,6 +406,7 @@ canvas#particles {
 .prof-card::before {
   content:''; position:absolute; inset:0;
   background:linear-gradient(135deg,rgba(201,165,80,0.04) 0%,transparent 60%);
+  pointer-events:none;
 }
 .prof-card-top { display:flex; align-items:flex-start; gap:10px; }
 .prof-card-avatar {
@@ -2782,15 +2783,38 @@ var ProfilesScreen = {
   selectProfile: function(id) {
     var p = ProfileManager.activateProfile(id);
     if (!p) return;
-    State.name = p.name;
-    if (State.hasSave()) {
-      App.continueGame();
-    } else {
-      // Pas de run en cours → démarrer nouvelle partie avec ce perso
-      State.race = p.race||'Humain';
-      State.cls  = p.cls||'Guerrier';
-      App.startRun();
+    State.name = p.name || 'Aventurier';
+    State.race = p.race || 'Humain';
+    State.cls  = p.cls  || 'Guerrier';
+
+    // Run sauvegardé ? → continuer
+    if (p.run && p.run.hp) {
+      // déjà chargé dans localStorage par activateProfile
+      if (State.loadRun()) {
+        Nav.go('inn-room');
+        setTimeout(function(){ InnRoom.enter(); }, 300);
+        return;
+      }
     }
+
+    // Pas de run → démarrer une nouvelle partie avec ce profil
+    var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
+    var b = Meta.bonuses;
+    State.hp    = c.hp  + r.dhp  + (b.hp||0);
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
+    State.atk   = c.atk + r.datk + (b.atk||0);
+    State.def   = c.def + r.ddef + (b.def||0);
+    State.floor  = 1; State.gold = 0; State.kills = 0;
+    State.xp = 0; State.level = 1;
+    State.potions = 2 + (b.potions||0);
+    State.regenPerFight = 0; State.critBonus = b.crit||0;
+    State._zoneMod = { enemyMod:1, goldMod:1 }; State._currentZone = null;
+    State.bag = []; State.inventory = [];
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.fleeBonus = 0;
+    Nav.go('inn-room');
+    setTimeout(function(){ InnRoom.enter(); }, 300);
   },
 
   openExport: function(id) {
