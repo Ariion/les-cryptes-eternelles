@@ -1090,7 +1090,7 @@ canvas#particles {
 
 /* bouton campement dans la carte donjon */
 #dm-camp-btn {
-  position:absolute; bottom:14px; right:14px;
+  position:absolute; bottom:14px; right:14px; z-index:10;
   padding:9px 16px; border-radius:8px; border:none; cursor:pointer;
   background:rgba(255,140,0,0.15); border:1px solid rgba(255,140,0,0.3);
   font-family:'Cinzel',serif; font-size:10px; color:rgba(255,180,80,0.85);
@@ -1314,7 +1314,7 @@ canvas#particles {
 }
 /* ── SAC BUTTON ── */
 #dm-bag-btn {
-  position:absolute; bottom:110px; right:16px;
+  position:absolute; bottom:110px; right:16px; z-index:10;
   width:48px; height:48px; border-radius:50%;
   background:rgba(201,165,80,0.12); border:1px solid rgba(201,165,80,0.35);
   color:#C9A550; font-size:22px; cursor:pointer;
@@ -2132,6 +2132,13 @@ canvas#particles {
           <div class="eq-slot" id="eqs-jambieres" onclick="EquipScreen.clickSlot('jambieres')">
             <div class="eq-slot-ico">🦵</div><div class="eq-slot-lbl">Jambières</div>
           </div>
+
+          <!-- Ligne 5 : plastron centré -->
+          <div></div>
+          <div class="eq-slot" id="eqs-plastron"  onclick="EquipScreen.clickSlot('plastron')">
+            <div class="eq-slot-ico">🥋</div><div class="eq-slot-lbl">Plastron</div>
+          </div>
+          <div></div>
         </div>
 
         <!-- Section Inventaire -->
