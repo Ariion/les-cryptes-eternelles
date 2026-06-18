@@ -4,397 +4,597 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Les Cryptes Éternelles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  html, body {
-    width: 100%; height: 100%;
-    background: #000;
-    overflow: hidden;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    touch-action: manipulation;
-  }
+html, body {
+  width:100%; height:100%;
+  background:#000;
+  overflow:hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
 
-  #app {
-    width: 100vw;
-    height: 100dvh;
-    position: relative;
-    overflow: hidden;
-  }
+#app {
+  width:100vw;
+  height:100dvh;
+  position:relative;
+  overflow:hidden;
+}
 
-  /* ── ÉCRANS ─────────────────────────────────────── */
-  .screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.6s ease;
-  }
-  .screen.active {
-    opacity: 1;
-    pointer-events: all;
-  }
+canvas#particles {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
 
-  /* ── SPLASH LOGO ─────────────────────────────────── */
-  #splash {
-    background: #fff;
-  }
+/* ── SCREENS ─────────────────────────────────────────────── */
+.screen {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  z-index:1;
+}
+.screen.active {
+  opacity:1;
+  pointer-events:all;
+}
 
-  #splash-logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    transform: scale(0.85);
-    opacity: 0;
-    transition: transform 0.7s cubic-bezier(.22,1,.36,1), opacity 0.7s ease;
-  }
-  #splash-logo.visible {
-    transform: scale(1);
-    opacity: 1;
-  }
+/* ── SPLASH ──────────────────────────────────────────────── */
+#splash {
+  background:#fff;
+  z-index:10;
+  transition: opacity 0.8s ease;
+}
+#splash-inner {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  opacity:0;
+  transform:scale(0.88) translateY(8px);
+  transition: opacity 0.8s cubic-bezier(.22,1,.36,1),
+              transform 0.8s cubic-bezier(.22,1,.36,1);
+}
+#splash-inner.show { opacity:1; transform:scale(1) translateY(0); }
+#splash-inner svg { width:140px; height:140px; }
+#splash-wordmark {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size:26px;
+  font-weight:300;
+  letter-spacing:1px;
+  color:#2D3A6B;
+}
+#splash-wordmark em { color:#2EC4D6; font-style:normal; }
+#splash-wordmark sup {
+  font-size:10px;
+  background:#2D3A6B;
+  color:#fff;
+  border-radius:50%;
+  width:15px; height:15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:super;
+  margin-left:2px;
+}
 
-  #splash-logo svg { width: 160px; height: 160px; }
+/* ── TITLE SCREEN ─────────────────────────────────────────── */
+#title-screen {
+  background: radial-gradient(ellipse 100% 60% at 50% 30%, #1a0a2e 0%, #06050f 60%, #000 100%);
+  cursor: pointer;
+}
 
-  #splash-wordmark {
-    font-size: 28px;
-    font-weight: 300;
-    letter-spacing: 1px;
-    color: #2D3A6B;
-  }
-  #splash-wordmark span { color: #2EC4D6; }
-  #splash-wordmark sup {
-    font-size: 11px;
-    color: #2D3A6B;
-    background: #2D3A6B;
-    color: #fff;
-    border-radius: 50%;
-    width: 16px; height: 16px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: super;
-    margin-left: 1px;
-  }
+#title-screen::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='35%25' r='45%25'%3E%3Cstop offset='0%25' stop-color='%23C9A550' stop-opacity='0.12'/%3E%3Cstop offset='100%25' stop-color='transparent'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='400' height='600'/%3E%3C/svg%3E") center/cover;
+  pointer-events:none;
+}
 
-  /* ── TITLE SCREEN ─────────────────────────────────── */
-  #title-screen {
-    background: #07071c;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(66,37,99,0.35) 0%, transparent 70%);
-  }
+#title-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  z-index:2;
+}
 
-  .title-ornament {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .title-ornament .line {
-    width: 60px; height: 1px;
-    background: rgba(201,165,80,0.4);
-  }
-  .title-ornament .diamond { color: #C9A550; font-size: 12px; }
+.title-line-deco {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:14px;
+  opacity:0;
+  transform:scaleX(0.4);
+  transition: opacity 0.6s ease 0.1s, transform 0.6s cubic-bezier(.22,1,.36,1) 0.1s;
+}
+.title-line-deco .bar {
+  width:70px; height:1px;
+  background: linear-gradient(90deg, transparent, #C9A550aa, transparent);
+}
+.title-line-deco .gem { color:#C9A550; font-size:14px; }
 
-  #title-les {
-    font-size: clamp(14px, 5vw, 18px);
-    font-weight: 400;
-    letter-spacing: 6px;
-    color: rgba(201,165,80,0.7);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  #title-cryptes {
-    font-size: clamp(42px, 12vw, 58px);
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: #C9A550;
-    text-transform: uppercase;
-    line-height: 1;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease 0.15s, transform 0.6s ease 0.15s;
-  }
-  #title-eternelles {
-    font-size: clamp(28px, 8vw, 38px);
-    font-weight: 300;
-    letter-spacing: 8px;
-    color: #EDE8DF;
-    text-transform: uppercase;
-    margin-top: 4px;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
-  }
-  #title-tagline {
-    font-size: 13px;
-    color: rgba(201,165,80,0.5);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 20px;
-    opacity: 0;
-    transition: opacity 0.5s ease 0.5s;
-  }
+#t-les {
+  font-family:'Cinzel', serif;
+  font-size:13px;
+  font-weight:400;
+  letter-spacing:10px;
+  color:rgba(201,165,80,0.6);
+  text-transform:uppercase;
+  margin-bottom:2px;
+  opacity:0;
+  transform:translateY(10px);
+  transition: opacity 0.6s ease 0.25s, transform 0.6s ease 0.25s;
+}
+#t-cryptes {
+  font-family:'Cinzel Decorative', serif;
+  font-size:clamp(44px,11vw,56px);
+  font-weight:700;
+  color:#C9A550;
+  text-shadow:
+    0 0 40px rgba(201,165,80,0.4),
+    0 0 80px rgba(201,165,80,0.15);
+  line-height:1;
+  letter-spacing:2px;
+  opacity:0;
+  transform:translateY(18px);
+  transition: opacity 0.7s ease 0.4s, transform 0.7s cubic-bezier(.22,1,.36,1) 0.4s;
+}
+#t-eternelles {
+  font-family:'Cinzel', serif;
+  font-size:clamp(22px,6vw,30px);
+  font-weight:400;
+  letter-spacing:7px;
+  color:#EDE8DF;
+  text-transform:uppercase;
+  margin-top:6px;
+  opacity:0;
+  transform:translateY(14px);
+  transition: opacity 0.6s ease 0.6s, transform 0.6s ease 0.6s;
+}
+#t-sub {
+  font-family:'Crimson Text', serif;
+  font-style:italic;
+  font-size:16px;
+  color:rgba(201,165,80,0.45);
+  margin-top:22px;
+  letter-spacing:1px;
+  opacity:0;
+  transition: opacity 0.6s ease 0.85s;
+}
 
-  #title-screen.active #title-les,
-  #title-screen.active #title-cryptes,
-  #title-screen.active #title-eternelles,
-  #title-screen.active #title-tagline {
-    opacity: 1;
-    transform: translateY(0);
-  }
+#title-screen.active .title-line-deco { opacity:1; transform:scaleX(1); }
+#title-screen.active #t-les { opacity:1; transform:translateY(0); }
+#title-screen.active #t-cryptes { opacity:1; transform:translateY(0); }
+#title-screen.active #t-eternelles { opacity:1; transform:translateY(0); }
+#title-screen.active #t-sub { opacity:1; }
 
-  #tap-hint {
-    position: absolute;
-    bottom: 60px;
-    font-size: 13px;
-    color: rgba(237,232,223,0.35);
-    letter-spacing: 2px;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.35; }
-    50% { opacity: 0.8; }
-  }
+#tap-hint {
+  position:absolute;
+  bottom:clamp(40px,8vh,70px);
+  font-family:'Cinzel', serif;
+  font-size:11px;
+  letter-spacing:3px;
+  color:rgba(201,165,80,0.4);
+  text-transform:uppercase;
+  animation:breathe 2.5s ease-in-out infinite;
+  z-index:2;
+}
+@keyframes breathe {
+  0%,100% { opacity:0.25; }
+  50% { opacity:0.7; }
+}
 
-  /* ── MENU PRINCIPAL ──────────────────────────────── */
-  #main-menu {
-    background: #07071c;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(66,37,99,0.35) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,0,0,0.8) 0%, transparent 70%);
-    padding: 0 28px;
-    gap: 0;
-    justify-content: flex-end;
-    padding-bottom: 60px;
-  }
+/* ── MAIN MENU ────────────────────────────────────────────── */
+#main-menu {
+  background: #06050f;
+  justify-content:flex-start;
+}
 
-  #menu-header {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 55%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
+#menu-bg {
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 0%, rgba(66,20,80,0.5) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(140,80,0,0.18) 0%, transparent 60%);
+}
+#menu-bg-line {
+  position:absolute;
+  top:50%; left:0; right:0;
+  height:1px;
+  background: linear-gradient(90deg, transparent, rgba(201,165,80,0.1), transparent);
+}
 
-  #menu-title-small {
-    font-size: 11px;
-    letter-spacing: 5px;
-    color: rgba(201,165,80,0.55);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  #menu-title-main {
-    font-size: clamp(36px, 10vw, 48px);
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #C9A550;
-    text-align: center;
-    line-height: 1.1;
-  }
-  #menu-title-sub {
-    font-size: clamp(20px, 5.5vw, 26px);
-    font-weight: 300;
-    letter-spacing: 6px;
-    color: #EDE8DF;
-    text-align: center;
-  }
-  #menu-sep {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  #menu-sep .line { width: 50px; height: 1px; background: rgba(201,165,80,0.25); }
-  #menu-sep .dot { color: #C9A550; font-size: 10px; }
+#menu-hero-zone {
+  width:100%;
+  flex:0 0 52%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:2;
+  padding-top: clamp(32px,6vh,56px);
+}
 
-  .menu-buttons {
-    width: 100%;
-    max-width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+#menu-eyebrow {
+  font-family:'Cinzel', serif;
+  font-size:10px;
+  letter-spacing:7px;
+  color:rgba(201,165,80,0.45);
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+#menu-t-cryptes {
+  font-family:'Cinzel Decorative', serif;
+  font-size:clamp(38px,10vw,52px);
+  font-weight:700;
+  color:#C9A550;
+  text-shadow: 0 0 50px rgba(201,165,80,0.3);
+  line-height:1;
+}
+#menu-t-eternelles {
+  font-family:'Cinzel', serif;
+  font-size:clamp(16px,4.5vw,22px);
+  font-weight:400;
+  letter-spacing:6px;
+  color:#EDE8DF;
+  margin-top:4px;
+  text-transform:uppercase;
+}
+.menu-deco {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:16px 0 0;
+}
+.menu-deco .bar {
+  width:44px; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(201,165,80,0.35));
+}
+.menu-deco .bar.r {
+  background: linear-gradient(270deg, transparent, rgba(201,165,80,0.35));
+}
+.menu-deco .gem { color:rgba(201,165,80,0.6); font-size:11px; }
 
-  .btn {
-    width: 100%;
-    padding: 18px 24px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: all 0.18s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn:active { transform: scale(0.97); }
+#menu-stats {
+  font-family:'Crimson Text', serif;
+  font-style:italic;
+  font-size:14px;
+  color:rgba(201,165,80,0.35);
+  margin-top:10px;
+}
 
-  .btn-primary {
-    background: rgba(201,165,80,0.12);
-    border: 1px solid #C9A550;
-    color: #C9A550;
-  }
-  .btn-primary:hover { background: rgba(201,165,80,0.2); }
+#menu-buttons-zone {
+  width:100%;
+  flex:0 0 48%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding: 0 28px clamp(20px,5vh,44px);
+  gap:11px;
+  position:relative;
+  z-index:2;
+}
 
-  .btn-secondary {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(201,165,80,0.25);
-    color: #EDE8DF;
-  }
-  .btn-secondary:hover { background: rgba(255,255,255,0.07); }
+.btn {
+  width:100%;
+  max-width:340px;
+  padding:0 24px;
+  height:58px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-family:'Cinzel', serif;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  transition: all 0.16s ease;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  position:relative;
+  overflow:hidden;
+}
+.btn::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: rgba(255,255,255,0);
+  transition: background 0.15s;
+}
+.btn:active::after { background: rgba(255,255,255,0.06); }
+.btn:active { transform:scale(0.97); }
 
-  #menu-footer {
-    position: absolute;
-    bottom: 16px;
-    font-size: 10px;
-    color: rgba(201,165,80,0.25);
-    letter-spacing: 1px;
-  }
+.btn .btn-icon { font-size:18px; opacity:0.85; }
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(201,165,80,0.18), rgba(201,165,80,0.08));
+  border:1px solid rgba(201,165,80,0.7);
+  color:#C9A550;
+  box-shadow: 0 0 20px rgba(201,165,80,0.08), inset 0 1px 0 rgba(201,165,80,0.15);
+}
+.btn-primary:hover {
+  border-color:#C9A550;
+  background: linear-gradient(135deg, rgba(201,165,80,0.26), rgba(201,165,80,0.12));
+  box-shadow: 0 0 30px rgba(201,165,80,0.15);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.2);
+  color:rgba(237,232,223,0.75);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.06);
+  border-color:rgba(201,165,80,0.4);
+}
+
+#menu-footer {
+  position:absolute;
+  bottom:10px;
+  font-family:'Cinzel', serif;
+  font-size:9px;
+  letter-spacing:2px;
+  color:rgba(201,165,80,0.18);
+  z-index:2;
+}
 </style>
 </head>
 <body>
 <div id="app">
+<canvas id="particles"></canvas>
 
-  <!-- ── SPLASH LOGO ── -->
-  <div id="splash" class="screen">
-    <div id="splash-logo">
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- Triangle bleu marine (gauche) -->
-        <polygon points="30,165 100,35 135,95 90,95 100,115 60,115" fill="#2D3A6B"/>
-        <!-- Encoche bas gauche -->
-        <polygon points="55,165 75,165 90,135 70,135" fill="#2D3A6B"/>
-        <!-- Triangle cyan (droite, décalé) -->
-        <polygon points="80,35 155,165 115,165 100,135 140,135 105,75" fill="#2EC4D6"/>
-        <!-- Chevauchement central (masque) -->
-        <polygon points="100,35 135,95 115,75" fill="#1a8fa0"/>
-      </svg>
-      <div id="splash-wordmark">
-        <span style="color:#2D3A6B">a</span><span>ardesign</span><sup>fr</sup>
-      </div>
+<!-- ── SPLASH ── -->
+<div id="splash" class="screen active">
+  <div id="splash-inner">
+    <svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+      <!-- Triangle bleu marine -->
+      <polygon points="28,168 100,32 136,96 92,96 102,118 58,118" fill="#2D3A6B"/>
+      <polygon points="54,168 76,168 92,138 70,138" fill="#2D3A6B"/>
+      <!-- Triangle cyan -->
+      <polygon points="82,32 158,168 116,168 102,138 142,138 106,74" fill="#2EC4D6"/>
+      <!-- Zone chevauchement -->
+      <polygon points="100,32 136,96 116,74" fill="#1a7a8e"/>
+    </svg>
+    <div id="splash-wordmark">
+      <em>a</em>ardesign<sup>fr</sup>
     </div>
   </div>
+</div>
 
-  <!-- ── TITLE SCREEN ── -->
-  <div id="title-screen" class="screen">
-    <div class="title-ornament">
-      <div class="line"></div>
-      <div class="diamond">✦</div>
-      <div class="line"></div>
+<!-- ── TITLE ── -->
+<div id="title-screen" class="screen">
+  <div id="title-wrap">
+    <div class="title-line-deco">
+      <div class="bar"></div>
+      <div class="gem">⬡</div>
+      <div class="bar"></div>
     </div>
-    <div id="title-les">Les</div>
-    <div id="title-cryptes">Cryptes</div>
-    <div id="title-eternelles">Éternelles</div>
-    <div id="title-tagline">Roguelite · Donjon · Tour par tour</div>
-    <div id="tap-hint">Appuie pour continuer</div>
+    <div id="t-les">Les</div>
+    <div id="t-cryptes">Cryptes</div>
+    <div id="t-eternelles">Éternelles</div>
+    <div id="t-sub">Descends si tu l'oses...</div>
+  </div>
+  <div id="tap-hint">Toucher pour entrer</div>
+</div>
+
+<!-- ── MAIN MENU ── -->
+<div id="main-menu" class="screen">
+  <div id="menu-bg"></div>
+  <div id="menu-bg-line"></div>
+
+  <div id="menu-hero-zone">
+    <div id="menu-eyebrow">Présente</div>
+    <div id="menu-t-cryptes">Cryptes</div>
+    <div id="menu-t-eternelles">Éternelles</div>
+    <div class="menu-deco">
+      <div class="bar"></div>
+      <div class="gem">✦</div>
+      <div class="bar r"></div>
+    </div>
+    <div id="menu-stats" id="menu-stats"></div>
   </div>
 
-  <!-- ── MAIN MENU ── -->
-  <div id="main-menu" class="screen">
-    <div id="menu-header">
-      <div id="menu-title-small">Les</div>
-      <div id="menu-title-main">Cryptes</div>
-      <div id="menu-title-sub">Éternelles</div>
-      <div id="menu-sep">
-        <div class="line"></div>
-        <div class="dot">✦</div>
-        <div class="line"></div>
-      </div>
-    </div>
-    <div class="menu-buttons">
-      <button class="btn btn-primary" onclick="App.newGame()">⚔&nbsp;&nbsp;Nouvelle Partie</button>
-      <button class="btn btn-secondary" id="btn-continue" onclick="App.continueGame()" style="display:none">↩&nbsp;&nbsp;Continuer</button>
-      <button class="btn btn-secondary" onclick="App.showHero()">◈&nbsp;&nbsp;Mon Héros</button>
-      <button class="btn btn-secondary" onclick="App.showSettings()">⚙&nbsp;&nbsp;Paramètres</button>
-    </div>
-    <div id="menu-footer">aardesign.fr · v1.0</div>
+  <div id="menu-buttons-zone">
+    <button class="btn btn-primary" onclick="App.newGame()">
+      <span class="btn-icon">⚔</span> Nouvelle Partie
+    </button>
+    <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()">
+      <span class="btn-icon">↩</span> Continuer
+    </button>
+    <button class="btn btn-secondary" onclick="App.showHero()">
+      <span class="btn-icon">◈</span> Mon Héros
+    </button>
+    <button class="btn btn-secondary" onclick="App.showSettings()">
+      <span class="btn-icon">⚙</span> Paramètres
+    </button>
   </div>
+
+  <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
+</div>
 
 </div>
 
 <script>
-// ── NAVIGATION ────────────────────────────────────────────────
-const screens = {};
-document.querySelectorAll('.screen').forEach(s => screens[s.id] = s);
+// ── PARTICULES BRAISES ────────────────────────────────────────
+var canvas = document.getElementById('particles');
+var ctx = canvas.getContext('2d');
+var pts = [];
 
-function showScreen(id) {
-  Object.values(screens).forEach(s => s.classList.remove('active'));
-  if (screens[id]) screens[id].classList.add('active');
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function mkParticle() {
+  return {
+    x: Math.random() * canvas.width,
+    y: canvas.height + 10,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: -(0.4 + Math.random() * 0.7),
+    life: 0,
+    maxLife: 120 + Math.random() * 180,
+    size: 1 + Math.random() * 1.5,
+    hue: 25 + Math.random() * 20
+  };
 }
 
-// ── INTRO SEQUENCE ────────────────────────────────────────────
-function runIntro() {
-  // 1. Affiche splash blanc
-  showScreen('splash');
-
-  // 2. Anime le logo après 200ms
-  setTimeout(function() {
-    document.getElementById('splash-logo').classList.add('visible');
-  }, 200);
-
-  // 3. Fade out splash après 2.2s
-  setTimeout(function() {
-    screens['splash'].style.transition = 'opacity 0.7s ease';
-    screens['splash'].style.opacity = '0';
-  }, 2200);
-
-  // 4. Affiche title screen après 2.9s
-  setTimeout(function() {
-    showScreen('title-screen');
-  }, 2900);
-
-  // 5. Écoute tap/click pour aller au menu
-  screens['title-screen'].addEventListener('click', goToMenu, { once: true });
-  screens['title-screen'].addEventListener('touchstart', goToMenu, { once: true });
-
-  // 6. Auto-avance après 5s si pas de tap
-  setTimeout(function() {
-    goToMenu();
-  }, 7000);
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (pts.length < 28) pts.push(mkParticle());
+  pts = pts.filter(function(p) { return p.life < p.maxLife; });
+  pts.forEach(function(p) {
+    p.life++;
+    p.x += p.vx + Math.sin(p.life * 0.04) * 0.3;
+    p.y += p.vy;
+    var prog = p.life / p.maxLife;
+    var alpha = prog < 0.2 ? prog / 0.2 : prog > 0.7 ? 1 - (prog - 0.7) / 0.3 : 1;
+    alpha *= 0.55;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = 'hsla(' + p.hue + ',90%,65%,' + alpha + ')';
+    ctx.fill();
+  });
+  requestAnimationFrame(animParticles);
 }
 
-function goToMenu() {
-  screens['title-screen'].removeEventListener('click', goToMenu);
-  screens['title-screen'].removeEventListener('touchstart', goToMenu);
-  screens['title-screen'].style.transition = 'opacity 0.5s ease';
-  screens['title-screen'].style.opacity = '0';
-  setTimeout(function() {
-    showScreen('main-menu');
-    // Affiche "Continuer" si save existant
-    if (localStorage.getItem('cge_save')) {
-      document.getElementById('btn-continue').style.display = 'block';
+// ── SCREENS ────────────────────────────────────────────────────
+var screens = {};
+document.querySelectorAll('.screen').forEach(function(s) {
+  screens[s.id] = s;
+});
+
+function showScreen(id, fade) {
+  var duration = fade || 600;
+  Object.values(screens).forEach(function(s) {
+    if (s.classList.contains('active')) {
+      s.style.transition = 'opacity ' + (duration/1000) + 's ease';
+      s.style.opacity = '0';
+      setTimeout(function() { s.classList.remove('active'); }, duration);
     }
-  }, 500);
+  });
+  setTimeout(function() {
+    var target = screens[id];
+    if (!target) return;
+    target.style.transition = 'none';
+    target.style.opacity = '0';
+    target.classList.add('active');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        target.style.transition = 'opacity ' + (duration/1000) + 's ease';
+        target.style.opacity = '1';
+      });
+    });
+  }, duration * 0.6);
 }
 
-// ── APP ────────────────────────────────────────────────────────
+// ── INTRO ──────────────────────────────────────────────────────
+function runIntro() {
+  animParticles();
+
+  // Logo apparaît
+  setTimeout(function() {
+    document.getElementById('splash-inner').classList.add('show');
+  }, 150);
+
+  // Fade out splash
+  setTimeout(function() {
+    var sp = screens['splash'];
+    sp.style.transition = 'opacity 0.9s ease';
+    sp.style.opacity = '0';
+    setTimeout(function() { sp.classList.remove('active'); }, 900);
+  }, 2000);
+
+  // Title screen
+  setTimeout(function() {
+    var ts = screens['title-screen'];
+    ts.style.opacity = '0';
+    ts.classList.add('active');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        ts.style.transition = 'opacity 0.7s ease';
+        ts.style.opacity = '1';
+      });
+    });
+    ts.addEventListener('click', goToMenu, { once: true });
+    ts.addEventListener('touchend', goToMenu, { once: true });
+  }, 2700);
+
+  // Auto-avance
+  setTimeout(goToMenu, 8000);
+}
+
+var menuShown = false;
+function goToMenu() {
+  if (menuShown) return;
+  menuShown = true;
+
+  var ts = screens['title-screen'];
+  ts.removeEventListener('click', goToMenu);
+  ts.removeEventListener('touchend', goToMenu);
+  ts.style.transition = 'opacity 0.6s ease';
+  ts.style.opacity = '0';
+  setTimeout(function() {
+    ts.classList.remove('active');
+    var save = getSave();
+    if (save) {
+      document.getElementById('btn-continue').style.display = 'flex';
+      document.getElementById('menu-stats').textContent =
+        'Runs : ' + (save.runs||0) + '  ·  Meilleur étage : ' + (save.best||0);
+    }
+    var mm = screens['main-menu'];
+    mm.style.opacity = '0';
+    mm.classList.add('active');
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        mm.style.transition = 'opacity 0.7s ease';
+        mm.style.opacity = '1';
+      });
+    });
+  }, 600);
+}
+
+// ── SAVE ────────────────────────────────────────────────────────
+function getSave() {
+  try { return JSON.parse(localStorage.getItem('cge_save')); } catch(e) { return null; }
+}
+function setSave(data) {
+  localStorage.setItem('cge_save', JSON.stringify(data));
+}
+
+// ── APP ─────────────────────────────────────────────────────────
 var App = {
   newGame: function() {
-    alert('Nouvelle partie — à venir !');
+    // TODO: CharacterSelect
+    alert('Sélection du personnage — prochain commit !');
   },
   continueGame: function() {
-    alert('Continuer — à venir !');
+    alert('Continuer la partie — prochain commit !');
   },
   showHero: function() {
-    alert('Mon Héros — à venir !');
+    alert('Améliorations du héros — prochain commit !');
   },
   showSettings: function() {
-    alert('Paramètres — à venir !');
+    alert('Paramètres — prochain commit !');
   }
 };
 
-// ── START ──────────────────────────────────────────────────────
 window.addEventListener('load', runIntro);
 </script>
 </body>
