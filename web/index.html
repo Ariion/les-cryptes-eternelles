@@ -345,6 +345,166 @@ canvas#particles {
 #btn-start-run:active { transform:scale(0.97); box-shadow:0 0 50px rgba(201,165,80,0.25); }
 #btn-start-run .ico { font-size:20px; }
 
+/* ── NOM HÉROS ───────────────────────────────────────────────── */
+#cs-name-wrap {
+  display:flex; flex-direction:column; gap:4px; flex-shrink:0;
+}
+#cs-name-input {
+  width:100%; height:44px; border-radius:10px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.3);
+  color:#EDE8DF; font-family:'Cinzel',serif; font-size:14px; font-weight:600;
+  padding:0 14px; outline:none; letter-spacing:1px;
+  transition:border-color 0.2s;
+}
+#cs-name-input:focus { border-color:#C9A550; background:rgba(201,165,80,0.06); }
+#cs-name-input::placeholder { color:rgba(201,165,80,0.25); font-style:italic; font-family:'Crimson Text',serif; font-size:13px; letter-spacing:0; }
+
+/* ── ÉCRAN PROFILS ────────────────────────────────────────────── */
+#profiles-screen {
+  background:#06050f;
+  flex-direction:column; justify-content:flex-start;
+}
+#prof-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 0%,rgba(40,10,70,0.7) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 20% 100%,rgba(100,50,0,0.15) 0%,transparent 50%);
+}
+#prof-header {
+  width:100%; padding:18px 20px 0;
+  display:flex; align-items:center; gap:14px;
+  position:relative; z-index:2; flex-shrink:0;
+}
+#prof-back {
+  width:38px; height:38px; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
+  color:rgba(201,165,80,0.7); font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+#prof-back:active { transform:scale(0.93); background:rgba(201,165,80,0.1); }
+#prof-title-wrap { flex:1; }
+#prof-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; text-transform:uppercase; }
+#prof-subtitle { font-family:'Crimson Text',serif; font-style:italic; font-size:12px; color:rgba(201,165,80,0.4); margin-top:1px; }
+
+#prof-list {
+  flex:1; width:100%; overflow-y:auto; overflow-x:hidden;
+  padding:14px 16px 0; display:flex; flex-direction:column; gap:10px;
+  position:relative; z-index:2; scrollbar-width:none;
+}
+#prof-list::-webkit-scrollbar { display:none; }
+
+.prof-card {
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.2);
+  border-radius:12px; padding:14px 14px 12px;
+  display:flex; flex-direction:column; gap:6px;
+  position:relative; overflow:hidden;
+  transition:border-color 0.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.prof-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(201,165,80,0.04) 0%,transparent 60%);
+}
+.prof-card-top { display:flex; align-items:flex-start; gap:10px; }
+.prof-card-avatar {
+  width:44px; height:44px; border-radius:10px; flex-shrink:0;
+  background:rgba(201,165,80,0.1); border:1px solid rgba(201,165,80,0.25);
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+}
+.prof-card-info { flex:1; }
+.prof-card-name { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#EDE8DF; }
+.prof-card-sub { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.55); margin-top:2px; }
+.prof-card-meta { font-size:10px; color:rgba(120,110,140,0.7); margin-top:3px; font-family:system-ui,sans-serif; }
+.prof-card-del {
+  width:28px; height:28px; border-radius:6px; flex-shrink:0;
+  background:rgba(200,80,80,0.08); border:1px solid rgba(200,80,80,0.2);
+  color:rgba(200,80,80,0.6); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.15s;
+}
+.prof-card-del:active { background:rgba(200,80,80,0.2); }
+.prof-card-btns { display:flex; gap:8px; margin-top:2px; }
+.prof-btn-play {
+  flex:1; height:36px; border-radius:8px;
+  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
+  border:1px solid rgba(201,165,80,0.5); color:#C9A550;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
+  cursor:pointer; transition:all 0.15s;
+}
+.prof-btn-play:active { transform:scale(0.97); }
+.prof-btn-export {
+  height:36px; width:36px; border-radius:8px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+  color:rgba(201,165,80,0.5); font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:all 0.15s;
+}
+.prof-btn-export:active { background:rgba(201,165,80,0.1); }
+
+#prof-footer {
+  width:100%; padding:12px 16px 18px;
+  position:relative; z-index:2; flex-shrink:0;
+  display:flex; flex-direction:column; gap:8px;
+}
+#btn-new-hero {
+  width:100%; height:52px; border-radius:10px;
+  background:linear-gradient(135deg,rgba(201,165,80,0.15),rgba(201,165,80,0.06));
+  border:1px dashed rgba(201,165,80,0.4); color:rgba(201,165,80,0.8);
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px;
+  cursor:pointer; transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+}
+#btn-new-hero:active { transform:scale(0.97); border-color:#C9A550; }
+#btn-import-save {
+  width:100%; height:42px; border-radius:10px;
+  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);
+  color:rgba(120,110,150,0.7); font-family:'Cinzel',serif; font-size:11px;
+  cursor:pointer; letter-spacing:1px; transition:all 0.15s;
+}
+#btn-import-save:active { background:rgba(255,255,255,0.05); }
+
+/* Modal code import/export */
+#code-modal {
+  position:absolute; inset:0; z-index:100;
+  background:rgba(4,2,10,0.95);
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  padding:24px;
+}
+#code-modal.show { display:flex; }
+#code-modal-title {
+  font-family:'Cinzel',serif; font-size:14px; font-weight:700;
+  color:#C9A550; letter-spacing:2px; margin-bottom:14px; text-align:center;
+}
+#code-modal-sub {
+  font-family:'Crimson Text',serif; font-style:italic; font-size:13px;
+  color:rgba(201,165,80,0.5); margin-bottom:16px; text-align:center; line-height:1.5;
+}
+#code-modal-textarea {
+  width:100%; height:120px; border-radius:10px;
+  background:rgba(0,0,0,0.4); border:1px solid rgba(201,165,80,0.3);
+  color:#EDE8DF; font-family:monospace; font-size:11px;
+  padding:12px; resize:none; outline:none; word-break:break-all;
+}
+#code-modal-textarea:focus { border-color:#C9A550; }
+.code-modal-btn {
+  width:100%; height:44px; border-radius:10px; margin-top:10px;
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:1px;
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#code-modal-copy {
+  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
+  border:1px solid rgba(201,165,80,0.5); color:#C9A550;
+}
+#code-modal-import {
+  background:linear-gradient(135deg,rgba(100,200,120,0.15),rgba(100,200,120,0.06));
+  border:1px solid rgba(100,200,120,0.4); color:rgba(100,200,120,0.9);
+}
+#code-modal-close {
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  color:rgba(150,140,170,0.6); margin-top:4px;
+}
+
 /* ── DUNGEON MAP ─────────────────────────────────────────────── */
 #dungeon-map {
   background:#06050f;
@@ -1397,11 +1557,36 @@ canvas#particles {
         <div id="menu-stats"></div>
       </div>
       <div id="menu-btns">
-        <button class="btn btn-primary" onclick="Nav.go('char-select')"><span class="ico">⚔</span>Nouvelle Partie</button>
-        <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()"><span class="ico">↩</span>Continuer la partie</button>
+        <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span>Jouer</button>
         <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
+    </div>
+
+    <!-- ── PROFILS ── -->
+    <div id="profiles-screen" class="screen">
+      <div id="prof-bg"></div>
+      <div id="prof-header">
+        <div id="prof-back" onclick="Nav.go('main-menu')">←</div>
+        <div id="prof-title-wrap">
+          <div id="prof-title">Mes Aventuriers</div>
+          <div id="prof-subtitle">Choisis ton héros ou crée-en un nouveau</div>
+        </div>
+      </div>
+      <div id="prof-list"></div>
+      <div id="prof-footer">
+        <button id="btn-new-hero" onclick="ProfilesScreen.createNew()">＋ Créer un aventurier</button>
+        <button id="btn-import-save" onclick="ProfilesScreen.openImport()">↓ Importer un code de sauvegarde</button>
+      </div>
+      <!-- Modal code -->
+      <div id="code-modal">
+        <div id="code-modal-title"></div>
+        <div id="code-modal-sub"></div>
+        <textarea id="code-modal-textarea" placeholder="Colle ton code ici..."></textarea>
+        <button class="code-modal-btn" id="code-modal-copy" onclick="ProfilesScreen.copyCode()" style="display:none">📋 Copier le code</button>
+        <button class="code-modal-btn" id="code-modal-import" onclick="ProfilesScreen.doImport()" style="display:none">✓ Importer</button>
+        <button class="code-modal-btn" id="code-modal-close" onclick="ProfilesScreen.closeModal()">Fermer</button>
+      </div>
     </div>
 
     <!-- ── CHARACTER SELECT ── -->
@@ -1409,7 +1594,7 @@ canvas#particles {
       <div id="cs-bg"></div>
 
       <div id="cs-header">
-        <div id="cs-back" onclick="Nav.go('main-menu')">←</div>
+        <div id="cs-back" onclick="ProfilesScreen.backFromCreate()">←</div>
         <div id="cs-title-wrap">
           <div id="cs-title">Ton Héros</div>
           <div id="cs-subtitle">Choisis ta race et ta classe</div>
@@ -1417,6 +1602,10 @@ canvas#particles {
       </div>
 
       <div id="cs-body">
+        <div class="cs-section-label">Nom</div>
+        <div id="cs-name-wrap">
+          <input id="cs-name-input" type="text" maxlength="20" placeholder="Donne un nom à ton héros..." autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
         <div class="cs-section-label">Race</div>
         <div id="race-grid"></div>
 
@@ -2007,6 +2196,7 @@ var CLASSES = [
 var State = {
   race: 'Humain',
   cls:  'Guerrier',
+  name: 'Aventurier',
   bag: [],
   inventory: [],
   equipped: {
@@ -2020,8 +2210,8 @@ var State = {
 // ── SAVE / LOAD RUN ─────────────────────────────────────────────
 State.saveRun = function() {
   try {
-    localStorage.setItem('cge_run', JSON.stringify({
-      race: State.race, cls: State.cls,
+    var data = {
+      race: State.race, cls: State.cls, name: State.name||'Héros',
       hp: State.hp, hpMax: State.hpMax,
       atk: State.atk, def: State.def,
       floor: State.floor, gold: State.gold,
@@ -2032,7 +2222,9 @@ State.saveRun = function() {
       inventory: State.inventory || [],
       equipped: State.equipped || {},
       bag: State.bag || [],
-    }));
+    };
+    localStorage.setItem('cge_run', JSON.stringify(data));
+    if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
   } catch(e) {}
 };
 
@@ -2135,19 +2327,12 @@ var Sfx = (function(){
       localStorage.setItem('cge_par', parOn?'1':'0');
     },
     confirmReset: function() {
-      if (confirm('⚠ Réinitialiser TOUT ?\n\n• Méta-progression (or, kills, upgrades)\n• Coffre\n• Donjons nettoyés\n• Partie en cours\n\nCette action est irréversible.')) {
-        // Effacer toutes les clés localStorage du jeu
-        ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus'].forEach(function(k){ localStorage.removeItem(k); });
-        // Reset meta en mémoire
+      if (confirm('⚠ Réinitialiser TOUT ?\n\n• Tous les aventuriers et leurs sauvegardes\n• Méta-progression (or, kills, upgrades)\n• Coffre, donjons nettoyés\n\nCette action est irréversible.')) {
+        ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus','cge_profiles','cge_active'].forEach(function(k){ localStorage.removeItem(k); });
         Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
         Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
         Meta.clearedZones={}; Meta.chest=[];
-        // Reset state
-        State.hp=0; State.hpMax=0;
-        // Cacher bouton continuer
-        var btn = document.getElementById('btn-continue');
-        if (btn) btn.style.display='none';
-        // Retour menu
+        State.hp=0; State.hpMax=0; State.name='Aventurier';
         Nav.go('main-menu');
         alert('✓ Tout a été réinitialisé.');
       }
@@ -2406,6 +2591,261 @@ var Music = (function(){
   };
 })();
 
+// ── PROFILS ───────────────────────────────────────────────────────
+var ProfileManager = {
+  KEY: 'cge_profiles',
+  ACTIVE_KEY: 'cge_active',
+
+  getAll: function() {
+    try { return JSON.parse(localStorage.getItem(this.KEY)||'[]'); } catch(e) { return []; }
+  },
+  saveAll: function(list) {
+    try { localStorage.setItem(this.KEY, JSON.stringify(list)); } catch(e) {}
+  },
+  getActiveId: function() { return localStorage.getItem(this.ACTIVE_KEY)||null; },
+  setActiveId: function(id) { localStorage.setItem(this.ACTIVE_KEY, id); },
+  getActive: function() {
+    var id = this.getActiveId();
+    if (!id) return null;
+    return this.getAll().find(function(p){ return p.id===id; })||null;
+  },
+
+  create: function(name, race, cls) {
+    var id = Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    var p = { id:id, name:name||'Inconnu', race:race, cls:cls,
+              createdAt:Date.now(), lastPlayed:Date.now(), level:1,
+              meta:null, run:null };
+    var list = this.getAll();
+    list.push(p);
+    this.saveAll(list);
+    this.setActiveId(id);
+    return p;
+  },
+
+  updateActive: function(metaData, runData) {
+    var id = this.getActiveId(); if (!id) return;
+    var list = this.getAll();
+    var idx = -1;
+    for (var i=0;i<list.length;i++) { if (list[i].id===id){ idx=i; break; } }
+    if (idx<0) return;
+    if (metaData !== undefined && metaData !== null) list[idx].meta = metaData;
+    if (runData  !== undefined && runData  !== null) list[idx].run  = runData;
+    list[idx].lastPlayed = Date.now();
+    if (State.level) list[idx].level = State.level||1;
+    this.saveAll(list);
+  },
+
+  activateProfile: function(id) {
+    var list = this.getAll();
+    var p = null;
+    for (var i=0;i<list.length;i++){ if (list[i].id===id){ p=list[i]; break; } }
+    if (!p) return false;
+    this.setActiveId(id);
+    // Restore meta
+    if (p.meta) { localStorage.setItem('cge_meta', JSON.stringify(p.meta)); Meta.load(); }
+    else { Meta.load(); }
+    // Restore run
+    if (p.run) { localStorage.setItem('cge_run', JSON.stringify(p.run)); }
+    else { localStorage.removeItem('cge_run'); }
+    // Restore identity
+    State.race = p.race || 'Humain';
+    State.cls  = p.cls  || 'Guerrier';
+    State.name = p.name || 'Héros';
+    return p;
+  },
+
+  deleteProfile: function(id) {
+    var list = this.getAll().filter(function(p){ return p.id!==id; });
+    this.saveAll(list);
+    if (this.getActiveId()===id) localStorage.removeItem(this.ACTIVE_KEY);
+  },
+
+  exportCode: function(id) {
+    var list = this.getAll();
+    var p = null;
+    for (var i=0;i<list.length;i++){ if (list[i].id===id){ p=Object.assign({},list[i]); break; } }
+    if (!p) return null;
+    if (this.getActiveId()===id) {
+      try { p.meta = JSON.parse(localStorage.getItem('cge_meta')||'null'); } catch(e){}
+      try { p.run  = JSON.parse(localStorage.getItem('cge_run')||'null');  } catch(e){}
+    }
+    try { return btoa(unescape(encodeURIComponent(JSON.stringify(p)))); } catch(e){ return null; }
+  },
+
+  importCode: function(code) {
+    try {
+      var p = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+      if (!p || !p.name) return null;
+      p.id = Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+      p.lastPlayed = Date.now();
+      var list = this.getAll();
+      list.push(p);
+      this.saveAll(list);
+      return p;
+    } catch(e) { return null; }
+  },
+
+  // Migration: if no profiles exist but cge_meta/cge_run do, create a default profile
+  migrate: function() {
+    var list = this.getAll();
+    if (list.length > 0) return;
+    var hasMeta = !!localStorage.getItem('cge_meta');
+    var hasRun  = !!localStorage.getItem('cge_run');
+    if (!hasMeta && !hasRun) return;
+    var meta = null; var run = null;
+    try { meta = JSON.parse(localStorage.getItem('cge_meta')||'null'); } catch(e){}
+    try { run  = JSON.parse(localStorage.getItem('cge_run')||'null');  } catch(e){}
+    var race = (run&&run.race)||'Humain';
+    var cls  = (run&&run.cls)||'Guerrier';
+    var id = Date.now().toString(36)+'mig';
+    list.push({ id:id, name:'Aventurier', race:race, cls:cls,
+                createdAt:Date.now(), lastPlayed:Date.now(),
+                level:(run&&run.level)||1, meta:meta, run:run });
+    this.saveAll(list);
+    this.setActiveId(id);
+  },
+};
+
+var ProfilesScreen = {
+  _exportId: null,
+  _mode: 'export', // 'export' or 'import'
+
+  open: function() {
+    this.render();
+    Nav.go('profiles-screen');
+  },
+
+  backFromCreate: function() {
+    var list = ProfileManager.getAll();
+    if (list.length > 0) { Nav.go('profiles-screen'); } else { Nav.go('main-menu'); }
+  },
+
+  createNew: function() {
+    Nav.go('char-select');
+    buildCharSelect();
+    var inp = document.getElementById('cs-name-input');
+    if (inp) inp.value = '';
+  },
+
+  render: function() {
+    var list = ProfileManager.getAll();
+    var cont = document.getElementById('prof-list');
+    if (!cont) return;
+    cont.innerHTML = '';
+    if (list.length === 0) {
+      cont.innerHTML = '<div style="text-align:center;padding:40px 20px;font-family:Crimson Text,serif;font-style:italic;color:rgba(201,165,80,0.35);font-size:14px;">Aucun aventurier pour l\'instant.<br>Crée ton premier héros !</div>';
+      return;
+    }
+    list.forEach(function(p) {
+      var r = (typeof RACES !== 'undefined') ? RACES.find(function(x){ return x.id===p.race; }) : null;
+      var c = (typeof CLASSES !== 'undefined') ? CLASSES.find(function(x){ return x.id===p.cls; }) : null;
+      var avatar = (r&&r.icon)||'⚔';
+      var rName  = (r&&r.name)||p.race||'?';
+      var cName  = (c&&c.name)||p.cls||'?';
+      var date   = new Date(p.lastPlayed||p.createdAt||Date.now());
+      var dateStr= date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+      var div = document.createElement('div');
+      div.className = 'prof-card';
+      div.innerHTML =
+        '<div class="prof-card-top">'+
+          '<div class="prof-card-avatar">'+avatar+'</div>'+
+          '<div class="prof-card-info">'+
+            '<div class="prof-card-name">'+p.name+'</div>'+
+            '<div class="prof-card-sub">'+rName+' · '+cName+'</div>'+
+            '<div class="prof-card-meta">Niveau '+( p.level||1)+' · Dernière partie : '+dateStr+'</div>'+
+          '</div>'+
+          '<div class="prof-card-del" data-id="'+p.id+'">✕</div>'+
+        '</div>'+
+        '<div class="prof-card-btns">'+
+          '<button class="prof-btn-play" data-id="'+p.id+'">⚔ Jouer</button>'+
+          '<button class="prof-btn-export" data-id="'+p.id+'" title="Exporter">📤</button>'+
+        '</div>';
+      cont.appendChild(div);
+    });
+    // Events
+    cont.querySelectorAll('.prof-btn-play').forEach(function(btn){
+      btn.addEventListener('click', function(){ ProfilesScreen.selectProfile(btn.dataset.id); });
+    });
+    cont.querySelectorAll('.prof-btn-export').forEach(function(btn){
+      btn.addEventListener('click', function(){ ProfilesScreen.openExport(btn.dataset.id); });
+    });
+    cont.querySelectorAll('.prof-card-del').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if (confirm('Supprimer cet aventurier ? Cette action est irréversible.')) {
+          ProfileManager.deleteProfile(btn.dataset.id);
+          ProfilesScreen.render();
+        }
+      });
+    });
+  },
+
+  selectProfile: function(id) {
+    var p = ProfileManager.activateProfile(id);
+    if (!p) return;
+    State.name = p.name;
+    if (State.hasSave()) {
+      App.continueGame();
+    } else {
+      // Pas de run en cours → démarrer nouvelle partie avec ce perso
+      State.race = p.race||'Humain';
+      State.cls  = p.cls||'Guerrier';
+      App.startRun();
+    }
+  },
+
+  openExport: function(id) {
+    this._exportId = id;
+    this._mode = 'export';
+    var code = ProfileManager.exportCode(id);
+    if (!code) { alert('Impossible d\'exporter ce profil.'); return; }
+    var modal = document.getElementById('code-modal');
+    document.getElementById('code-modal-title').textContent = '📤 Code de sauvegarde';
+    document.getElementById('code-modal-sub').textContent = 'Copie ce code et partage-le. Il suffit de le coller dans "Importer" sur un autre appareil.';
+    document.getElementById('code-modal-textarea').value = code;
+    document.getElementById('code-modal-textarea').readOnly = true;
+    document.getElementById('code-modal-copy').style.display = 'block';
+    document.getElementById('code-modal-import').style.display = 'none';
+    modal.classList.add('show');
+  },
+
+  openImport: function() {
+    this._mode = 'import';
+    var modal = document.getElementById('code-modal');
+    document.getElementById('code-modal-title').textContent = '↓ Importer un aventurier';
+    document.getElementById('code-modal-sub').textContent = 'Colle ici le code de sauvegarde reçu depuis un autre appareil.';
+    document.getElementById('code-modal-textarea').value = '';
+    document.getElementById('code-modal-textarea').readOnly = false;
+    document.getElementById('code-modal-copy').style.display = 'none';
+    document.getElementById('code-modal-import').style.display = 'block';
+    modal.classList.add('show');
+    setTimeout(function(){ document.getElementById('code-modal-textarea').focus(); }, 300);
+  },
+
+  copyCode: function() {
+    var ta = document.getElementById('code-modal-textarea');
+    ta.select();
+    try { document.execCommand('copy'); alert('✓ Code copié dans le presse-papier !'); }
+    catch(e) {
+      try { navigator.clipboard.writeText(ta.value).then(function(){ alert('✓ Copié !'); }); }
+      catch(e2) { alert('Copie manuelle : sélectionne tout le texte ci-dessus.'); }
+    }
+  },
+
+  doImport: function() {
+    var code = document.getElementById('code-modal-textarea').value.trim();
+    if (!code) { alert('Colle un code d\'abord !'); return; }
+    var p = ProfileManager.importCode(code);
+    if (!p) { alert('Code invalide ou corrompu.'); return; }
+    this.closeModal();
+    this.render();
+    alert('✓ Aventurier "'+p.name+'" importé avec succès !');
+  },
+
+  closeModal: function() {
+    document.getElementById('code-modal').classList.remove('show');
+  },
+};
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -2423,7 +2863,7 @@ var Nav = {
       else if (id==='dungeon-map') Music.play('dungeon');
       else if (id==='inn-room') Music.play('menu');
       else if (id==='world-map') { Music.play('dungeon'); if (typeof WorldMap !== 'undefined') WorldMap.updateHotspots(); }
-      else if (id==='main-menu'||id==='char-select'||id==='title-screen') Music.play('menu');
+      else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen') Music.play('menu');
       else if (id==='gameover-screen') Music.stop();
     }
     if (prev && screens[prev]) {
@@ -3256,7 +3696,7 @@ var Meta = {
   },
 
   save: function() {
-    localStorage.setItem('cge_meta', JSON.stringify({
+    var data = {
       totalGold:    Meta.totalGold,
       totalKills:   Meta.totalKills,
       totalRuns:    Meta.totalRuns,
@@ -3265,7 +3705,9 @@ var Meta = {
       bonuses:      Meta.bonuses,
       clearedZones: Meta.clearedZones,
       chest:        Meta.chest,
-    }));
+    };
+    localStorage.setItem('cge_meta', JSON.stringify(data));
+    if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
   },
 
   clearZone: function(zoneId) {
@@ -4180,11 +4622,10 @@ function goToMenu() {
   if (menuShown) return; menuShown = true;
   screens['title-screen'].removeEventListener('click', goToMenu);
   screens['title-screen'].removeEventListener('touchend', goToMenu);
-  var save = getSave();
-  if (save) {
-    document.getElementById('btn-continue').style.display = 'flex';
-    document.getElementById('menu-stats').textContent = 'Runs : '+(save.runs||0)+'  ·  Meilleur étage : '+(save.best||0);
-  }
+  // Stats méta dans le menu
+  var metaEl = document.getElementById('menu-stats');
+  if (metaEl) metaEl.textContent = Meta.totalRuns > 0
+    ? 'Runs : '+Meta.totalRuns+'  ·  Meilleur étage : '+Meta.bestFloor : '';
   Nav.go('main-menu');
   buildCharSelect();
 }
@@ -4246,7 +4687,8 @@ var InnRoom = {
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
     var el = document.getElementById('inn-hero-name');
-    if (el) el.textContent = (r.icon||'') + ' ' + r.name + ' ' + c.name;
+    var heroName = State.name && State.name !== 'Aventurier' ? State.name + ' · ' : '';
+    if (el) el.textContent = heroName + (r.icon||'') + ' ' + r.name + ' ' + c.name;
     InnRoom.updateHp();
     State.saveRun(); // auto-save à chaque retour à l'auberge
   },
@@ -4364,6 +4806,22 @@ var WorldMap = {
 
 var App = {
   startRun: function() {
+    // Récupère le nom saisi, crée ou met à jour le profil
+    var inp = document.getElementById('cs-name-input');
+    var heroName = (inp && inp.value.trim()) ? inp.value.trim() : 'Aventurier';
+    State.name = heroName;
+    // Si aucun profil actif, en créer un nouveau
+    if (!ProfileManager.getActiveId() || !ProfileManager.getActive()) {
+      ProfileManager.create(heroName, State.race, State.cls);
+    } else {
+      // Met à jour le nom du profil actif si on recrée
+      var list = ProfileManager.getAll();
+      var actId = ProfileManager.getActiveId();
+      for (var i=0;i<list.length;i++){
+        if (list[i].id===actId){ list[i].name=heroName; list[i].race=State.race; list[i].cls=State.cls; break; }
+      }
+      ProfileManager.saveAll(list);
+    }
     State.clearSave(); // efface toute save précédente
     var r = RACES.find(function(x){ return x.id===State.race; });
     var c = CLASSES.find(function(x){ return x.id===State.cls; });
@@ -4389,7 +4847,15 @@ var App = {
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
   continueGame: function() {
-    if (!State.loadRun()) { alert('Aucune partie en cours !'); return; }
+    if (!State.loadRun()) {
+      // Essayer de charger depuis le profil actif
+      var p = ProfileManager.getActive();
+      if (p && p.run) {
+        localStorage.setItem('cge_run', JSON.stringify(p.run));
+        if (!State.loadRun()) { ProfilesScreen.open(); return; }
+      } else { ProfilesScreen.open(); return; }
+    }
+    if (State.name === undefined) State.name = 'Aventurier';
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
@@ -4423,15 +4889,12 @@ var App = {
 
 window.addEventListener('load', function(){
   Meta.load();
+  ProfileManager.migrate(); // migration depuis ancien système si besoin
   Music.load();
   Sfx.load();
   Sfx.applyToggles();
   document.getElementById('st-mus-toggle').classList.toggle('on', Music.on);
   WorldMap.updateHotspots();
-
-  // Bouton Continuer si une save existe
-  var btnCont = document.getElementById('btn-continue');
-  if (btnCont) btnCont.style.display = State.hasSave() ? 'flex' : 'none';
 
   // Enregistrement Service Worker (PWA)
   if ('serviceWorker' in navigator) {
