@@ -12,27 +12,165 @@
 
 html, body {
   width:100%; height:100%;
-  background:#000;
+  background:#0a0a12;
   overflow:hidden;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
-#app {
-  width:100vw;
-  height:100dvh;
+/* ── DESKTOP : fond derrière le téléphone ─────────────────── */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(40,15,60,0.6) 0%, transparent 70%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── PHONE WRAPPER ─────────────────────────────────────────── */
+#phone-wrap {
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
+  pointer-events:none;
+}
+
+/* Coque du téléphone — visible sur desktop uniquement */
+#phone-shell {
   position:relative;
-  overflow:hidden;
+  width:430px;
+  height:900px;
+  border-radius:52px;
+  background: linear-gradient(160deg, #2a2a35 0%, #18181f 40%, #111118 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 0 0 2px rgba(0,0,0,0.8),
+    0 30px 80px rgba(0,0,0,0.9),
+    0 0 60px rgba(100,50,160,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  pointer-events:all;
 }
 
+/* Boutons latéraux */
+#phone-shell::before {
+  content:'';
+  position:absolute;
+  left:-3px; top:140px;
+  width:3px; height:36px;
+  background: linear-gradient(180deg, #2a2a35, #1a1a22);
+  border-radius:2px 0 0 2px;
+  box-shadow: 0 50px 0 #2a2a35, 0 95px 0 #2a2a35;
+}
+#phone-shell::after {
+  content:'';
+  position:absolute;
+  right:-3px; top:180px;
+  width:3px; height:56px;
+  background: linear-gradient(180deg, #2a2a35, #1a1a22);
+  border-radius:0 2px 2px 0;
+}
+
+/* Encoche / Dynamic Island */
+#phone-notch {
+  position:absolute;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:120px; height:34px;
+  background:#0a0a10;
+  border-radius:20px;
+  z-index:10;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+#phone-notch::before {
+  content:'';
+  width:12px; height:12px;
+  border-radius:50%;
+  background:radial-gradient(circle at 40% 40%, #1a3a4a, #0a1a20);
+  box-shadow: inset 0 0 4px rgba(0,100,150,0.3), 0 0 6px rgba(0,150,200,0.15);
+}
+#phone-notch::after {
+  content:'';
+  width:6px; height:6px;
+  border-radius:50%;
+  background:#111;
+  box-shadow: 0 0 4px rgba(200,50,50,0.3);
+}
+
+/* Écran du téléphone */
+#phone-screen {
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  border-radius:52px;
+  overflow:hidden;
+  background:#06050f;
+}
+
+/* Reflet sur la vitre */
+#phone-glare {
+  position:absolute;
+  top:0; left:0; right:0;
+  height:50%;
+  border-radius:52px 52px 0 0;
+  background: linear-gradient(160deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.01) 40%,
+    transparent 60%);
+  pointer-events:none;
+  z-index:20;
+}
+
+/* Indicateur home bar */
+#phone-home {
+  position:absolute;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:130px; height:5px;
+  background:rgba(255,255,255,0.2);
+  border-radius:3px;
+  z-index:20;
+}
+
+/* ── RESPONSIVE : vrai mobile → fullscreen ─────────────────── */
+@media (max-width: 500px), (max-height: 950px) and (max-width:500px) {
+  body::before { display:none; }
+  #phone-shell {
+    width:100vw;
+    height:100dvh;
+    border-radius:0;
+    background:none;
+    box-shadow:none;
+  }
+  #phone-shell::before,
+  #phone-shell::after { display:none; }
+  #phone-notch,
+  #phone-glare,
+  #phone-home { display:none; }
+  #phone-screen { border-radius:0; }
+}
+
+/* ── CANVAS PARTICULES ─────────────────────────────────────── */
 canvas#particles {
   position:absolute;
   inset:0;
   pointer-events:none;
   z-index:0;
+  border-radius:inherit;
 }
 
-/* ── SCREENS ─────────────────────────────────────────────── */
+/* ── SCREENS ───────────────────────────────────────────────── */
 .screen {
   position:absolute;
   inset:0;
@@ -43,44 +181,41 @@ canvas#particles {
   opacity:0;
   pointer-events:none;
   z-index:1;
+  transition:opacity 0.7s ease;
 }
-.screen.active {
-  opacity:1;
-  pointer-events:all;
-}
+.screen.active { opacity:1; pointer-events:all; }
 
-/* ── SPLASH ──────────────────────────────────────────────── */
+/* ── SPLASH ────────────────────────────────────────────────── */
 #splash {
-  background:#fff;
-  z-index:10;
-  transition: opacity 0.8s ease;
+  background:#ffffff;
+  z-index:15;
+  border-radius:inherit;
 }
 #splash-inner {
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:20px;
+  gap:18px;
   opacity:0;
-  transform:scale(0.88) translateY(8px);
-  transition: opacity 0.8s cubic-bezier(.22,1,.36,1),
-              transform 0.8s cubic-bezier(.22,1,.36,1);
+  transform:scale(0.85) translateY(10px);
+  transition: opacity 0.8s cubic-bezier(.22,1,.36,1), transform 0.8s cubic-bezier(.22,1,.36,1);
 }
 #splash-inner.show { opacity:1; transform:scale(1) translateY(0); }
-#splash-inner svg { width:140px; height:140px; }
+#splash-inner svg { width:120px; height:120px; }
 #splash-wordmark {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  font-size:26px;
+  font-family: system-ui, sans-serif;
+  font-size:24px;
   font-weight:300;
   letter-spacing:1px;
   color:#2D3A6B;
 }
 #splash-wordmark em { color:#2EC4D6; font-style:normal; }
 #splash-wordmark sup {
-  font-size:10px;
+  font-size:9px;
   background:#2D3A6B;
   color:#fff;
   border-radius:50%;
-  width:15px; height:15px;
+  width:14px; height:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -88,20 +223,11 @@ canvas#particles {
   margin-left:2px;
 }
 
-/* ── TITLE SCREEN ─────────────────────────────────────────── */
+/* ── TITLE SCREEN ──────────────────────────────────────────── */
 #title-screen {
   background: radial-gradient(ellipse 100% 60% at 50% 30%, #1a0a2e 0%, #06050f 60%, #000 100%);
-  cursor: pointer;
+  cursor:pointer;
 }
-
-#title-screen::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='35%25' r='45%25'%3E%3Cstop offset='0%25' stop-color='%23C9A550' stop-opacity='0.12'/%3E%3Cstop offset='100%25' stop-color='transparent'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='400' height='600'/%3E%3C/svg%3E") center/cover;
-  pointer-events:none;
-}
-
 #title-wrap {
   display:flex;
   flex-direction:column;
@@ -109,72 +235,58 @@ canvas#particles {
   position:relative;
   z-index:2;
 }
-
-.title-line-deco {
+.deco-line {
   display:flex;
   align-items:center;
-  gap:14px;
-  margin-bottom:14px;
+  gap:12px;
+  margin-bottom:12px;
   opacity:0;
-  transform:scaleX(0.4);
+  transform:scaleX(0.3);
   transition: opacity 0.6s ease 0.1s, transform 0.6s cubic-bezier(.22,1,.36,1) 0.1s;
 }
-.title-line-deco .bar {
-  width:70px; height:1px;
-  background: linear-gradient(90deg, transparent, #C9A550aa, transparent);
-}
-.title-line-deco .gem { color:#C9A550; font-size:14px; }
-
+.deco-line .bar { width:60px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.5),transparent); }
+.deco-line .gem { color:#C9A550; font-size:13px; }
 #t-les {
-  font-family:'Cinzel', serif;
-  font-size:13px;
-  font-weight:400;
+  font-family:'Cinzel',serif;
+  font-size:12px;
   letter-spacing:10px;
-  color:rgba(201,165,80,0.6);
+  color:rgba(201,165,80,0.55);
   text-transform:uppercase;
-  margin-bottom:2px;
-  opacity:0;
-  transform:translateY(10px);
-  transition: opacity 0.6s ease 0.25s, transform 0.6s ease 0.25s;
+  opacity:0; transform:translateY(10px);
+  transition:opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
 }
 #t-cryptes {
-  font-family:'Cinzel Decorative', serif;
-  font-size:clamp(44px,11vw,56px);
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(42px,10.5vw,52px);
   font-weight:700;
   color:#C9A550;
-  text-shadow:
-    0 0 40px rgba(201,165,80,0.4),
-    0 0 80px rgba(201,165,80,0.15);
+  text-shadow:0 0 40px rgba(201,165,80,0.5),0 0 80px rgba(201,165,80,0.2);
   line-height:1;
   letter-spacing:2px;
-  opacity:0;
-  transform:translateY(18px);
-  transition: opacity 0.7s ease 0.4s, transform 0.7s cubic-bezier(.22,1,.36,1) 0.4s;
+  opacity:0; transform:translateY(18px);
+  transition:opacity 0.7s ease 0.45s, transform 0.7s cubic-bezier(.22,1,.36,1) 0.45s;
 }
 #t-eternelles {
-  font-family:'Cinzel', serif;
-  font-size:clamp(22px,6vw,30px);
+  font-family:'Cinzel',serif;
+  font-size:clamp(20px,5.5vw,26px);
   font-weight:400;
   letter-spacing:7px;
   color:#EDE8DF;
   text-transform:uppercase;
-  margin-top:6px;
-  opacity:0;
-  transform:translateY(14px);
-  transition: opacity 0.6s ease 0.6s, transform 0.6s ease 0.6s;
+  margin-top:5px;
+  opacity:0; transform:translateY(14px);
+  transition:opacity 0.6s ease 0.65s, transform 0.6s ease 0.65s;
 }
 #t-sub {
-  font-family:'Crimson Text', serif;
+  font-family:'Crimson Text',serif;
   font-style:italic;
-  font-size:16px;
-  color:rgba(201,165,80,0.45);
+  font-size:15px;
+  color:rgba(201,165,80,0.4);
   margin-top:22px;
-  letter-spacing:1px;
   opacity:0;
-  transition: opacity 0.6s ease 0.85s;
+  transition:opacity 0.6s ease 0.9s;
 }
-
-#title-screen.active .title-line-deco { opacity:1; transform:scaleX(1); }
+#title-screen.active .deco-line { opacity:1; transform:scaleX(1); }
 #title-screen.active #t-les { opacity:1; transform:translateY(0); }
 #title-screen.active #t-cryptes { opacity:1; transform:translateY(0); }
 #title-screen.active #t-eternelles { opacity:1; transform:translateY(0); }
@@ -182,417 +294,317 @@ canvas#particles {
 
 #tap-hint {
   position:absolute;
-  bottom:clamp(40px,8vh,70px);
-  font-family:'Cinzel', serif;
-  font-size:11px;
+  bottom:clamp(36px,7vh,60px);
+  font-family:'Cinzel',serif;
+  font-size:10px;
   letter-spacing:3px;
   color:rgba(201,165,80,0.4);
   text-transform:uppercase;
   animation:breathe 2.5s ease-in-out infinite;
   z-index:2;
 }
-@keyframes breathe {
-  0%,100% { opacity:0.25; }
-  50% { opacity:0.7; }
-}
+@keyframes breathe { 0%,100%{opacity:0.2;} 50%{opacity:0.7;} }
 
-/* ── MAIN MENU ────────────────────────────────────────────── */
+/* ── MAIN MENU ─────────────────────────────────────────────── */
 #main-menu {
-  background: #06050f;
+  background:#06050f;
   justify-content:flex-start;
 }
-
 #menu-bg {
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 90% 55% at 50% 0%, rgba(66,20,80,0.5) 0%, transparent 65%),
-    radial-gradient(ellipse 70% 40% at 50% 100%, rgba(140,80,0,0.18) 0%, transparent 60%);
+    radial-gradient(ellipse 90% 55% at 50% 0%,rgba(80,20,100,0.55) 0%,transparent 65%),
+    radial-gradient(ellipse 70% 35% at 50% 100%,rgba(140,80,0,0.2) 0%,transparent 60%);
 }
-#menu-bg-line {
-  position:absolute;
-  top:50%; left:0; right:0;
-  height:1px;
-  background: linear-gradient(90deg, transparent, rgba(201,165,80,0.1), transparent);
-}
-
-#menu-hero-zone {
+#menu-hero {
   width:100%;
   flex:0 0 52%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  position:relative;
-  z-index:2;
-  padding-top: clamp(32px,6vh,56px);
+  position:relative; z-index:2;
+  padding-top:clamp(28px,5vh,48px);
 }
-
 #menu-eyebrow {
-  font-family:'Cinzel', serif;
-  font-size:10px;
-  letter-spacing:7px;
-  color:rgba(201,165,80,0.45);
+  font-family:'Cinzel',serif;
+  font-size:9px;
+  letter-spacing:6px;
+  color:rgba(201,165,80,0.4);
   text-transform:uppercase;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 #menu-t-cryptes {
-  font-family:'Cinzel Decorative', serif;
-  font-size:clamp(38px,10vw,52px);
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(36px,9vw,48px);
   font-weight:700;
   color:#C9A550;
-  text-shadow: 0 0 50px rgba(201,165,80,0.3);
+  text-shadow:0 0 50px rgba(201,165,80,0.3);
   line-height:1;
 }
 #menu-t-eternelles {
-  font-family:'Cinzel', serif;
-  font-size:clamp(16px,4.5vw,22px);
+  font-family:'Cinzel',serif;
+  font-size:clamp(15px,4vw,20px);
   font-weight:400;
   letter-spacing:6px;
   color:#EDE8DF;
-  margin-top:4px;
+  margin-top:3px;
   text-transform:uppercase;
 }
 .menu-deco {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin:16px 0 0;
+  display:flex; align-items:center; gap:12px; margin:14px 0 0;
 }
-.menu-deco .bar {
-  width:44px; height:1px;
-  background: linear-gradient(90deg, transparent, rgba(201,165,80,0.35));
-}
-.menu-deco .bar.r {
-  background: linear-gradient(270deg, transparent, rgba(201,165,80,0.35));
-}
-.menu-deco .gem { color:rgba(201,165,80,0.6); font-size:11px; }
-
+.menu-deco .bar { width:44px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.3)); }
+.menu-deco .bar.r { background:linear-gradient(270deg,transparent,rgba(201,165,80,0.3)); }
+.menu-deco .gem { color:rgba(201,165,80,0.5); font-size:10px; }
 #menu-stats {
-  font-family:'Crimson Text', serif;
+  font-family:'Crimson Text',serif;
   font-style:italic;
-  font-size:14px;
-  color:rgba(201,165,80,0.35);
-  margin-top:10px;
+  font-size:13px;
+  color:rgba(201,165,80,0.3);
+  margin-top:8px;
+  min-height:18px;
 }
-
-#menu-buttons-zone {
+#menu-btns {
   width:100%;
   flex:0 0 48%;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  padding: 0 28px clamp(20px,5vh,44px);
-  gap:11px;
-  position:relative;
-  z-index:2;
+  padding:0 28px clamp(16px,4vh,36px);
+  gap:10px;
+  position:relative; z-index:2;
 }
-
 .btn {
   width:100%;
-  max-width:340px;
-  padding:0 24px;
-  height:58px;
-  border-radius:6px;
+  max-width:330px;
+  height:56px;
+  border-radius:7px;
   border:none;
   cursor:pointer;
-  font-family:'Cinzel', serif;
-  font-size:13px;
+  font-family:'Cinzel',serif;
+  font-size:12px;
   font-weight:600;
   letter-spacing:2px;
   text-transform:uppercase;
-  transition: all 0.16s ease;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  position:relative;
-  overflow:hidden;
+  display:flex; align-items:center; gap:12px;
+  padding:0 22px;
+  transition:all 0.15s ease;
+  position:relative; overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
 }
-.btn::after {
-  content:'';
-  position:absolute;
-  inset:0;
-  background: rgba(255,255,255,0);
-  transition: background 0.15s;
-}
-.btn:active::after { background: rgba(255,255,255,0.06); }
-.btn:active { transform:scale(0.97); }
-
-.btn .btn-icon { font-size:18px; opacity:0.85; }
-
+.btn:active { transform:scale(0.97); filter:brightness(1.1); }
+.btn .ico { font-size:17px; opacity:0.9; }
 .btn-primary {
-  background: linear-gradient(135deg, rgba(201,165,80,0.18), rgba(201,165,80,0.08));
-  border:1px solid rgba(201,165,80,0.7);
+  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
+  border:1px solid rgba(201,165,80,0.65);
   color:#C9A550;
-  box-shadow: 0 0 20px rgba(201,165,80,0.08), inset 0 1px 0 rgba(201,165,80,0.15);
+  box-shadow:0 0 20px rgba(201,165,80,0.08),inset 0 1px 0 rgba(201,165,80,0.12);
 }
-.btn-primary:hover {
-  border-color:#C9A550;
-  background: linear-gradient(135deg, rgba(201,165,80,0.26), rgba(201,165,80,0.12));
-  box-shadow: 0 0 30px rgba(201,165,80,0.15);
-}
-
 .btn-secondary {
-  background: rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.2);
-  color:rgba(237,232,223,0.75);
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.18);
+  color:rgba(237,232,223,0.7);
 }
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.06);
-  border-color:rgba(201,165,80,0.4);
-}
-
 #menu-footer {
-  position:absolute;
-  bottom:10px;
-  font-family:'Cinzel', serif;
-  font-size:9px;
-  letter-spacing:2px;
-  color:rgba(201,165,80,0.18);
+  position:absolute; bottom:9px;
+  font-family:'Cinzel',serif;
+  font-size:8px; letter-spacing:2px;
+  color:rgba(201,165,80,0.15);
   z-index:2;
 }
 </style>
 </head>
 <body>
-<div id="app">
-<canvas id="particles"></canvas>
 
-<!-- ── SPLASH ── -->
-<div id="splash" class="screen active">
-  <div id="splash-inner">
-    <svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
-      <!-- Triangle bleu marine -->
-      <polygon points="28,168 100,32 136,96 92,96 102,118 58,118" fill="#2D3A6B"/>
-      <polygon points="54,168 76,168 92,138 70,138" fill="#2D3A6B"/>
-      <!-- Triangle cyan -->
-      <polygon points="82,32 158,168 116,168 102,138 142,138 106,74" fill="#2EC4D6"/>
-      <!-- Zone chevauchement -->
-      <polygon points="100,32 136,96 116,74" fill="#1a7a8e"/>
-    </svg>
-    <div id="splash-wordmark">
-      <em>a</em>ardesign<sup>fr</sup>
-    </div>
-  </div>
-</div>
+<div id="phone-wrap">
+  <div id="phone-shell">
+    <div id="phone-notch"></div>
+    <div id="phone-glare"></div>
 
-<!-- ── TITLE ── -->
-<div id="title-screen" class="screen">
-  <div id="title-wrap">
-    <div class="title-line-deco">
-      <div class="bar"></div>
-      <div class="gem">⬡</div>
-      <div class="bar"></div>
-    </div>
-    <div id="t-les">Les</div>
-    <div id="t-cryptes">Cryptes</div>
-    <div id="t-eternelles">Éternelles</div>
-    <div id="t-sub">Descends si tu l'oses...</div>
-  </div>
-  <div id="tap-hint">Toucher pour entrer</div>
-</div>
+    <div id="phone-screen">
+      <canvas id="particles"></canvas>
 
-<!-- ── MAIN MENU ── -->
-<div id="main-menu" class="screen">
-  <div id="menu-bg"></div>
-  <div id="menu-bg-line"></div>
+      <!-- SPLASH -->
+      <div id="splash" class="screen active">
+        <div id="splash-inner">
+          <svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="28,168 100,32 136,96 92,96 102,118 58,118" fill="#2D3A6B"/>
+            <polygon points="54,168 76,168 92,138 70,138" fill="#2D3A6B"/>
+            <polygon points="82,32 158,168 116,168 102,138 142,138 106,74" fill="#2EC4D6"/>
+            <polygon points="100,32 136,96 116,74" fill="#1a7a8e"/>
+          </svg>
+          <div id="splash-wordmark"><em>a</em>ardesign<sup>fr</sup></div>
+        </div>
+      </div>
 
-  <div id="menu-hero-zone">
-    <div id="menu-eyebrow">Présente</div>
-    <div id="menu-t-cryptes">Cryptes</div>
-    <div id="menu-t-eternelles">Éternelles</div>
-    <div class="menu-deco">
-      <div class="bar"></div>
-      <div class="gem">✦</div>
-      <div class="bar r"></div>
-    </div>
-    <div id="menu-stats" id="menu-stats"></div>
-  </div>
+      <!-- TITLE -->
+      <div id="title-screen" class="screen">
+        <div id="title-wrap">
+          <div class="deco-line"><div class="bar"></div><div class="gem">⬡</div><div class="bar"></div></div>
+          <div id="t-les">Les</div>
+          <div id="t-cryptes">Cryptes</div>
+          <div id="t-eternelles">Éternelles</div>
+          <div id="t-sub">Descends si tu l'oses...</div>
+        </div>
+        <div id="tap-hint">Toucher pour entrer</div>
+      </div>
 
-  <div id="menu-buttons-zone">
-    <button class="btn btn-primary" onclick="App.newGame()">
-      <span class="btn-icon">⚔</span> Nouvelle Partie
-    </button>
-    <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()">
-      <span class="btn-icon">↩</span> Continuer
-    </button>
-    <button class="btn btn-secondary" onclick="App.showHero()">
-      <span class="btn-icon">◈</span> Mon Héros
-    </button>
-    <button class="btn btn-secondary" onclick="App.showSettings()">
-      <span class="btn-icon">⚙</span> Paramètres
-    </button>
-  </div>
+      <!-- MAIN MENU -->
+      <div id="main-menu" class="screen">
+        <div id="menu-bg"></div>
+        <div id="menu-hero">
+          <div id="menu-eyebrow">Présente</div>
+          <div id="menu-t-cryptes">Cryptes</div>
+          <div id="menu-t-eternelles">Éternelles</div>
+          <div class="menu-deco">
+            <div class="bar"></div><div class="gem">✦</div><div class="bar r"></div>
+          </div>
+          <div id="menu-stats"></div>
+        </div>
+        <div id="menu-btns">
+          <button class="btn btn-primary" onclick="App.newGame()"><span class="ico">⚔</span>Nouvelle Partie</button>
+          <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()"><span class="ico">↩</span>Continuer</button>
+          <button class="btn btn-secondary" onclick="App.showHero()"><span class="ico">◈</span>Mon Héros</button>
+          <button class="btn btn-secondary" onclick="App.showSettings()"><span class="ico">⚙</span>Paramètres</button>
+        </div>
+        <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
+      </div>
 
-  <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
-</div>
-
-</div>
+    </div><!-- /phone-screen -->
+    <div id="phone-home"></div>
+  </div><!-- /phone-shell -->
+</div><!-- /phone-wrap -->
 
 <script>
-// ── PARTICULES BRAISES ────────────────────────────────────────
+// ── CANVAS ─────────────────────────────────────────────────────
 var canvas = document.getElementById('particles');
 var ctx = canvas.getContext('2d');
 var pts = [];
 
 function resizeCanvas() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  var screen = document.getElementById('phone-screen');
+  canvas.width  = screen.offsetWidth;
+  canvas.height = screen.offsetHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-function mkParticle() {
+function mkP() {
   return {
     x: Math.random() * canvas.width,
-    y: canvas.height + 10,
-    vx: (Math.random() - 0.5) * 0.4,
-    vy: -(0.4 + Math.random() * 0.7),
+    y: canvas.height + 8,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: -(0.35 + Math.random() * 0.6),
     life: 0,
-    maxLife: 120 + Math.random() * 180,
-    size: 1 + Math.random() * 1.5,
-    hue: 25 + Math.random() * 20
+    maxLife: 130 + Math.random() * 160,
+    r: 0.8 + Math.random() * 1.3,
+    hue: 22 + Math.random() * 18
   };
 }
 
-function animParticles() {
+function tick() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (pts.length < 28) pts.push(mkParticle());
-  pts = pts.filter(function(p) { return p.life < p.maxLife; });
+  if (pts.length < 22) pts.push(mkP());
+  pts = pts.filter(function(p){ return p.life < p.maxLife; });
   pts.forEach(function(p) {
     p.life++;
-    p.x += p.vx + Math.sin(p.life * 0.04) * 0.3;
+    p.x += p.vx + Math.sin(p.life * 0.045) * 0.25;
     p.y += p.vy;
     var prog = p.life / p.maxLife;
-    var alpha = prog < 0.2 ? prog / 0.2 : prog > 0.7 ? 1 - (prog - 0.7) / 0.3 : 1;
-    alpha *= 0.55;
+    var a = (prog < 0.2 ? prog/0.2 : prog > 0.7 ? 1-(prog-0.7)/0.3 : 1) * 0.5;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fillStyle = 'hsla(' + p.hue + ',90%,65%,' + alpha + ')';
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = 'hsla('+p.hue+',90%,65%,'+a+')';
     ctx.fill();
   });
-  requestAnimationFrame(animParticles);
+  requestAnimationFrame(tick);
 }
 
-// ── SCREENS ────────────────────────────────────────────────────
+// ── SCREENS ─────────────────────────────────────────────────────
 var screens = {};
-document.querySelectorAll('.screen').forEach(function(s) {
-  screens[s.id] = s;
-});
+document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
 
-function showScreen(id, fade) {
-  var duration = fade || 600;
-  Object.values(screens).forEach(function(s) {
-    if (s.classList.contains('active')) {
-      s.style.transition = 'opacity ' + (duration/1000) + 's ease';
-      s.style.opacity = '0';
-      setTimeout(function() { s.classList.remove('active'); }, duration);
-    }
-  });
+function fadeIn(id, delay) {
+  delay = delay || 0;
   setTimeout(function() {
-    var target = screens[id];
-    if (!target) return;
-    target.style.transition = 'none';
-    target.style.opacity = '0';
-    target.classList.add('active');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        target.style.transition = 'opacity ' + (duration/1000) + 's ease';
-        target.style.opacity = '1';
-      });
-    });
-  }, duration * 0.6);
+    var el = screens[id];
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.classList.add('active');
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      el.style.transition = 'opacity 0.7s ease';
+      el.style.opacity = '1';
+    });});
+  }, delay);
 }
 
-// ── INTRO ──────────────────────────────────────────────────────
+function fadeOut(id, cb, duration) {
+  duration = duration || 700;
+  var el = screens[id];
+  el.style.transition = 'opacity '+(duration/1000)+'s ease';
+  el.style.opacity = '0';
+  setTimeout(function(){
+    el.classList.remove('active');
+    el.style.opacity = '';
+    el.style.transition = '';
+    if (cb) cb();
+  }, duration);
+}
+
+// ── INTRO ────────────────────────────────────────────────────────
+var menuShown = false;
+
 function runIntro() {
-  animParticles();
+  tick();
 
   // Logo apparaît
-  setTimeout(function() {
-    document.getElementById('splash-inner').classList.add('show');
-  }, 150);
+  setTimeout(function(){ document.getElementById('splash-inner').classList.add('show'); }, 200);
 
   // Fade out splash
-  setTimeout(function() {
-    var sp = screens['splash'];
-    sp.style.transition = 'opacity 0.9s ease';
-    sp.style.opacity = '0';
-    setTimeout(function() { sp.classList.remove('active'); }, 900);
-  }, 2000);
+  setTimeout(function(){
+    fadeOut('splash', function(){ fadeIn('title-screen'); });
+  }, 2100);
 
-  // Title screen
-  setTimeout(function() {
+  // Tap / auto
+  setTimeout(function(){
     var ts = screens['title-screen'];
-    ts.style.opacity = '0';
-    ts.classList.add('active');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        ts.style.transition = 'opacity 0.7s ease';
-        ts.style.opacity = '1';
-      });
-    });
     ts.addEventListener('click', goToMenu, { once: true });
     ts.addEventListener('touchend', goToMenu, { once: true });
-  }, 2700);
+  }, 3000);
 
-  // Auto-avance
-  setTimeout(goToMenu, 8000);
+  setTimeout(goToMenu, 8500);
 }
 
-var menuShown = false;
 function goToMenu() {
   if (menuShown) return;
   menuShown = true;
-
   var ts = screens['title-screen'];
   ts.removeEventListener('click', goToMenu);
   ts.removeEventListener('touchend', goToMenu);
-  ts.style.transition = 'opacity 0.6s ease';
-  ts.style.opacity = '0';
-  setTimeout(function() {
-    ts.classList.remove('active');
+  fadeOut('title-screen', function(){
     var save = getSave();
     if (save) {
       document.getElementById('btn-continue').style.display = 'flex';
       document.getElementById('menu-stats').textContent =
-        'Runs : ' + (save.runs||0) + '  ·  Meilleur étage : ' + (save.best||0);
+        'Runs : '+(save.runs||0)+'  ·  Meilleur étage : '+(save.best||0);
     }
-    var mm = screens['main-menu'];
-    mm.style.opacity = '0';
-    mm.classList.add('active');
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        mm.style.transition = 'opacity 0.7s ease';
-        mm.style.opacity = '1';
-      });
-    });
+    fadeIn('main-menu');
   }, 600);
 }
 
-// ── SAVE ────────────────────────────────────────────────────────
+// ── SAVE ─────────────────────────────────────────────────────────
 function getSave() {
-  try { return JSON.parse(localStorage.getItem('cge_save')); } catch(e) { return null; }
-}
-function setSave(data) {
-  localStorage.setItem('cge_save', JSON.stringify(data));
+  try { return JSON.parse(localStorage.getItem('cge_save')); } catch(e){ return null; }
 }
 
-// ── APP ─────────────────────────────────────────────────────────
+// ── APP ──────────────────────────────────────────────────────────
 var App = {
-  newGame: function() {
-    // TODO: CharacterSelect
-    alert('Sélection du personnage — prochain commit !');
-  },
-  continueGame: function() {
-    alert('Continuer la partie — prochain commit !');
-  },
-  showHero: function() {
-    alert('Améliorations du héros — prochain commit !');
-  },
-  showSettings: function() {
-    alert('Paramètres — prochain commit !');
-  }
+  newGame:      function(){ alert('Sélection du personnage — prochain commit !'); },
+  continueGame: function(){ alert('Continuer — prochain commit !'); },
+  showHero:     function(){ alert('Mon Héros — prochain commit !'); },
+  showSettings: function(){ alert('Paramètres — prochain commit !'); }
 };
 
 window.addEventListener('load', runIntro);
