@@ -722,6 +722,104 @@ canvas#particles {
 .status-stun    { background:rgba(200,200,80,0.15); border:1px solid rgba(200,200,80,0.4); color:#d0d060; }
 .status-shield  { background:rgba(80,120,255,0.15); border:1px solid rgba(80,120,255,0.4); color:#80a0ff; }
 .status-defend  { background:rgba(80,120,220,0.15); border:1px solid rgba(80,120,220,0.4); color:#80a0e0; }
+
+/* ── LEVEL UP ────────────────────────────────────────────────── */
+#levelup-overlay {
+  position:absolute; inset:0; z-index:25;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.88); opacity:0; pointer-events:none;
+  transition:opacity 0.4s ease; gap:16px;
+  padding:24px;
+}
+#levelup-overlay.show { opacity:1; pointer-events:all; }
+#lu-title { font-family:'Cinzel Decorative',serif; font-size:22px; color:#C9A550; text-shadow:0 0 30px rgba(201,165,80,0.5); }
+#lu-level { font-family:'Cinzel',serif; font-size:13px; letter-spacing:4px; color:rgba(201,165,80,0.5); text-transform:uppercase; margin-top:-8px; }
+#lu-sub   { font-family:'Crimson Text',serif; font-style:italic; font-size:14px; color:rgba(237,232,223,0.5); }
+#lu-cards { width:100%; display:flex; flex-direction:column; gap:10px; }
+.lu-card {
+  width:100%; padding:14px 18px; border-radius:10px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(201,165,80,0.2);
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+  display:flex; align-items:center; gap:14px;
+}
+.lu-card:active { transform:scale(0.97); background:rgba(201,165,80,0.1); border-color:#C9A550; }
+.lu-card .lu-ico { font-size:28px; flex-shrink:0; }
+.lu-card .lu-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
+.lu-card .lu-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.55); margin-top:2px; }
+
+/* ── XP BAR (combat) ─────────────────────────────────────────── */
+#cb-xp-wrap {
+  width:100%; padding:4px 16px 0;
+  display:flex; align-items:center; gap:8px;
+  position:relative; z-index:2; flex-shrink:0;
+}
+#cb-xp-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(201,165,80,0.35); width:30px; text-align:right; }
+#cb-xp-bar { flex:1; height:4px; border-radius:2px; background:rgba(255,255,255,0.05); overflow:hidden; }
+#cb-xp-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#6030a0,#a060e0); transition:width 0.5s ease; }
+#cb-level-badge { font-family:'Cinzel',serif; font-size:10px; font-weight:700; color:rgba(160,100,220,0.8); width:24px; }
+
+/* ── MON HÉROS (méta) ────────────────────────────────────────── */
+#hero-screen {
+  background:#06050f;
+  background-image:radial-gradient(ellipse 80% 50% at 50% 20%, rgba(40,10,70,0.5) 0%, transparent 60%);
+  flex-direction:column; align-items:center; justify-content:flex-start;
+  overflow:hidden;
+}
+#hs-header {
+  width:100%; padding:18px 20px 0;
+  display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+#hs-back {
+  width:38px; height:38px; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
+  color:rgba(201,165,80,0.7); font-size:18px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#hs-back:active { transform:scale(0.93); }
+#hs-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
+#hs-gold-total { margin-left:auto; font-family:'Cinzel',serif; font-size:13px; color:#C9A550; }
+
+#hs-body {
+  width:100%; flex:1; padding:16px; display:flex; flex-direction:column; gap:10px;
+  overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
+}
+#hs-body::-webkit-scrollbar { display:none; }
+
+#hs-stats-panel {
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:4px;
+}
+.hs-stat-box {
+  padding:10px 8px; border-radius:8px; text-align:center;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.12);
+}
+.hs-stat-box .hsb-val { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#EDE8DF; }
+.hs-stat-box .hsb-lbl { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(201,165,80,0.4); margin-top:2px; }
+
+.hs-section-lbl {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:rgba(201,165,80,0.4); text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
+}
+.hs-section-lbl::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(201,165,80,0.2),transparent); }
+
+.upgrade-card {
+  display:flex; align-items:center; gap:14px; padding:13px 16px;
+  border-radius:10px; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.15); cursor:pointer;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent; position:relative;
+}
+.upgrade-card:active { transform:scale(0.98); }
+.upgrade-card.maxed { opacity:0.35; pointer-events:none; }
+.upgrade-card .uc-ico  { font-size:26px; flex-shrink:0; }
+.upgrade-card .uc-info { flex:1; }
+.upgrade-card .uc-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
+.upgrade-card .uc-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.5); margin-top:1px; }
+.upgrade-card .uc-prog { font-size:10px; color:rgba(201,165,80,0.35); margin-top:3px; font-family:'Cinzel',serif; }
+.upgrade-card .uc-cost {
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550;
+  display:flex; align-items:center; gap:4px; flex-shrink:0;
+}
+.upgrade-card .uc-cost::before { content:'🪙'; font-size:14px; }
+.upgrade-card.cant-afford .uc-cost { color:rgba(200,80,80,0.7); }
 </style>
 </head>
 <body>
@@ -849,6 +947,12 @@ canvas#particles {
         </div>
       </div>
 
+      <!-- XP bar -->
+      <div id="cb-xp-wrap">
+        <div id="cb-level-badge">1</div>
+        <div id="cb-xp-bar"><div id="cb-xp-fill" style="width:0%"></div></div>
+        <div id="cb-xp-label">XP</div>
+      </div>
       <!-- Statuts -->
       <div id="cb-status-row"></div>
 
@@ -972,6 +1076,32 @@ canvas#particles {
       <div id="dm-footer">
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
+      </div>
+    </div>
+
+    <!-- ── LEVEL UP OVERLAY ── -->
+    <div id="levelup-overlay">
+      <div id="lu-title">✦ Montée de Niveau ✦</div>
+      <div id="lu-level">Niveau <span id="lu-level-num">2</span></div>
+      <div id="lu-sub">Choisis ton amélioration</div>
+      <div id="lu-cards"></div>
+    </div>
+
+    <!-- ── MON HÉROS ── -->
+    <div id="hero-screen" class="screen">
+      <div id="hs-header">
+        <div id="hs-back" onclick="Nav.go('main-menu')">←</div>
+        <div id="hs-title">Mon Héros</div>
+        <div id="hs-gold-total">🪙 <span id="hs-gold-val">0</span></div>
+      </div>
+      <div id="hs-body">
+        <div id="hs-stats-panel">
+          <div class="hs-stat-box"><div class="hsb-val" id="hs-runs">0</div><div class="hsb-lbl">Runs</div></div>
+          <div class="hs-stat-box"><div class="hsb-val" id="hs-best">0</div><div class="hsb-lbl">Meilleur étage</div></div>
+          <div class="hs-stat-box"><div class="hsb-val" id="hs-kills">0</div><div class="hsb-lbl">Kills totaux</div></div>
+        </div>
+        <div class="hs-section-lbl">Améliorations permanentes</div>
+        <div id="hs-upgrades"></div>
       </div>
     </div>
 
@@ -1288,13 +1418,20 @@ var Combat = (function(){
     setButtons(false);
     statuses = []; enemyStatuses = []; renderStatuses();
     if (victory) {
-      State.gold  = (State.gold||0)  + enemy.gold;
+      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)/100));
       State.kills = (State.kills||0) + 1;
+      gainXP(enemy.xp||10);
+      if (State.regenPerFight) {
+        State.hp = Math.min(State.hpMax, State.hp + State.regenPerFight);
+        var pct = Math.round(State.hp/State.hpMax*100);
+        document.getElementById('cb-player-hp-inner').style.width = pct+'%';
+        document.getElementById('cb-player-hp-text').textContent = State.hp+'/'+State.hpMax;
+      }
       var wasBoss = !!enemy.boss;
       setTimeout(function(){
         if (wasBoss) {
           if ((State.floor||1) >= 6) {
-            // Victoire finale !
+            Meta.addRunResult();
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
@@ -1311,6 +1448,7 @@ var Combat = (function(){
         }
       }, 700);
     } else {
+      Meta.addRunResult();
       setTimeout(function(){
         document.getElementById('go-skull').textContent = '💀';
         document.getElementById('go-title').textContent = 'Défaite';
@@ -1574,6 +1712,147 @@ var Rooms = {
 
   _pendingItem: null,
   _healAmt: 0
+};
+
+// ── XP & NIVEAU ──────────────────────────────────────────────────
+var XP_PER_LEVEL = [0, 30, 70, 120, 180, 250, 340, 440, 560, 700];
+
+var LEVEL_UP_CHOICES = [
+  { ico:'⚔', name:'Tranchant',       desc:'+4 ATQ',           effect:function(){ State.atk+=4; } },
+  { ico:'🛡', name:'Endurci',        desc:'+5 DEF',           effect:function(){ State.def+=5; } },
+  { ico:'❤', name:'Vigueur',         desc:'+25 PV max + soin',effect:function(){ State.hpMax+=25; State.hp=Math.min(State.hpMax, State.hp+25); } },
+  { ico:'⚡', name:'Rapidité',       desc:'+3 ATQ +2 DEF',    effect:function(){ State.atk+=3; State.def+=2; } },
+  { ico:'🧪', name:'Alchimiste',     desc:'+2 Potions',       effect:function(){ State.potions=(State.potions||0)+2; } },
+  { ico:'🩸', name:'Soif de sang',   desc:'+6 ATQ −3 DEF',    effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-3); } },
+  { ico:'🔮', name:'Arcane',         desc:'+8 ATQ (fragile)', effect:function(){ State.atk+=8; State.hpMax=Math.max(10,State.hpMax-10); } },
+  { ico:'🌿', name:'Régénération',   desc:'+3 PV après chaque combat', effect:function(){ State.regenPerFight=(State.regenPerFight||0)+3; } },
+  { ico:'🎯', name:'Précision',      desc:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
+];
+
+function gainXP(amount) {
+  State.xp = (State.xp||0) + amount;
+  State.level = State.level||1;
+  var threshold = XP_PER_LEVEL[Math.min(State.level, XP_PER_LEVEL.length-1)];
+  updateXPBar();
+  if (State.xp >= threshold && State.level < 9) {
+    State.xp -= threshold;
+    State.level++;
+    triggerLevelUp();
+  }
+}
+
+function updateXPBar() {
+  var lvl = State.level||1;
+  var threshold = XP_PER_LEVEL[Math.min(lvl, XP_PER_LEVEL.length-1)];
+  var pct = threshold > 0 ? Math.min(100, Math.round((State.xp||0)/threshold*100)) : 100;
+  document.getElementById('cb-xp-fill').style.width = pct+'%';
+  document.getElementById('cb-level-badge').textContent = lvl;
+}
+
+function triggerLevelUp() {
+  var pool = LEVEL_UP_CHOICES.slice().sort(function(){ return Math.random()-0.5; }).slice(0,3);
+  document.getElementById('lu-level-num').textContent = State.level;
+  var cards = document.getElementById('lu-cards');
+  cards.innerHTML = '';
+  pool.forEach(function(choice) {
+    var d = document.createElement('div');
+    d.className = 'lu-card';
+    d.innerHTML = '<span class="lu-ico">'+choice.ico+'</span><div><div class="lu-name">'+choice.name+'</div><div class="lu-desc">'+choice.desc+'</div></div>';
+    d.addEventListener('click', function(){
+      choice.effect();
+      Combat.updatePlayerUI();
+      document.getElementById('levelup-overlay').classList.remove('show');
+    });
+    cards.appendChild(d);
+  });
+  document.getElementById('levelup-overlay').classList.add('show');
+}
+
+// ── MÉTA-PROGRESSION ─────────────────────────────────────────────
+var META_UPGRADES = [
+  { id:'atk',    ico:'⚔', name:'Forge du Héros',   desc:'+2 ATQ de base',       max:5, cost:60,  effect:function(){ Meta.bonuses.atk+=2; } },
+  { id:'def',    ico:'🛡', name:'Armure Ancestrale',desc:'+3 DEF de base',       max:5, cost:60,  effect:function(){ Meta.bonuses.def+=3; } },
+  { id:'hp',     ico:'❤', name:'Constitution',     desc:'+20 PV de base',       max:5, cost:50,  effect:function(){ Meta.bonuses.hp+=20; } },
+  { id:'potion', ico:'🧪', name:'Alchimie',         desc:'+1 Potion de départ',  max:3, cost:80,  effect:function(){ Meta.bonuses.potions+=1; } },
+  { id:'gold',   ico:'🪙', name:'Commerce',         desc:'+20% or gagné',        max:3, cost:100, effect:function(){ Meta.bonuses.goldPct+=0.2; } },
+  { id:'crit',   ico:'🎯', name:'Instinct Meurtrier',desc:'+5% chance critique',  max:4, cost:90,  effect:function(){ Meta.bonuses.crit+=0.05; } },
+];
+
+var Meta = {
+  totalGold: 0,
+  totalKills: 0,
+  totalRuns: 0,
+  bestFloor: 0,
+  levels: {},   // { upgrade_id: level }
+  bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 },
+
+  load: function() {
+    try {
+      var d = JSON.parse(localStorage.getItem('cge_meta')||'{}');
+      Meta.totalGold  = d.totalGold||0;
+      Meta.totalKills = d.totalKills||0;
+      Meta.totalRuns  = d.totalRuns||0;
+      Meta.bestFloor  = d.bestFloor||0;
+      Meta.levels     = d.levels||{};
+      Meta.bonuses    = d.bonuses||{ atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 };
+    } catch(e){}
+  },
+
+  save: function() {
+    localStorage.setItem('cge_meta', JSON.stringify({
+      totalGold:  Meta.totalGold,
+      totalKills: Meta.totalKills,
+      totalRuns:  Meta.totalRuns,
+      bestFloor:  Meta.bestFloor,
+      levels:     Meta.levels,
+      bonuses:    Meta.bonuses,
+    }));
+  },
+
+  addRunResult: function() {
+    Meta.totalGold  += State.gold||0;
+    Meta.totalKills += State.kills||0;
+    Meta.totalRuns  += 1;
+    Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
+    Meta.save();
+  },
+
+  buildScreen: function() {
+    document.getElementById('hs-gold-val').textContent  = Meta.totalGold;
+    document.getElementById('hs-runs').textContent      = Meta.totalRuns;
+    document.getElementById('hs-best').textContent      = Meta.bestFloor;
+    document.getElementById('hs-kills').textContent     = Meta.totalKills;
+    var cont = document.getElementById('hs-upgrades');
+    cont.innerHTML = '';
+    META_UPGRADES.forEach(function(u) {
+      var lvl   = Meta.levels[u.id]||0;
+      var maxed = lvl >= u.max;
+      var cost  = u.cost + lvl*20;
+      var canBuy= !maxed && Meta.totalGold >= cost;
+      var card  = document.createElement('div');
+      card.className = 'upgrade-card'+(maxed?' maxed':(!canBuy?' cant-afford':''));
+      card.innerHTML =
+        '<span class="uc-ico">'+u.ico+'</span>'+
+        '<div class="uc-info">'+
+          '<div class="uc-name">'+u.name+'</div>'+
+          '<div class="uc-desc">'+u.desc+'</div>'+
+          '<div class="uc-prog">Niveau '+lvl+' / '+u.max+(maxed?' — MAXÉ':'')+'</div>'+
+        '</div>'+
+        (maxed ? '' : '<div class="uc-cost">'+cost+'</div>');
+      if (!maxed) {
+        card.addEventListener('click', function(){
+          var c2 = u.cost + (Meta.levels[u.id]||0)*20;
+          if (Meta.totalGold < c2) return;
+          Meta.totalGold -= c2;
+          Meta.levels[u.id] = (Meta.levels[u.id]||0)+1;
+          u.effect();
+          Meta.save();
+          Meta.buildScreen();
+        });
+      }
+      cont.appendChild(card);
+    });
+  }
 };
 
 // ── BOUTIQUE ──────────────────────────────────────────────────────
@@ -2096,29 +2375,47 @@ var App = {
   startRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; });
     var c = CLASSES.find(function(x){ return x.id===State.cls; });
-    State.hp    = c.hp  + r.dhp;
-    State.hpMax = c.hp  + r.dhp;
-    State.atk   = c.atk + r.datk;
-    State.def   = c.def + r.ddef;
-    State.floor = 1;
+    var b = Meta.bonuses;
+    State.hp    = c.hp  + r.dhp  + (b.hp||0);
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
+    State.atk   = c.atk + r.datk + (b.atk||0);
+    State.def   = c.def + r.ddef + (b.def||0);
+    State.floor  = 1;
+    State.gold   = 0;
+    State.kills  = 0;
+    State.xp     = 0;
+    State.level  = 1;
+    State.potions = 2 + (b.potions||0);
+    State.regenPerFight = 0;
+    State.critBonus = b.crit||0;
     Nav.go('dungeon-map');
     setTimeout(function(){ DungeonMap.init(1, State.hp, State.hpMax); }, 300);
   },
   continueGame: function(){ alert('Continuer — prochain commit !'); },
-  showHero:     function(){ alert('Mon Héros — prochain commit !'); },
+  showHero: function(){ Meta.buildScreen(); Nav.go('hero-screen'); },
   showSettings: function(){ alert('Paramètres — prochain commit !'); },
   retryRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
-    State.hp=c.hp+r.dhp; State.hpMax=c.hp+r.dhp;
-    State.atk=c.atk+r.datk; State.def=c.def+r.ddef;
-    State.floor=1; State.gold=0; State.kills=0; State.potions=2;
+    var b = Meta.bonuses;
+    State.hp    = c.hp  + r.dhp  + (b.hp||0);
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
+    State.atk   = c.atk + r.datk + (b.atk||0);
+    State.def   = c.def + r.ddef + (b.def||0);
+    State.floor  = 1;
+    State.gold   = 0;
+    State.kills  = 0;
+    State.xp     = 0;
+    State.level  = 1;
+    State.potions = 2 + (b.potions||0);
+    State.regenPerFight = 0;
+    State.critBonus = b.crit||0;
     Nav.go('dungeon-map');
     setTimeout(function(){ DungeonMap.init(1,State.hp,State.hpMax); },300);
   },
 };
 
-window.addEventListener('load', runIntro);
+window.addEventListener('load', function(){ Meta.load(); runIntro(); });
 </script>
 </body>
 </html>
