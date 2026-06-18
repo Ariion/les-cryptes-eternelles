@@ -393,6 +393,167 @@ canvas#particles {
   font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
   color:rgba(201,165,80,0.25); text-transform:uppercase;
 }
+
+/* ── COMBAT ──────────────────────────────────────────────────── */
+#combat-screen {
+  background:#06050f;
+  flex-direction:column;
+  justify-content:flex-start;
+  overflow:hidden;
+}
+#cb-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 100% 50% at 50% 0%,  rgba(60,10,10,0.7) 0%,transparent 55%),
+    radial-gradient(ellipse 80%  40% at 50% 100%, rgba(20,10,40,0.5) 0%,transparent 50%);
+}
+
+/* ── Barre haut (infos joueur) ── */
+#cb-top {
+  width:100%; padding:14px 16px 0;
+  display:flex; align-items:center; justify-content:space-between;
+  position:relative; z-index:2; flex-shrink:0;
+}
+#cb-player-info { display:flex; flex-direction:column; gap:4px; }
+#cb-player-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; letter-spacing:1px; }
+#cb-player-hp-wrap { display:flex; align-items:center; gap:8px; }
+.hp-bar-outer {
+  height:10px; border-radius:5px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(200,60,60,0.3);
+  overflow:hidden; flex:1;
+}
+.hp-bar-inner { height:100%; border-radius:5px; transition:width 0.5s cubic-bezier(.4,0,.2,1); }
+#cb-player-hp-inner { background:linear-gradient(90deg,#7a1010,#c83030,#e05050); }
+#cb-player-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(220,140,140,0.8); white-space:nowrap; }
+#cb-floor-badge {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
+  color:rgba(201,165,80,0.5); text-transform:uppercase; text-align:right;
+}
+#cb-floor-num { font-family:'Cinzel Decorative',serif; font-size:20px; color:#C9A550; line-height:1; }
+
+/* ── Zone ennemi ── */
+#cb-enemy-zone {
+  flex:0 0 38%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  position:relative; z-index:2; gap:6px;
+  padding:0 16px;
+}
+#cb-enemy-sprite {
+  font-size:72px; line-height:1;
+  filter:drop-shadow(0 0 20px rgba(200,50,50,0.4));
+  transition:transform 0.1s ease, filter 0.3s ease;
+}
+#cb-enemy-sprite.hit {
+  animation:enemy-hit 0.35s ease;
+}
+@keyframes enemy-hit {
+  0%   { transform:translateX(0) scale(1); filter:drop-shadow(0 0 20px rgba(200,50,50,0.4)) brightness(3); }
+  20%  { transform:translateX(-12px) scale(0.95); }
+  50%  { transform:translateX(8px) scale(1.02); }
+  100% { transform:translateX(0) scale(1); filter:drop-shadow(0 0 20px rgba(200,50,50,0.4)); }
+}
+#cb-enemy-name {
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700;
+  color:#EDE8DF; letter-spacing:2px; text-transform:uppercase;
+}
+#cb-enemy-hp-wrap { width:100%; max-width:220px; display:flex; align-items:center; gap:8px; }
+#cb-enemy-hp-inner { background:linear-gradient(90deg,#1a6a1a,#2db82d,#50d050); }
+#cb-enemy-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(140,220,140,0.8); white-space:nowrap; }
+
+/* Nombre de dégâts flottant */
+#dmg-float {
+  position:absolute; top:50%; left:50%;
+  font-family:'Cinzel',serif; font-size:28px; font-weight:900;
+  pointer-events:none; z-index:10;
+  opacity:0;
+}
+#dmg-float.show { animation:float-up 0.9s ease-out forwards; }
+@keyframes float-up {
+  0%   { opacity:1; transform:translate(-50%,-50%) scale(0.6); }
+  20%  { opacity:1; transform:translate(-50%,-80%) scale(1.2); }
+  100% { opacity:0; transform:translate(-50%,-160%) scale(0.9); }
+}
+
+/* ── Log de combat ── */
+#cb-log-zone {
+  flex:0 0 22%;
+  width:100%; padding:0 14px;
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  gap:2px; overflow:hidden;
+}
+.log-line {
+  font-family:'Crimson Text',serif; font-size:13px;
+  padding:2px 0;
+  opacity:0; transform:translateY(6px);
+  animation:log-in 0.3s ease forwards;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@keyframes log-in { to { opacity:1; transform:translateY(0); } }
+.log-line.player  { color:rgba(201,165,80,0.9); }
+.log-line.enemy   { color:rgba(220,120,120,0.9); }
+.log-line.system  { color:rgba(150,140,200,0.7); font-style:italic; }
+.log-line.heal    { color:rgba(100,220,120,0.9); }
+
+/* ── Boutons d'action ── */
+#cb-actions {
+  width:100%; flex-shrink:0;
+  padding:8px 14px 14px;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; position:relative; z-index:2;
+}
+.cb-btn {
+  height:54px; border-radius:10px; border:none; cursor:pointer;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+  transition:all 0.14s ease; position:relative; overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.cb-btn:active { transform:scale(0.95); filter:brightness(1.2); }
+.cb-btn:disabled { opacity:0.35; pointer-events:none; }
+.cb-btn .cb-ico { font-size:20px; line-height:1; }
+.cb-btn .cb-cd  { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
+
+.cb-btn-attack  { background:linear-gradient(135deg,rgba(180,30,30,0.25),rgba(120,15,15,0.15)); border:1px solid rgba(220,80,80,0.5); color:#e08080; }
+.cb-btn-defend  { background:linear-gradient(135deg,rgba(30,80,180,0.2),rgba(15,40,120,0.12)); border:1px solid rgba(80,130,220,0.4); color:#80aae0; }
+.cb-btn-skill   { background:linear-gradient(135deg,rgba(100,30,180,0.2),rgba(60,15,120,0.12)); border:1px solid rgba(150,80,220,0.4); color:#b080e0; }
+.cb-btn-item    { background:linear-gradient(135deg,rgba(30,130,80,0.2),rgba(15,80,40,0.12)); border:1px solid rgba(60,180,120,0.35); color:#80d0a0; }
+.cb-btn-flee    {
+  grid-column:1/-1; height:42px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:rgba(200,190,180,0.5);
+  font-size:10px;
+}
+
+/* Flash rouge écran dégâts reçus */
+#hit-flash {
+  position:absolute; inset:0; z-index:18;
+  background:rgba(200,0,0,0.18);
+  pointer-events:none; opacity:0;
+}
+#hit-flash.show { animation:flash 0.4s ease-out; }
+@keyframes flash { 0%{opacity:1;} 100%{opacity:0;} }
+
+/* Game over / victoire overlay */
+#combat-result {
+  position:absolute; inset:0; z-index:20;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.85); opacity:0; pointer-events:none;
+  transition:opacity 0.6s ease;
+  gap:16px;
+}
+#combat-result.show { opacity:1; pointer-events:all; }
+#result-icon  { font-size:64px; }
+#result-title { font-family:'Cinzel Decorative',serif; font-size:26px; color:#C9A550; }
+#result-sub   { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(201,165,80,0.6); }
+#result-btn   {
+  margin-top:8px; padding:14px 32px;
+  border-radius:8px; border:1px solid rgba(201,165,80,0.6);
+  background:rgba(201,165,80,0.12); color:#C9A550;
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; transition:all 0.15s;
+}
+#result-btn:active { transform:scale(0.97); }
 </style>
 </head>
 <body>
@@ -495,6 +656,73 @@ canvas#particles {
         <button id="btn-start-run" onclick="App.startRun()">
           <span class="ico">⚔</span> Entrer dans le Donjon
         </button>
+      </div>
+    </div>
+
+    <!-- ── COMBAT ── -->
+    <div id="combat-screen" class="screen">
+      <div id="cb-bg"></div>
+      <div id="hit-flash"></div>
+
+      <!-- Haut : joueur -->
+      <div id="cb-top">
+        <div id="cb-player-info">
+          <div id="cb-player-name">Héros</div>
+          <div id="cb-player-hp-wrap">
+            <div class="hp-bar-outer" style="width:140px">
+              <div class="hp-bar-inner" id="cb-player-hp-inner" style="width:100%"></div>
+            </div>
+            <div id="cb-player-hp-text">100/100</div>
+          </div>
+        </div>
+        <div>
+          <div id="cb-floor-badge">Étage</div>
+          <div id="cb-floor-num">I</div>
+        </div>
+      </div>
+
+      <!-- Ennemi -->
+      <div id="cb-enemy-zone">
+        <div id="cb-enemy-sprite">👹</div>
+        <div id="cb-enemy-name">Ennemi</div>
+        <div id="cb-enemy-hp-wrap">
+          <div class="hp-bar-outer" style="flex:1">
+            <div class="hp-bar-inner" id="cb-enemy-hp-inner" style="width:100%"></div>
+          </div>
+          <div id="cb-enemy-hp-text">50/50</div>
+        </div>
+        <div id="dmg-float"></div>
+      </div>
+
+      <!-- Log -->
+      <div id="cb-log-zone"></div>
+
+      <!-- Actions -->
+      <div id="cb-actions">
+        <button class="cb-btn cb-btn-attack" onclick="Combat.playerAttack()">
+          <span class="cb-ico">⚔</span>Attaquer
+        </button>
+        <button class="cb-btn cb-btn-defend" onclick="Combat.playerDefend()">
+          <span class="cb-ico">🛡</span>Défendre
+        </button>
+        <button class="cb-btn cb-btn-skill" id="btn-skill" onclick="Combat.playerSkill()">
+          <span class="cb-ico">✨</span>Compétence
+          <span class="cb-cd" id="skill-cd"></span>
+        </button>
+        <button class="cb-btn cb-btn-item" onclick="Combat.playerItem()">
+          <span class="cb-ico">🧪</span>Objet
+        </button>
+        <button class="cb-btn cb-btn-flee" onclick="Combat.playerFlee()">
+          🏃 Fuir (risqué)
+        </button>
+      </div>
+
+      <!-- Résultat -->
+      <div id="combat-result">
+        <div id="result-icon">⚔</div>
+        <div id="result-title">Résultat</div>
+        <div id="result-sub"></div>
+        <button id="result-btn" onclick="Combat.closeResult()">Continuer</button>
       </div>
     </div>
 
@@ -668,6 +896,299 @@ function updateStats() {
     else if (v < base) el.classList.add('down');
   });
 }
+
+// ── ENNEMIS ───────────────────────────────────────────────────────
+var ENEMIES = [
+  { name:'Squelette',   sprite:'💀', hp:30, atk:8,  def:2, gold:12, xp:15, floor:1 },
+  { name:'Slime Acide', sprite:'🟢', hp:25, atk:6,  def:0, gold:8,  xp:10, floor:1 },
+  { name:'Gobelin',     sprite:'👺', hp:35, atk:10, def:3, gold:15, xp:18, floor:1 },
+  { name:'Chauve-Souris Géante', sprite:'🦇', hp:28, atk:9, def:1, gold:10, xp:12, floor:1 },
+  { name:'Orc Pillard', sprite:'👹', hp:55, atk:14, def:5, gold:22, xp:28, floor:2 },
+  { name:'Sorcier Noir',sprite:'🧙', hp:45, atk:18, def:2, gold:28, xp:32, floor:2 },
+  { name:'Fantôme',     sprite:'👻', hp:40, atk:12, def:6, gold:20, xp:25, floor:3 },
+  { name:'Golem de Pierre',sprite:'🗿',hp:80,atk:15,def:10,gold:35,xp:40, floor:3 },
+  { name:'Démon',       sprite:'😈', hp:70, atk:20, def:7, gold:45, xp:55, floor:4 },
+  { name:'Vampire',     sprite:'🧛', hp:65, atk:22, def:5, gold:50, xp:60, floor:4 },
+  { name:'Dragon Jeune',sprite:'🐉', hp:120,atk:25, def:8, gold:80, xp:90, floor:5, boss:true },
+  { name:'Liche',       sprite:'💀', hp:100,atk:28, def:6, gold:90, xp:100,floor:5, boss:true },
+  { name:'Seigneur des Cryptes',sprite:'☠',hp:200,atk:32,def:12,gold:200,xp:200,floor:6,boss:true },
+];
+
+function getEnemiesForFloor(floor) {
+  var pool = ENEMIES.filter(function(e){ return e.floor <= floor && !e.boss; });
+  if (!pool.length) pool = ENEMIES.slice(0,4);
+  return pool;
+}
+
+// ── COMBAT ────────────────────────────────────────────────────────
+var Combat = (function(){
+  var enemy = null;
+  var playerDef = false;
+  var skillCd = 0;
+  var turnLocked = false;
+  var logLines = [];
+
+  function log(msg, type) {
+    type = type || 'system';
+    logLines.push({ msg:msg, type:type });
+    if (logLines.length > 4) logLines.shift();
+    var zone = document.getElementById('cb-log-zone');
+    zone.innerHTML = '';
+    logLines.forEach(function(l) {
+      var d = document.createElement('div');
+      d.className = 'log-line '+l.type;
+      d.textContent = l.msg;
+      zone.appendChild(d);
+    });
+  }
+
+  function updatePlayerUI() {
+    var hp    = State.hp;
+    var hpMax = State.hpMax;
+    var pct   = Math.max(0, Math.min(100, Math.round(hp/hpMax*100)));
+    document.getElementById('cb-player-hp-inner').style.width = pct+'%';
+    document.getElementById('cb-player-hp-text').textContent = hp+'/'+hpMax;
+    // Couleur selon PV
+    var bar = document.getElementById('cb-player-hp-inner');
+    if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#7a1010,#c83030,#e05050)';
+    else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
+    else               bar.style.background = 'linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
+  }
+
+  function updateEnemyUI() {
+    var pct = Math.max(0, Math.min(100, Math.round(enemy.hp/enemy.hpMax*100)));
+    document.getElementById('cb-enemy-hp-inner').style.width = pct+'%';
+    document.getElementById('cb-enemy-hp-text').textContent = enemy.hp+'/'+enemy.hpMax;
+    var bar = document.getElementById('cb-enemy-hp-inner');
+    if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#1a6a1a,#2db82d,#50d050)';
+    else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#6a6a10,#b8b820,#d0d040)';
+    else               bar.style.background = 'linear-gradient(90deg,#6a1a10,#b83020,#d05040)';
+  }
+
+  function showDmg(amount, isPlayer) {
+    var el = document.getElementById('dmg-float');
+    el.textContent = '-'+amount;
+    el.style.color = isPlayer ? '#ff6060' : '#ffe060';
+    el.className = '';
+    void el.offsetWidth;
+    el.className = 'show';
+  }
+
+  function hitFlash() {
+    var el = document.getElementById('hit-flash');
+    el.className = '';
+    void el.offsetWidth;
+    el.className = 'show';
+  }
+
+  function enemyHitAnim() {
+    var el = document.getElementById('cb-enemy-sprite');
+    el.classList.remove('hit');
+    void el.offsetWidth;
+    el.classList.add('hit');
+    setTimeout(function(){ el.classList.remove('hit'); }, 400);
+  }
+
+  function calcDmg(atk, def) {
+    var base = Math.max(1, atk - def);
+    var crit = Math.random() < 0.15;
+    return { dmg: crit ? Math.round(base*1.5) : base, crit:crit };
+  }
+
+  function setButtons(enabled) {
+    document.querySelectorAll('.cb-btn').forEach(function(b){
+      if (!b.classList.contains('cb-btn-flee')) b.disabled = !enabled;
+    });
+  }
+
+  function updateSkillBtn() {
+    var cd = document.getElementById('skill-cd');
+    var btn = document.getElementById('btn-skill');
+    if (skillCd > 0) {
+      cd.textContent = skillCd+' tour'+(skillCd>1?'s':'');
+      btn.disabled = true;
+    } else {
+      cd.textContent = '';
+      btn.disabled = false;
+    }
+  }
+
+  function endCombat(victory) {
+    setButtons(false);
+    var res = document.getElementById('combat-result');
+    if (victory) {
+      document.getElementById('result-icon').textContent  = '🏆';
+      document.getElementById('result-title').textContent = 'Victoire !';
+      document.getElementById('result-sub').textContent   = '+'+enemy.gold+' or  ·  +'+enemy.xp+' XP';
+      State.gold = (State.gold||0) + enemy.gold;
+    } else {
+      document.getElementById('result-icon').textContent  = '💀';
+      document.getElementById('result-title').textContent = 'Défaite...';
+      document.getElementById('result-sub').textContent   = 'Les cryptes t\'ont englouti.';
+    }
+    setTimeout(function(){ res.classList.add('show'); }, 800);
+  }
+
+  function enemyTurn() {
+    if (enemy.hp <= 0) return;
+    turnLocked = true;
+    setButtons(false);
+    setTimeout(function(){
+      // IA ennemi simple
+      var action = Math.random();
+      var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def);
+      playerDef = false;
+
+      if (action < 0.15 && enemy.hp < enemy.hpMax * 0.4) {
+        // Soin
+        var heal = Math.round(enemy.hpMax * 0.15);
+        enemy.hp = Math.min(enemy.hpMax, enemy.hp + heal);
+        updateEnemyUI();
+        log(enemy.name+' se soigne de '+heal+' PV.','system');
+      } else {
+        State.hp = Math.max(0, State.hp - dmgResult.dmg);
+        updatePlayerUI();
+        hitFlash();
+        if (navigator.vibrate) navigator.vibrate(dmgResult.crit ? [50,20,80] : 40);
+        log(enemy.name+(dmgResult.crit?' inflige un COUP CRITIQUE ':' t\'inflige ')+dmgResult.dmg+' dégâts !','enemy');
+        showDmg(dmgResult.dmg, true);
+      }
+
+      if (State.hp <= 0) { endCombat(false); return; }
+
+      // Cooldown compétence
+      if (skillCd > 0) skillCd--;
+      updateSkillBtn();
+
+      turnLocked = false;
+      setButtons(true);
+    }, 900);
+  }
+
+  return {
+    start: function(enemyData) {
+      enemy = Object.assign({}, enemyData, { hpMax: enemyData.hp });
+      playerDef = false;
+      skillCd = 0;
+      turnLocked = false;
+      logLines = [];
+
+      var r = RACES.find(function(x){ return x.id===State.race; });
+      var c = CLASSES.find(function(x){ return x.id===State.cls; });
+
+      document.getElementById('cb-player-name').textContent = (r?r.name:'?')+' '+((c?c.name:'?'));
+      document.getElementById('cb-enemy-sprite').textContent = enemy.sprite;
+      document.getElementById('cb-enemy-name').textContent   = enemy.name;
+      document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
+      document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
+      document.getElementById('combat-result').classList.remove('show');
+
+      updatePlayerUI();
+      updateEnemyUI();
+      updateSkillBtn();
+      setButtons(true);
+      log('⚔ '+enemy.name+' surgit de l\'ombre !','system');
+    },
+
+    playerAttack: function() {
+      if (turnLocked) return;
+      var res = calcDmg(State.atk, enemy.def);
+      enemy.hp = Math.max(0, enemy.hp - res.dmg);
+      enemyHitAnim();
+      showDmg(res.dmg, false);
+      updateEnemyUI();
+      if (navigator.vibrate) navigator.vibrate(res.crit ? [30,10,50] : 20);
+      if (res.crit) log('CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !','player');
+      else          log('Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.','player');
+      if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); return; }
+      enemyTurn();
+    },
+
+    playerDefend: function() {
+      if (turnLocked) return;
+      playerDef = true;
+      log('Tu te mets en garde. (-50% dégâts ce tour)','player');
+      enemyTurn();
+    },
+
+    playerSkill: function() {
+      if (turnLocked || skillCd > 0) return;
+      var c = CLASSES.find(function(x){ return x.id===State.cls; });
+      skillCd = 3;
+      updateSkillBtn();
+      if (c.id === 'Guerrier') {
+        State.def += 8; playerDef = true;
+        log('Bouclier de fer ! (+8 DEF ce tour)','player');
+        enemyTurn();
+      } else if (c.id === 'Mage') {
+        var dmg = Math.round(State.atk * 1.8);
+        enemy.hp = Math.max(0, enemy.hp - dmg);
+        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        log('Boule de feu ! '+dmg+' dégâts de feu à '+enemy.name+' !','player');
+        if (enemy.hp <= 0) { endCombat(true); return; }
+        enemyTurn();
+      } else if (c.id === 'Chasseur') {
+        var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
+        var total = d1.dmg + d2.dmg;
+        enemy.hp = Math.max(0, enemy.hp - total);
+        enemyHitAnim(); showDmg(total, false); updateEnemyUI();
+        log('Double tir ! '+d1.dmg+' + '+d2.dmg+' = '+total+' dégâts.','player');
+        if (enemy.hp <= 0) { endCombat(true); return; }
+        enemyTurn();
+      } else if (c.id === 'Assassin') {
+        var dmg = Math.round(State.atk * 2);
+        enemy.hp = Math.max(0, enemy.hp - dmg);
+        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        log('Frappe critique garantie ! '+dmg+' dégâts.','player');
+        if (enemy.hp <= 0) { endCombat(true); return; }
+        enemyTurn();
+      } else if (c.id === 'Prêtre') {
+        var heal = Math.round(State.hpMax * 0.3);
+        State.hp = Math.min(State.hpMax, State.hp + heal);
+        updatePlayerUI();
+        log('Soin divin ! +'+heal+' PV récupérés.','heal');
+        enemyTurn();
+      } else if (c.id === 'Barbare') {
+        var dmg = Math.round(State.atk * 1.6);
+        if (State.hp < State.hpMax * 0.3) dmg = Math.round(dmg * 1.5);
+        enemy.hp = Math.max(0, enemy.hp - dmg);
+        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        log('Frenésie barbare ! '+dmg+' dégâts sauvages.','player');
+        if (enemy.hp <= 0) { endCombat(true); return; }
+        enemyTurn();
+      }
+    },
+
+    playerItem: function() {
+      if (turnLocked) return;
+      // Potion de base pour l'instant
+      if ((State.potions||0) <= 0) { log('Tu n\'as plus de potions !','system'); return; }
+      State.potions--;
+      var heal = Math.round(State.hpMax * 0.35);
+      State.hp = Math.min(State.hpMax, State.hp + heal);
+      updatePlayerUI();
+      log('Potion de soin ! +'+heal+' PV.','heal');
+      enemyTurn();
+    },
+
+    playerFlee: function() {
+      if (turnLocked) return;
+      var chance = 0.35;
+      if (Math.random() < chance) {
+        log('Tu t\'enfuis dans l\'obscurité !','system');
+        setTimeout(function(){ Nav.go('dungeon-map'); }, 700);
+      } else {
+        log('Impossible de fuir !','system');
+        enemyTurn();
+      }
+    },
+
+    closeResult: function() {
+      document.getElementById('combat-result').classList.remove('show');
+      Nav.go('dungeon-map');
+    }
+  };
+})();
 
 // ── DUNGEON MAP ───────────────────────────────────────────────────
 var DungeonMap = (function() {
@@ -1014,8 +1535,13 @@ var DungeonMap = (function() {
 
     setTimeout(function(){
       document.getElementById('dm-node-info').textContent = 'Choisis ton chemin...';
-      // TODO: aller au combat / événement selon hit.type
-    }, 600);
+      // Lancer l'événement selon le type de salle
+      var pool = getEnemiesForFloor(State.floor||1);
+      var enemyData = pool[Math.floor(Math.random()*pool.length)];
+      State.potions = State.potions || 2;
+      Nav.go('combat-screen');
+      setTimeout(function(){ Combat.start(enemyData); }, 350);
+    }, 500);
   }
 
   return {
