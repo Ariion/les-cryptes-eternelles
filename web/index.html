@@ -928,6 +928,227 @@ canvas#particles {
   letter-spacing:1px; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
 }
 #dm-camp-btn:active { transform:scale(0.95); }
+
+/* ── MENU SETTINGS BTN ── */
+#btn-menu-settings {
+  background:none; border:none; cursor:pointer;
+  font-family:'Cinzel',serif; font-size:11px; color:rgba(237,232,223,0.45);
+  letter-spacing:1px; padding:6px 12px; margin-top:8px;
+  transition:color 0.2s;
+}
+#btn-menu-settings:active { color:rgba(201,165,80,0.8); }
+
+/* ── INN ROOM ── */
+#inn-room {
+  background:#1a0f08;
+  flex-direction:column; align-items:stretch; justify-content:flex-end;
+  overflow:hidden; position:relative;
+}
+#inn-bg {
+  position:absolute; inset:0; pointer-events:none;
+}
+#inn-wall {
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, #1a0f08 0%, #2a1a0e 60%, #1a0f08 100%);
+}
+#inn-ceiling {
+  position:absolute; top:0; left:0; right:0; height:80px;
+  background: linear-gradient(180deg, #0e0805 0%, #2a1a0e 100%);
+  transform-origin: top center;
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+}
+#inn-window {
+  position:absolute; top:18px; left:50%; transform:translateX(-50%);
+  width:90px; height:65px;
+  background:#1a2a4a;
+  border:3px solid #3a2a18;
+  border-radius:4px 4px 0 0;
+  overflow:hidden; box-shadow: 0 0 18px rgba(100,140,220,0.25);
+}
+#inn-sky {
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, #0a1128 0%, #1a2a50 50%, #2a3060 100%);
+}
+#inn-castle {
+  position:absolute; bottom:0; left:0; right:0; width:100%; height:60px;
+}
+#inn-candle {
+  position:absolute; top:100px; left:68px;
+}
+#inn-candle-body {
+  width:10px; height:30px; background:#e8d8a0;
+  border-radius:2px;
+  box-shadow: 0 0 6px rgba(255,180,60,0.3);
+}
+#inn-flame {
+  width:8px; height:14px;
+  background: radial-gradient(ellipse at 50% 80%, #fff7a0 0%, #ffaa00 50%, transparent 100%);
+  border-radius:50% 50% 30% 30%;
+  margin:0 auto -2px;
+  animation: flicker 1.2s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+@keyframes flicker {
+  0%   { transform:scaleX(1)   scaleY(1)   rotate(-2deg); opacity:1; }
+  25%  { transform:scaleX(0.85) scaleY(1.1) rotate(1deg);  opacity:0.95; }
+  50%  { transform:scaleX(1.1) scaleY(0.95) rotate(-1deg); opacity:1; }
+  75%  { transform:scaleX(0.9) scaleY(1.05) rotate(2deg);  opacity:0.9; }
+  100% { transform:scaleX(1)   scaleY(1)   rotate(-1deg); opacity:1; }
+}
+#inn-bed {
+  position:absolute; bottom:160px; right:-10px;
+}
+#inn-bed-frame {
+  width:100px; height:55px; background:#3a1f0a;
+  border-radius:8px 8px 0 0;
+  border:2px solid #5a3010;
+}
+#inn-bed-pillow {
+  position:absolute; top:6px; left:8px;
+  width:40px; height:22px; background:#d4c8a8;
+  border-radius:4px;
+}
+#inn-bed-blanket {
+  position:absolute; top:16px; left:4px; right:4px; bottom:0;
+  background: linear-gradient(135deg, #8b1a1a, #6b1010);
+  border-radius:4px;
+}
+#inn-chest {
+  position:absolute; bottom:160px; left:10px;
+}
+#inn-chest-body {
+  width:55px; height:35px; background:#4a2a0a;
+  border:2px solid #6a4010; border-radius:3px;
+}
+#inn-chest-lid {
+  position:absolute; top:-12px; left:-1px;
+  width:55px; height:14px; background:#5a3a10;
+  border:2px solid #6a4010; border-radius:3px 3px 0 0;
+}
+#inn-chest-clasp {
+  position:absolute; top:10px; left:23px;
+  width:10px; height:10px; background:#C9A550;
+  border-radius:50%;
+}
+#inn-floor-persp {
+  position:absolute; bottom:0; left:0; right:0; height:180px;
+  background: linear-gradient(180deg, transparent 0%, #2a1808 40%, #1a0f05 100%);
+}
+#inn-vignette {
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 80% 80% at 50% 40%, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+#inn-header {
+  position:relative; z-index:2;
+  padding:12px 16px 8px;
+  background: linear-gradient(180deg, rgba(7,7,28,0.85) 0%, rgba(7,7,28,0.0) 100%);
+}
+#inn-hero-name {
+  font-family:'Cinzel',serif; font-size:13px; color:#C9A550;
+  letter-spacing:1.5px; text-align:center; margin-bottom:6px;
+}
+#inn-hp-bar-wrap {
+  height:6px; background:rgba(255,255,255,0.12); border-radius:3px;
+  overflow:hidden; margin:0 8px;
+}
+#inn-hp-bar-fill {
+  height:100%; background: linear-gradient(90deg, #C9A550, #e8c060);
+  border-radius:3px; transition:width 0.4s ease;
+  width:100%;
+}
+#inn-hp-text {
+  font-family:'Crimson Text',serif; font-size:11px; color:rgba(237,232,223,0.6);
+  text-align:center; margin-top:3px;
+}
+#inn-actions {
+  position:relative; z-index:2;
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; padding:12px 14px 20px;
+  background: linear-gradient(0deg, rgba(7,7,28,0.92) 70%, transparent 100%);
+}
+.inn-btn {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:5px; padding:14px 8px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.25);
+  border-radius:10px; cursor:pointer;
+  font-family:'Cinzel',serif; color:#EDE8DF;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.inn-btn:active { transform:scale(0.96); background:rgba(201,165,80,0.18); }
+.inn-btn-ico { font-size:22px; }
+.inn-btn-lbl { font-size:9.5px; letter-spacing:0.8px; color:rgba(237,232,223,0.8); }
+
+/* ── WORLD MAP ── */
+#world-map {
+  background:#c8a96e;
+  flex-direction:column; align-items:stretch;
+  overflow:hidden; position:relative;
+}
+#wm-bg {
+  position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(ellipse 90% 80% at 50% 50%, #d4b87a 0%, #b89455 60%, #8a6a30 100%);
+}
+#wm-texture {
+  position:absolute; inset:0;
+}
+#wm-border {
+  position:absolute; inset:8px;
+  border:3px solid rgba(80,45,10,0.5);
+  border-radius:4px;
+  box-shadow: inset 0 0 30px rgba(80,45,10,0.3);
+}
+#wm-title-wrap {
+  position:relative; z-index:2;
+  padding:20px 16px 10px; text-align:center;
+}
+#wm-title {
+  font-family:'Cinzel',serif; font-size:20px; color:#3a1f05;
+  letter-spacing:2px; text-shadow:1px 1px 0 rgba(255,220,140,0.4);
+}
+#wm-deco {
+  font-family:'Crimson Text',serif; font-size:12px; color:rgba(58,31,5,0.65);
+  margin-top:3px; font-style:italic;
+}
+#wm-zones {
+  position:relative; z-index:2;
+  flex:1; overflow-y:auto;
+  padding:6px 14px; display:flex; flex-direction:column; gap:7px;
+}
+#wm-zones::-webkit-scrollbar { display:none; }
+.wm-zone {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  background:rgba(255,240,200,0.45); border:1px solid rgba(80,45,10,0.3);
+  border-radius:8px; cursor:pointer;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.wm-zone:active { transform:scale(0.97); background:rgba(255,240,200,0.7); }
+.wm-zone-legendary { border-color:rgba(150,80,10,0.6); background:rgba(80,30,5,0.15); }
+.wm-zone-legendary:active { background:rgba(80,30,5,0.3); }
+.wm-zone-ico { font-size:26px; flex-shrink:0; }
+.wm-zone-info { flex:1; min-width:0; }
+.wm-zone-name { font-family:'Cinzel',serif; font-size:11px; color:#3a1f05; letter-spacing:0.5px; }
+.wm-zone-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(58,31,5,0.65); margin-top:1px; }
+.wm-zone-badge {
+  font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:0.5px;
+  padding:3px 7px; border-radius:20px; flex-shrink:0; font-weight:700;
+}
+.wm-zone-badge.easy     { background:#2d5a27; color:#a8e09a; }
+.wm-zone-badge.medium   { background:#5a4a10; color:#e0c060; }
+.wm-zone-badge.hard     { background:#5a2a10; color:#e08040; }
+.wm-zone-badge.danger   { background:#5a1010; color:#e05050; }
+.wm-zone-badge.extreme  { background:#3a0a3a; color:#c060c0; }
+.wm-zone-badge.legendary{ background:#2a1508; color:#C9A550; border:1px solid #C9A550; }
+#wm-back-btn {
+  position:relative; z-index:2;
+  margin:8px 14px 16px;
+  padding:10px; background:rgba(80,45,10,0.2);
+  border:1px solid rgba(80,45,10,0.35); border-radius:8px;
+  font-family:'Cinzel',serif; font-size:11px; color:#3a1f05;
+  cursor:pointer; letter-spacing:1px;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#wm-back-btn:active { background:rgba(80,45,10,0.4); }
 </style>
 </head>
 <body>
@@ -978,8 +1199,7 @@ canvas#particles {
       <div id="menu-btns">
         <button class="btn btn-primary" onclick="Nav.go('char-select')"><span class="ico">⚔</span>Nouvelle Partie</button>
         <button class="btn btn-secondary" id="btn-continue" style="display:none" onclick="App.continueGame()"><span class="ico">↩</span>Continuer</button>
-        <button class="btn btn-secondary" onclick="App.showHero()"><span class="ico">◈</span>Mon Héros</button>
-        <button class="btn btn-secondary" onclick="App.showSettings()"><span class="ico">⚙</span>Paramètres</button>
+        <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
     </div>
@@ -1141,6 +1361,7 @@ canvas#particles {
         <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
       </div>
       <button id="btn-go-retry" onclick="App.retryRun()">⚔ Recommencer</button>
+      <button id="btn-go-inn" onclick="App.retryRun()">🏠 Chambre d'auberge</button>
       <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
     </div>
 
@@ -1315,6 +1536,125 @@ canvas#particles {
         </div>
 
       </div>
+    </div>
+
+    <!-- ── INN ROOM (HUB) ── -->
+    <div id="inn-room" class="screen">
+      <div id="inn-bg">
+        <div id="inn-wall"></div>
+        <div id="inn-ceiling"></div>
+        <div id="inn-window">
+          <div id="inn-sky"></div>
+          <svg id="inn-castle" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="30" width="100" height="30" fill="#1a1a2e"/>
+            <rect x="20" y="18" width="16" height="20" fill="#1a1a2e"/>
+            <rect x="50" y="10" width="20" height="26" fill="#1a1a2e"/>
+            <rect x="84" y="18" width="16" height="20" fill="#1a1a2e"/>
+            <rect x="20" y="14" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="28" y="14" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="50" y="6" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="58" y="6" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="66" y="6" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="84" y="14" width="4" height="6" fill="#1a1a2e"/>
+            <rect x="92" y="14" width="4" height="6" fill="#1a1a2e"/>
+          </svg>
+        </div>
+        <div id="inn-candle">
+          <div id="inn-flame"></div>
+          <div id="inn-candle-body"></div>
+        </div>
+        <div id="inn-bed">
+          <div id="inn-bed-frame"></div>
+          <div id="inn-bed-pillow"></div>
+          <div id="inn-bed-blanket"></div>
+        </div>
+        <div id="inn-chest">
+          <div id="inn-chest-body"></div>
+          <div id="inn-chest-lid"></div>
+          <div id="inn-chest-clasp"></div>
+        </div>
+        <div id="inn-floor-persp"></div>
+        <div id="inn-vignette"></div>
+      </div>
+      <div id="inn-header">
+        <div id="inn-hero-name">Aventurier</div>
+        <div id="inn-hp-bar-wrap">
+          <div id="inn-hp-bar-fill"></div>
+        </div>
+        <div id="inn-hp-text">-- / -- PV</div>
+      </div>
+      <div id="inn-actions">
+        <button class="inn-btn" onclick="Nav.go('world-map')"><span class="inn-btn-ico">🗺</span><span class="inn-btn-lbl">Explorer la région</span></button>
+        <button class="inn-btn" onclick="InnRoom.rest()"><span class="inn-btn-ico">🛌</span><span class="inn-btn-lbl">Se reposer</span></button>
+        <button class="inn-btn" onclick="Meta.buildScreen(); Nav.go('hero-screen')"><span class="inn-btn-ico">◈</span><span class="inn-btn-lbl">Mon Héros</span></button>
+        <button class="inn-btn" onclick="Nav.go('settings-screen')"><span class="inn-btn-ico">⚙</span><span class="inn-btn-lbl">Paramètres</span></button>
+      </div>
+    </div>
+
+    <!-- ── WORLD MAP ── -->
+    <div id="world-map" class="screen">
+      <div id="wm-bg">
+        <svg id="wm-texture" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+          <filter id="wm-noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+          <rect width="100%" height="100%" filter="url(#wm-noise)" opacity="0.18"/>
+        </svg>
+        <div id="wm-border"></div>
+      </div>
+      <div id="wm-title-wrap">
+        <div id="wm-title">Carte du Monde</div>
+        <div id="wm-deco">— Choisissez votre destination —</div>
+      </div>
+      <div id="wm-zones">
+        <div class="wm-zone" onclick="WorldMap.enter('grottes')">
+          <div class="wm-zone-ico">🪨</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Grottes des Ombres</div>
+            <div class="wm-zone-desc">Tous niveaux · Conseil : Niv.1-2</div>
+          </div>
+          <div class="wm-zone-badge easy">Facile</div>
+        </div>
+        <div class="wm-zone" onclick="WorldMap.enter('foret')">
+          <div class="wm-zone-ico">🌲</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Forêt des Âmes Perdues</div>
+            <div class="wm-zone-desc">Niv.2+ · Conseil : Niv.2-4</div>
+          </div>
+          <div class="wm-zone-badge medium" id="wm-badge-foret">Moyen</div>
+        </div>
+        <div class="wm-zone" onclick="WorldMap.enter('ruines')">
+          <div class="wm-zone-ico">🏚</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Ruines d'Astavar</div>
+            <div class="wm-zone-desc">Niv.3+ · Conseil : Niv.3-5</div>
+          </div>
+          <div class="wm-zone-badge hard" id="wm-badge-ruines">Difficile</div>
+        </div>
+        <div class="wm-zone" onclick="WorldMap.enter('port')">
+          <div class="wm-zone-ico">🌊</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Port des Tempêtes</div>
+            <div class="wm-zone-desc">Niv.4+ · Conseil : Niv.4-6</div>
+          </div>
+          <div class="wm-zone-badge danger" id="wm-badge-port">Dangereux</div>
+        </div>
+        <div class="wm-zone" onclick="WorldMap.enter('pics')">
+          <div class="wm-zone-ico">🏔</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Pics du Néant</div>
+            <div class="wm-zone-desc">Niv.6+ · Conseil : Niv.6-8</div>
+          </div>
+          <div class="wm-zone-badge extreme" id="wm-badge-pics">Extrême</div>
+        </div>
+        <div class="wm-zone wm-zone-legendary" onclick="WorldMap.enter('cryptes')">
+          <div class="wm-zone-ico">⚰</div>
+          <div class="wm-zone-info">
+            <div class="wm-zone-name">Les Cryptes Éternelles</div>
+            <div class="wm-zone-desc">Tous niveaux · Le donjon original</div>
+          </div>
+          <div class="wm-zone-badge legendary">Légendaire</div>
+        </div>
+      </div>
+      <button id="wm-back-btn" onclick="Nav.go('inn-room')">← Retour</button>
     </div>
 
     <!-- Transition étage (overlay) -->
@@ -1705,6 +2045,8 @@ var Nav = {
     if (typeof Music !== 'undefined') {
       if (id==='combat-screen') Music.play('combat');
       else if (id==='dungeon-map') Music.play('dungeon');
+      else if (id==='inn-room') Music.play('menu');
+      else if (id==='world-map') Music.play('dungeon');
       else if (id==='main-menu'||id==='char-select'||id==='title-screen') Music.play('menu');
       else if (id==='gameover-screen') Music.stop();
     }
@@ -2885,6 +3227,8 @@ var DungeonMap = (function() {
         if (!pool.length) pool = getEnemiesForFloor(1);
         var enemyData = pool[Math.floor(Math.random()*pool.length)];
         if (type === 'elite') enemyData = Object.assign({}, enemyData, { hp:Math.round(enemyData.hp*1.5), atk:Math.round(enemyData.atk*1.2), gold:Math.round(enemyData.gold*2) });
+        var zm = State._zoneMod || { enemyMod:1, goldMod:1 };
+        enemyData = Object.assign({}, enemyData, { atk:Math.round(enemyData.atk*zm.enemyMod), def:Math.round(enemyData.def*zm.enemyMod), gold:Math.round(enemyData.gold*zm.goldMod) });
         Nav.go('combat-screen');
         setTimeout(function(){ Combat.start(enemyData); }, 350);
       }
@@ -3002,6 +3346,57 @@ var Travel = {
   },
 };
 
+// ── INN ROOM ───────────────────────────────────────────────────────
+var InnRoom = {
+  enter: function() {
+    var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
+    var heroName = (r.id||'Aventurier') + ' · ' + (c.id||'Guerrier');
+    var el = document.getElementById('inn-hero-name');
+    if (el) el.textContent = heroName;
+    InnRoom.updateHp();
+  },
+  updateHp: function() {
+    var hp = State.hp||0, hpMax = State.hpMax||1;
+    var fill = document.getElementById('inn-hp-bar-fill');
+    var txt  = document.getElementById('inn-hp-text');
+    if (fill) fill.style.width = Math.max(0, Math.min(100, hp/hpMax*100)) + '%';
+    if (txt)  txt.textContent = hp + ' / ' + hpMax + ' PV';
+  },
+  rest: function() {
+    var heal = Math.ceil((State.hpMax||1) * 0.5);
+    State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
+    InnRoom.updateHp();
+    if (typeof Sfx !== 'undefined') Sfx.heal && Sfx.heal();
+  },
+};
+
+// ── WORLD MAP ──────────────────────────────────────────────────────
+var ZONE_DATA = {
+  grottes: { enemyMod:0.7, goldMod:0.9,  floors:4, minLevel:1,  label:'Grottes des Ombres' },
+  foret:   { enemyMod:1.0, goldMod:1.1,  floors:5, minLevel:2,  label:'Forêt des Âmes Perdues' },
+  ruines:  { enemyMod:1.3, goldMod:1.4,  floors:5, minLevel:3,  label:'Ruines d\'Astavar' },
+  port:    { enemyMod:1.6, goldMod:1.7,  floors:5, minLevel:4,  label:'Port des Tempêtes' },
+  pics:    { enemyMod:2.0, goldMod:2.2,  floors:6, minLevel:6,  label:'Pics du Néant' },
+  cryptes: { enemyMod:1.0, goldMod:1.0,  floors:6, minLevel:1,  label:'Les Cryptes Éternelles' },
+};
+
+var WorldMap = {
+  enter: function(zoneId) {
+    var zone = ZONE_DATA[zoneId];
+    if (!zone) return;
+    var lvl = State.level||1;
+    if (lvl < zone.minLevel) {
+      var ok = confirm('⚠ Zone dangereuse ! Ton niveau (' + lvl + ') est inférieur au conseil (' + zone.minLevel + '). Continuer quand même ?');
+      if (!ok) return;
+    }
+    State._zoneMod = { enemyMod: zone.enemyMod, goldMod: zone.goldMod };
+    State.floor = 1;
+    Nav.go('dungeon-map');
+    setTimeout(function(){ DungeonMap.init(1, State.hp, State.hpMax); }, 300);
+  },
+};
+
 var App = {
   startRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; });
@@ -3019,8 +3414,9 @@ var App = {
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0;
     State.critBonus = b.crit||0;
-    Nav.go('dungeon-map');
-    setTimeout(function(){ DungeonMap.init(1, State.hp, State.hpMax); }, 300);
+    State._zoneMod = { enemyMod:1, goldMod:1 };
+    Nav.go('inn-room');
+    setTimeout(function(){ InnRoom.enter(); }, 300);
   },
   continueGame: function(){ alert('Continuer — prochain commit !'); },
   showHero: function(){ Meta.buildScreen(); Nav.go('hero-screen'); },
@@ -3041,8 +3437,9 @@ var App = {
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0;
     State.critBonus = b.crit||0;
-    Nav.go('dungeon-map');
-    setTimeout(function(){ DungeonMap.init(1,State.hp,State.hpMax); },300);
+    State._zoneMod = { enemyMod:1, goldMod:1 };
+    Nav.go('inn-room');
+    setTimeout(function(){ InnRoom.enter(); }, 300);
   },
 };
 
