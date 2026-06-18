@@ -17,6 +17,122 @@ const ENEMIES_BY_TIER := {
 	4: ["Troll", "Vampire", "Golem", "Demon"],
 }
 
+func generate_map(floor_number: int) -> Dictionary:
+	_rng.randomize()
+	var nodes := []
+	var layers := []
+	var edges := []
+
+	# Layer 0: entrance
+	var node_id := 0
+	var layer0_node := {
+		"id": 0,
+		"layer": 0,
+		"type": RoomType.ENTRANCE,
+		"cleared": false,
+		"enemies": [],
+		"loot": {},
+	}
+	nodes.append(layer0_node)
+	layers.append([0])
+	node_id = 1
+
+	# Layers 1-4: 2-3 nodes each
+	for layer in range(1, 5):
+		var count := _rng.randi_range(2, 3)
+		var layer_ids := []
+		for _i in range(count):
+			var t := _pick_type_for_layer(layer, floor_number)
+			var n := {
+				"id": node_id,
+				"layer": layer,
+				"type": t,
+				"cleared": false,
+				"enemies": _generate_enemies(t, floor_number),
+				"loot": _generate_loot(t, floor_number),
+			}
+			nodes.append(n)
+			layer_ids.append(node_id)
+			node_id += 1
+		layers.append(layer_ids)
+
+	# Layer 5: boss
+	var boss_node := {
+		"id": node_id,
+		"layer": 5,
+		"type": RoomType.BOSS,
+		"cleared": false,
+		"enemies": _generate_enemies(RoomType.BOSS, floor_number),
+		"loot": _generate_loot(RoomType.BOSS, floor_number),
+	}
+	nodes.append(boss_node)
+	layers.append([node_id])
+
+	# Edge generation
+	for layer in range(0, 5):
+		var from_ids: Array = layers[layer]
+		var to_ids: Array = layers[layer + 1]
+
+		var to_covered := {}
+		for tid in to_ids:
+			to_covered[tid] = false
+
+		var edge_set := {}
+		for fid in from_ids:
+			var shuffled_to := to_ids.duplicate()
+			shuffled_to.shuffle()
+			var num_connections := _rng.randi_range(1, min(2, to_ids.size()))
+			for k in range(num_connections):
+				var tid = shuffled_to[k]
+				var key = str(fid) + "_" + str(tid)
+				if not edge_set.has(key):
+					edge_set[key] = true
+					edges.append([fid, tid])
+					to_covered[tid] = true
+
+		# Ensure all to_ids have at least one incoming edge
+		for tid in to_ids:
+			if not to_covered[tid]:
+				var fid = from_ids[_rng.randi() % from_ids.size()]
+				var key = str(fid) + "_" + str(tid)
+				if not edge_set.has(key):
+					edge_set[key] = true
+					edges.append([fid, tid])
+
+	return {
+		"nodes": nodes,
+		"layers": layers,
+		"edges": edges,
+		"current_node": 0,
+		"reachable": [0],
+	}
+
+func _pick_type_for_layer(layer: int, _floor: int) -> RoomType:
+	var r := _rng.randf()
+	match layer:
+		1, 2:
+			if r < 0.60:
+				return RoomType.COMBAT
+			elif r < 0.85:
+				return RoomType.TREASURE
+			else:
+				return RoomType.REST
+		3:
+			if r < 0.35:
+				return RoomType.COMBAT
+			elif r < 0.70:
+				return RoomType.TREASURE
+			else:
+				return RoomType.REST
+		4:
+			if r < 0.45:
+				return RoomType.REST
+			elif r < 0.80:
+				return RoomType.COMBAT
+			else:
+				return RoomType.TREASURE
+	return RoomType.COMBAT
+
 func generate_floor(floor_number: int) -> Array:
 	_rng.randomize()
 	var rooms := []
