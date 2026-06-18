@@ -33,6 +33,9 @@ const ENEMY_DATA := {
 
 const _DMG_SCRIPT := preload("res://scenes/ui/DamageNumber.gd")
 
+func _ready() -> void:
+	queue_redraw()
+
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
 	var data: Dictionary = ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"])
