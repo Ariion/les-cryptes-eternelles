@@ -114,32 +114,29 @@ func _start_enemy_turn() -> void:
 		_end_combat(false)
 		return
 
-	get_tree().create_timer(0.7).timeout.connect(_run_enemy_actions)
+	await get_tree().create_timer(0.7).timeout
+	await _process_all_enemies()
 
-func _run_enemy_actions() -> void:
-	if state == CombatState.ENDED:
-		return
+func _process_all_enemies() -> void:
 	for enemy in enemies:
-		if not is_instance_valid(enemy) or not enemy.is_alive():
+		if not enemy.is_alive():
 			continue
 		var msgs: Array = enemy.process_status_effects()
 		for msg in msgs:
 			emit_signal("combat_log", str(msg))
 		if not enemy.is_alive():
 			_on_enemy_defeated(enemy)
-			if state == CombatState.ENDED:
-				return
 			continue
-		_process_single_enemy(enemy)
-		if int(player.stats.get("hp", 0)) == 0:
-			_end_combat(false)
-			return
+		await _process_single_enemy(enemy)
+		await get_tree().create_timer(0.3).timeout
 
-	if state != CombatState.ENDED:
+	if int(player.stats.get("hp", 0)) == 0:
+		_end_combat(false)
+	else:
 		_player_defending = false
 		_back_to_player_turn()
 
-func _process_single_enemy(enemy: Node) -> void:  # sync — called from _run_enemy_actions
+func _process_single_enemy(enemy: Node) -> void:
 	var action: Dictionary = enemy.choose_action()
 	var action_type: String = str(action.get("type", "attack"))
 	match action_type:
@@ -183,8 +180,6 @@ func _process_single_enemy(enemy: Node) -> void:  # sync — called from _run_en
 			emit_signal("combat_log", "%s se met en garde." % enemy.enemy_name)
 
 func _on_enemy_defeated(enemy: Node) -> void:
-	if state == CombatState.ENDED:
-		return
 	emit_signal("combat_log", "%s est vaincu !" % enemy.enemy_name)
 	SoundManager.play_sfx("victory")
 	GameManager.run_stats["kills"] += 1
