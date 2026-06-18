@@ -17,6 +17,84 @@ const ENEMIES_BY_TIER := {
 	4: ["Troll", "Vampire", "Golem", "Demon"],
 }
 
+func generate_map(floor_number: int) -> Dictionary:
+	_rng.randomize()
+
+	# Layer definitions: 0=entrance, 1-4=middle, 5=boss
+	var layer_type_lists: Array = [
+		[RoomType.ENTRANCE],
+		_random_layer_types(2, 1, floor_number),
+		_random_layer_types(3, 2, floor_number),
+		_random_layer_types(2, 3, floor_number),
+		_random_layer_types(2, 4, floor_number),
+		[RoomType.BOSS],
+	]
+
+	# Build nodes
+	var nodes: Array = []
+	var layers: Array = []
+	var nid := 0
+	for layer_idx in layer_type_lists.size():
+		var layer_ids: Array = []
+		for type in layer_type_lists[layer_idx]:
+			nodes.append({
+				"id": nid, "layer": layer_idx, "type": type,
+				"cleared": false,
+				"enemies": _generate_enemies(type, floor_number),
+				"loot": _generate_loot(type, floor_number),
+			})
+			layer_ids.append(nid)
+			nid += 1
+		layers.append(layer_ids)
+
+	# Build edges: each node connects to 1-2 nodes in next layer
+	var edges: Array = []
+	for layer_idx in range(layers.size() - 1):
+		var from_ids: Array = layers[layer_idx]
+		var to_ids: Array = layers[layer_idx + 1]
+		var covered: Dictionary = {}
+		for tid in to_ids:
+			covered[tid] = false
+		for fid in from_ids:
+			var shuffled: Array = to_ids.duplicate()
+			shuffled.shuffle()
+			var cnt := 1 if to_ids.size() == 1 else _rng.randi_range(1, min(2, to_ids.size()))
+			for i in cnt:
+				var pair := [fid, shuffled[i]]
+				if not pair in edges:
+					edges.append(pair)
+					covered[shuffled[i]] = true
+		# Ensure every target has at least one incoming edge
+		for tid in covered:
+			if not covered[tid]:
+				var fid = from_ids[_rng.randi() % from_ids.size()]
+				var pair := [fid, tid]
+				if not pair in edges:
+					edges.append(pair)
+
+	return {
+		"nodes": nodes, "layers": layers, "edges": edges,
+		"current_node": -1, "reachable": [layers[0][0]],
+	}
+
+func _random_layer_types(count: int, layer: int, floor_number: int) -> Array:
+	var out: Array = []
+	for i in count:
+		out.append(_pick_room_type_for_layer(layer))
+	return out
+
+func _pick_room_type_for_layer(layer: int) -> RoomType:
+	var r := _rng.randf()
+	match layer:
+		1, 2:
+			return RoomType.COMBAT if r < 0.60 else (RoomType.TREASURE if r < 0.85 else RoomType.REST)
+		3:
+			return RoomType.COMBAT if r < 0.35 else (RoomType.TREASURE if r < 0.70 else RoomType.REST)
+		4:
+			return RoomType.REST if r < 0.45 else (RoomType.COMBAT if r < 0.80 else RoomType.TREASURE)
+		_:
+			return RoomType.COMBAT
+
 func generate_floor(floor_number: int) -> Array:
 	_rng.randomize()
 	var rooms := []
