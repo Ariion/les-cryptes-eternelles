@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Les Cryptes Éternelles</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    touch-action: manipulation;
+  }
+
+  #app {
+    width: 100vw;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── ÉCRANS ─────────────────────────────────────── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── SPLASH LOGO ─────────────────────────────────── */
+  #splash {
+    background: #fff;
+  }
+
+  #splash-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    transform: scale(0.85);
+    opacity: 0;
+    transition: transform 0.7s cubic-bezier(.22,1,.36,1), opacity 0.7s ease;
+  }
+  #splash-logo.visible {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  #splash-logo svg { width: 160px; height: 160px; }
+
+  #splash-wordmark {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: #2D3A6B;
+  }
+  #splash-wordmark span { color: #2EC4D6; }
+  #splash-wordmark sup {
+    font-size: 11px;
+    color: #2D3A6B;
+    background: #2D3A6B;
+    color: #fff;
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: super;
+    margin-left: 1px;
+  }
+
+  /* ── TITLE SCREEN ─────────────────────────────────── */
+  #title-screen {
+    background: #07071c;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(66,37,99,0.35) 0%, transparent 70%);
+  }
+
+  .title-ornament {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .title-ornament .line {
+    width: 60px; height: 1px;
+    background: rgba(201,165,80,0.4);
+  }
+  .title-ornament .diamond { color: #C9A550; font-size: 12px; }
+
+  #title-les {
+    font-size: clamp(14px, 5vw, 18px);
+    font-weight: 400;
+    letter-spacing: 6px;
+    color: rgba(201,165,80,0.7);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #title-cryptes {
+    font-size: clamp(42px, 12vw, 58px);
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #C9A550;
+    text-transform: uppercase;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease 0.15s, transform 0.6s ease 0.15s;
+  }
+  #title-eternelles {
+    font-size: clamp(28px, 8vw, 38px);
+    font-weight: 300;
+    letter-spacing: 8px;
+    color: #EDE8DF;
+    text-transform: uppercase;
+    margin-top: 4px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+  }
+  #title-tagline {
+    font-size: 13px;
+    color: rgba(201,165,80,0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.5s;
+  }
+
+  #title-screen.active #title-les,
+  #title-screen.active #title-cryptes,
+  #title-screen.active #title-eternelles,
+  #title-screen.active #title-tagline {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #tap-hint {
+    position: absolute;
+    bottom: 60px;
+    font-size: 13px;
+    color: rgba(237,232,223,0.35);
+    letter-spacing: 2px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.8; }
+  }
+
+  /* ── MENU PRINCIPAL ──────────────────────────────── */
+  #main-menu {
+    background: #07071c;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(66,37,99,0.35) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,0,0,0.8) 0%, transparent 70%);
+    padding: 0 28px;
+    gap: 0;
+    justify-content: flex-end;
+    padding-bottom: 60px;
+  }
+
+  #menu-header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  #menu-title-small {
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: rgba(201,165,80,0.55);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  #menu-title-main {
+    font-size: clamp(36px, 10vw, 48px);
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #C9A550;
+    text-align: center;
+    line-height: 1.1;
+  }
+  #menu-title-sub {
+    font-size: clamp(20px, 5.5vw, 26px);
+    font-weight: 300;
+    letter-spacing: 6px;
+    color: #EDE8DF;
+    text-align: center;
+  }
+  #menu-sep {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  #menu-sep .line { width: 50px; height: 1px; background: rgba(201,165,80,0.25); }
+  #menu-sep .dot { color: #C9A550; font-size: 10px; }
+
+  .menu-buttons {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: rgba(201,165,80,0.12);
+    border: 1px solid #C9A550;
+    color: #C9A550;
+  }
+  .btn-primary:hover { background: rgba(201,165,80,0.2); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,165,80,0.25);
+    color: #EDE8DF;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.07); }
+
+  #menu-footer {
+    position: absolute;
+    bottom: 16px;
+    font-size: 10px;
+    color: rgba(201,165,80,0.25);
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── SPLASH LOGO ── -->
+  <div id="splash" class="screen">
+    <div id="splash-logo">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Triangle bleu marine (gauche) -->
+        <polygon points="30,165 100,35 135,95 90,95 100,115 60,115" fill="#2D3A6B"/>
+        <!-- Encoche bas gauche -->
+        <polygon points="55,165 75,165 90,135 70,135" fill="#2D3A6B"/>
+        <!-- Triangle cyan (droite, décalé) -->
+        <polygon points="80,35 155,165 115,165 100,135 140,135 105,75" fill="#2EC4D6"/>
+        <!-- Chevauchement central (masque) -->
+        <polygon points="100,35 135,95 115,75" fill="#1a8fa0"/>
+      </svg>
+      <div id="splash-wordmark">
+        <span style="color:#2D3A6B">a</span><span>ardesign</span><sup>fr</sup>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TITLE SCREEN ── -->
+  <div id="title-screen" class="screen">
+    <div class="title-ornament">
+      <div class="line"></div>
+      <div class="diamond">✦</div>
+      <div class="line"></div>
+    </div>
+    <div id="title-les">Les</div>
+    <div id="title-cryptes">Cryptes</div>
+    <div id="title-eternelles">Éternelles</div>
+    <div id="title-tagline">Roguelite · Donjon · Tour par tour</div>
+    <div id="tap-hint">Appuie pour continuer</div>
+  </div>
+
+  <!-- ── MAIN MENU ── -->
+  <div id="main-menu" class="screen">
+    <div id="menu-header">
+      <div id="menu-title-small">Les</div>
+      <div id="menu-title-main">Cryptes</div>
+      <div id="menu-title-sub">Éternelles</div>
+      <div id="menu-sep">
+        <div class="line"></div>
+        <div class="dot">✦</div>
+        <div class="line"></div>
+      </div>
+    </div>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" onclick="App.newGame()">⚔&nbsp;&nbsp;Nouvelle Partie</button>
+      <button class="btn btn-secondary" id="btn-continue" onclick="App.continueGame()" style="display:none">↩&nbsp;&nbsp;Continuer</button>
+      <button class="btn btn-secondary" onclick="App.showHero()">◈&nbsp;&nbsp;Mon Héros</button>
+      <button class="btn btn-secondary" onclick="App.showSettings()">⚙&nbsp;&nbsp;Paramètres</button>
+    </div>
+    <div id="menu-footer">aardesign.fr · v1.0</div>
+  </div>
+
+</div>
+
+<script>
+// ── NAVIGATION ────────────────────────────────────────────────
+const screens = {};
+document.querySelectorAll('.screen').forEach(s => screens[s.id] = s);
+
+function showScreen(id) {
+  Object.values(screens).forEach(s => s.classList.remove('active'));
+  if (screens[id]) screens[id].classList.add('active');
+}
+
+// ── INTRO SEQUENCE ────────────────────────────────────────────
+function runIntro() {
+  // 1. Affiche splash blanc
+  showScreen('splash');
+
+  // 2. Anime le logo après 200ms
+  setTimeout(function() {
+    document.getElementById('splash-logo').classList.add('visible');
+  }, 200);
+
+  // 3. Fade out splash après 2.2s
+  setTimeout(function() {
+    screens['splash'].style.transition = 'opacity 0.7s ease';
+    screens['splash'].style.opacity = '0';
+  }, 2200);
+
+  // 4. Affiche title screen après 2.9s
+  setTimeout(function() {
+    showScreen('title-screen');
+  }, 2900);
+
+  // 5. Écoute tap/click pour aller au menu
+  screens['title-screen'].addEventListener('click', goToMenu, { once: true });
+  screens['title-screen'].addEventListener('touchstart', goToMenu, { once: true });
+
+  // 6. Auto-avance après 5s si pas de tap
+  setTimeout(function() {
+    goToMenu();
+  }, 7000);
+}
+
+function goToMenu() {
+  screens['title-screen'].removeEventListener('click', goToMenu);
+  screens['title-screen'].removeEventListener('touchstart', goToMenu);
+  screens['title-screen'].style.transition = 'opacity 0.5s ease';
+  screens['title-screen'].style.opacity = '0';
+  setTimeout(function() {
+    showScreen('main-menu');
+    // Affiche "Continuer" si save existant
+    if (localStorage.getItem('cge_save')) {
+      document.getElementById('btn-continue').style.display = 'block';
+    }
+  }, 500);
+}
+
+// ── APP ────────────────────────────────────────────────────────
+var App = {
+  newGame: function() {
+    alert('Nouvelle partie — à venir !');
+  },
+  continueGame: function() {
+    alert('Continuer — à venir !');
+  },
+  showHero: function() {
+    alert('Mon Héros — à venir !');
+  },
+  showSettings: function() {
+    alert('Paramètres — à venir !');
+  }
+};
+
+// ── START ──────────────────────────────────────────────────────
+window.addEventListener('load', runIntro);
+</script>
+</body>
+</html>
