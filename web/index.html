@@ -1161,7 +1161,7 @@ canvas#particles {
 
       <div id="cs-footer">
         <button id="btn-start-run" onclick="App.startRun()">
-          <span class="ico">⚔</span> Entrer dans le Donjon
+          <span class="ico">⚔</span> Commencer l'Aventure
         </button>
       </div>
     </div>
@@ -1319,7 +1319,7 @@ canvas#particles {
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
-      <button id="dm-camp-btn" onclick="Travel.openMap()">🗺 Voyager</button>
+      <button id="dm-camp-btn" onclick="Nav.go('world-map')">🗺 Voyager</button>
     </div>
 
     <!-- ── LEVEL UP OVERLAY ── -->
@@ -2756,8 +2756,8 @@ function advanceFloor() {
   ft.classList.add('show');
   setTimeout(function(){
     ft.classList.remove('show');
-    DungeonMap.init(State.floor, State.hp, State.hpMax);
     Nav.go('dungeon-map');
+    setTimeout(function(){ DungeonMap.init(State.floor, State.hp, State.hpMax); }, 80);
   }, 2200);
 }
 
