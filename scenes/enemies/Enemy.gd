@@ -38,6 +38,10 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	queue_redraw()
+	if enemy_name != "":
+		var lbl = get_node_or_null("NameLabel")
+		if lbl and lbl.text != enemy_name:
+			lbl.text = enemy_name
 
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
