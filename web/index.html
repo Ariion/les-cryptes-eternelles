@@ -1740,6 +1740,9 @@ var Combat = (function(){
       log('⚔ '+enemy.name+' surgit de l\'ombre !'+(enemy.boss?' ☠':''),'system');
     },
 
+    updatePlayerUI: function() { updatePlayerUI(); },
+    updateEnemyUI:  function() { updateEnemyUI(); },
+
     playerAttack: function() {
       if (turnLocked) return;
       var res = calcDmg(State.atk, enemy.def);
