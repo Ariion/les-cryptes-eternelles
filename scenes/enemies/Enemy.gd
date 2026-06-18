@@ -66,7 +66,9 @@ func take_damage(amount: int, is_crit: bool = false) -> void:
 	GameManager.run_stats["damage_dealt"] += reduced
 	_spawn_damage_number(reduced, is_crit)
 	var ratio: float = float(int(stats.get("hp", 0))) / float(max(1, int(stats.get("max_hp", 1))))
-	$HpBar.offset_right = -54.0 + 108.0 * ratio
+	var hp_bar = get_node_or_null("HpBar")
+	if hp_bar:
+		hp_bar.offset_right = -54.0 + 108.0 * ratio
 	emit_signal("hp_changed", int(stats.get("hp", 0)), int(stats.get("max_hp", 1)))
 	if int(stats.get("hp", 0)) == 0:
 		emit_signal("enemy_died", int(stats.get("gold", 0)))
