@@ -2690,20 +2690,24 @@ var Combat = (function(){
       Sfx.gold();
       setTimeout(function(){
         if (wasBoss) {
-          // Mark zone as cleared
-          if (State._currentZone) Meta.clearZone(State._currentZone);
-          if ((State.floor||1) >= 6) {
+          var zd = State._currentZone ? ZONE_DATA[State._currentZone] : null;
+          var maxFloor = zd ? zd.floors : 6;
+          var isLastFloor = (State.floor||1) >= maxFloor;
+          if (isLastFloor) {
+            // Donjon terminé → marquer nettoyé + victoire
+            if (State._currentZone) Meta.clearZone(State._currentZone);
             Meta.addRunResult();
             Sfx.victory();
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
-            document.getElementById('go-quote').textContent = '"Tu as vaincu les Cryptes Éternelles !"';
-            document.getElementById('go-floor').textContent = 6;
+            document.getElementById('go-quote').textContent = '"' + (zd ? zd.label : 'Le donjon') + ' est vaincu !"';
+            document.getElementById('go-floor').textContent = State.floor||1;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
             Nav.go('gameover-screen');
           } else {
+            // Passer à l'étage suivant du même donjon
             advanceFloor();
           }
         } else {
@@ -3267,15 +3271,23 @@ var Meta = {
 };
 
 // ── BOUTIQUE ──────────────────────────────────────────────────────
+// SHOP_POOL : items disponibles en boutique
+// slot → va dans l'inventaire (équipable); effect → appliqué immédiatement
 var SHOP_POOL = [
-  { ico:'⚔', name:'Épée du Marché',     desc:'+4 ATQ',        cost:30, effect:function(){ State.atk+=4; } },
-  { ico:'🛡', name:'Écu Renforcé',      desc:'+5 DEF',        cost:30, effect:function(){ State.def+=5; } },
-  { ico:'💊', name:'Potion Suprême',    desc:'+1 Potion ×2',  cost:20, effect:function(){ State.potions=(State.potions||0)+2; } },
-  { ico:'💎', name:'Pierre de Vie',     desc:'+30 PV max',    cost:45, effect:function(){ State.hpMax+=30; State.hp=Math.min(State.hpMax,State.hp+30); } },
-  { ico:'🧪', name:'Élixir de Vigueur', desc:'+3 ATQ +3 DEF', cost:50, effect:function(){ State.atk+=3; State.def+=3; } },
-  { ico:'📿', name:'Amulette du Chaos', desc:'+6 ATQ −2 DEF', cost:35, effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-2); } },
+  // Consommables (effet immédiat)
+  { ico:'💊', name:'Potion Suprême',    desc:'+2 Potions',    cost:20, effect:function(){ State.potions=(State.potions||0)+2; } },
   { ico:'🩹', name:'Soin Immédiat',     desc:'Récup 50% PV',  cost:25, effect:function(){ State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.5)); } },
-  { ico:'🗡', name:'Stylet Empoisonné', desc:'+2 ATQ +Poison', cost:40, effect:function(){ State.atk+=2; State.poisonAtk=true; } },
+  { ico:'🧪', name:'Élixir de Force',   desc:'+1 Potion force',cost:35, combat:true, effect:function(){ State.potions=(State.potions||0)+1; } },
+  // Équipements (slot → inventaire)
+  { ico:'⚔', name:'Épée du Marché',    desc:'+5 ATQ',        cost:30, slot:'arme',      stats:{atk:5} },
+  { ico:'🛡', name:'Écu Renforcé',     desc:'+6 DEF',        cost:30, slot:'bouclier',  stats:{def:6} },
+  { ico:'💎', name:'Pierre de Vie',    desc:'+35 PV max',    cost:45, slot:'collier',   stats:{hp:35} },
+  { ico:'📿', name:'Amulette du Chaos',desc:'+7 ATQ -3 DEF', cost:35, slot:'collier',   stats:{atk:7, def:-3} },
+  { ico:'🪖', name:'Casque de Combat', desc:'+5 DEF',        cost:32, slot:'heaume',    stats:{def:5} },
+  { ico:'🥋', name:'Gambison Épais',   desc:'+8 DEF',        cost:40, slot:'plastron',  stats:{def:8} },
+  { ico:'🧤', name:'Gants de Mage',    desc:'+5 ATQ',        cost:35, slot:'gants',     stats:{atk:5} },
+  { ico:'👢', name:'Sandales Agiles',  desc:'+20% fuite',    cost:28, slot:'bottes',    stats:{flee:0.2} },
+  { ico:'🗡', name:'Stylet Empoisonné',desc:'+3 ATQ',        cost:40, slot:'arme',      stats:{atk:3} },
 ];
 
 Rooms._shopTab = 'buy';
@@ -3785,13 +3797,22 @@ var DungeonMap = (function() {
       } else {
         // combat / elite / mystery / trap / boss → ennemi
         var pool = type === 'boss'
-          ? ENEMIES.filter(function(e){ return e.boss && e.floor <= (State.floor||1)+1; })
+          ? ENEMIES.filter(function(e){ return e.boss; })
           : getEnemiesForFloor(State.floor||1);
-        if (!pool.length) pool = getEnemiesForFloor(1);
+        if (!pool.length) pool = ENEMIES.filter(function(e){ return !e.boss; });
         var enemyData = pool[Math.floor(Math.random()*pool.length)];
-        if (type === 'elite') enemyData = Object.assign({}, enemyData, { hp:Math.round(enemyData.hp*1.5), atk:Math.round(enemyData.atk*1.2), gold:Math.round(enemyData.gold*2) });
-        var zm = State._zoneMod || { enemyMod:1, goldMod:1 };
-        enemyData = Object.assign({}, enemyData, { atk:Math.round(enemyData.atk*zm.enemyMod), def:Math.round(enemyData.def*zm.enemyMod), gold:Math.round(enemyData.gold*zm.goldMod) });
+        var zm = State._zoneMod || { hpMult:1, atkMult:1, defMult:1, goldMult:1 };
+        var floorBonus = 1 + ((State.floor||1)-1) * 0.2; // +20% par étage
+        var bossBonus  = type === 'boss'  ? 3.5 : 1;  // boss = ×3.5 en plus du scaling
+        var eliteBonus = type === 'elite' ? 1.8 : 1;
+        enemyData = Object.assign({}, enemyData, {
+          hp:   Math.round(enemyData.hp   * (zm.hpMult||1)  * floorBonus * bossBonus * eliteBonus),
+          atk:  Math.round(enemyData.atk  * (zm.atkMult||1) * floorBonus * (type==='boss'?2:1) * eliteBonus),
+          def:  Math.round(enemyData.def  * (zm.defMult||1) * floorBonus * (type==='boss'?1.5:1)),
+          gold: Math.round(enemyData.gold * (zm.goldMult||1) * floorBonus * (type==='boss'?5:eliteBonus)),
+          boss: type==='boss',
+          name: type==='boss' ? '☠ '+enemyData.name : (type==='elite' ? '★ '+enemyData.name : enemyData.name),
+        });
         Nav.go('combat-screen');
         setTimeout(function(){ Combat.start(enemyData); }, 350);
       }
@@ -4222,12 +4243,14 @@ var TownScreen = {
 
 // ── WORLD MAP ──────────────────────────────────────────────────────
 var ZONE_DATA = {
-  grottes: { enemyMod:0.7, goldMod:0.9,  floors:4, minLevel:1,  label:'Grottes des Ombres' },
-  foret:   { enemyMod:1.0, goldMod:1.1,  floors:5, minLevel:2,  label:'Forêt des Âmes Perdues' },
-  ruines:  { enemyMod:1.3, goldMod:1.4,  floors:5, minLevel:3,  label:'Ruines d\'Astavar' },
-  port:    { enemyMod:1.6, goldMod:1.7,  floors:5, minLevel:4,  label:'Port des Tempêtes' },
-  pics:    { enemyMod:2.0, goldMod:2.2,  floors:6, minLevel:6,  label:'Pics du Néant' },
-  cryptes: { enemyMod:1.0, goldMod:1.0,  floors:6, minLevel:1,  label:'Les Cryptes Éternelles' },
+  // hpMult / atkMult / defMult : multiplicateurs appliqués sur les stats de base des ennemis
+  // goldMult : multiplicateur sur l'or
+  grottes: { hpMult:1,    atkMult:1,   defMult:1,   goldMult:1,    floors:4, minLevel:1,  label:'Grottes des Ombres' },
+  foret:   { hpMult:5,    atkMult:3,   defMult:2.5, goldMult:4,    floors:5, minLevel:5,  label:'Forêt des Âmes Perdues' },
+  ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar' },
+  port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes' },
+  pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant' },
+  cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles' },
 };
 
 var WorldMap = {
@@ -4243,7 +4266,15 @@ var WorldMap = {
       var ok = confirm(warnings.join('\n') + '\n\nEntrer quand même ? (À tes risques et périls !)');
       if (!ok) return;
     }
-    State._zoneMod = { enemyMod: zone.enemyMod, goldMod: zone.goldMod };
+    State._zoneMod = {
+      hpMult:   zone.hpMult||1,
+      atkMult:  zone.atkMult||1,
+      defMult:  zone.defMult||1,
+      goldMult: zone.goldMult||1,
+      // legacy compat
+      enemyMod: zone.hpMult||1,
+      goldMod:  zone.goldMult||1,
+    };
     State._currentZone = zoneId;
     State.floor = 1;
     Nav.go('dungeon-map');
