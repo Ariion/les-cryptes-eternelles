@@ -1165,6 +1165,13 @@ canvas#particles {
       <div id="st-body">
         <div class="st-row">
           <div class="st-row-info">
+            <div class="st-row-label">Musique</div>
+            <div class="st-row-sub">Ambiance menu, donjon et combat</div>
+          </div>
+          <button class="st-toggle on" id="st-mus-toggle" onclick="Music.toggleMusic()"></button>
+        </div>
+        <div class="st-row">
+          <div class="st-row-info">
             <div class="st-row-label">Effets sonores</div>
             <div class="st-row-sub">Sons de combat et d'interface</div>
           </div>
@@ -1324,6 +1331,244 @@ var Sfx = (function(){
   return pub;
 })();
 
+// ── MUSIQUE PROCÉDURALE ──────────────────────────────────────────
+var Music = (function(){
+  var AC = null, masterGain = null;
+  var nodes = [];   // tous les nœuds actifs
+  var current = null;
+  var musicOn = true;
+  var fadeTimer = null;
+
+  function ac() {
+    if (!AC) {
+      try { AC = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){}
+    }
+    if (AC && AC.state === 'suspended') AC.resume();
+    return AC;
+  }
+
+  function master() {
+    if (!masterGain) {
+      var c = ac(); if (!c) return null;
+      masterGain = c.createGain();
+      masterGain.gain.setValueAtTime(0, c.currentTime);
+      masterGain.connect(c.destination);
+    }
+    return masterGain;
+  }
+
+  function killAll() {
+    nodes.forEach(function(n){ try{ n.stop(); }catch(e){} try{ n.disconnect(); }catch(e){} });
+    nodes = [];
+  }
+
+  function osc(freq, type, vol, dest) {
+    var c = ac(); if (!c) return null;
+    var g = c.createGain(); g.gain.value = vol;
+    g.connect(dest);
+    var o = c.createOscillator(); o.type = type; o.frequency.value = freq;
+    o.connect(g); o.start();
+    nodes.push(o);
+    return o;
+  }
+
+  function lfo(target, param, rate, depth, base) {
+    var c = ac(); if (!c) return;
+    var l = c.createOscillator(); l.type = 'sine'; l.frequency.value = rate;
+    var lg = c.createGain(); lg.gain.value = depth;
+    l.connect(lg); lg.connect(target[param]);
+    l.start(); nodes.push(l);
+  }
+
+  function reverb(dest, seconds) {
+    var c = ac(); if (!c) return dest;
+    var len = c.sampleRate * seconds;
+    var buf = c.createBuffer(2, len, c.sampleRate);
+    for (var ch=0; ch<2; ch++) {
+      var d = buf.getChannelData(ch);
+      for (var i=0; i<len; i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.5);
+    }
+    var conv = c.createConvolver(); conv.buffer = buf;
+    var g = c.createGain(); g.gain.value = 0.22;
+    conv.connect(g); g.connect(dest);
+    return conv;
+  }
+
+  // ── MUSIQUES ──
+  function playMenu() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 3);
+    // Drone de quinte (La + Mi)
+    osc(55,   'sine',   0.18, rv);
+    osc(82.5, 'sine',   0.10, rv);
+    osc(110,  'sine',   0.08, rv);
+    // Pad harmonique
+    var pad = c.createGain(); pad.gain.value = 0.07; pad.connect(rv);
+    [220, 277.2, 329.6, 440].forEach(function(f) {
+      var o = c.createOscillator(); o.type='sine'; o.frequency.value=f;
+      var g = c.createGain(); g.gain.value=0.22; o.connect(g); g.connect(pad);
+      lfo(g, 'gain', 0.13+Math.random()*0.07, 0.10, 0.22);
+      o.start(); nodes.push(o);
+    });
+    // Mélodie lente arpégée (La mineur pentatonique)
+    var melody = [220, 261.6, 329.6, 392, 440, 523.2, 392, 329.6];
+    var step = 0;
+    function nextNote() {
+      if (!musicOn || current !== 'menu') return;
+      var c2 = ac(); if (!c2) return;
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0, c2.currentTime);
+      g.gain.linearRampToValueAtTime(0.09, c2.currentTime+0.12);
+      g.gain.linearRampToValueAtTime(0, c2.currentTime+1.6);
+      g.connect(rv);
+      var o = c2.createOscillator(); o.type='triangle';
+      o.frequency.value = melody[step % melody.length];
+      o.connect(g); o.start(); o.stop(c2.currentTime+1.8);
+      nodes.push(o);
+      step++;
+      setTimeout(nextNote, 1400 + Math.random()*600);
+    }
+    nextNote();
+  }
+
+  function playDungeon() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 4);
+    // Drone grave oppressant
+    osc(36.7, 'sawtooth', 0.06, rv);
+    osc(55,   'sine',     0.12, rv);
+    osc(73.4, 'sine',     0.05, rv);
+    // Battement lent (tension)
+    var bNode = c.createGain(); bNode.gain.value = 0.10; bNode.connect(m);
+    lfo(bNode, 'gain', 0.07, 0.08, 0.10);
+    osc(55, 'triangle', 0.12, bNode);
+    // Sons de gouttes / pas (bruit filtré périodique)
+    function drip() {
+      if (!musicOn || current !== 'dungeon') return;
+      var c2 = ac(); if (!c2) return;
+      var buf = c2.createBuffer(1, c2.sampleRate*0.05, c2.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+      var src = c2.createBufferSource(); src.buffer=buf;
+      var f = c2.createBiquadFilter(); f.type='bandpass'; f.frequency.value=800+Math.random()*400;
+      var g = c2.createGain(); g.gain.value=0.06;
+      src.connect(f); f.connect(g); g.connect(rv);
+      src.start(); nodes.push(src);
+      setTimeout(drip, 2000 + Math.random()*4000);
+    }
+    drip();
+  }
+
+  function playCombat() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 1.5);
+    // Basse pulsante (rythme cardiaque)
+    function beat() {
+      if (!musicOn || current !== 'combat') return;
+      var c2 = ac(); if (!c2) return;
+      // Kick grave
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0.25, c2.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c2.currentTime+0.35);
+      g.connect(m);
+      var o = c2.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(120, c2.currentTime);
+      o.frequency.exponentialRampToValueAtTime(40, c2.currentTime+0.3);
+      o.connect(g); o.start(); o.stop(c2.currentTime+0.4);
+      nodes.push(o);
+      // Double battement (lub-dub)
+      setTimeout(function(){
+        if (!musicOn || current !== 'combat') return;
+        var c3 = ac(); if (!c3) return;
+        var g2 = c3.createGain();
+        g2.gain.setValueAtTime(0.15, c3.currentTime);
+        g2.gain.exponentialRampToValueAtTime(0.001, c3.currentTime+0.25);
+        g2.connect(m);
+        var o2 = c3.createOscillator(); o2.type='sine';
+        o2.frequency.setValueAtTime(90, c3.currentTime);
+        o2.frequency.exponentialRampToValueAtTime(35, c3.currentTime+0.2);
+        o2.connect(g2); o2.start(); o2.stop(c3.currentTime+0.3);
+        nodes.push(o2);
+      }, 220);
+      setTimeout(beat, 900);
+    }
+    beat();
+    // Pad de tension (quinte augmentée)
+    var pad = c.createGain(); pad.gain.value = 0.05; pad.connect(rv);
+    lfo(pad, 'gain', 0.09, 0.04, 0.05);
+    [110, 164.8, 207.7].forEach(function(f){ osc(f,'sawtooth',0.08,pad); });
+    // Mélodie de danger (motif répété)
+    var motif = [220,196,220,174.6,220,196,174.6,164.8];
+    var mi = 0;
+    function mNote() {
+      if (!musicOn || current !== 'combat') return;
+      var c2 = ac(); if (!c2) return;
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0, c2.currentTime);
+      g.gain.linearRampToValueAtTime(0.06, c2.currentTime+0.04);
+      g.gain.linearRampToValueAtTime(0, c2.currentTime+0.18);
+      g.connect(rv);
+      var o = c2.createOscillator(); o.type='square';
+      o.frequency.value = motif[mi % motif.length];
+      o.connect(g); o.start(); o.stop(c2.currentTime+0.22);
+      nodes.push(o); mi++;
+      setTimeout(mNote, 280 + (mi%4===0?160:0));
+    }
+    mNote();
+  }
+
+  // ── API ──
+  return {
+    play: function(track) {
+      if (!musicOn) return;
+      if (current === track) return;
+      current = track;
+      var m = master(); if (!m) return;
+      var c = ac(); if (!c) return;
+      // Fondu sortant
+      m.gain.cancelScheduledValues(c.currentTime);
+      m.gain.setValueAtTime(m.gain.value, c.currentTime);
+      m.gain.linearRampToValueAtTime(0, c.currentTime+1.2);
+      clearTimeout(fadeTimer);
+      fadeTimer = setTimeout(function(){
+        killAll();
+        if (!musicOn || current !== track) return;
+        m.gain.setValueAtTime(0, c.currentTime);
+        m.gain.linearRampToValueAtTime(0.7, c.currentTime+2.5);
+        if (track==='menu')    playMenu();
+        if (track==='dungeon') playDungeon();
+        if (track==='combat')  playCombat();
+      }, 1300);
+    },
+
+    stop: function() {
+      current = null;
+      var m = master(), c = ac();
+      if (m && c) {
+        m.gain.cancelScheduledValues(c.currentTime);
+        m.gain.setValueAtTime(m.gain.value, c.currentTime);
+        m.gain.linearRampToValueAtTime(0, c.currentTime+1.5);
+      }
+      clearTimeout(fadeTimer);
+      fadeTimer = setTimeout(killAll, 1600);
+    },
+
+    toggleMusic: function() {
+      musicOn = !musicOn;
+      document.getElementById('st-mus-toggle').classList.toggle('on', musicOn);
+      localStorage.setItem('cge_mus', musicOn?'1':'0');
+      if (!musicOn) { Music.stop(); }
+      else if (current) { var t=current; current=null; Music.play(t); }
+    },
+
+    load: function() {
+      musicOn = localStorage.getItem('cge_mus') !== '0';
+    },
+
+    get on() { return musicOn; }
+  };
+})();
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -1335,6 +1580,13 @@ var Nav = {
     if (prev === id) return;
     Nav.current = id;
     if (prev && typeof Sfx !== 'undefined') Sfx.nav();
+    // Musique selon l'écran
+    if (typeof Music !== 'undefined') {
+      if (id==='combat-screen') Music.play('combat');
+      else if (id==='dungeon-map') Music.play('dungeon');
+      else if (id==='main-menu'||id==='char-select'||id==='title-screen') Music.play('menu');
+      else if (id==='gameover-screen') Music.stop();
+    }
     if (prev && screens[prev]) {
       var el = screens[prev];
       el.style.transition = 'opacity 0.4s ease';
@@ -2612,7 +2864,14 @@ var App = {
   },
 };
 
-window.addEventListener('load', function(){ Meta.load(); Sfx.load(); Sfx.applyToggles(); runIntro(); });
+window.addEventListener('load', function(){
+  Meta.load();
+  Music.load();
+  Sfx.load();
+  Sfx.applyToggles();
+  document.getElementById('st-mus-toggle').classList.toggle('on', Music.on);
+  runIntro();
+});
 </script>
 </body>
 </html>
