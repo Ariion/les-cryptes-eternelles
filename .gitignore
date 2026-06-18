@@ -1,3 +1,4 @@
 .godot/
 build/*.apk
 build/*.ipa
+.claude/
