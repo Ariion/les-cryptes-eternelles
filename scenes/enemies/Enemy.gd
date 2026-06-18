@@ -36,14 +36,12 @@ const _DMG_SCRIPT := preload("res://scenes/ui/DamageNumber.gd")
 func _ready() -> void:
 	queue_redraw()
 
+func _process(_delta: float) -> void:
+	queue_redraw()
+
 func setup(p_name: String, floor_number: int) -> void:
 	enemy_name = p_name
 	var data: Dictionary = ENEMY_DATA.get(p_name, ENEMY_DATA["Goblin"])
-
-	queue_redraw()
-
-	if has_node("NameLabel"):
-		$NameLabel.text = p_name
 
 	var base: Dictionary = data.duplicate()
 	var difficulty: float = 1.0 + (floor_number - 1) * 0.15
@@ -55,15 +53,16 @@ func setup(p_name: String, floor_number: int) -> void:
 		"gold":      int(int(base.get("gold", 10))   * difficulty),
 		"abilities": base.get("abilities", []),
 	}
+	$NameLabel.text = p_name
+	$HpBar.offset_right = 54.0
 
 func take_damage(amount: int, is_crit: bool = false) -> void:
 	var reduced: int = max(1, amount - int(stats.get("defense", 0)) - _get_shield_bonus())
 	stats["hp"] = max(0, int(stats.get("hp", 0)) - reduced)
 	GameManager.run_stats["damage_dealt"] += reduced
 	_spawn_damage_number(reduced, is_crit)
-	if has_node("HpBar"):
-		var ratio: float = float(int(stats.get("hp", 0))) / float(max(1, int(stats.get("max_hp", 1))))
-		$HpBar.offset_right = -54.0 + 108.0 * ratio
+	var ratio: float = float(int(stats.get("hp", 0))) / float(max(1, int(stats.get("max_hp", 1))))
+	$HpBar.offset_right = -54.0 + 108.0 * ratio
 	emit_signal("hp_changed", int(stats.get("hp", 0)), int(stats.get("max_hp", 1)))
 	if int(stats.get("hp", 0)) == 0:
 		emit_signal("enemy_died", int(stats.get("gold", 0)))
