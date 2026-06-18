@@ -114,11 +114,17 @@ func _start_enemy_turn() -> void:
 		_end_combat(false)
 		return
 
-	get_tree().create_timer(0.7).timeout.connect(_run_enemy_actions, CONNECT_ONE_SHOT)
+	get_tree().create_timer(0.7).timeout.connect(func(): _run_enemy_actions())
 
 func _run_enemy_actions() -> void:
 	if state == CombatState.ENDED:
 		return
+	emit_signal("combat_log", "[Tour ennemi] %d ennemis en liste" % enemies.size())
+	for enemy in enemies:
+		var valid := is_instance_valid(enemy)
+		var alive := valid and enemy.is_alive()
+		var hp_val = enemy.stats.get("hp", "NOSTATS") if valid else "INVALID"
+		emit_signal("combat_log", "  > %s valid=%s alive=%s hp=%s" % [enemy.enemy_name if valid else "?", str(valid), str(alive), str(hp_val)])
 	for enemy in enemies:
 		if not is_instance_valid(enemy) or not enemy.is_alive():
 			continue

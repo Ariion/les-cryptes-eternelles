@@ -53,8 +53,12 @@ func setup(p_name: String, floor_number: int) -> void:
 		"gold":      int(int(base.get("gold", 10))   * difficulty),
 		"abilities": base.get("abilities", []),
 	}
-	$NameLabel.text = p_name
-	$HpBar.offset_right = 54.0
+	var lbl = get_node_or_null("NameLabel")
+	if lbl:
+		lbl.text = p_name
+	var bar = get_node_or_null("HpBar")
+	if bar:
+		bar.offset_right = 54.0
 
 func take_damage(amount: int, is_crit: bool = false) -> void:
 	var reduced: int = max(1, amount - int(stats.get("defense", 0)) - _get_shield_bonus())
