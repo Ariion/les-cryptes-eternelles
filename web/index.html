@@ -820,6 +820,57 @@ canvas#particles {
 }
 .upgrade-card .uc-cost::before { content:'🪙'; font-size:14px; }
 .upgrade-card.cant-afford .uc-cost { color:rgba(200,80,80,0.7); }
+
+/* ── SETTINGS ── */
+#settings-screen {
+  background:#06050f;
+  background-image:radial-gradient(ellipse 80% 50% at 50% 20%, rgba(40,10,70,0.45) 0%, transparent 60%);
+  flex-direction:column; align-items:center; justify-content:flex-start;
+}
+#st-header {
+  width:100%; padding:18px 20px 0;
+  display:flex; align-items:center; gap:14px; flex-shrink:0;
+}
+#st-back {
+  width:38px; height:38px; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
+  color:rgba(201,165,80,0.7); font-size:18px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#st-back:active { transform:scale(0.93); }
+#st-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
+#st-body { width:100%; flex:1; padding:20px 18px; display:flex; flex-direction:column; gap:18px; }
+.st-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-radius:10px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.12);
+}
+.st-row-info { display:flex; flex-direction:column; gap:3px; }
+.st-row-label { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
+.st-row-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.45); }
+.st-toggle {
+  width:52px; height:28px; border-radius:14px; border:none; cursor:pointer;
+  background:rgba(255,255,255,0.08); position:relative; transition:background 0.25s;
+  -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+.st-toggle.on { background:linear-gradient(90deg,#7B3FA0,#C9A550); }
+.st-toggle::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:22px; height:22px; border-radius:50%;
+  background:#EDE8DF; transition:transform 0.25s; box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+.st-toggle.on::after { transform:translateX(24px); }
+.st-reset-btn {
+  width:100%; padding:14px; border-radius:10px; border:none; cursor:pointer;
+  background:rgba(180,30,30,0.15); border:1px solid rgba(200,50,50,0.3);
+  font-family:'Cinzel',serif; font-size:12px; color:rgba(220,100,100,0.8);
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent; letter-spacing:1px;
+}
+.st-reset-btn:active { transform:scale(0.98); }
+.st-version { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.2); text-align:center; margin-top:auto; padding-bottom:20px; }
+
+/* critiques visuels */
+#dmg-float.crit { color:#FFD700 !important; font-size:32px !important; text-shadow:0 0 12px rgba(255,200,0,0.8); }
 </style>
 </head>
 <body>
@@ -1105,6 +1156,39 @@ canvas#particles {
       </div>
     </div>
 
+    <!-- ── PARAMÈTRES ── -->
+    <div id="settings-screen" class="screen">
+      <div id="st-header">
+        <div id="st-back" onclick="Nav.go('main-menu')">←</div>
+        <div id="st-title">Paramètres</div>
+      </div>
+      <div id="st-body">
+        <div class="st-row">
+          <div class="st-row-info">
+            <div class="st-row-label">Effets sonores</div>
+            <div class="st-row-sub">Sons de combat et d'interface</div>
+          </div>
+          <button class="st-toggle on" id="st-sfx-toggle" onclick="Sfx.toggleSfx()"></button>
+        </div>
+        <div class="st-row">
+          <div class="st-row-info">
+            <div class="st-row-label">Vibrations</div>
+            <div class="st-row-sub">Retour haptique sur mobile</div>
+          </div>
+          <button class="st-toggle on" id="st-vib-toggle" onclick="Sfx.toggleVib()"></button>
+        </div>
+        <div class="st-row">
+          <div class="st-row-info">
+            <div class="st-row-label">Particules</div>
+            <div class="st-row-sub">Braises en arrière-plan</div>
+          </div>
+          <button class="st-toggle on" id="st-par-toggle" onclick="Sfx.toggleParticles()"></button>
+        </div>
+        <button class="st-reset-btn" onclick="Sfx.confirmReset()">⚠ Réinitialiser la progression</button>
+        <div class="st-version">AARDESIGN · LES CRYPTES ÉTERNELLES · V1.2</div>
+      </div>
+    </div>
+
     <!-- Transition étage (overlay) -->
     <div id="floor-transition">
       <div id="ft-label">Étage</div>
@@ -1139,6 +1223,107 @@ var State = {
   cls:  'Guerrier',
 };
 
+// ── AUDIO & SETTINGS ─────────────────────────────────────────────
+var Sfx = (function(){
+  var AC = null;
+  var sfxOn = true, vibOn = true, parOn = true;
+
+  function ctx() {
+    if (!AC) { try { AC = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){} }
+    return AC;
+  }
+
+  function tone(freq, type, vol, dur, delay) {
+    var c = ctx(); if (!c || !sfxOn) return;
+    var g = c.createGain();
+    g.gain.setValueAtTime(vol||0.18, c.currentTime + (delay||0));
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + (delay||0) + (dur||0.15));
+    g.connect(c.destination);
+    var o = c.createOscillator();
+    o.type = type||'square';
+    o.frequency.setValueAtTime(freq, c.currentTime + (delay||0));
+    o.connect(g);
+    o.start(c.currentTime + (delay||0));
+    o.stop(c.currentTime + (delay||0) + (dur||0.15) + 0.05);
+  }
+
+  function noise(vol, dur, delay) {
+    var c = ctx(); if (!c || !sfxOn) return;
+    var buf = c.createBuffer(1, c.sampleRate*0.2, c.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+    var src = c.createBufferSource();
+    src.buffer = buf;
+    var g = c.createGain();
+    g.gain.setValueAtTime(vol||0.1, c.currentTime+(delay||0));
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime+(delay||0)+(dur||0.1));
+    src.connect(g); g.connect(c.destination);
+    src.start(c.currentTime+(delay||0)); src.stop(c.currentTime+(delay||0)+(dur||0.15));
+  }
+
+  function vib(pattern) { if (vibOn && navigator.vibrate) navigator.vibrate(pattern); }
+
+  var pub = {
+    sfxOn: true, vibOn: true, parOn: true,
+
+    attack:  function()  { tone(220,'sawtooth',0.16,0.08); tone(330,'sawtooth',0.10,0.07,0.07); vib(18); },
+    crit:    function()  { tone(440,'square',0.22,0.06); tone(660,'square',0.18,0.06,0.06); tone(880,'sine',0.12,0.1,0.12); vib([25,8,40]); },
+    hit:     function()  { noise(0.12,0.08); tone(110,'sawtooth',0.12,0.1); vib(15); },
+    defend:  function()  { tone(196,'sine',0.15,0.12); tone(247,'sine',0.10,0.10,0.08); },
+    heal:    function()  { tone(523,'sine',0.12,0.08); tone(659,'sine',0.14,0.10,0.07); tone(784,'sine',0.12,0.12,0.15); },
+    skill:   function()  { tone(392,'sawtooth',0.18,0.06); tone(523,'square',0.14,0.08,0.06); tone(659,'sine',0.12,0.12,0.13); vib([10,5,20]); },
+    potion:  function()  { tone(440,'sine',0.13,0.06); tone(554,'sine',0.15,0.08,0.06); tone(659,'sine',0.13,0.10,0.13); },
+    death:   function()  { tone(110,'sawtooth',0.20,0.25); noise(0.10,0.2,0.05); vib([30,15,50]); },
+    victory: function()  { tone(523,'sine',0.16,0.1); tone(659,'sine',0.18,0.1,0.1); tone(784,'sine',0.20,0.15,0.2); tone(1047,'sine',0.18,0.25,0.35); },
+    levelup: function()  { [523,659,784,1047].forEach(function(f,i){ tone(f,'sine',0.16,0.12,i*0.08); }); vib([15,5,15,5,30]); },
+    gold:    function()  { tone(880,'sine',0.12,0.06); tone(1108,'sine',0.14,0.08,0.06); },
+    nav:     function()  { tone(330,'sine',0.08,0.06); },
+    buy:     function()  { tone(440,'sine',0.12,0.07); tone(554,'sine',0.14,0.09,0.07); },
+    flee:    function()  { tone(220,'sawtooth',0.10,0.05); tone(180,'sawtooth',0.08,0.08,0.05); },
+    gameover:function()  { tone(147,'sawtooth',0.18,0.3); tone(110,'sawtooth',0.14,0.4,0.25); noise(0.08,0.3,0.1); },
+
+    toggleSfx: function() {
+      sfxOn = !sfxOn; pub.sfxOn = sfxOn;
+      document.getElementById('st-sfx-toggle').classList.toggle('on', sfxOn);
+      localStorage.setItem('cge_sfx', sfxOn?'1':'0');
+      if (sfxOn) pub.nav();
+    },
+    toggleVib: function() {
+      vibOn = !vibOn; pub.vibOn = vibOn;
+      document.getElementById('st-vib-toggle').classList.toggle('on', vibOn);
+      localStorage.setItem('cge_vib', vibOn?'1':'0');
+    },
+    toggleParticles: function() {
+      parOn = !parOn; pub.parOn = parOn;
+      document.getElementById('st-par-toggle').classList.toggle('on', parOn);
+      document.getElementById('particles').style.display = parOn ? '' : 'none';
+      localStorage.setItem('cge_par', parOn?'1':'0');
+    },
+    confirmReset: function() {
+      if (confirm('Réinitialiser toute la progression méta ? Cette action est irréversible.')) {
+        localStorage.removeItem('cge_meta');
+        Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
+        Meta.levels={}; Meta.bonuses={ atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 };
+        pub.nav();
+        alert('Progression réinitialisée.');
+      }
+    },
+    load: function() {
+      sfxOn = localStorage.getItem('cge_sfx') !== '0';
+      vibOn = localStorage.getItem('cge_vib') !== '0';
+      parOn = localStorage.getItem('cge_par') !== '0';
+      pub.sfxOn = sfxOn; pub.vibOn = vibOn; pub.parOn = parOn;
+    },
+    applyToggles: function() {
+      document.getElementById('st-sfx-toggle').classList.toggle('on', sfxOn);
+      document.getElementById('st-vib-toggle').classList.toggle('on', vibOn);
+      document.getElementById('st-par-toggle').classList.toggle('on', parOn);
+      if (!parOn) document.getElementById('particles').style.display = 'none';
+    }
+  };
+  return pub;
+})();
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -1149,6 +1334,7 @@ var Nav = {
     var prev = Nav.current;
     if (prev === id) return;
     Nav.current = id;
+    if (prev && typeof Sfx !== 'undefined') Sfx.nav();
     if (prev && screens[prev]) {
       var el = screens[prev];
       el.style.transition = 'opacity 0.4s ease';
@@ -1330,13 +1516,13 @@ var Combat = (function(){
     else               bar.style.background = 'linear-gradient(90deg,#6a1a10,#b83020,#d05040)';
   }
 
-  function showDmg(amount, isPlayer) {
+  function showDmg(amount, isPlayer, isCrit) {
     var el = document.getElementById('dmg-float');
-    el.textContent = '-'+amount;
-    el.style.color = isPlayer ? '#ff6060' : '#ffe060';
+    el.textContent = (isCrit ? '💥 ' : '-') + amount;
+    el.style.color = isPlayer ? '#ff6060' : (isCrit ? '#FFD700' : '#ffe060');
     el.className = '';
     void el.offsetWidth;
-    el.className = 'show';
+    el.className = 'show' + (isCrit ? ' crit' : '');
   }
 
   function hitFlash() {
@@ -1428,10 +1614,12 @@ var Combat = (function(){
         document.getElementById('cb-player-hp-text').textContent = State.hp+'/'+State.hpMax;
       }
       var wasBoss = !!enemy.boss;
+      Sfx.gold();
       setTimeout(function(){
         if (wasBoss) {
           if ((State.floor||1) >= 6) {
             Meta.addRunResult();
+            Sfx.victory();
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
@@ -1449,6 +1637,7 @@ var Combat = (function(){
       }, 700);
     } else {
       Meta.addRunResult();
+      Sfx.gameover();
       setTimeout(function(){
         document.getElementById('go-skull').textContent = '💀';
         document.getElementById('go-title').textContent = 'Défaite';
@@ -1509,9 +1698,9 @@ var Combat = (function(){
         State.hp = Math.max(0, State.hp - dmgResult.dmg);
         updatePlayerUI();
         hitFlash();
-        if (navigator.vibrate) navigator.vibrate(dmgResult.crit ? [50,20,80] : 40);
+        if (dmgResult.crit) Sfx.crit(); else Sfx.hit();
         log(enemy.name+(dmgResult.crit?' inflige un COUP CRITIQUE ':' t\'inflige ')+dmgResult.dmg+' dégâts !','enemy');
-        showDmg(dmgResult.dmg, true);
+        showDmg(dmgResult.dmg, true, dmgResult.crit);
       }
 
       if (State.hp <= 0) { endCombat(false); return; }
@@ -1556,11 +1745,10 @@ var Combat = (function(){
       var res = calcDmg(State.atk, enemy.def);
       enemy.hp = Math.max(0, enemy.hp - res.dmg);
       enemyHitAnim();
-      showDmg(res.dmg, false);
+      showDmg(res.dmg, false, res.crit);
       updateEnemyUI();
-      if (navigator.vibrate) navigator.vibrate(res.crit ? [30,10,50] : 20);
-      if (res.crit) log('CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !','player');
-      else          log('Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.','player');
+      if (res.crit) { Sfx.crit(); log('CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !','player'); }
+      else          { Sfx.attack(); log('Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.','player'); }
       if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); return; }
       enemyTurn();
     },
@@ -1568,6 +1756,7 @@ var Combat = (function(){
     playerDefend: function() {
       if (turnLocked) return;
       playerDef = true;
+      Sfx.defend();
       log('Tu te mets en garde. (-50% dégâts ce tour)','player');
       enemyTurn();
     },
@@ -1577,6 +1766,7 @@ var Combat = (function(){
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
       skillCd = 3;
       updateSkillBtn();
+      Sfx.skill();
       if (c.id === 'Guerrier') {
         State.def += 8; playerDef = true;
         log('Bouclier de fer ! (+8 DEF ce tour)','player');
@@ -1584,7 +1774,7 @@ var Combat = (function(){
       } else if (c.id === 'Mage') {
         var dmg = Math.round(State.atk * 1.8);
         enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
         log('Boule de feu ! '+dmg+' dégâts de feu à '+enemy.name+' !','player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
@@ -1592,14 +1782,14 @@ var Combat = (function(){
         var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
         var total = d1.dmg + d2.dmg;
         enemy.hp = Math.max(0, enemy.hp - total);
-        enemyHitAnim(); showDmg(total, false); updateEnemyUI();
+        enemyHitAnim(); showDmg(total, false, false); updateEnemyUI();
         log('Double tir ! '+d1.dmg+' + '+d2.dmg+' = '+total+' dégâts.','player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Assassin') {
         var dmg = Math.round(State.atk * 2);
         enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
         log('Frappe critique garantie ! '+dmg+' dégâts.','player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
@@ -1607,13 +1797,14 @@ var Combat = (function(){
         var heal = Math.round(State.hpMax * 0.3);
         State.hp = Math.min(State.hpMax, State.hp + heal);
         updatePlayerUI();
+        Sfx.heal();
         log('Soin divin ! +'+heal+' PV récupérés.','heal');
         enemyTurn();
       } else if (c.id === 'Barbare') {
         var dmg = Math.round(State.atk * 1.6);
         if (State.hp < State.hpMax * 0.3) dmg = Math.round(dmg * 1.5);
         enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false); updateEnemyUI();
+        enemyHitAnim(); showDmg(dmg, false, State.hp < State.hpMax * 0.3); updateEnemyUI();
         log('Frenésie barbare ! '+dmg+' dégâts sauvages.','player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
@@ -1622,12 +1813,12 @@ var Combat = (function(){
 
     playerItem: function() {
       if (turnLocked) return;
-      // Potion de base pour l'instant
       if ((State.potions||0) <= 0) { log('Tu n\'as plus de potions !','system'); return; }
       State.potions--;
       var heal = Math.round(State.hpMax * 0.35);
       State.hp = Math.min(State.hpMax, State.hp + heal);
       updatePlayerUI();
+      Sfx.potion();
       log('Potion de soin ! +'+heal+' PV.','heal');
       enemyTurn();
     },
@@ -1636,6 +1827,7 @@ var Combat = (function(){
       if (turnLocked) return;
       var chance = 0.35;
       if (Math.random() < chance) {
+        Sfx.flee();
         log('Tu t\'enfuis dans l\'obscurité !','system');
         setTimeout(function(){ Nav.go('dungeon-map'); }, 700);
       } else {
@@ -1750,6 +1942,7 @@ function updateXPBar() {
 }
 
 function triggerLevelUp() {
+  Sfx.levelup();
   var pool = LEVEL_UP_CHOICES.slice().sort(function(){ return Math.random()-0.5; }).slice(0,3);
   document.getElementById('lu-level-num').textContent = State.level;
   var cards = document.getElementById('lu-cards');
@@ -1895,6 +2088,7 @@ Rooms.shopBuy = function(idx) {
   if (!item || (State.gold||0) < item.cost) return;
   State.gold -= item.cost;
   item.effect();
+  Sfx.buy();
   document.getElementById('shop-gold-val').textContent = State.gold;
   // Marquer vendu
   var cards = document.querySelectorAll('.shop-item');
@@ -2393,7 +2587,7 @@ var App = {
   },
   continueGame: function(){ alert('Continuer — prochain commit !'); },
   showHero: function(){ Meta.buildScreen(); Nav.go('hero-screen'); },
-  showSettings: function(){ alert('Paramètres — prochain commit !'); },
+  showSettings: function(){ Sfx.nav(); Nav.go('settings-screen'); },
   retryRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
@@ -2415,7 +2609,7 @@ var App = {
   },
 };
 
-window.addEventListener('load', function(){ Meta.load(); runIntro(); });
+window.addEventListener('load', function(){ Meta.load(); Sfx.load(); Sfx.applyToggles(); runIntro(); });
 </script>
 </body>
 </html>
