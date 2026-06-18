@@ -648,6 +648,80 @@ canvas#particles {
 #rest-heal-val { font-family:'Cinzel',serif; font-size:40px; font-weight:700; color:#50d070; text-shadow:0 0 30px rgba(80,200,100,0.4); }
 #btn-rest-cont { padding:16px 40px; border-radius:8px; border:1px solid rgba(80,200,100,0.5); background:rgba(40,160,60,0.12); color:#50d070; font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
 #btn-rest-cont:active { transform:scale(0.97); }
+
+/* ── BOUTIQUE ────────────────────────────────────────────────── */
+#shop-screen {
+  background:#06050f;
+  background-image: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(60,40,0,0.45) 0%, transparent 60%);
+  flex-direction:column; align-items:center; justify-content:flex-start;
+  padding-top: 24px; gap:0;
+}
+#shop-title { font-family:'Cinzel Decorative',serif; font-size:20px; color:#C9A550; margin-bottom:4px; }
+#shop-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.45); margin-bottom:8px; }
+#shop-gold-display {
+  display:flex; align-items:center; gap:8px; margin-bottom:20px;
+  padding:8px 20px; border-radius:20px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
+  font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550;
+}
+#shop-items { width:100%; padding:0 16px; display:flex; flex-direction:column; gap:10px; flex:1; }
+.shop-item {
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+  border-radius:10px; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.15);
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.shop-item:active { transform:scale(0.98); background:rgba(201,165,80,0.08); }
+.shop-item.sold { opacity:0.35; pointer-events:none; }
+.shop-item .si-ico { font-size:30px; flex-shrink:0; }
+.shop-item .si-info { flex:1; }
+.shop-item .si-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
+.shop-item .si-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:1px; }
+.shop-item .si-price {
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550;
+  display:flex; align-items:center; gap:4px; flex-shrink:0;
+}
+.shop-item .si-price::before { content:'🪙'; font-size:14px; }
+.shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
+#btn-shop-leave {
+  margin:14px 16px 18px; width:calc(100% - 32px); height:50px;
+  border-radius:8px; border:1px solid rgba(255,255,255,0.1);
+  background:transparent; color:rgba(200,190,180,0.45);
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+
+/* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
+#floor-transition {
+  position:absolute; inset:0; z-index:30;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:#000; opacity:0; pointer-events:none;
+  transition:opacity 0.5s ease;
+  gap:12px;
+}
+#floor-transition.show { opacity:1; pointer-events:all; }
+#ft-label { font-family:'Cinzel',serif; font-size:11px; letter-spacing:6px; color:rgba(201,165,80,0.5); text-transform:uppercase; }
+#ft-num { font-family:'Cinzel Decorative',serif; font-size:52px; font-weight:700; color:#C9A550; text-shadow:0 0 60px rgba(201,165,80,0.5); line-height:1; }
+#ft-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(201,165,80,0.4); }
+
+/* ── STATUTS de combat ───────────────────────────────────────── */
+#cb-status-row {
+  width:100%; padding:4px 16px 0;
+  display:flex; gap:6px; flex-wrap:wrap;
+  position:relative; z-index:2; flex-shrink:0; min-height:22px;
+}
+.status-badge {
+  font-size:10px; padding:2px 7px; border-radius:10px;
+  font-family:'Cinzel',serif; letter-spacing:1px;
+  animation:badge-in 0.3s ease;
+}
+@keyframes badge-in { from{opacity:0;transform:scale(0.7);} to{opacity:1;transform:scale(1);} }
+.status-poison  { background:rgba(100,200,80,0.15); border:1px solid rgba(100,200,80,0.4); color:#80d060; }
+.status-burn    { background:rgba(255,120,30,0.15); border:1px solid rgba(255,120,30,0.4); color:#ff9040; }
+.status-stun    { background:rgba(200,200,80,0.15); border:1px solid rgba(200,200,80,0.4); color:#d0d060; }
+.status-shield  { background:rgba(80,120,255,0.15); border:1px solid rgba(80,120,255,0.4); color:#80a0ff; }
+.status-defend  { background:rgba(80,120,220,0.15); border:1px solid rgba(80,120,220,0.4); color:#80a0e0; }
 </style>
 </head>
 <body>
@@ -775,6 +849,9 @@ canvas#particles {
         </div>
       </div>
 
+      <!-- Statuts -->
+      <div id="cb-status-row"></div>
+
       <!-- Ennemi -->
       <div id="cb-enemy-zone">
         <div id="cb-enemy-sprite">👹</div>
@@ -866,6 +943,15 @@ canvas#particles {
       <button id="btn-rest-cont" onclick="Rooms.restContinue()">Se reposer →</button>
     </div>
 
+    <!-- ── BOUTIQUE ── -->
+    <div id="shop-screen" class="screen">
+      <div id="shop-title">🏪 Marchand Obscur</div>
+      <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
+      <div id="shop-gold-display">🪙 <span id="shop-gold-val">0</span> or</div>
+      <div id="shop-items"></div>
+      <button id="btn-shop-leave" onclick="Rooms.shopLeave()">Quitter la boutique →</button>
+    </div>
+
     <!-- ── DUNGEON MAP ── -->
     <div id="dungeon-map" class="screen">
       <div id="dm-bg"></div>
@@ -887,6 +973,13 @@ canvas#particles {
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
+    </div>
+
+    <!-- Transition étage (overlay) -->
+    <div id="floor-transition">
+      <div id="ft-label">Étage</div>
+      <div id="ft-num">II</div>
+      <div id="ft-sub">Les ténèbres s'épaississent...</div>
     </div>
 
   </div><!-- /phone-screen -->
@@ -1067,6 +1160,8 @@ var Combat = (function(){
   var skillCd = 0;
   var turnLocked = false;
   var logLines = [];
+  var statuses = []; // { type:'poison'|'burn'|'stun'|'shield', turns, val }
+  var enemyStatuses = [];
 
   function log(msg, type) {
     type = type || 'system';
@@ -1141,6 +1236,42 @@ var Combat = (function(){
     });
   }
 
+  function addStatus(list, type, turns, val) {
+    var ex = list.find(function(s){ return s.type===type; });
+    if (ex) { ex.turns = Math.max(ex.turns, turns); }
+    else list.push({ type:type, turns:turns, val:val||0 });
+    renderStatuses();
+  }
+
+  function renderStatuses() {
+    var row = document.getElementById('cb-status-row');
+    row.innerHTML = '';
+    statuses.forEach(function(s){
+      var d = document.createElement('div');
+      d.className = 'status-badge status-'+s.type;
+      var icons = { poison:'☠ Poison', burn:'🔥 Brûlure', stun:'⚡ Étourdi', shield:'🛡 Bouclier', defend:'🛡 Garde' };
+      d.textContent = (icons[s.type]||s.type)+' ×'+s.turns;
+      row.appendChild(d);
+    });
+  }
+
+  function tickStatuses() {
+    // Appliquer et décrémenter
+    statuses = statuses.filter(function(s){
+      if (s.type==='poison') { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('☠ Poison : -'+s.val+' PV','enemy'); }
+      if (s.type==='burn')   { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('🔥 Brûlure : -'+s.val+' PV','enemy'); }
+      s.turns--;
+      return s.turns > 0;
+    });
+    enemyStatuses = enemyStatuses.filter(function(s){
+      if (s.type==='poison') { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log(enemy.name+' ☠ -'+s.val+' PV','player'); }
+      if (s.type==='burn')   { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log(enemy.name+' 🔥 -'+s.val+' PV','player'); }
+      s.turns--;
+      return s.turns > 0;
+    });
+    renderStatuses();
+  }
+
   function updateSkillBtn() {
     var cd = document.getElementById('skill-cd');
     var btn = document.getElementById('btn-skill');
@@ -1155,12 +1286,36 @@ var Combat = (function(){
 
   function endCombat(victory) {
     setButtons(false);
+    statuses = []; enemyStatuses = []; renderStatuses();
     if (victory) {
       State.gold  = (State.gold||0)  + enemy.gold;
       State.kills = (State.kills||0) + 1;
-      setTimeout(function(){ Rooms.showLoot(enemy); }, 700);
+      var wasBoss = !!enemy.boss;
+      setTimeout(function(){
+        if (wasBoss) {
+          if ((State.floor||1) >= 6) {
+            // Victoire finale !
+            document.getElementById('go-skull').textContent = '🏆';
+            document.getElementById('go-title').textContent = 'VICTOIRE !';
+            document.getElementById('go-title').style.color = '#C9A550';
+            document.getElementById('go-quote').textContent = '"Tu as vaincu les Cryptes Éternelles !"';
+            document.getElementById('go-floor').textContent = 6;
+            document.getElementById('go-gold').textContent  = State.gold||0;
+            document.getElementById('go-kills').textContent = State.kills||0;
+            Nav.go('gameover-screen');
+          } else {
+            advanceFloor();
+          }
+        } else {
+          Rooms.showLoot(enemy);
+        }
+      }, 700);
     } else {
       setTimeout(function(){
+        document.getElementById('go-skull').textContent = '💀';
+        document.getElementById('go-title').textContent = 'Défaite';
+        document.getElementById('go-title').style.color = '#c83030';
+        document.getElementById('go-quote').textContent = '"Les cryptes gardent leurs secrets pour l\'éternité..."';
         document.getElementById('go-floor').textContent = State.floor||1;
         document.getElementById('go-gold').textContent  = State.gold||0;
         document.getElementById('go-kills').textContent = State.kills||0;
@@ -1174,10 +1329,37 @@ var Combat = (function(){
     turnLocked = true;
     setButtons(false);
     setTimeout(function(){
+      // Tick statuts
+      tickStatuses();
+      if (enemy.hp <= 0) { log(enemy.name+' succombe au poison !','system'); endCombat(true); return; }
+      if (State.hp <= 0) { endCombat(false); return; }
+
+      // Étourdi ?
+      var stunned = statuses.find(function(s){ return s.type==='stun'; });
+      if (stunned) { stunned.turns=0; tickStatuses(); log('Tu es étourdi et perds ton tour !','enemy'); turnLocked=false; setButtons(true); return; }
+
       // IA ennemi simple
       var action = Math.random();
       var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def);
       playerDef = false;
+
+      // Boss : capacités spéciales
+      if (enemy.boss && action < 0.25) {
+        var spec = Math.random();
+        if (spec < 0.33) {
+          addStatus(statuses, 'poison', 3, 5);
+          log(enemy.name+' t\'empoisonne !','enemy');
+          turnLocked=false; setButtons(true); return;
+        } else if (spec < 0.66) {
+          addStatus(statuses, 'burn', 2, 8);
+          log(enemy.name+' te brûle !','enemy');
+          turnLocked=false; setButtons(true); return;
+        } else {
+          addStatus(statuses, 'stun', 1, 0);
+          log(enemy.name+' t\'étourdit !','enemy');
+          turnLocked=false; setButtons(true); return;
+        }
+      }
 
       if (action < 0.15 && enemy.hp < enemy.hpMax * 0.4) {
         // Soin
@@ -1222,12 +1404,13 @@ var Combat = (function(){
       document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
       document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
       document.getElementById('combat-result').classList.remove('show');
+      statuses = []; enemyStatuses = []; renderStatuses();
 
       updatePlayerUI();
       updateEnemyUI();
       updateSkillBtn();
       setButtons(true);
-      log('⚔ '+enemy.name+' surgit de l\'ombre !','system');
+      log('⚔ '+enemy.name+' surgit de l\'ombre !'+(enemy.boss?' ☠':''),'system');
     },
 
     playerAttack: function() {
@@ -1392,6 +1575,86 @@ var Rooms = {
   _pendingItem: null,
   _healAmt: 0
 };
+
+// ── BOUTIQUE ──────────────────────────────────────────────────────
+var SHOP_POOL = [
+  { ico:'⚔', name:'Épée du Marché',     desc:'+4 ATQ',        cost:30, effect:function(){ State.atk+=4; } },
+  { ico:'🛡', name:'Écu Renforcé',      desc:'+5 DEF',        cost:30, effect:function(){ State.def+=5; } },
+  { ico:'💊', name:'Potion Suprême',    desc:'+1 Potion ×2',  cost:20, effect:function(){ State.potions=(State.potions||0)+2; } },
+  { ico:'💎', name:'Pierre de Vie',     desc:'+30 PV max',    cost:45, effect:function(){ State.hpMax+=30; State.hp=Math.min(State.hpMax,State.hp+30); } },
+  { ico:'🧪', name:'Élixir de Vigueur', desc:'+3 ATQ +3 DEF', cost:50, effect:function(){ State.atk+=3; State.def+=3; } },
+  { ico:'📿', name:'Amulette du Chaos', desc:'+6 ATQ −2 DEF', cost:35, effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-2); } },
+  { ico:'🩹', name:'Soin Immédiat',     desc:'Récup 50% PV',  cost:25, effect:function(){ State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.5)); } },
+  { ico:'🗡', name:'Stylet Empoisonné', desc:'+2 ATQ +Poison', cost:40, effect:function(){ State.atk+=2; State.poisonAtk=true; } },
+];
+
+Rooms.showShop = function() {
+  // Sélection aléatoire de 3 items
+  var pool = SHOP_POOL.slice();
+  pool.sort(function(){ return Math.random()-0.5; });
+  var items = pool.slice(0,3);
+  State._shopItems = items;
+  document.getElementById('shop-gold-val').textContent = State.gold||0;
+  var cont = document.getElementById('shop-items');
+  cont.innerHTML = '';
+  items.forEach(function(item, idx) {
+    var div = document.createElement('div');
+    div.className = 'shop-item' + ((State.gold||0) < item.cost ? ' cant-afford' : '');
+    div.dataset.idx = idx;
+    div.innerHTML =
+      '<span class="si-ico">'+item.ico+'</span>'+
+      '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div></div>'+
+      '<div class="si-price">'+item.cost+'</div>';
+    div.addEventListener('click', function(){ Rooms.shopBuy(idx); });
+    cont.appendChild(div);
+  });
+  Nav.go('shop-screen');
+};
+
+Rooms.shopBuy = function(idx) {
+  var item = State._shopItems[idx];
+  if (!item || (State.gold||0) < item.cost) return;
+  State.gold -= item.cost;
+  item.effect();
+  document.getElementById('shop-gold-val').textContent = State.gold;
+  // Marquer vendu
+  var cards = document.querySelectorAll('.shop-item');
+  if (cards[idx]) cards[idx].classList.add('sold');
+  // Mettre à jour afford
+  document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c,i){
+    var cost = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
+    c.classList.toggle('cant-afford', (State.gold||0) < cost);
+  });
+};
+
+Rooms.shopLeave = function() {
+  updateMapHpBar();
+  Nav.go('dungeon-map');
+};
+
+// ── TRANSITION ÉTAGE ──────────────────────────────────────────────
+var FLOOR_QUOTES = [
+  'Les murs suintent l\'obscurité...',
+  'L\'air se fait plus froid et plus lourd...',
+  'Les ténèbres s\'épaississent...',
+  'Tu sens une présence ancienne...',
+  'La mort rôde dans ces couloirs...',
+  'Tu touches le fond de l\'abîsse...',
+];
+
+function advanceFloor() {
+  State.floor = (State.floor||1) + 1;
+  var labels = ['I','II','III','IV','V','VI'];
+  var ft = document.getElementById('floor-transition');
+  document.getElementById('ft-num').textContent = labels[State.floor-1]||String(State.floor);
+  document.getElementById('ft-sub').textContent = FLOOR_QUOTES[Math.min(State.floor-1, FLOOR_QUOTES.length-1)];
+  ft.classList.add('show');
+  setTimeout(function(){
+    ft.classList.remove('show');
+    DungeonMap.init(State.floor, State.hp, State.hpMax);
+    Nav.go('dungeon-map');
+  }, 2200);
+}
 
 function updateMapHpBar() {
   var pct = Math.max(0, Math.min(100, Math.round(State.hp/State.hpMax*100)));
@@ -1748,6 +2011,8 @@ var DungeonMap = (function() {
       var type = hit.type;
       if (type === 'rest') {
         Rooms.showRest();
+      } else if (type === 'shop') {
+        Rooms.showShop();
       } else {
         // combat / elite / mystery / trap / boss → ennemi
         var pool = type === 'boss'
