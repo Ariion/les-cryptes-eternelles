@@ -554,6 +554,100 @@ canvas#particles {
   cursor:pointer; transition:all 0.15s;
 }
 #result-btn:active { transform:scale(0.97); }
+
+/* ── LOOT SCREEN ─────────────────────────────────────────────── */
+#loot-screen {
+  background:#06050f;
+  background-image: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(40,80,20,0.35) 0%, transparent 65%);
+  flex-direction:column; align-items:center; justify-content:center; gap:0;
+}
+#loot-title {
+  font-family:'Cinzel Decorative',serif; font-size:22px; color:#C9A550;
+  text-shadow:0 0 30px rgba(201,165,80,0.4);
+  margin-bottom:6px;
+}
+#loot-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:14px; color:rgba(201,165,80,0.5); margin-bottom:28px; }
+#loot-gold-wrap {
+  display:flex; align-items:center; gap:12px; margin-bottom:24px;
+  padding:14px 28px; border-radius:10px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.25);
+}
+#loot-gold-ico { font-size:28px; }
+#loot-gold-val { font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:#C9A550; }
+#loot-gold-lbl { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.45); }
+#loot-item-wrap {
+  width:80%; max-width:280px; margin-bottom:32px;
+  padding:16px 20px; border-radius:10px;
+  background:rgba(100,60,180,0.1); border:1px solid rgba(150,100,220,0.3);
+  display:flex; align-items:center; gap:14px;
+  opacity:0; transform:translateY(10px);
+  transition:opacity 0.5s ease 0.4s, transform 0.5s ease 0.4s;
+}
+#loot-item-wrap.show { opacity:1; transform:translateY(0); }
+#loot-item-wrap.hidden { display:none; }
+#loot-item-ico { font-size:32px; }
+#loot-item-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
+#loot-item-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(180,160,220,0.7); margin-top:2px; }
+#btn-loot-cont {
+  padding:16px 40px; border-radius:8px;
+  border:1px solid rgba(201,165,80,0.6);
+  background:rgba(201,165,80,0.12); color:#C9A550;
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#btn-loot-cont:active { transform:scale(0.97); background:rgba(201,165,80,0.22); }
+
+/* ── GAME OVER ───────────────────────────────────────────────── */
+#gameover-screen {
+  background:#06050f;
+  background-image: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(80,10,10,0.5) 0%, transparent 60%);
+  flex-direction:column; align-items:center; justify-content:center; gap:0;
+}
+#go-skull { font-size:80px; margin-bottom:16px; filter:drop-shadow(0 0 30px rgba(200,30,30,0.5)); }
+#go-title { font-family:'Cinzel Decorative',serif; font-size:30px; color:#c83030; text-shadow:0 0 40px rgba(200,30,30,0.4); margin-bottom:6px; }
+#go-quote { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(200,150,150,0.6); margin-bottom:36px; text-align:center; padding:0 32px; }
+#go-stats {
+  width:80%; max-width:280px; margin-bottom:32px;
+  display:flex; flex-direction:column; gap:0;
+  border-radius:10px; overflow:hidden;
+  border:1px solid rgba(200,80,80,0.2);
+}
+.go-stat-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 18px; background:rgba(255,255,255,0.03);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.go-stat-row:last-child { border-bottom:none; }
+.go-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:rgba(200,150,150,0.5); text-transform:uppercase; }
+.go-stat-val { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#EDE8DF; }
+#btn-go-retry {
+  padding:16px 40px; border-radius:8px; margin-bottom:12px;
+  border:1px solid rgba(200,80,80,0.5);
+  background:rgba(180,30,30,0.15); color:rgba(240,140,140,0.9);
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+#btn-go-retry:active { transform:scale(0.97); }
+#btn-go-menu {
+  padding:10px 28px; border-radius:8px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:transparent; color:rgba(200,190,180,0.4);
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+}
+
+/* ── REST ROOM ───────────────────────────────────────────────── */
+#rest-screen {
+  background:#06050f;
+  background-image: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(20,60,20,0.4) 0%, transparent 60%);
+  flex-direction:column; align-items:center; justify-content:center; gap:20px;
+}
+#rest-icon { font-size:70px; filter:drop-shadow(0 0 20px rgba(80,200,100,0.3)); }
+#rest-title { font-family:'Cinzel Decorative',serif; font-size:22px; color:#50d070; margin-bottom:4px; }
+#rest-desc { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(150,210,160,0.6); text-align:center; padding:0 36px; }
+#rest-heal-val { font-family:'Cinzel',serif; font-size:40px; font-weight:700; color:#50d070; text-shadow:0 0 30px rgba(80,200,100,0.4); }
+#btn-rest-cont { padding:16px 40px; border-radius:8px; border:1px solid rgba(80,200,100,0.5); background:rgba(40,160,60,0.12); color:#50d070; font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
+#btn-rest-cont:active { transform:scale(0.97); }
 </style>
 </head>
 <body>
@@ -724,6 +818,52 @@ canvas#particles {
         <div id="result-sub"></div>
         <button id="result-btn" onclick="Combat.closeResult()">Continuer</button>
       </div>
+    </div>
+
+    <!-- ── LOOT ── -->
+    <div id="loot-screen" class="screen">
+      <div id="loot-title">Victoire !</div>
+      <div id="loot-sub">L'ennemi est vaincu</div>
+      <div id="loot-gold-wrap">
+        <div id="loot-gold-ico">🪙</div>
+        <div>
+          <div id="loot-gold-val">+0</div>
+          <div id="loot-gold-lbl">Or gagné</div>
+        </div>
+      </div>
+      <div id="loot-item-wrap">
+        <div id="loot-item-ico">⚔</div>
+        <div>
+          <div id="loot-item-name">Objet trouvé</div>
+          <div id="loot-item-desc">Description</div>
+        </div>
+      </div>
+      <button id="btn-loot-cont" onclick="Rooms.lootContinue()">Continuer →</button>
+    </div>
+
+    <!-- ── GAME OVER ── -->
+    <div id="gameover-screen" class="screen">
+      <div id="go-skull">💀</div>
+      <div id="go-title">Défaite</div>
+      <div id="go-quote">"Les cryptes gardent leurs secrets pour l'éternité..."</div>
+      <div id="go-stats">
+        <div class="go-stat-row"><span class="go-stat-lbl">Étage atteint</span><span class="go-stat-val" id="go-floor">1</span></div>
+        <div class="go-stat-row"><span class="go-stat-lbl">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
+        <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
+      </div>
+      <button id="btn-go-retry" onclick="App.retryRun()">⚔ Recommencer</button>
+      <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
+    </div>
+
+    <!-- ── REPOS ── -->
+    <div id="rest-screen" class="screen">
+      <div id="rest-icon">🔥</div>
+      <div>
+        <div id="rest-title">Feu de camp</div>
+        <div id="rest-desc">Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.</div>
+      </div>
+      <div id="rest-heal-val">+0 PV</div>
+      <button id="btn-rest-cont" onclick="Rooms.restContinue()">Se reposer →</button>
     </div>
 
     <!-- ── DUNGEON MAP ── -->
@@ -1015,18 +1155,18 @@ var Combat = (function(){
 
   function endCombat(victory) {
     setButtons(false);
-    var res = document.getElementById('combat-result');
     if (victory) {
-      document.getElementById('result-icon').textContent  = '🏆';
-      document.getElementById('result-title').textContent = 'Victoire !';
-      document.getElementById('result-sub').textContent   = '+'+enemy.gold+' or  ·  +'+enemy.xp+' XP';
-      State.gold = (State.gold||0) + enemy.gold;
+      State.gold  = (State.gold||0)  + enemy.gold;
+      State.kills = (State.kills||0) + 1;
+      setTimeout(function(){ Rooms.showLoot(enemy); }, 700);
     } else {
-      document.getElementById('result-icon').textContent  = '💀';
-      document.getElementById('result-title').textContent = 'Défaite...';
-      document.getElementById('result-sub').textContent   = 'Les cryptes t\'ont englouti.';
+      setTimeout(function(){
+        document.getElementById('go-floor').textContent = State.floor||1;
+        document.getElementById('go-gold').textContent  = State.gold||0;
+        document.getElementById('go-kills').textContent = State.kills||0;
+        Nav.go('gameover-screen');
+      }, 700);
     }
-    setTimeout(function(){ res.classList.add('show'); }, 800);
   }
 
   function enemyTurn() {
@@ -1189,6 +1329,75 @@ var Combat = (function(){
     }
   };
 })();
+
+// ── ITEMS (butin possible) ────────────────────────────────────────
+var ITEMS = [
+  { ico:'⚔', name:'Épée Rouillée',    desc:'+3 ATQ',       effect:function(){ State.atk+=3; } },
+  { ico:'🛡', name:'Bouclier Brisé',  desc:'+4 DEF',       effect:function(){ State.def+=4; } },
+  { ico:'💎', name:'Amulette',        desc:'+20 PV max',   effect:function(){ State.hpMax+=20; State.hp+=20; } },
+  { ico:'🗡', name:'Dague Acérée',    desc:'+5 ATQ',       effect:function(){ State.atk+=5; } },
+  { ico:'👢', name:'Bottes de Fuite', desc:'+15% fuite',   effect:function(){ State.fleeBonus=(State.fleeBonus||0)+0.15; } },
+  { ico:'📿', name:'Collier de Dents',desc:'+2 ATQ +2 DEF',effect:function(){ State.atk+=2; State.def+=2; } },
+  { ico:'🪄', name:'Baguette Magique',desc:'+6 ATQ (Mage)',effect:function(){ State.atk+=6; } },
+  { ico:'🧪', name:'Potion de Force', desc:'+4 ATQ temp',  effect:function(){ State.atk+=4; } },
+  { ico:'📜', name:'Parchemin',       desc:'+1 Potion',    effect:function(){ State.potions=(State.potions||0)+1; } },
+];
+
+// ── ROOMS ─────────────────────────────────────────────────────────
+var Rooms = {
+  _lastEnemy: null,
+
+  showLoot: function(e) {
+    Rooms._lastEnemy = e;
+    document.getElementById('loot-gold-val').textContent = '+'+e.gold;
+    // Item aléatoire (60% chance)
+    var wrap = document.getElementById('loot-item-wrap');
+    if (Math.random() < 0.6) {
+      var item = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+      document.getElementById('loot-item-ico').textContent  = item.ico;
+      document.getElementById('loot-item-name').textContent = item.name;
+      document.getElementById('loot-item-desc').textContent = item.desc;
+      wrap.classList.remove('hidden');
+      wrap.classList.remove('show');
+      Rooms._pendingItem = item;
+      setTimeout(function(){ wrap.classList.add('show'); }, 50);
+    } else {
+      wrap.classList.add('hidden');
+      Rooms._pendingItem = null;
+    }
+    Nav.go('loot-screen');
+  },
+
+  lootContinue: function() {
+    if (Rooms._pendingItem) { Rooms._pendingItem.effect(); Rooms._pendingItem = null; }
+    // Sync barre PV de la carte
+    updateMapHpBar();
+    Nav.go('dungeon-map');
+  },
+
+  showRest: function() {
+    var heal = Math.round(State.hpMax * 0.35);
+    var actual = Math.min(heal, State.hpMax - State.hp);
+    document.getElementById('rest-heal-val').textContent = '+'+actual+' PV';
+    Rooms._healAmt = actual;
+    Nav.go('rest-screen');
+  },
+
+  restContinue: function() {
+    State.hp = Math.min(State.hpMax, State.hp + (Rooms._healAmt||0));
+    updateMapHpBar();
+    Nav.go('dungeon-map');
+  },
+
+  _pendingItem: null,
+  _healAmt: 0
+};
+
+function updateMapHpBar() {
+  var pct = Math.max(0, Math.min(100, Math.round(State.hp/State.hpMax*100)));
+  document.getElementById('dm-hp-fill').style.width = pct+'%';
+  document.getElementById('dm-hp-text').textContent = State.hp+' / '+State.hpMax;
+}
 
 // ── DUNGEON MAP ───────────────────────────────────────────────────
 var DungeonMap = (function() {
@@ -1535,12 +1744,21 @@ var DungeonMap = (function() {
 
     setTimeout(function(){
       document.getElementById('dm-node-info').textContent = 'Choisis ton chemin...';
-      // Lancer l'événement selon le type de salle
-      var pool = getEnemiesForFloor(State.floor||1);
-      var enemyData = pool[Math.floor(Math.random()*pool.length)];
-      State.potions = State.potions || 2;
-      Nav.go('combat-screen');
-      setTimeout(function(){ Combat.start(enemyData); }, 350);
+      State.potions = State.potions !== undefined ? State.potions : 2;
+      var type = hit.type;
+      if (type === 'rest') {
+        Rooms.showRest();
+      } else {
+        // combat / elite / mystery / trap / boss → ennemi
+        var pool = type === 'boss'
+          ? ENEMIES.filter(function(e){ return e.boss && e.floor <= (State.floor||1)+1; })
+          : getEnemiesForFloor(State.floor||1);
+        if (!pool.length) pool = getEnemiesForFloor(1);
+        var enemyData = pool[Math.floor(Math.random()*pool.length)];
+        if (type === 'elite') enemyData = Object.assign({}, enemyData, { hp:Math.round(enemyData.hp*1.5), atk:Math.round(enemyData.atk*1.2), gold:Math.round(enemyData.gold*2) });
+        Nav.go('combat-screen');
+        setTimeout(function(){ Combat.start(enemyData); }, 350);
+      }
     }, 500);
   }
 
@@ -1624,6 +1842,15 @@ var App = {
   continueGame: function(){ alert('Continuer — prochain commit !'); },
   showHero:     function(){ alert('Mon Héros — prochain commit !'); },
   showSettings: function(){ alert('Paramètres — prochain commit !'); },
+  retryRun: function() {
+    var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
+    State.hp=c.hp+r.dhp; State.hpMax=c.hp+r.dhp;
+    State.atk=c.atk+r.datk; State.def=c.def+r.ddef;
+    State.floor=1; State.gold=0; State.kills=0; State.potions=2;
+    Nav.go('dungeon-map');
+    setTimeout(function(){ DungeonMap.init(1,State.hp,State.hpMax); },300);
+  },
 };
 
 window.addEventListener('load', runIntro);
