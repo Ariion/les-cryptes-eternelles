@@ -1174,6 +1174,164 @@ canvas#particles {
 .hotspot.cleared .hs-ring::after { animation:none; }
 .hotspot.cleared .hs-lbl { color:rgba(180,120,120,0.5); border-color:rgba(120,80,80,0.3); }
 .hotspot.cleared .hs-lbl::after { content:' ✓'; }
+/* ══════════════════════════════════════════════════════════════════
+   ÉCRAN ÉQUIPEMENT / INVENTAIRE
+   ══════════════════════════════════════════════════════════════════ */
+#equip-screen {
+  background:#06050f;
+  background-image: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(60,40,100,0.4) 0%, transparent 65%);
+  flex-direction:column; align-items:stretch; padding:0; gap:0; overflow:hidden;
+}
+#eq-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px 10px; flex-shrink:0;
+  border-bottom:1px solid rgba(201,165,80,0.1);
+}
+#eq-back { width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; border:1px solid rgba(255,255,255,0.1); cursor:pointer;
+  color:rgba(237,232,223,0.6); font-size:16px; -webkit-tap-highlight-color:transparent; }
+#eq-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#C9A550; letter-spacing:1px; }
+#eq-gold { font-family:'Cinzel',serif; font-size:13px; color:#C9A550; }
+
+#eq-body { flex:1; overflow-y:auto; padding:10px 12px 20px; display:flex; flex-direction:column; gap:10px; }
+
+/* ── Grille équipement ── */
+#eq-char-grid {
+  display:grid;
+  grid-template-columns:64px 1fr 64px;
+  grid-template-rows:repeat(4, 64px);
+  gap:6px;
+  align-items:center;
+}
+.eq-slot {
+  width:62px; height:62px;
+  border-radius:10px; border:1px solid rgba(201,165,80,0.2);
+  background:rgba(255,255,255,0.03);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; cursor:pointer; position:relative;
+  -webkit-tap-highlight-color:transparent; transition:all 0.15s;
+}
+.eq-slot:active { transform:scale(0.94); background:rgba(201,165,80,0.08); }
+.eq-slot.filled { border-color:rgba(201,165,80,0.55); background:rgba(201,165,80,0.07); }
+.eq-slot.filled::after {
+  content:''; position:absolute; inset:0; border-radius:10px;
+  box-shadow:0 0 12px rgba(201,165,80,0.15) inset;
+}
+.eq-slot-ico { font-size:22px; }
+.eq-slot-lbl {
+  font-family:'Cinzel',serif; font-size:7px; letter-spacing:0.5px;
+  color:rgba(237,232,223,0.35); text-transform:uppercase; line-height:1;
+}
+.eq-slot.filled .eq-slot-lbl { color:#C9A550; font-size:8px; }
+.eq-slot-stat { font-family:'Cinzel',serif; font-size:9px; color:rgba(201,165,80,0.7); }
+
+/* ── Panneau personnage (centre) ── */
+#eq-char-panel {
+  grid-column:2; grid-row:1/5; height:256px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; padding:8px 4px;
+}
+#eq-char-sprite { font-size:44px; line-height:1; }
+#eq-char-name { font-family:'Cinzel',serif; font-size:10px; color:#C9A550; letter-spacing:0.5px; text-align:center; }
+#eq-char-stats { display:flex; flex-direction:column; gap:3px; width:100%; margin-top:4px; }
+.eq-stat-row {
+  display:flex; align-items:center; justify-content:center; gap:4px;
+  font-family:'Cinzel',serif; font-size:10px; color:rgba(237,232,223,0.7);
+}
+.eq-stat-ico { font-size:11px; }
+.eq-stat-val { color:#EDE8DF; font-weight:700; }
+
+/* ── Section titre ── */
+.eq-section-title {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.5);
+  text-transform:uppercase; text-align:center; padding:4px 0;
+  border-top:1px solid rgba(201,165,80,0.1);
+}
+
+/* ── Grille inventaire ── */
+#eq-inv-grid {
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
+}
+.inv-slot {
+  aspect-ratio:1; border-radius:8px;
+  border:1px dashed rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.02);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; cursor:pointer; position:relative;
+  -webkit-tap-highlight-color:transparent; transition:all 0.15s; padding:4px;
+}
+.inv-slot.occupied { border-color:rgba(201,165,80,0.3); background:rgba(201,165,80,0.05); border-style:solid; }
+.inv-slot:active { transform:scale(0.94); }
+.inv-slot .inv-ico { font-size:20px; }
+.inv-slot .inv-name { font-family:'Cinzel',serif; font-size:7px; color:rgba(237,232,223,0.55); text-align:center; line-height:1.2; }
+.inv-slot .inv-stat { font-family:'Cinzel',serif; font-size:8px; color:rgba(201,165,80,0.7); }
+.inv-slot .inv-sell { font-family:'Cinzel',serif; font-size:7px; color:rgba(200,80,80,0.6); display:none; }
+
+/* ── Tooltip équip ── */
+#eq-tooltip {
+  position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+  background:#0e0910; border:1px solid rgba(201,165,80,0.4); border-radius:8px;
+  padding:8px 10px; min-width:130px; z-index:50; pointer-events:none;
+  opacity:0; transition:opacity 0.15s;
+}
+#eq-tooltip.show { opacity:1; }
+#eq-tooltip-name { font-family:'Cinzel',serif; font-size:10px; color:#C9A550; margin-bottom:3px; }
+#eq-tooltip-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(237,232,223,0.7); }
+#eq-tooltip-action { font-family:'Cinzel',serif; font-size:9px; color:rgba(200,80,80,0.7); margin-top:4px; }
+
+/* ══════════════════════════════════════════════════════════════════
+   COFFRE / STOCKAGE
+   ══════════════════════════════════════════════════════════════════ */
+#chest-screen {
+  background:#0a0805;
+  background-image: radial-gradient(ellipse 70% 40% at 50% 10%, rgba(80,50,10,0.5) 0%, transparent 60%);
+  flex-direction:column; align-items:stretch; padding:0; gap:0; overflow:hidden;
+}
+#chest-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px 10px; flex-shrink:0;
+  border-bottom:1px solid rgba(201,165,80,0.12);
+}
+#chest-back { width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  border-radius:50%; border:1px solid rgba(255,255,255,0.1); cursor:pointer;
+  color:rgba(237,232,223,0.6); font-size:16px; -webkit-tap-highlight-color:transparent; }
+#chest-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#C9A550; }
+#chest-capacity { font-family:'Cinzel',serif; font-size:11px; color:rgba(201,165,80,0.45); }
+
+#chest-tabs {
+  display:flex; gap:0; border-bottom:1px solid rgba(201,165,80,0.1); flex-shrink:0;
+}
+.chest-tab {
+  flex:1; padding:10px; text-align:center;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
+  color:rgba(237,232,223,0.35); cursor:pointer; border-bottom:2px solid transparent;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.chest-tab.active { color:#C9A550; border-bottom-color:#C9A550; }
+
+#chest-body { flex:1; overflow-y:auto; padding:12px; }
+
+#chest-grid, #chest-inv-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
+}
+.chest-slot {
+  aspect-ratio:1; border-radius:8px;
+  border:1px dashed rgba(201,165,80,0.12);
+  background:rgba(201,165,80,0.02);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; cursor:pointer; padding:4px;
+  -webkit-tap-highlight-color:transparent; transition:all 0.15s;
+}
+.chest-slot.occupied { border-color:rgba(201,165,80,0.35); background:rgba(201,165,80,0.06); border-style:solid; }
+.chest-slot:active { transform:scale(0.93); }
+.chest-slot .cs-ico { font-size:20px; }
+.chest-slot .cs-name { font-family:'Cinzel',serif; font-size:7px; color:rgba(237,232,223,0.5); text-align:center; line-height:1.2; }
+.chest-slot .cs-stat { font-family:'Cinzel',serif; font-size:8px; color:rgba(201,165,80,0.65); }
+#chest-hint {
+  font-family:'Crimson Text',serif; font-style:italic; font-size:12px;
+  color:rgba(237,232,223,0.25); text-align:center; padding:8px 0 4px;
+}
+
 /* ── HERO SCREEN close btn ── */
 #hs-close-btn {
   margin:auto 16px 20px; width:calc(100% - 32px); height:46px;
@@ -1437,6 +1595,10 @@ canvas#particles {
       <div id="shop-title">🏪 Marchand Obscur</div>
       <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
       <div id="shop-gold-display">🪙 <span id="shop-gold-val">0</span> or</div>
+      <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
+        <div class="chest-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
+        <div class="chest-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
+      </div>
       <div id="shop-items"></div>
       <button id="btn-shop-leave" onclick="Rooms.shopLeave()">Quitter la boutique →</button>
     </div>
@@ -1463,7 +1625,7 @@ canvas#particles {
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
       <button id="dm-camp-btn" onclick="Nav.go('world-map')">🗺 Voyager</button>
-      <button id="dm-bag-btn" onclick="BagManager.open()">🎒</button>
+      <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')">🎒</button>
       <!-- Bag overlay -->
       <div id="bag-overlay">
         <div id="bag-overlay-box">
@@ -1616,13 +1778,13 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl safe">Partir à l'aventure</div>
       </div>
-      <!-- hotspot armoire → Mon Héros -->
-      <div class="hotspot" id="hs-inn-armoire" onclick="State._heroFrom='inn-room';Meta.buildScreen();Nav.go('hero-screen')">
+      <!-- hotspot armoire → Équipement -->
+      <div class="hotspot" id="hs-inn-armoire" onclick="EquipScreen.open('inn-room')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">Équipement</div>
       </div>
-      <!-- hotspot coffre → inventaire / or -->
-      <div class="hotspot" id="hs-inn-chest" onclick="InnRoom.showChest()">
+      <!-- hotspot coffre → Coffre stockage -->
+      <div class="hotspot" id="hs-inn-chest" onclick="ChestScreen.open()">
         <div class="hs-ring"></div>
         <div class="hs-lbl">Coffre</div>
       </div>
@@ -1719,6 +1881,92 @@ canvas#particles {
       </div>
     </div>
 
+    <!-- ── ÉQUIPEMENT / INVENTAIRE ── -->
+    <div id="equip-screen" class="screen">
+      <div id="eq-header">
+        <div id="eq-back" onclick="EquipScreen.close()">←</div>
+        <div id="eq-title">Équipement</div>
+        <div id="eq-gold">🪙 <span id="eq-gold-val">0</span></div>
+      </div>
+      <div id="eq-body">
+        <!-- Grille 3 colonnes: gauche | personnage | droite -->
+        <div id="eq-char-grid">
+          <!-- Colonne gauche -->
+          <div class="eq-slot" id="eqs-heaume"    onclick="EquipScreen.clickSlot('heaume')">
+            <div class="eq-slot-ico">🪖</div><div class="eq-slot-lbl">Heaume</div>
+          </div>
+          <!-- Panneau personnage (s'étend sur 4 lignes, col 2) -->
+          <div id="eq-char-panel">
+            <div id="eq-char-sprite">⚔</div>
+            <div id="eq-char-name">Héros</div>
+            <div id="eq-char-stats">
+              <div class="eq-stat-row"><span class="eq-stat-ico">⚔</span><span id="eq-s-atk" class="eq-stat-val">0</span></div>
+              <div class="eq-stat-row"><span class="eq-stat-ico">🛡</span><span id="eq-s-def" class="eq-stat-val">0</span></div>
+              <div class="eq-stat-row"><span class="eq-stat-ico">❤</span><span id="eq-s-hp" class="eq-stat-val">0/0</span></div>
+              <div class="eq-stat-row"><span class="eq-stat-ico">✨</span><span id="eq-s-lvl" class="eq-stat-val">Niv.1</span></div>
+            </div>
+          </div>
+          <!-- Col droite -->
+          <div class="eq-slot" id="eqs-collier"   onclick="EquipScreen.clickSlot('collier')">
+            <div class="eq-slot-ico">📿</div><div class="eq-slot-lbl">Collier</div>
+          </div>
+
+          <div class="eq-slot" id="eqs-arme"      onclick="EquipScreen.clickSlot('arme')">
+            <div class="eq-slot-ico">⚔</div><div class="eq-slot-lbl">Arme</div>
+          </div>
+          <!-- col2 row2 = char panel (auto) -->
+          <div class="eq-slot" id="eqs-bouclier"  onclick="EquipScreen.clickSlot('bouclier')">
+            <div class="eq-slot-ico">🛡</div><div class="eq-slot-lbl">Bouclier</div>
+          </div>
+
+          <div class="eq-slot" id="eqs-gants"     onclick="EquipScreen.clickSlot('gants')">
+            <div class="eq-slot-ico">🧤</div><div class="eq-slot-lbl">Gants</div>
+          </div>
+          <!-- col2 row3 = char panel (auto) -->
+          <div class="eq-slot" id="eqs-ceinture"  onclick="EquipScreen.clickSlot('ceinture')">
+            <div class="eq-slot-ico">🪢</div><div class="eq-slot-lbl">Ceinture</div>
+          </div>
+
+          <div class="eq-slot" id="eqs-bottes"    onclick="EquipScreen.clickSlot('bottes')">
+            <div class="eq-slot-ico">👢</div><div class="eq-slot-lbl">Bottes</div>
+          </div>
+          <!-- col2 row4 = char panel (auto) -->
+          <div class="eq-slot" id="eqs-jambieres" onclick="EquipScreen.clickSlot('jambieres')">
+            <div class="eq-slot-ico">🦵</div><div class="eq-slot-lbl">Jambières</div>
+          </div>
+        </div>
+
+        <!-- Section Inventaire -->
+        <div class="eq-section-title">🎒 Inventaire · <span id="eq-inv-count">0</span>/8</div>
+        <div id="eq-inv-grid"></div>
+
+        <!-- Tooltip flottant -->
+        <div id="eq-tooltip">
+          <div id="eq-tooltip-name"></div>
+          <div id="eq-tooltip-desc"></div>
+          <div id="eq-tooltip-action"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COFFRE ── -->
+    <div id="chest-screen" class="screen">
+      <div id="chest-header">
+        <div id="chest-back" onclick="ChestScreen.close()">←</div>
+        <div id="chest-title">⚰ Coffre</div>
+        <div id="chest-capacity"><span id="chest-used">0</span>/20</div>
+      </div>
+      <div id="chest-tabs">
+        <div class="chest-tab active" id="chest-tab-chest" onclick="ChestScreen.showTab('chest')">Coffre</div>
+        <div class="chest-tab" id="chest-tab-inv" onclick="ChestScreen.showTab('inv')">Inventaire</div>
+      </div>
+      <div id="chest-body">
+        <div id="chest-hint">Appuie sur un objet pour le déplacer</div>
+        <div id="chest-grid"></div>
+        <div id="chest-inv-grid" style="display:none"></div>
+      </div>
+    </div>
+
     <!-- Transition étage (overlay) -->
     <div id="floor-transition">
       <div id="ft-label">Étage</div>
@@ -1751,7 +1999,12 @@ var CLASSES = [
 var State = {
   race: 'Humain',
   cls:  'Guerrier',
-  bag: [],         // items carried (not yet equipped)
+  bag: [],       // legacy, replaced by inventory
+  inventory: [], // items carried during run (max 8)
+  equipped: {    // items equipped per slot
+    heaume:null, arme:null, bouclier:null, gants:null,
+    bottes:null, ceinture:null, jambieres:null, collier:null, plastron:null
+  },
   _heroFrom: 'inn-room',
   _currentZone: null,
 };
@@ -2664,17 +2917,17 @@ var Combat = (function(){
         });
         rows.appendChild(div);
       }
-      // Bag items (consumables in bag)
-      (State.bag||[]).forEach(function(item, idx) {
-        if (!item.combat) return; // only items usable in combat
+      // Inventory combat consumables
+      (State.inventory||[]).forEach(function(item, idx) {
+        if (!item.combat) return;
         hasItems = true;
         var div = document.createElement('div');
         div.className = 'item-row';
         div.innerHTML = '<div class="ir-ico">'+item.ico+'</div><div class="ir-info"><div class="ir-name">'+item.name+'</div><div class="ir-desc">'+item.desc+'</div></div>';
         div.addEventListener('click', function(){
           Combat.closeItemMenu();
-          item.effect();
-          State.bag.splice(idx, 1);
+          if (item.effect) item.effect();
+          State.inventory.splice(idx, 1);
           updatePlayerUI();
           log(item.name+' utilisé !', 'heal');
           enemyTurn();
@@ -2720,21 +2973,45 @@ var Combat = (function(){
 })();
 
 // ── ITEMS (butin possible) ────────────────────────────────────────
-// equip:true → goes to bag, applied on equip; combat:true → usable in combat item menu
+// slot → équipable dans un emplacement précis
+// combat → utilisable dans le menu objet en combat
+// stats → { atk, def, hp, flee } appliqués à l'équip, retirés au déséquip
 var ITEMS = [
-  { ico:'⚔', name:'Épée Rouillée',      desc:'+4 ATQ',        equip:true,  effect:function(){ State.atk+=4; } },
-  { ico:'🗡', name:'Dague Acérée',       desc:'+6 ATQ',        equip:true,  effect:function(){ State.atk+=6; } },
-  { ico:'⚔', name:'Épée de Chevalier',  desc:'+8 ATQ',        equip:true,  effect:function(){ State.atk+=8; } },
-  { ico:'🛡', name:'Bouclier Brisé',     desc:'+5 DEF',        equip:true,  effect:function(){ State.def+=5; } },
-  { ico:'🛡', name:'Armure de Cuir',     desc:'+8 DEF',        equip:true,  effect:function(){ State.def+=8; } },
-  { ico:'💎', name:'Amulette Vitale',    desc:'+25 PV max',    equip:true,  effect:function(){ State.hpMax+=25; State.hp+=25; } },
-  { ico:'📿', name:'Collier de Dents',   desc:'+3 ATQ +3 DEF', equip:true,  effect:function(){ State.atk+=3; State.def+=3; } },
-  { ico:'🪄', name:'Baguette Arcane',    desc:'+9 ATQ mag.',   equip:true,  effect:function(){ State.atk+=9; } },
-  { ico:'👢', name:'Bottes de Fuite',    desc:'+20% fuite',    equip:true,  effect:function(){ State.fleeBonus=(State.fleeBonus||0)+0.2; } },
-  { ico:'🧪', name:'Potion de Force',    desc:'+5 ATQ, 3 tours',combat:true, effect:function(){ State.atk+=5; setTimeout(function(){ State.atk=Math.max(0,State.atk-5); }, 3*10000); } },
-  { ico:'📜', name:'Parchemin de Soin', desc:'+1 Potion',      effect:function(){ State.potions=(State.potions||0)+1; } },
-  { ico:'💊', name:'Herbes Médicinales', desc:'+20% PV',       combat:true, effect:function(){ var h=Math.round(State.hpMax*0.2); State.hp=Math.min(State.hpMax,State.hp+h); } },
+  { ico:'⚔', name:'Épée Rouillée',      slot:'arme',      stats:{atk:4},        desc:'+4 ATQ' },
+  { ico:'🗡', name:'Dague Acérée',       slot:'arme',      stats:{atk:6},        desc:'+6 ATQ' },
+  { ico:'⚔', name:'Épée de Chevalier',  slot:'arme',      stats:{atk:10},       desc:'+10 ATQ' },
+  { ico:'🪄', name:'Baguette Arcane',    slot:'arme',      stats:{atk:12},       desc:'+12 ATQ mag.' },
+  { ico:'🪓', name:'Hache Barbare',      slot:'arme',      stats:{atk:14},       desc:'+14 ATQ brut' },
+  { ico:'🛡', name:'Bouclier Brisé',     slot:'bouclier',  stats:{def:5},        desc:'+5 DEF' },
+  { ico:'🛡', name:'Écu de Chevalier',   slot:'bouclier',  stats:{def:9},        desc:'+9 DEF' },
+  { ico:'🪖', name:'Casque de Fer',      slot:'heaume',    stats:{def:4},        desc:'+4 DEF' },
+  { ico:'🪖', name:'Heaume Enchanté',    slot:'heaume',    stats:{def:7,hp:10},  desc:'+7 DEF +10 PV' },
+  { ico:'🥋', name:'Armure de Cuir',     slot:'plastron',  stats:{def:6},        desc:'+6 DEF' },
+  { ico:'🥋', name:'Plastron d\'Acier',  slot:'plastron',  stats:{def:10},       desc:'+10 DEF' },
+  { ico:'🧤', name:'Gants de Feu',       slot:'gants',     stats:{atk:4},        desc:'+4 ATQ' },
+  { ico:'🧤', name:'Gantelets Lourds',   slot:'gants',     stats:{def:4},        desc:'+4 DEF' },
+  { ico:'👢', name:'Bottes Légères',     slot:'bottes',    stats:{flee:0.15},    desc:'+15% fuite' },
+  { ico:'👢', name:'Bottes de Guerre',   slot:'bottes',    stats:{def:3,atk:2},  desc:'+3 DEF +2 ATQ' },
+  { ico:'🪢', name:'Ceinture de Force',  slot:'ceinture',  stats:{atk:3,hp:15},  desc:'+3 ATQ +15 PV' },
+  { ico:'🪢', name:'Ceinture Renforcée', slot:'ceinture',  stats:{def:5},        desc:'+5 DEF' },
+  { ico:'🦵', name:'Jambières de Cuir',  slot:'jambieres', stats:{def:4},        desc:'+4 DEF' },
+  { ico:'🦵', name:'Cuissardes d\'Acier',slot:'jambieres', stats:{def:7},        desc:'+7 DEF' },
+  { ico:'📿', name:'Collier de Dents',   slot:'collier',   stats:{atk:3,def:3},  desc:'+3 ATQ +3 DEF' },
+  { ico:'💎', name:'Amulette Vitale',    slot:'collier',   stats:{hp:30},        desc:'+30 PV max' },
+  // Consommables (pas de slot, utilisables en combat ou auto)
+  { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
+  { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
+  { ico:'📜', name:'Parchemin de Soin', desc:'+1 Potion', effect:function(){ State.potions=(State.potions||0)+1; } },
 ];
+
+// Appliquer les stats d'un item équipé
+function applyItemStats(item, sign) {
+  if (!item || !item.stats) return;
+  if (item.stats.atk)  State.atk  = Math.max(0, (State.atk||0)  + sign*(item.stats.atk||0));
+  if (item.stats.def)  State.def  = Math.max(0, (State.def||0)  + sign*(item.stats.def||0));
+  if (item.stats.hp)  { State.hpMax = Math.max(1,(State.hpMax||1)+sign*(item.stats.hp||0)); State.hp=Math.min(State.hpMax,(State.hp||0)+sign*(item.stats.hp||0)); }
+  if (item.stats.flee) State.fleeBonus = Math.max(0,(State.fleeBonus||0)+sign*(item.stats.flee||0));
+}
 
 // ── ROOMS ─────────────────────────────────────────────────────────
 var Rooms = {
@@ -2773,18 +3050,19 @@ var Rooms = {
     var item = Rooms._pendingItem;
     if (item) {
       Rooms._pendingItem = null;
-      if (item.equip) {
-        // Add to bag (max 4 slots)
-        State.bag = State.bag || [];
-        if (State.bag.length < 4) {
-          State.bag.push(item);
+      if (item.slot) {
+        // Equippable → go to inventory
+        State.inventory = State.inventory || [];
+        if (State.inventory.length < 8) {
+          State.inventory.push(item);
         } else {
-          // Bag full → auto-equip oldest, push new
-          var old = State.bag.shift();
-          old.effect();
-          State.bag.push(item);
+          // Full: auto-discard oldest to chest if possible
+          var discarded = State.inventory.shift();
+          if (Meta.chest.length < 20) Meta.chest.push(discarded);
+          Meta.save();
+          State.inventory.push(item);
         }
-      } else {
+      } else if (item.effect) {
         item.effect();
       }
     }
@@ -2897,8 +3175,8 @@ var Meta = {
   bestFloor: 0,
   levels: {},
   bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 },
-  clearedZones: {},   // { zoneId: true }
-  // zone unlock order
+  clearedZones: {},
+  chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
 
   load: function() {
@@ -2911,6 +3189,7 @@ var Meta = {
       Meta.levels      = d.levels||{};
       Meta.bonuses     = d.bonuses||{ atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 };
       Meta.clearedZones= d.clearedZones||{};
+      Meta.chest       = d.chest||[];
     } catch(e){}
   },
 
@@ -2923,6 +3202,7 @@ var Meta = {
       levels:       Meta.levels,
       bonuses:      Meta.bonuses,
       clearedZones: Meta.clearedZones,
+      chest:        Meta.chest,
     }));
   },
 
@@ -2998,14 +3278,25 @@ var SHOP_POOL = [
   { ico:'🗡', name:'Stylet Empoisonné', desc:'+2 ATQ +Poison', cost:40, effect:function(){ State.atk+=2; State.poisonAtk=true; } },
 ];
 
+Rooms._shopTab = 'buy';
+
 Rooms.showShop = function(fromScreen) {
   State._shopFrom = fromScreen || 'dungeon-map';
-  // Sélection aléatoire de 3 items
+  Rooms._shopTab = 'buy';
+  document.getElementById('stab-buy').classList.add('active');
+  document.getElementById('stab-sell').classList.remove('active');
+  // Sélection aléatoire de 4 items
   var pool = SHOP_POOL.slice();
   pool.sort(function(){ return Math.random()-0.5; });
-  var items = pool.slice(0,3);
+  var items = pool.slice(0,4);
   State._shopItems = items;
   document.getElementById('shop-gold-val').textContent = State.gold||0;
+  Rooms._renderShopBuy();
+  Nav.go('shop-screen');
+};
+
+Rooms._renderShopBuy = function() {
+  var items = State._shopItems || [];
   var cont = document.getElementById('shop-items');
   cont.innerHTML = '';
   items.forEach(function(item, idx) {
@@ -3019,21 +3310,86 @@ Rooms.showShop = function(fromScreen) {
     div.addEventListener('click', function(){ Rooms.shopBuy(idx); });
     cont.appendChild(div);
   });
-  Nav.go('shop-screen');
+};
+
+Rooms._renderShopSell = function() {
+  var cont = document.getElementById('shop-items');
+  cont.innerHTML = '';
+  var inv = State.inventory || [];
+  // Also sellable: equipped items
+  var allSellable = [];
+  inv.forEach(function(it,i){ allSellable.push({ item:it, src:'inv', idx:i }); });
+  Object.keys(State.equipped||{}).forEach(function(slot){
+    if (State.equipped[slot]) allSellable.push({ item:State.equipped[slot], src:'slot', idx:slot });
+  });
+  if (allSellable.length === 0) {
+    cont.innerHTML = '<div style="font-family:\'Crimson Text\',serif;font-style:italic;font-size:13px;color:rgba(237,232,223,0.3);text-align:center;padding:20px">Rien à vendre...</div>';
+    return;
+  }
+  allSellable.forEach(function(entry, i) {
+    var it = entry.item;
+    var sellPrice = Rooms._sellPrice(it);
+    var div = document.createElement('div');
+    div.className = 'shop-item';
+    div.innerHTML =
+      '<span class="si-ico">'+it.ico+'</span>'+
+      '<div class="si-info"><div class="si-name">'+it.name+(entry.src==='slot'?' [équipé]':'')+'</div><div class="si-desc">'+it.desc+'</div></div>'+
+      '<div class="si-price" style="color:#50c870">+'+sellPrice+'</div>';
+    div.addEventListener('click', function(){
+      State.gold = (State.gold||0) + sellPrice;
+      document.getElementById('shop-gold-val').textContent = State.gold;
+      if (entry.src === 'inv') {
+        State.inventory.splice(entry.idx, 1);
+      } else {
+        applyItemStats(it, -1);
+        State.equipped[entry.idx] = null;
+        State.hp = Math.min(State.hp, State.hpMax);
+      }
+      Sfx.gold && Sfx.gold();
+      Rooms._renderShopSell();
+    });
+    cont.appendChild(div);
+  });
+};
+
+Rooms._sellPrice = function(item) {
+  // Sell for ~40% of buy price based on stats
+  if (!item) return 0;
+  var base = 10;
+  if (item.stats) {
+    base += (item.stats.atk||0)*3 + (item.stats.def||0)*2 + (item.stats.hp||0);
+  }
+  return Math.max(5, Math.round(base * 0.5));
+};
+
+Rooms.shopTab = function(tab) {
+  Rooms._shopTab = tab;
+  document.getElementById('stab-buy').classList.toggle('active', tab==='buy');
+  document.getElementById('stab-sell').classList.toggle('active', tab==='sell');
+  if (tab==='buy') Rooms._renderShopBuy(); else Rooms._renderShopSell();
 };
 
 Rooms.shopBuy = function(idx) {
   var item = State._shopItems[idx];
   if (!item || (State.gold||0) < item.cost) return;
   State.gold -= item.cost;
-  item.effect();
-  Sfx.buy();
+  // If item has a slot → add to inventory; otherwise apply effect
+  if (item.slot) {
+    State.inventory = State.inventory || [];
+    if (State.inventory.length < 8) {
+      State.inventory.push(item);
+    } else {
+      alert('Inventaire plein ! Équipe ou vends un objet d\'abord.');
+      State.gold += item.cost; return;
+    }
+  } else if (item.effect) {
+    item.effect();
+  }
+  Sfx.buy && Sfx.buy();
   document.getElementById('shop-gold-val').textContent = State.gold;
-  // Marquer vendu
   var cards = document.querySelectorAll('.shop-item');
   if (cards[idx]) cards[idx].classList.add('sold');
-  // Mettre à jour afford
-  document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c,i){
+  document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c){
     var cost = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
     c.classList.toggle('cant-afford', (State.gold||0) < cost);
   });
@@ -3460,32 +3816,255 @@ var DungeonMap = (function() {
   };
 })();
 
-// ── BAG MANAGER ──────────────────────────────────────────────────
-var BagManager = {
-  open: function() {
-    var rows = document.getElementById('bag-rows');
-    rows.innerHTML = '';
-    var bag = State.bag || [];
-    if (bag.length === 0) {
-      rows.innerHTML = '<div class="bag-empty">Ton sac est vide...</div>';
-    } else {
-      bag.forEach(function(item, idx) {
-        var div = document.createElement('div');
-        div.className = 'bag-row';
-        div.innerHTML = '<div class="br-ico">'+item.ico+'</div><div class="br-info"><div class="br-name">'+item.name+'</div><div class="br-desc">'+item.desc+'</div></div><div style="font-family:\'Cinzel\',serif;font-size:10px;color:#C9A550;letter-spacing:1px">ÉQUIPER</div>';
-        div.addEventListener('click', function(){
-          item.effect();
-          State.bag.splice(idx, 1);
-          updateMapHpBar();
-          BagManager.open(); // refresh
-        });
-        rows.appendChild(div);
-      });
-    }
-    document.getElementById('bag-overlay').classList.add('show');
+// ── EQUIP SCREEN ─────────────────────────────────────────────────
+var SLOT_DEFAULTS = {
+  heaume:'🪖', arme:'⚔', bouclier:'🛡', gants:'🧤',
+  bottes:'👢', ceinture:'🪢', jambieres:'🦵', collier:'📿', plastron:'🥋'
+};
+
+var EquipScreen = {
+  _from: 'inn-room',
+  _selected: null, // { type:'slot'|'inv', slot/idx }
+
+  open: function(from) {
+    EquipScreen._from = from || 'inn-room';
+    EquipScreen._selected = null;
+    State.equipped = State.equipped || {};
+    State.inventory = State.inventory || [];
+    EquipScreen.render();
+    Nav.go('equip-screen');
   },
+
   close: function() {
-    document.getElementById('bag-overlay').classList.remove('show');
+    Nav.go(EquipScreen._from);
+  },
+
+  render: function() {
+    // Stats
+    var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
+    document.getElementById('eq-char-sprite').textContent = (r&&r.icon)||'⚔';
+    document.getElementById('eq-char-name').textContent = (r&&r.name||'') + ' ' + (c&&c.name||'');
+    document.getElementById('eq-s-atk').textContent = State.atk||0;
+    document.getElementById('eq-s-def').textContent = State.def||0;
+    document.getElementById('eq-s-hp').textContent = (State.hp||0)+'/'+(State.hpMax||0);
+    document.getElementById('eq-s-lvl').textContent = 'Niv.'+(State.level||1);
+    document.getElementById('eq-gold-val').textContent = State.gold||0;
+    // Slots
+    Object.keys(SLOT_DEFAULTS).forEach(function(slot) {
+      var el = document.getElementById('eqs-'+slot);
+      if (!el) return;
+      var item = State.equipped[slot];
+      el.innerHTML = '';
+      if (item) {
+        el.classList.add('filled');
+        el.innerHTML = '<div class="eq-slot-ico">'+item.ico+'</div><div class="eq-slot-lbl">'+item.name.split(' ').slice(0,2).join(' ')+'</div>'+(item.stats && item.stats.atk ? '<div class="eq-slot-stat">+'+item.stats.atk+'⚔</div>' : (item.stats && item.stats.def ? '<div class="eq-slot-stat">+'+item.stats.def+'🛡</div>' : ''));
+      } else {
+        el.classList.remove('filled');
+        el.innerHTML = '<div class="eq-slot-ico">'+SLOT_DEFAULTS[slot]+'</div><div class="eq-slot-lbl">'+slot.charAt(0).toUpperCase()+slot.slice(1)+'</div>';
+      }
+    });
+    // Inventory grid
+    var grid = document.getElementById('eq-inv-grid');
+    grid.innerHTML = '';
+    var inv = State.inventory || [];
+    document.getElementById('eq-inv-count').textContent = inv.length;
+    var maxSlots = 8;
+    for (var i = 0; i < maxSlots; i++) {
+      var div = document.createElement('div');
+      div.className = 'inv-slot' + (inv[i] ? ' occupied' : '');
+      if (inv[i]) {
+        var it = inv[i];
+        div.innerHTML = '<div class="inv-ico">'+it.ico+'</div><div class="inv-name">'+it.name+'</div><div class="inv-stat">'+it.desc+'</div>';
+        (function(idx){ div.addEventListener('click', function(){ EquipScreen.clickInv(idx); }); })(i);
+      }
+      grid.appendChild(div);
+    }
+    // Highlight selected
+    if (EquipScreen._selected) {
+      if (EquipScreen._selected.type==='slot') {
+        var sel = document.getElementById('eqs-'+EquipScreen._selected.slot);
+        if (sel) sel.style.borderColor = '#C9A550';
+      } else if (EquipScreen._selected.type==='inv') {
+        var cells = grid.querySelectorAll('.inv-slot');
+        if (cells[EquipScreen._selected.idx]) cells[EquipScreen._selected.idx].style.borderColor = '#C9A550';
+      }
+    }
+  },
+
+  clickSlot: function(slot) {
+    var equipped = State.equipped[slot];
+    if (!EquipScreen._selected) {
+      if (equipped) {
+        // Show unequip prompt via selection
+        EquipScreen._selected = { type:'slot', slot:slot };
+        EquipScreen.render();
+        EquipScreen._showTooltip(equipped, 'Appuie encore pour déséquiper');
+      }
+      return;
+    }
+    // Something is selected — if inv item selected, equip it here
+    if (EquipScreen._selected.type === 'inv') {
+      var idx = EquipScreen._selected.idx;
+      var item = (State.inventory||[])[idx];
+      if (!item) { EquipScreen._selected=null; EquipScreen.render(); return; }
+      if (item.slot && item.slot !== slot) {
+        // Wrong slot
+        EquipScreen._showTooltip(item, '⚠ Va dans l\'emplacement : '+item.slot);
+        return;
+      }
+      // Unequip current if any
+      if (equipped) {
+        applyItemStats(equipped, -1);
+        State.inventory.push(equipped);
+      }
+      // Equip new
+      applyItemStats(item, +1);
+      State.equipped[slot] = item;
+      State.inventory.splice(idx, 1);
+      if (State.hp > State.hpMax) State.hp = State.hpMax;
+      EquipScreen._selected = null;
+      updateMapHpBar && updateMapHpBar();
+      EquipScreen.render();
+    } else if (EquipScreen._selected.type === 'slot' && EquipScreen._selected.slot === slot) {
+      // Unequip
+      if (equipped) {
+        applyItemStats(equipped, -1);
+        if (State.inventory.length < 8) State.inventory.push(equipped);
+        State.equipped[slot] = null;
+        State.hp = Math.min(State.hp, State.hpMax);
+        updateMapHpBar && updateMapHpBar();
+      }
+      EquipScreen._selected = null;
+      EquipScreen.render();
+    } else {
+      EquipScreen._selected = null;
+      EquipScreen.render();
+    }
+  },
+
+  clickInv: function(idx) {
+    var item = (State.inventory||[])[idx];
+    if (!item) return;
+    if (!EquipScreen._selected) {
+      // Select this item
+      EquipScreen._selected = { type:'inv', idx:idx };
+      EquipScreen.render();
+      var hint = item.slot ? 'Appuie sur l\'emplacement ' + item.slot : 'Consommable — non équipable ici';
+      EquipScreen._showTooltip(item, hint);
+      return;
+    }
+    // Already selected same → deselect
+    if (EquipScreen._selected.type==='inv' && EquipScreen._selected.idx===idx) {
+      EquipScreen._selected = null; EquipScreen.render(); return;
+    }
+    // Swap two inventory items
+    var a = EquipScreen._selected.idx;
+    if (EquipScreen._selected.type==='inv') {
+      var tmp = State.inventory[a];
+      State.inventory[a] = State.inventory[idx];
+      State.inventory[idx] = tmp;
+    }
+    EquipScreen._selected = null; EquipScreen.render();
+  },
+
+  _showTooltip: function(item, action) {
+    var tt = document.getElementById('eq-tooltip');
+    document.getElementById('eq-tooltip-name').textContent = item.ico+' '+item.name;
+    document.getElementById('eq-tooltip-desc').textContent = item.desc;
+    document.getElementById('eq-tooltip-action').textContent = action||'';
+    tt.classList.add('show');
+    clearTimeout(EquipScreen._ttTimer);
+    EquipScreen._ttTimer = setTimeout(function(){ tt.classList.remove('show'); }, 2500);
+  },
+
+  // Quick access from dungeon bag button
+  openFromDungeon: function() {
+    EquipScreen.open('dungeon-map');
+  },
+};
+
+// ── CHEST SCREEN ─────────────────────────────────────────────────
+var ChestScreen = {
+  _tab: 'chest',
+
+  open: function() {
+    ChestScreen._tab = 'chest';
+    ChestScreen.render();
+    Nav.go('chest-screen');
+  },
+
+  close: function() {
+    Nav.go('inn-room');
+  },
+
+  showTab: function(tab) {
+    ChestScreen._tab = tab;
+    document.getElementById('chest-tab-chest').classList.toggle('active', tab==='chest');
+    document.getElementById('chest-tab-inv').classList.toggle('active', tab==='inv');
+    ChestScreen.render();
+  },
+
+  render: function() {
+    var chest = Meta.chest || [];
+    var inv   = State.inventory || [];
+    document.getElementById('chest-used').textContent = chest.length;
+    var chestGrid = document.getElementById('chest-grid');
+    var invGrid   = document.getElementById('chest-inv-grid');
+    chestGrid.style.display = ChestScreen._tab==='chest' ? 'grid' : 'none';
+    invGrid.style.display   = ChestScreen._tab==='inv'   ? 'grid' : 'none';
+
+    // Chest tab: 20 slots
+    if (ChestScreen._tab === 'chest') {
+      chestGrid.innerHTML = '';
+      for (var i = 0; i < 20; i++) {
+        var div = document.createElement('div');
+        div.className = 'chest-slot' + (chest[i] ? ' occupied' : '');
+        if (chest[i]) {
+          var it = chest[i];
+          div.innerHTML = '<div class="cs-ico">'+it.ico+'</div><div class="cs-name">'+it.name+'</div><div class="cs-stat">'+it.desc+'</div>';
+          (function(idx){
+            div.addEventListener('click', function(){
+              // Move chest → inventory
+              var item = Meta.chest[idx];
+              if (!item) return;
+              if ((State.inventory||[]).length >= 8) { alert('Inventaire plein !'); return; }
+              Meta.chest.splice(idx, 1);
+              State.inventory.push(item);
+              Meta.save();
+              ChestScreen.render();
+            });
+          })(i);
+        }
+        chestGrid.appendChild(div);
+      }
+    }
+    // Inv tab: player's current inventory
+    if (ChestScreen._tab === 'inv') {
+      invGrid.innerHTML = '';
+      var maxInv = 8;
+      for (var j = 0; j < maxInv; j++) {
+        var div2 = document.createElement('div');
+        div2.className = 'chest-slot' + (inv[j] ? ' occupied' : '');
+        if (inv[j]) {
+          var it2 = inv[j];
+          div2.innerHTML = '<div class="cs-ico">'+it2.ico+'</div><div class="cs-name">'+it2.name+'</div><div class="cs-stat">'+it2.desc+'</div>';
+          (function(jdx){
+            div2.addEventListener('click', function(){
+              // Move inv → chest
+              var item = (State.inventory||[])[jdx];
+              if (!item) return;
+              if ((Meta.chest||[]).length >= 20) { alert('Coffre plein !'); return; }
+              State.inventory.splice(jdx, 1);
+              Meta.chest.push(item);
+              Meta.save();
+              ChestScreen.render();
+            });
+          })(j);
+        }
+        invGrid.appendChild(div2);
+      }
+    }
   },
 };
 
@@ -3655,17 +4234,13 @@ var WorldMap = {
   enter: function(zoneId) {
     var zone = ZONE_DATA[zoneId];
     if (!zone) return;
-    if (Meta.clearedZones[zoneId]) {
-      alert('🔒 Ce donjon est déjà nettoyé ! Cherche un nouveau défi.'); return;
-    }
-    if (!Meta.isZoneUnlocked(zoneId)) {
-      var prev = Meta.ZONE_ORDER[Meta.ZONE_ORDER.indexOf(zoneId)-1];
-      var prevLabel = ZONE_DATA[prev] ? ZONE_DATA[prev].label : prev;
-      alert('🔒 Accès bloqué ! Nettoie d\'abord : ' + prevLabel); return;
-    }
     var lvl = State.level||1;
-    if (lvl < zone.minLevel) {
-      var ok = confirm('⚠ Zone dangereuse ! Ton niveau (' + lvl + ') est inférieur au conseil (' + zone.minLevel + '). Continuer quand même ?');
+    var warnings = [];
+    if (Meta.clearedZones[zoneId]) warnings.push('⚰ Ce donjon a déjà été nettoyé. Les monstres sont plus forts au retour !');
+    if (!Meta.isZoneUnlocked(zoneId)) warnings.push('⚠ Zone non recommandée pour ton niveau de progression.');
+    if (lvl < zone.minLevel) warnings.push('💀 Niveau conseillé : ' + zone.minLevel + ' (tu es niveau ' + lvl + ').');
+    if (warnings.length) {
+      var ok = confirm(warnings.join('\n') + '\n\nEntrer quand même ? (À tes risques et périls !)');
       if (!ok) return;
     }
     State._zoneMod = { enemyMod: zone.enemyMod, goldMod: zone.goldMod };
@@ -3691,8 +4266,8 @@ var WorldMap = {
       var cleared = Meta.clearedZones[id];
       var locked = !Meta.isZoneUnlocked(id);
       el.classList.toggle('cleared', !!cleared);
-      el.style.opacity = locked ? '0.35' : '';
-      el.style.pointerEvents = (cleared || locked) ? 'none' : '';
+      el.style.opacity = '';
+      el.style.pointerEvents = '';
     });
   },
 };
@@ -3716,7 +4291,9 @@ var App = {
     State.critBonus = b.crit||0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
-    State.bag = [];
+    State.bag = []; State.inventory = [];
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.fleeBonus = 0;
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
@@ -3741,7 +4318,9 @@ var App = {
     State.critBonus = b.crit||0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
-    State.bag = [];
+    State.bag = []; State.inventory = [];
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.fleeBonus = 0;
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
