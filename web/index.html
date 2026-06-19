@@ -5284,10 +5284,11 @@ var WorldMap = {
       enemyMod: zone.hpMult||1,
       goldMod:  zone.goldMult||1,
     };
+    var resumeFloor = (State._currentZone === zoneId && (State.floor||1) > 1) ? (State.floor||1) : 1;
     State._currentZone = zoneId;
-    State.floor = 1;
+    State.floor = resumeFloor;
     Nav.go('dungeon-map');
-    setTimeout(function(){ DungeonMap.init(1, State.hp, State.hpMax); }, 300);
+    setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
   },
 
   updateHotspots: function() {
