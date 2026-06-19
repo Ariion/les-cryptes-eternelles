@@ -512,12 +512,81 @@ canvas#particles {
   flex-direction:column;
   justify-content:flex-start;
 }
+/* Zone ambiances */
+#dungeon-map.zone-grottes { background:#0a0604; }
+#dungeon-map.zone-foret   { background:#040a04; }
+#dungeon-map.zone-ruines  { background:#0a0a10; }
+#dungeon-map.zone-port    { background:#04060f; }
+#dungeon-map.zone-pics    { background:#07090f; }
+#dungeon-map.zone-cryptes { background:#0c0008; }
 #dm-bg {
   position:absolute; inset:0;
   background:
     radial-gradient(ellipse 80% 50% at 50% 50%, rgba(30,15,5,0.8) 0%, transparent 70%),
     radial-gradient(ellipse 100% 60% at 50% 0%, rgba(60,20,0,0.4) 0%, transparent 50%);
 }
+.zone-grottes #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(50,28,8,0.85) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 20% 80%, rgba(80,40,0,0.4) 0%, transparent 50%); }
+.zone-foret #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(8,30,8,0.85) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 80% 20%, rgba(20,60,10,0.4) 0%, transparent 50%); }
+.zone-ruines #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(25,20,40,0.85) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 30% 70%, rgba(50,30,80,0.4) 0%, transparent 50%); }
+.zone-port #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(5,20,45,0.85) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 70% 30%, rgba(10,40,80,0.4) 0%, transparent 50%); }
+.zone-pics #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(20,24,45,0.85) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 50% 0%, rgba(40,50,90,0.4) 0%, transparent 50%); }
+.zone-cryptes #dm-bg { background:
+  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(40,0,30,0.9) 0%, transparent 70%),
+  radial-gradient(ellipse 100% 40% at 50% 100%, rgba(80,0,60,0.5) 0%, transparent 50%); }
+/* ── RARETÉS ─────────────────────────────────────────────────── */
+.rarity-common    { border-color:rgba(160,160,160,0.45)!important; }
+.rarity-uncommon  { border-color:rgba(60,200,60,0.65)!important;  background:rgba(20,70,20,0.18)!important; }
+.rarity-rare      { border-color:rgba(60,130,255,0.75)!important; background:rgba(15,35,100,0.18)!important; }
+.rarity-epic      { border-color:rgba(210,60,60,0.75)!important;  background:rgba(80,15,15,0.18)!important; }
+.rarity-legendary { border-color:rgba(170,55,230,0.8)!important;  background:rgba(60,15,80,0.22)!important; }
+.rarity-mythic    { border-color:rgba(255,200,40,0.9)!important;  background:rgba(80,55,5,0.28)!important;  animation:mythic-glow 2s infinite; }
+@keyframes mythic-glow {
+  0%,100%{ box-shadow:0 0 8px rgba(255,200,40,0.3); }
+  50%    { box-shadow:0 0 22px rgba(255,200,40,0.75); }
+}
+.rarity-badge { font-size:9px; font-family:'Cinzel',serif; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:3px; display:inline-block; margin-top:3px; }
+.rarity-badge.common    { color:#aaa; }
+.rarity-badge.uncommon  { color:#3cc83c; }
+.rarity-badge.rare      { color:#5080ff; }
+.rarity-badge.epic      { color:#e04444; }
+.rarity-badge.legendary { color:#b03ae0; }
+.rarity-badge.mythic    { color:#ffc820; }
+/* ── MODIFICATEURS DE RUN ────────────────────────────────────── */
+#runmod-overlay {
+  position:absolute; inset:0; background:rgba(5,3,2,0.92); z-index:90;
+  display:flex; align-items:center; justify-content:center; transition:opacity 0.3s;
+}
+#runmod-box {
+  background:linear-gradient(160deg,#1a100a,#0e080a); border:1px solid #6a3020;
+  border-radius:16px; padding:24px 20px; width:86%;
+  display:flex; flex-direction:column; gap:12px; align-items:center;
+  box-shadow:0 0 40px rgba(200,50,20,0.3);
+}
+#runmod-title { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#e06040; letter-spacing:2px; text-align:center; }
+#runmod-subtitle { font-family:'Crimson Text',serif; font-size:13px; color:rgba(237,232,223,0.55); text-align:center; font-style:italic; }
+#runmod-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+.runmod-card { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid; }
+.runmod-card.bad  { background:rgba(150,30,20,0.15); border-color:rgba(200,60,40,0.4); }
+.runmod-card.good { background:rgba(30,100,30,0.15); border-color:rgba(60,180,60,0.4); }
+.runmod-ico  { font-size:24px; flex-shrink:0; }
+.runmod-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#EDE8DF; }
+.runmod-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.7); margin-top:2px; }
+#runmod-btn {
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:1px;
+  padding:12px 24px; border-radius:10px; border:1px solid #C9A550;
+  background:rgba(201,165,80,0.15); color:#C9A550; cursor:pointer; width:100%; transition:all 0.2s; margin-top:4px;
+}
+#runmod-btn:hover { background:rgba(201,165,80,0.3); }
 #dm-header {
   width:100%; padding:16px 20px 0;
   display:flex; align-items:center; justify-content:space-between;
@@ -2148,6 +2217,16 @@ canvas#particles {
     </div>
 
     <!-- ── NPC DIALOGUE OVERLAY ── -->
+    <!-- ── MODIFICATEURS DE RUN ── -->
+    <div id="runmod-overlay" style="display:none;opacity:0;position:absolute;inset:0;z-index:90;display:none;align-items:center;justify-content:center">
+      <div id="runmod-box">
+        <div id="runmod-title">⚠ Présages du Destin</div>
+        <div id="runmod-subtitle">Les forces occultes ont façonné cette expédition...</div>
+        <div id="runmod-list"></div>
+        <button onclick="RunMods.confirm()" id="runmod-btn">Partir à l'aventure →</button>
+      </div>
+    </div>
+
     <div id="npc-overlay" class="overlay" style="display:none">
       <div id="npc-box">
         <div id="npc-portrait-ico"></div>
@@ -3088,6 +3167,10 @@ var Nav = {
         setTimeout(function(){ next.style.transition=''; }, 500);
       });});
       if (id === 'taverne-screen' && typeof Quests !== 'undefined') Quests.refreshBadges();
+      if (id === 'dungeon-map') {
+        var dmEl = document.getElementById('dungeon-map');
+        if (dmEl) { dmEl.className = dmEl.className.replace(/\bzone-\w+\b/g,'').trim(); if (State._currentZone) dmEl.classList.add('zone-'+State._currentZone); }
+      }
     }, prev ? 250 : 0);
   }
 };
@@ -3446,7 +3529,7 @@ var Combat = (function(){
     if (victory) {
       var sprEl = document.getElementById('cb-enemy-sprite');
       if (sprEl) { sprEl.classList.remove('hit'); sprEl.classList.add('dead'); }
-      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)));
+      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)) * (State._runGoldBonus||1) * 0.42);
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
       if (Meta.bonuses.regenMeta) {
@@ -3797,48 +3880,54 @@ var Combat = (function(){
 // slot → équipable dans un emplacement précis
 // combat → utilisable dans le menu objet en combat
 // stats → { atk, def, hp, flee } appliqués à l'équip, retirés au déséquip
+var RARITY_LABELS = { common:'Commun', uncommon:'Peu commun', rare:'Rare', epic:'Épique', legendary:'Légendaire', mythic:'Mythique' };
+var RARITY_ORDER  = ['common','uncommon','rare','epic','legendary','mythic'];
 var ITEMS = [
   // ── Tier 1 (étages 1-2) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée Rouillée',       slot:'arme',      stats:{atk:4},         desc:'+4 ATQ',            tier:1 },
-  { ico:'🗡', name:'Dague Acérée',        slot:'arme',      stats:{atk:6},         desc:'+6 ATQ',            tier:1 },
-  { ico:'🛡', name:'Bouclier Brisé',      slot:'bouclier',  stats:{def:5},         desc:'+5 DEF',            tier:1 },
-  { ico:'🪖', name:'Casque de Fer',       slot:'heaume',    stats:{def:4},         desc:'+4 DEF',            tier:1 },
-  { ico:'🥋', name:'Armure de Cuir',      slot:'plastron',  stats:{def:6},         desc:'+6 DEF',            tier:1 },
-  { ico:'🧤', name:'Gants de Feu',        slot:'gants',     stats:{atk:4},         desc:'+4 ATQ',            tier:1 },
-  { ico:'🧤', name:'Gantelets Lourds',    slot:'gants',     stats:{def:4},         desc:'+4 DEF',            tier:1 },
-  { ico:'👢', name:'Bottes Légères',      slot:'bottes',    stats:{flee:0.15},     desc:'+15% fuite',        tier:1 },
-  { ico:'🪢', name:'Ceinture Renforcée',  slot:'ceinture',  stats:{def:5},         desc:'+5 DEF',            tier:1 },
-  { ico:'🦵', name:'Jambières de Cuir',   slot:'jambieres', stats:{def:4},         desc:'+4 DEF',            tier:1 },
-  { ico:'📿', name:'Collier de Dents',    slot:'collier',   stats:{atk:3,def:3},   desc:'+3 ATQ +3 DEF',     tier:1 },
+  { ico:'⚔', name:'Épée Rouillée',       slot:'arme',      stats:{atk:4},         desc:'+4 ATQ',            tier:1, rarity:'common' },
+  { ico:'🗡', name:'Dague Acérée',        slot:'arme',      stats:{atk:6},         desc:'+6 ATQ',            tier:1, rarity:'common' },
+  { ico:'🛡', name:'Bouclier Brisé',      slot:'bouclier',  stats:{def:5},         desc:'+5 DEF',            tier:1, rarity:'common' },
+  { ico:'🪖', name:'Casque de Fer',       slot:'heaume',    stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
+  { ico:'🥋', name:'Armure de Cuir',      slot:'plastron',  stats:{def:6},         desc:'+6 DEF',            tier:1, rarity:'common' },
+  { ico:'🧤', name:'Gants de Feu',        slot:'gants',     stats:{atk:4},         desc:'+4 ATQ',            tier:1, rarity:'common' },
+  { ico:'🧤', name:'Gantelets Lourds',    slot:'gants',     stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
+  { ico:'👢', name:'Bottes Légères',      slot:'bottes',    stats:{flee:0.15},     desc:'+15% fuite',        tier:1, rarity:'uncommon' },
+  { ico:'🪢', name:'Ceinture Renforcée',  slot:'ceinture',  stats:{def:5},         desc:'+5 DEF',            tier:1, rarity:'common' },
+  { ico:'🦵', name:'Jambières de Cuir',   slot:'jambieres', stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
+  { ico:'📿', name:'Collier de Dents',    slot:'collier',   stats:{atk:3,def:3},   desc:'+3 ATQ +3 DEF',     tier:1, rarity:'uncommon' },
   // ── Tier 2 (étages 3-4) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée de Chevalier',   slot:'arme',      stats:{atk:10},        desc:'+10 ATQ',           tier:2 },
-  { ico:'🪄', name:'Baguette Arcane',     slot:'arme',      stats:{atk:12},        desc:'+12 ATQ mag.',      tier:2 },
-  { ico:'🪓', name:'Hache Barbare',       slot:'arme',      stats:{atk:14},        desc:'+14 ATQ brut',      tier:2 },
-  { ico:'🛡', name:'Écu de Chevalier',    slot:'bouclier',  stats:{def:9},         desc:'+9 DEF',            tier:2 },
-  { ico:'🪖', name:'Heaume Enchanté',     slot:'heaume',    stats:{def:7,hp:10},   desc:'+7 DEF +10 PV',     tier:2 },
-  { ico:'🥋', name:'Plastron d\'Acier',   slot:'plastron',  stats:{def:10},        desc:'+10 DEF',           tier:2 },
-  { ico:'👢', name:'Bottes de Guerre',    slot:'bottes',    stats:{def:3,atk:2},   desc:'+3 DEF +2 ATQ',     tier:2 },
-  { ico:'🪢', name:'Ceinture de Force',   slot:'ceinture',  stats:{atk:3,hp:15},   desc:'+3 ATQ +15 PV',     tier:2 },
-  { ico:'🦵', name:'Cuissardes d\'Acier', slot:'jambieres', stats:{def:7},         desc:'+7 DEF',            tier:2 },
-  { ico:'💎', name:'Amulette Vitale',     slot:'collier',   stats:{hp:30},         desc:'+30 PV max',        tier:2 },
+  { ico:'⚔', name:'Épée de Chevalier',   slot:'arme',      stats:{atk:10},        desc:'+10 ATQ',           tier:2, rarity:'uncommon' },
+  { ico:'🪄', name:'Baguette Arcane',     slot:'arme',      stats:{atk:12},        desc:'+12 ATQ mag.',      tier:2, rarity:'rare' },
+  { ico:'🪓', name:'Hache Barbare',       slot:'arme',      stats:{atk:14},        desc:'+14 ATQ brut',      tier:2, rarity:'rare' },
+  { ico:'🛡', name:'Écu de Chevalier',    slot:'bouclier',  stats:{def:9},         desc:'+9 DEF',            tier:2, rarity:'uncommon' },
+  { ico:'🪖', name:'Heaume Enchanté',     slot:'heaume',    stats:{def:7,hp:10},   desc:'+7 DEF +10 PV',     tier:2, rarity:'rare' },
+  { ico:'🥋', name:'Plastron d\'Acier',   slot:'plastron',  stats:{def:10},        desc:'+10 DEF',           tier:2, rarity:'uncommon' },
+  { ico:'👢', name:'Bottes de Guerre',    slot:'bottes',    stats:{def:3,atk:2},   desc:'+3 DEF +2 ATQ',     tier:2, rarity:'uncommon' },
+  { ico:'🪢', name:'Ceinture de Force',   slot:'ceinture',  stats:{atk:3,hp:15},   desc:'+3 ATQ +15 PV',     tier:2, rarity:'rare' },
+  { ico:'🦵', name:'Cuissardes d\'Acier', slot:'jambieres', stats:{def:7},         desc:'+7 DEF',            tier:2, rarity:'uncommon' },
+  { ico:'💎', name:'Amulette Vitale',     slot:'collier',   stats:{hp:30},         desc:'+30 PV max',        tier:2, rarity:'rare' },
   // ── Tier 3 (étages 5-6) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée de Sang',        slot:'arme',      stats:{atk:18},        desc:'+18 ATQ',           tier:3 },
-  { ico:'🪄', name:'Sceptre des Âmes',   slot:'arme',      stats:{atk:22,hp:-20}, desc:'+22 ATQ −20 PV',    tier:3 },
-  { ico:'🛡', name:'Bouclier Enchanté',  slot:'bouclier',  stats:{def:16},        desc:'+16 DEF',           tier:3 },
-  { ico:'🛡', name:'Égide de Lumière',   slot:'bouclier',  stats:{def:20,hp:15},  desc:'+20 DEF +15 PV',    tier:3 },
-  { ico:'🪖', name:'Heaume de Fer Noir', slot:'heaume',    stats:{def:14,atk:3},  desc:'+14 DEF +3 ATQ',    tier:3 },
-  { ico:'🥋', name:'Plastron des Rois',  slot:'plastron',  stats:{def:18},        desc:'+18 DEF',           tier:3 },
-  { ico:'🥋', name:'Cuirasse Maudite',   slot:'plastron',  stats:{def:22,hp:-15}, desc:'+22 DEF −15 PV',    tier:3 },
-  { ico:'🧤', name:'Gants du Titan',     slot:'gants',     stats:{atk:10,def:5},  desc:'+10 ATQ +5 DEF',    tier:3 },
-  { ico:'👢', name:'Bottes des Ombres',  slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ', tier:3 },
-  { ico:'🪢', name:'Ceinture Abyssale',  slot:'ceinture',  stats:{hp:40,def:6},   desc:'+40 PV +6 DEF',     tier:3 },
-  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ',    tier:3 },
-  { ico:'💎', name:'Rubis du Néant',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF',    tier:3 },
-  { ico:'💎', name:'Saphir Éternel',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF',    tier:3 },
+  { ico:'⚔', name:'Épée de Sang',        slot:'arme',      stats:{atk:18},        desc:'+18 ATQ',           tier:3, rarity:'rare' },
+  { ico:'🪄', name:'Sceptre des Âmes',   slot:'arme',      stats:{atk:22,hp:-20}, desc:'+22 ATQ −20 PV',    tier:3, rarity:'epic' },
+  { ico:'🛡', name:'Bouclier Enchanté',  slot:'bouclier',  stats:{def:16},        desc:'+16 DEF',           tier:3, rarity:'rare' },
+  { ico:'🛡', name:'Égide de Lumière',   slot:'bouclier',  stats:{def:20,hp:15},  desc:'+20 DEF +15 PV',    tier:3, rarity:'epic' },
+  { ico:'🪖', name:'Heaume de Fer Noir', slot:'heaume',    stats:{def:14,atk:3},  desc:'+14 DEF +3 ATQ',    tier:3, rarity:'rare' },
+  { ico:'🥋', name:'Plastron des Rois',  slot:'plastron',  stats:{def:18},        desc:'+18 DEF',           tier:3, rarity:'rare' },
+  { ico:'🥋', name:'Cuirasse Maudite',   slot:'plastron',  stats:{def:22,hp:-15}, desc:'+22 DEF −15 PV',    tier:3, rarity:'epic' },
+  { ico:'🧤', name:'Gants du Titan',     slot:'gants',     stats:{atk:10,def:5},  desc:'+10 ATQ +5 DEF',    tier:3, rarity:'epic' },
+  { ico:'👢', name:'Bottes des Ombres',  slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ', tier:3, rarity:'epic' },
+  { ico:'🪢', name:'Ceinture Abyssale',  slot:'ceinture',  stats:{hp:40,def:6},   desc:'+40 PV +6 DEF',     tier:3, rarity:'rare' },
+  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ',    tier:3, rarity:'epic' },
+  { ico:'💎', name:'Rubis du Néant',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF',    tier:3, rarity:'epic' },
+  { ico:'💎', name:'Saphir Éternel',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF',    tier:3, rarity:'legendary' },
+  // ── Légendaires rares (drop boss uniquement) ──────────────────────
+  { ico:'⚔', name:'Lame de l\'Aube',    slot:'arme',      stats:{atk:28},        desc:'+28 ATQ',           tier:3, rarity:'legendary' },
+  { ico:'🥋', name:'Armure des Cryptes', slot:'plastron',  stats:{def:30,atk:8},  desc:'+30 DEF +8 ATQ',    tier:3, rarity:'legendary' },
+  { ico:'💍', name:'Anneau du Chaos',    slot:'collier',   stats:{atk:18,def:12}, desc:'+18 ATQ +12 DEF',   tier:3, rarity:'mythic' },
   // ── Consommables ─────────────────────────────────────────────────
-  { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
-  { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
-  { ico:'📜', name:'Parchemin de Soin',  desc:'+1 Potion', effect:function(){ State.potions=(State.potions||0)+1; } },
+  { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', rarity:'common', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
+  { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', rarity:'common', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
+  { ico:'📜', name:'Parchemin de Soin',  desc:'+1 Potion', rarity:'common', effect:function(){ State.potions=(State.potions||0)+1; } },
 ];
 
 // Appliquer les stats d'un item équipé
@@ -3883,12 +3972,15 @@ var Rooms = {
       var item = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
       document.getElementById('loot-item-ico').textContent  = item.ico;
       document.getElementById('loot-item-name').textContent = item.name;
+      var rar = item.rarity||'common';
+      var rarLabel = (RARITY_LABELS||{})[rar]||rar;
+      wrap.className = wrap.className.replace(/rarity-\w+/g,'').trim() + ' rarity-'+rar;
       if (item.equip) {
-        document.getElementById('loot-item-desc').textContent = item.desc + ' · Mis dans le sac';
+        document.getElementById('loot-item-desc').innerHTML = item.desc + ' · Mis dans le sac<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = 'Récupérer →';
       } else {
-        document.getElementById('loot-item-desc').textContent = item.desc;
+        document.getElementById('loot-item-desc').innerHTML = item.desc+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = 'Continuer →';
       }
@@ -4099,6 +4191,56 @@ var META_UPGRADES = [
 ];
 
 // ── QUESTS ────────────────────────────────────────────────────────
+// ── MODIFICATEURS DE RUN ─────────────────────────────────────────
+var RUN_MODIFIERS = [
+  { id:'curse_atk',  ico:'💀', name:'Malédiction de faiblesse', desc:'-20% ATQ ce run',        bad:true,  apply:function(){ State.atk=Math.max(1,Math.round(State.atk*0.8)); } },
+  { id:'curse_def',  ico:'💀', name:'Armure maudite',           desc:'-20% DEF ce run',        bad:true,  apply:function(){ State.def=Math.max(0,Math.round(State.def*0.8)); } },
+  { id:'curse_hp',   ico:'💀', name:'Cœur fragile',             desc:'-15% PV max ce run',     bad:true,  apply:function(){ State.hpMax=Math.max(10,Math.round(State.hpMax*0.85)); State.hp=Math.min(State.hp,State.hpMax); } },
+  { id:'curse_flee', ico:'🔒', name:'Pas de fuite',             desc:'Impossible de fuir',     bad:true,  apply:function(){ State.fleeBonus=-1; } },
+  { id:'curse_shop', ico:'💸', name:'Marché maudit',            desc:'Shops 50% plus chers',   bad:true,  apply:function(){ State._shopMod=(State._shopMod||1)*1.5; } },
+  { id:'bless_gold', ico:'🪙', name:'Fortune',                  desc:'+60% or ce run',         bad:false, apply:function(){ State._runGoldBonus=(State._runGoldBonus||1)*1.6; } },
+  { id:'bless_atk',  ico:'⚔', name:'Rage guerrière',           desc:'+20% ATQ ce run',        bad:false, apply:function(){ State.atk=Math.round(State.atk*1.2); } },
+  { id:'bless_xp',   ico:'✨', name:'Illumination',             desc:'+30% XP ce run',         bad:false, apply:function(){ State._runXpBonus=(State._runXpBonus||1)*1.3; } },
+  { id:'bless_pot',  ico:'🧪', name:'Alchimiste inspiré',       desc:'+2 Potions de départ',   bad:false, apply:function(){ State.potions=(State.potions||0)+2; } },
+  { id:'bless_hp',   ico:'❤', name:'Vitalité débordante',      desc:'+20% PV max ce run',     bad:false, apply:function(){ State.hpMax=Math.round(State.hpMax*1.2); State.hp=State.hpMax; } },
+  { id:'bless_crit', ico:'🎯', name:'Vision critique',          desc:'+10% chances critique',  bad:false, apply:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
+];
+
+var RunMods = (function(){
+  var _onConfirm = null;
+  return {
+    roll: function(onConfirm) {
+      _onConfirm = onConfirm;
+      var bad  = RUN_MODIFIERS.filter(function(m){ return m.bad; });
+      var good = RUN_MODIFIERS.filter(function(m){ return !m.bad; });
+      var picked = [];
+      if (bad.length)  picked.push(bad[Math.floor(Math.random()*bad.length)]);
+      if (good.length) picked.push(good[Math.floor(Math.random()*good.length)]);
+      var list = document.getElementById('runmod-list');
+      if (!list) { if (onConfirm) onConfirm(); return; }
+      list.innerHTML = '';
+      picked.forEach(function(m){
+        var d = document.createElement('div');
+        d.className = 'runmod-card '+(m.bad?'bad':'good');
+        d.innerHTML = '<div class="runmod-ico">'+m.ico+'</div><div><div class="runmod-name">'+m.name+'</div><div class="runmod-desc">'+m.desc+'</div></div>';
+        list.appendChild(d);
+      });
+      var ov = document.getElementById('runmod-overlay');
+      ov.style.display = 'flex'; ov.style.opacity = '0';
+      setTimeout(function(){ ov.style.opacity='1'; }, 20);
+      RunMods._picked = picked;
+    },
+    confirm: function() {
+      var ov = document.getElementById('runmod-overlay');
+      ov.style.opacity = '0';
+      setTimeout(function(){ ov.style.display='none'; }, 300);
+      (RunMods._picked||[]).forEach(function(m){ try{ m.apply(); }catch(e){} });
+      RunMods._picked = [];
+      if (_onConfirm) { var cb=_onConfirm; _onConfirm=null; cb(); }
+    },
+  };
+})();
+
 var QUEST_DEFS = [
   // Bertrand (aubergiste) — quêtes de combat
   { id:'q_kill10',   npc:'bertrand',  title:'Chasse aux monstres',    desc:'Tue 10 monstres au total.',                          check:function(){ return (Meta.totalKills||0)>=10; },   reward:{ gold:80 },  rewardTxt:'80 🪙 or' },
@@ -4313,7 +4455,8 @@ var Meta = {
   },
 
   buildScreen: function() {
-    document.getElementById('hs-gold-val').textContent  = Meta.totalGold;
+    var _gTotal = Meta.totalGold + (State.gold||0);
+    document.getElementById('hs-gold-val').textContent  = _gTotal;
     document.getElementById('hs-runs').textContent      = Meta.totalRuns;
     document.getElementById('hs-best').textContent      = Meta.bestFloor;
     document.getElementById('hs-kills').textContent     = Meta.totalKills;
@@ -4323,7 +4466,7 @@ var Meta = {
       var lvl   = Meta.levels[u.id]||0;
       var maxed = lvl >= u.max;
       var cost  = u.cost + lvl*20;
-      var canBuy= !maxed && Meta.totalGold >= cost;
+      var canBuy= !maxed && (Meta.totalGold+(State.gold||0)) >= cost;
       var card  = document.createElement('div');
       card.className = 'upgrade-card'+(maxed?' maxed':(!canBuy?' cant-afford':''));
       card.innerHTML =
@@ -4337,8 +4480,11 @@ var Meta = {
       if (!maxed) {
         card.addEventListener('click', function(){
           var c2 = u.cost + (Meta.levels[u.id]||0)*20;
-          if (Meta.totalGold < c2) return;
-          Meta.totalGold -= c2;
+          var _avail = Meta.totalGold + (State.gold||0);
+          if (_avail < c2) return;
+          var _fromRun = Math.min(State.gold||0, c2);
+          State.gold = (State.gold||0) - _fromRun;
+          Meta.totalGold -= (c2 - _fromRun);
           Meta.levels[u.id] = (Meta.levels[u.id]||0)+1;
           u.effect();
           Meta.save();
@@ -4354,20 +4500,34 @@ var Meta = {
 // SHOP_POOL : items disponibles en boutique
 // slot → va dans l'inventaire (équipable); effect → appliqué immédiatement
 var SHOP_POOL = [
-  // Consommables (effet immédiat)
-  { ico:'💊', name:'Potion Suprême',    desc:'+2 Potions',    cost:20, effect:function(){ State.potions=(State.potions||0)+2; } },
-  { ico:'🩹', name:'Soin Immédiat',     desc:'Récup 50% PV',  cost:25, effect:function(){ State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.5)); } },
-  { ico:'🧪', name:'Élixir de Force',   desc:'+1 Potion force',cost:35, combat:true, effect:function(){ State.potions=(State.potions||0)+1; } },
-  // Équipements (slot → inventaire)
-  { ico:'⚔', name:'Épée du Marché',    desc:'+5 ATQ',        cost:30, slot:'arme',      stats:{atk:5} },
-  { ico:'🛡', name:'Écu Renforcé',     desc:'+6 DEF',        cost:30, slot:'bouclier',  stats:{def:6} },
-  { ico:'💎', name:'Pierre de Vie',    desc:'+35 PV max',    cost:45, slot:'collier',   stats:{hp:35} },
-  { ico:'📿', name:'Amulette du Chaos',desc:'+7 ATQ -3 DEF', cost:35, slot:'collier',   stats:{atk:7, def:-3} },
-  { ico:'🪖', name:'Casque de Combat', desc:'+5 DEF',        cost:32, slot:'heaume',    stats:{def:5} },
-  { ico:'🥋', name:'Gambison Épais',   desc:'+8 DEF',        cost:40, slot:'plastron',  stats:{def:8} },
-  { ico:'🧤', name:'Gants de Mage',    desc:'+5 ATQ',        cost:35, slot:'gants',     stats:{atk:5} },
-  { ico:'👢', name:'Sandales Agiles',  desc:'+20% fuite',    cost:28, slot:'bottes',    stats:{flee:0.2} },
-  { ico:'🗡', name:'Stylet Empoisonné',desc:'+3 ATQ',        cost:40, slot:'arme',      stats:{atk:3} },
+  // Consommables
+  { ico:'💊', name:'Potion Suprême',     desc:'+2 Potions',      cost:20,  rarity:'common',    effect:function(){ State.potions=(State.potions||0)+2; } },
+  { ico:'🩹', name:'Soin Immédiat',      desc:'Récup 50% PV',    cost:25,  rarity:'common',    effect:function(){ State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.5)); } },
+  { ico:'🧪', name:'Élixir de Force',    desc:'+1 Potion force',  cost:35,  rarity:'uncommon',  combat:true, effect:function(){ State.potions=(State.potions||0)+1; } },
+  // Équipements communs / peu communs
+  { ico:'⚔', name:'Épée du Marché',     desc:'+5 ATQ',           cost:30,  rarity:'common',    slot:'arme',      stats:{atk:5} },
+  { ico:'🛡', name:'Écu Renforcé',      desc:'+6 DEF',           cost:30,  rarity:'common',    slot:'bouclier',  stats:{def:6} },
+  { ico:'💎', name:'Pierre de Vie',     desc:'+35 PV max',       cost:45,  rarity:'uncommon',  slot:'collier',   stats:{hp:35} },
+  { ico:'📿', name:'Amulette du Chaos', desc:'+7 ATQ -3 DEF',    cost:35,  rarity:'uncommon',  slot:'collier',   stats:{atk:7, def:-3} },
+  { ico:'🪖', name:'Casque de Combat',  desc:'+5 DEF',           cost:32,  rarity:'common',    slot:'heaume',    stats:{def:5} },
+  { ico:'🥋', name:'Gambison Épais',    desc:'+8 DEF',           cost:40,  rarity:'uncommon',  slot:'plastron',  stats:{def:8} },
+  { ico:'🧤', name:'Gants de Mage',     desc:'+5 ATQ',           cost:35,  rarity:'common',    slot:'gants',     stats:{atk:5} },
+  { ico:'👢', name:'Sandales Agiles',   desc:'+20% fuite',       cost:28,  rarity:'common',    slot:'bottes',    stats:{flee:0.2} },
+  { ico:'🗡', name:'Stylet Empoisonné', desc:'+3 ATQ',           cost:40,  rarity:'uncommon',  slot:'arme',      stats:{atk:3} },
+  // ── Rares ──────────────────────────────────────────────────────────
+  { ico:'⚔', name:'Épée de Feu',       desc:'+12 ATQ · Rare',   cost:120, rarity:'rare',      slot:'arme',      stats:{atk:12} },
+  { ico:'🛡', name:'Bouclier Runique',  desc:'+14 DEF · Rare',   cost:130, rarity:'rare',      slot:'bouclier',  stats:{def:14} },
+  { ico:'💎', name:'Orbe de Vie',       desc:'+50 PV · Rare',    cost:150, rarity:'rare',      slot:'collier',   stats:{hp:50} },
+  // ── Épiques ────────────────────────────────────────────────────────
+  { ico:'⚔', name:'Lame de l\'Aube',   desc:'+22 ATQ · Épique', cost:280, rarity:'epic',      slot:'arme',      stats:{atk:22} },
+  { ico:'🛡', name:'Égide Royale',      desc:'+20 DEF · Épique', cost:260, rarity:'epic',      slot:'bouclier',  stats:{def:20} },
+  { ico:'💎', name:'Cristal Éternel',   desc:'+80 PV +12 DEF · Épique', cost:380, rarity:'epic', slot:'collier', stats:{hp:80,def:12} },
+  { ico:'🪖', name:'Heaume du Paladin', desc:'+15 DEF +8 ATQ · Épique', cost:360, rarity:'epic', slot:'heaume',  stats:{def:15,atk:8} },
+  // ── Légendaires ───────────────────────────────────────────────────
+  { ico:'⚔', name:'Épée de l\'Éternité', desc:'+35 ATQ · Légendaire',   cost:620, rarity:'legendary', slot:'arme',     stats:{atk:35} },
+  { ico:'🥋', name:'Armure des Cryptes',  desc:'+30 DEF +10 ATQ · Légendaire', cost:680, rarity:'legendary', slot:'plastron', stats:{def:30,atk:10} },
+  // ── Mythique ──────────────────────────────────────────────────────
+  { ico:'💍', name:'Anneau du Chaos',     desc:'+15 ATQ +15 DEF · Mythique', cost:999, rarity:'mythic', slot:'collier', stats:{atk:15,def:15} },
 ];
 
 Rooms._shopTab = 'buy';
@@ -4393,11 +4553,13 @@ Rooms._renderShopBuy = function() {
   cont.innerHTML = '';
   items.forEach(function(item, idx) {
     var div = document.createElement('div');
-    div.className = 'shop-item' + ((State.gold||0) < item.cost ? ' cant-afford' : '');
+    var rar2 = item.rarity||'common';
+    div.className = 'shop-item rarity-'+rar2 + ((State.gold||0) < item.cost ? ' cant-afford' : '');
     div.dataset.idx = idx;
+    var rarLabel2 = (RARITY_LABELS||{})[rar2]||rar2;
     div.innerHTML =
       '<span class="si-ico">'+item.ico+'</span>'+
-      '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div></div>'+
+      '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
       '<div class="si-price">'+item.cost+'</div>';
     div.addEventListener('click', function(){ Rooms.shopBuy(idx); });
     cont.appendChild(div);
@@ -5377,8 +5539,15 @@ var WorldMap = {
     var resumeFloor = (State._currentZone === zoneId && (State.floor||1) > 1) ? (State.floor||1) : 1;
     State._currentZone = zoneId;
     State.floor = resumeFloor;
+    State._runGoldBonus = State._runGoldBonus || 1;
     Nav.go('dungeon-map');
-    setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
+    if (resumeFloor === 1) {
+      setTimeout(function(){
+        RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
+      }, 350);
+    } else {
+      setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
+    }
   },
 
   updateHotspots: function() {
