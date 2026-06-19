@@ -687,7 +687,8 @@ canvas#particles {
 .cb-btn-attack  { background:linear-gradient(135deg,rgba(180,30,30,0.25),rgba(120,15,15,0.15)); border:1px solid rgba(220,80,80,0.5); color:#e08080; }
 .cb-btn-defend  { background:linear-gradient(135deg,rgba(30,80,180,0.2),rgba(15,40,120,0.12)); border:1px solid rgba(80,130,220,0.4); color:#80aae0; }
 .cb-btn-skill   { background:linear-gradient(135deg,rgba(100,30,180,0.2),rgba(60,15,120,0.12)); border:1px solid rgba(150,80,220,0.4); color:#b080e0; }
-.cb-btn-item    { background:linear-gradient(135deg,rgba(30,130,80,0.2),rgba(15,80,40,0.12)); border:1px solid rgba(60,180,120,0.35); color:#80d0a0; }
+.cb-btn-potion  { background:linear-gradient(135deg,rgba(30,130,80,0.2),rgba(15,80,40,0.12)); border:1px solid rgba(60,180,120,0.35); color:#80d0a0; }
+.cb-btn-item    { background:linear-gradient(135deg,rgba(60,60,120,0.2),rgba(30,30,80,0.12)); border:1px solid rgba(100,100,200,0.35); color:#a0a0e0; }
 .cb-btn-flee    {
   grid-column:1/-1; height:42px;
   background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:rgba(200,190,180,0.5);
@@ -1707,8 +1708,11 @@ canvas#particles {
           <span class="cb-ico">✨</span>Compétence
           <span class="cb-cd" id="skill-cd"></span>
         </button>
+        <button class="cb-btn cb-btn-potion" id="btn-potion" onclick="Combat.usePotion()">
+          <span class="cb-ico">🧪</span>Potion <span id="cb-potion-count"></span>
+        </button>
         <button class="cb-btn cb-btn-item" onclick="Combat.showItemMenu()">
-          <span class="cb-ico">🧪</span>Objet
+          <span class="cb-ico">🎒</span>Sac
         </button>
         <button class="cb-btn cb-btn-flee" onclick="Combat.playerFlee()">
           🏃 Fuir (risqué)
@@ -3009,32 +3013,83 @@ function updateStats() {
 }
 
 // ── ENNEMIS ───────────────────────────────────────────────────────
+// zones: tableau des zones où cet ennemi peut apparaître (vide = toutes)
 var ENEMIES = [
-  { name:'Squelette',           sprite:'💀', hp:60,  atk:14, def:4,  gold:14, xp:18,  floor:1 },
-  { name:'Slime Corrosif',      sprite:'🟢', hp:50,  atk:12, def:1,  gold:10, xp:12,  floor:1 },
-  { name:'Gobelin Sauvage',     sprite:'👺', hp:65,  atk:16, def:5,  gold:18, xp:22,  floor:1 },
-  { name:'Chauve-Souris Géante',sprite:'🦇', hp:55,  atk:15, def:2,  gold:12, xp:15,  floor:1 },
-  { name:'Rat des Abysses',     sprite:'🐀', hp:45,  atk:18, def:0,  gold:8,  xp:10,  floor:1 },
-  { name:'Orc Pillard',         sprite:'👹', hp:100, atk:22, def:8,  gold:26, xp:35,  floor:2 },
-  { name:'Sorcier Noir',        sprite:'🧙', hp:85,  atk:26, def:3,  gold:32, xp:40,  floor:2 },
-  { name:'Troll des Cavernes',  sprite:'🧌', hp:120, atk:20, def:10, gold:30, xp:38,  floor:2 },
-  { name:'Fantôme Affamé',      sprite:'👻', hp:80,  atk:20, def:8,  gold:25, xp:32,  floor:3 },
-  { name:'Golem de Pierre',     sprite:'🗿', hp:140, atk:22, def:14, gold:40, xp:50,  floor:3 },
-  { name:'Araignée Vénéneuse',  sprite:'🕷', hp:90,  atk:24, def:6,  gold:35, xp:45,  floor:3, poison:true },
-  { name:'Démon',               sprite:'😈', hp:130, atk:28, def:10, gold:55, xp:70,  floor:4 },
-  { name:'Vampire Lord',        sprite:'🧛', hp:120, atk:30, def:8,  gold:60, xp:75,  floor:4 },
-  { name:'Ombre Maudite',       sprite:'🌑', hp:110, atk:32, def:5,  gold:50, xp:68,  floor:4 },
-  { name:'Dragon Jeune',        sprite:'🐉', hp:220, atk:35, def:12, gold:100,xp:120, floor:5, boss:true },
-  { name:'Liche Ancienne',      sprite:'💀', hp:190, atk:38, def:8,  gold:110,xp:130, floor:5, boss:true },
-  { name:'Titan des Ténèbres',  sprite:'🗿', hp:260, atk:32, def:16, gold:120,xp:140, floor:5, boss:true },
-  { name:'Seigneur des Cryptes',sprite:'☠',  hp:400, atk:45, def:20, gold:300,xp:300, floor:6, boss:true },
-  { name:'Gardien Éternel',     sprite:'⚰',  hp:350, atk:42, def:18, gold:260,xp:280, floor:6, boss:true },
+  // ── Grottes des Ombres ──────────────────────────────────────────
+  { name:'Squelette',            sprite:'💀', hp:60,  atk:14, def:4,  gold:14, xp:18, floor:1, zones:['grottes'] },
+  { name:'Slime Corrosif',       sprite:'🟢', hp:50,  atk:12, def:1,  gold:10, xp:12, floor:1, zones:['grottes'] },
+  { name:'Gobelin Sauvage',      sprite:'👺', hp:65,  atk:16, def:5,  gold:18, xp:22, floor:1, zones:['grottes'] },
+  { name:'Chauve-Souris Géante', sprite:'🦇', hp:55,  atk:15, def:2,  gold:12, xp:15, floor:1, zones:['grottes'] },
+  { name:'Rat des Abysses',      sprite:'🐀', hp:45,  atk:18, def:0,  gold:8,  xp:10, floor:1, zones:['grottes'] },
+  { name:'Golem de Boue',        sprite:'🪨', hp:90,  atk:16, def:8,  gold:22, xp:28, floor:2, zones:['grottes'] },
+  { name:'Orc de Caverne',       sprite:'👹', hp:100, atk:20, def:7,  gold:26, xp:32, floor:3, zones:['grottes'] },
+  { name:'Gardien des Grottes',  sprite:'💀', hp:200, atk:28, def:12, gold:120,xp:150,floor:4, boss:true, zones:['grottes'] },
+
+  // ── Forêt des Âmes Perdues ──────────────────────────────────────
+  { name:'Loup Fantôme',         sprite:'🐺', hp:80,  atk:18, def:5,  gold:22, xp:28, floor:1, zones:['foret'] },
+  { name:'Dryade Corrompue',     sprite:'🌿', hp:70,  atk:20, def:3,  gold:20, xp:25, floor:1, zones:['foret'] },
+  { name:'Araignée Géante',      sprite:'🕷', hp:90,  atk:22, def:6,  gold:28, xp:35, floor:2, zones:['foret'], poison:true },
+  { name:'Esprit de la Forêt',   sprite:'👻', hp:85,  atk:25, def:4,  gold:30, xp:38, floor:2, zones:['foret'] },
+  { name:'Ours Maudit',          sprite:'🐻', hp:120, atk:22, def:10, gold:35, xp:45, floor:3, zones:['foret'] },
+  { name:'Chasseur de Primes',   sprite:'🏹', hp:95,  atk:28, def:6,  gold:38, xp:48, floor:3, zones:['foret'] },
+  { name:'Seigneur de la Forêt', sprite:'🌳', hp:250, atk:32, def:14, gold:180,xp:200,floor:5, boss:true, zones:['foret'] },
+
+  // ── Ruines d'Astavar ────────────────────────────────────────────
+  { name:'Fantôme Affamé',       sprite:'👻', hp:80,  atk:20, def:8,  gold:25, xp:32, floor:1, zones:['ruines'] },
+  { name:'Golem de Pierre',      sprite:'🗿', hp:140, atk:22, def:14, gold:40, xp:50, floor:2, zones:['ruines'] },
+  { name:'Nécromant',            sprite:'🧙', hp:110, atk:30, def:5,  gold:50, xp:62, floor:2, zones:['ruines'] },
+  { name:'Guerrier Ancien',      sprite:'⚔',  hp:130, atk:26, def:12, gold:45, xp:55, floor:3, zones:['ruines'] },
+  { name:'Sphinge Brisée',       sprite:'🦁', hp:150, atk:28, def:10, gold:55, xp:70, floor:4, zones:['ruines'] },
+  { name:'Lich Mineure',         sprite:'💀', hp:300, atk:38, def:15, gold:220,xp:260,floor:5, boss:true, zones:['ruines'] },
+
+  // ── Port des Tempêtes ───────────────────────────────────────────
+  { name:'Pirate Maudit',        sprite:'🏴‍☠️',hp:110, atk:26, def:8,  gold:40, xp:50, floor:1, zones:['port'] },
+  { name:'Sirène Vengeresse',    sprite:'🧜', hp:100, atk:30, def:5,  gold:45, xp:55, floor:2, zones:['port'] },
+  { name:'Kraken Juvénile',      sprite:'🦑', hp:160, atk:28, def:12, gold:55, xp:68, floor:3, zones:['port'] },
+  { name:'Démon des Mers',       sprite:'😈', hp:130, atk:34, def:10, gold:60, xp:75, floor:3, zones:['port'] },
+  { name:'Tempête Incarnée',     sprite:'⛈',  hp:145, atk:32, def:8,  gold:58, xp:72, floor:4, zones:['port'] },
+  { name:'Leviathan des Abysses',sprite:'🌊', hp:380, atk:44, def:18, gold:300,xp:340,floor:5, boss:true, zones:['port'] },
+
+  // ── Pics du Néant ───────────────────────────────────────────────
+  { name:'Yéti Déchaîné',        sprite:'🏔', hp:160, atk:32, def:14, gold:60, xp:75, floor:1, zones:['pics'] },
+  { name:'Griffon de Pierre',    sprite:'🦅', hp:140, atk:38, def:10, gold:65, xp:82, floor:2, zones:['pics'] },
+  { name:'Géant des Glaces',     sprite:'❄',  hp:200, atk:35, def:18, gold:75, xp:95, floor:3, zones:['pics'] },
+  { name:'Dragon des Pics',      sprite:'🐲', hp:180, atk:42, def:12, gold:80, xp:100,floor:4, zones:['pics'] },
+  { name:'Ange Déchu',           sprite:'👼', hp:220, atk:40, def:15, gold:90, xp:110,floor:4, zones:['pics'] },
+  { name:'Seigneur du Néant',    sprite:'🌑', hp:500, atk:55, def:22, gold:400,xp:450,floor:6, boss:true, zones:['pics'] },
+
+  // ── Les Cryptes Éternelles ──────────────────────────────────────
+  { name:'Vampire Lord',         sprite:'🧛', hp:220, atk:44, def:18, gold:90, xp:110,floor:1, zones:['cryptes'] },
+  { name:'Ombre Maudite',        sprite:'🌑', hp:200, atk:48, def:12, gold:95, xp:118,floor:2, zones:['cryptes'] },
+  { name:'Démon Antique',        sprite:'👿', hp:240, atk:46, def:20, gold:100,xp:125,floor:3, zones:['cryptes'] },
+  { name:'Spectre Éternel',      sprite:'💀', hp:210, atk:50, def:14, gold:105,xp:130,floor:4, zones:['cryptes'] },
+  { name:'Liche Ancienne',       sprite:'🧙', hp:280, atk:52, def:18, gold:120,xp:150,floor:4, zones:['cryptes'] },
+  { name:'Seigneur des Cryptes', sprite:'☠',  hp:400, atk:65, def:28, gold:500,xp:500,floor:6, boss:true, zones:['cryptes'] },
+  { name:'Gardien Éternel',      sprite:'⚰',  hp:350, atk:60, def:25, gold:450,xp:460,floor:5, boss:true, zones:['cryptes'] },
 ];
 
 function getEnemiesForFloor(floor) {
-  var pool = ENEMIES.filter(function(e){ return e.floor <= floor && !e.boss; });
-  if (!pool.length) pool = ENEMIES.slice(0,4);
+  var zone = State._currentZone;
+  // D'abord: ennemis de cette zone jusqu'au floor actuel
+  var pool = ENEMIES.filter(function(e){
+    return !e.boss && e.floor <= floor &&
+           (!e.zones || !e.zones.length || !zone || e.zones.indexOf(zone) >= 0);
+  });
+  // Fallback: ennemis génériques si pool vide
+  if (!pool.length) {
+    pool = ENEMIES.filter(function(e){ return !e.boss && e.floor <= floor; });
+  }
+  if (!pool.length) pool = ENEMIES.slice(0, 5);
   return pool;
+}
+
+function getBossForZone(zone, floor) {
+  var bosses = ENEMIES.filter(function(e){
+    return e.boss && (!e.zones || !e.zones.length || e.zones.indexOf(zone) >= 0);
+  });
+  // Préfère le boss du floor le plus proche
+  bosses.sort(function(a,b){ return Math.abs(a.floor-floor) - Math.abs(b.floor-floor); });
+  return bosses[0] || ENEMIES.find(function(e){ return e.boss; });
 }
 
 // ── COMBAT ────────────────────────────────────────────────────────
@@ -3155,6 +3210,15 @@ var Combat = (function(){
       return s.turns > 0;
     });
     renderStatuses();
+  }
+
+  function updatePotionBtn() {
+    var btn = document.getElementById('btn-potion');
+    var cnt = document.getElementById('cb-potion-count');
+    var n = State.potions||0;
+    if (cnt) cnt.textContent = '×'+n;
+    if (btn) btn.disabled = (n <= 0);
+    if (btn) btn.style.opacity = n <= 0 ? '0.4' : '1';
   }
 
   function updateSkillBtn() {
@@ -3337,7 +3401,8 @@ var Combat = (function(){
       var r = RACES.find(function(x){ return x.id===State.race; });
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
 
-      document.getElementById('cb-player-name').textContent = (r?r.name:'?')+' '+((c?c.name:'?'));
+      var heroName = State.name && State.name !== 'Aventurier' ? State.name : (r?r.name:'Héros');
+      document.getElementById('cb-player-name').textContent = heroName + (c?' · '+c.name:'');
       document.getElementById('cb-enemy-sprite').textContent = enemy.sprite;
       document.getElementById('cb-enemy-name').textContent   = enemy.name;
       document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
@@ -3348,6 +3413,7 @@ var Combat = (function(){
       updatePlayerUI();
       updateEnemyUI();
       updateSkillBtn();
+      updatePotionBtn();
       setButtons(true);
       log('⚔ '+enemy.name+' surgit de l\'ombre !'+(enemy.boss?' ☠':''),'system');
     },
@@ -3424,6 +3490,20 @@ var Combat = (function(){
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       }
+    },
+
+    usePotion: function() {
+      if (turnLocked) return;
+      if ((State.potions||0) <= 0) { log('Plus de potions !','system'); return; }
+      clearTimer();
+      State.potions--;
+      var heal = Math.round(State.hpMax * 0.35);
+      State.hp = Math.min(State.hpMax, State.hp + heal);
+      updatePlayerUI();
+      updatePotionBtn();
+      Sfx.potion();
+      log('🧪 Potion de soin ! +'+heal+' PV.','heal');
+      enemyTurn();
     },
 
     showItemMenu: function() {
@@ -3531,6 +3611,20 @@ var ITEMS = [
   { ico:'🦵', name:'Cuissardes d\'Acier',slot:'jambieres', stats:{def:7},        desc:'+7 DEF' },
   { ico:'📿', name:'Collier de Dents',   slot:'collier',   stats:{atk:3,def:3},  desc:'+3 ATQ +3 DEF' },
   { ico:'💎', name:'Amulette Vitale',    slot:'collier',   stats:{hp:30},        desc:'+30 PV max' },
+  // Items de tier moyen
+  { ico:'⚔', name:'Épée de Sang',       slot:'arme',      stats:{atk:18},       desc:'+18 ATQ' },
+  { ico:'🪄', name:'Sceptre des Âmes',  slot:'arme',      stats:{atk:22,hp:-20},desc:'+22 ATQ −20 PV' },
+  { ico:'🛡', name:'Bouclier Enchanté', slot:'bouclier',  stats:{def:16},       desc:'+16 DEF' },
+  { ico:'🛡', name:'Égide de Lumière',  slot:'bouclier',  stats:{def:20,hp:15}, desc:'+20 DEF +15 PV' },
+  { ico:'🪖', name:'Heaume de Fer Noir',slot:'heaume',    stats:{def:14,atk:3}, desc:'+14 DEF +3 ATQ' },
+  { ico:'🥋', name:'Plastron des Rois', slot:'plastron',  stats:{def:18},       desc:'+18 DEF' },
+  { ico:'🥋', name:'Cuirasse Maudite',  slot:'plastron',  stats:{def:22,hp:-15},desc:'+22 DEF −15 PV' },
+  { ico:'🧤', name:'Gants du Titan',    slot:'gants',     stats:{atk:10,def:5}, desc:'+10 ATQ +5 DEF' },
+  { ico:'👢', name:'Bottes des Ombres', slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ' },
+  { ico:'🪢', name:'Ceinture Abyssale', slot:'ceinture',  stats:{hp:40,def:6},  desc:'+40 PV +6 DEF' },
+  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres',stats:{def:12,atk:4}, desc:'+12 DEF +4 ATQ' },
+  { ico:'💎', name:'Rubis du Néant',    slot:'collier',   stats:{atk:14,def:8}, desc:'+14 ATQ +8 DEF' },
+  { ico:'💎', name:'Saphir Éternel',    slot:'collier',   stats:{hp:60,def:10}, desc:'+60 PV +10 DEF' },
   // Consommables (pas de slot, utilisables en combat ou auto)
   { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
   { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
@@ -3555,8 +3649,27 @@ var Rooms = {
     document.getElementById('loot-gold-val').textContent = '+'+e.gold;
     var wrap = document.getElementById('loot-item-wrap');
     var btn  = document.getElementById('btn-loot-cont');
-    if (Math.random() < 0.65) {
-      var item = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+    // Taux de drop légèrement plus élevé pour les boss
+    var dropRate = e.boss ? 0.95 : 0.65;
+    if (Math.random() < dropRate) {
+      // Sélection d'item pondérée par zone (items avec meilleures stats pour zones avancées)
+      var zoneOrder = ['grottes','foret','ruines','port','pics','cryptes'];
+      var zoneIdx = zoneOrder.indexOf(State._currentZone||'grottes');
+      var equipItems = ITEMS.filter(function(it){ return it.slot; });
+      // Pool de base: tous les items équipables
+      // Mais pour zones avancées (idx>=2), favoriser items avec stats plus élevées
+      var pool = equipItems;
+      if (zoneIdx >= 2) {
+        // Trier par puissance totale et garder la moitié supérieure
+        pool = equipItems.slice().sort(function(a,b){
+          var pa = (a.stats?((a.stats.atk||0)+(a.stats.def||0)+(a.stats.hp||0)*0.3):0);
+          var pb = (b.stats?((b.stats.atk||0)+(b.stats.def||0)+(b.stats.hp||0)*0.3):0);
+          return pb-pa;
+        }).slice(0, Math.max(4, Math.round(equipItems.length*(1-zoneIdx*0.1))));
+      }
+      // Ajouter consommables dans le pool avec faible probabilité
+      if (Math.random() < 0.2) pool = ITEMS.filter(function(it){ return !it.slot; });
+      var item = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
       document.getElementById('loot-item-ico').textContent  = item.ico;
       document.getElementById('loot-item-name').textContent = item.name;
       if (item.equip) {
@@ -4327,8 +4440,9 @@ var DungeonMap = (function() {
         Rooms.showShop();
       } else {
         // combat / elite / mystery / trap / boss → ennemi
+        var zone = State._currentZone;
         var pool = type === 'boss'
-          ? ENEMIES.filter(function(e){ return e.boss; })
+          ? ENEMIES.filter(function(e){ return e.boss && (!e.zones||!e.zones.length||!zone||e.zones.indexOf(zone)>=0); })
           : getEnemiesForFloor(State.floor||1);
         if (!pool.length) pool = ENEMIES.filter(function(e){ return !e.boss; });
         var enemyData = pool[Math.floor(Math.random()*pool.length)];
