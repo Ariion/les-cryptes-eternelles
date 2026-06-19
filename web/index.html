@@ -89,12 +89,13 @@ body::before {
   border-radius:52px; overflow:hidden; background:#06050f;
 }
 #global-home-btn {
-  position:absolute; top:14px; right:14px; z-index:999;
-  background:rgba(0,0,0,0.55); border:1px solid rgba(201,165,80,0.3);
-  color:#C9A550; font-size:18px; border-radius:50%;
-  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  position:absolute; bottom:18px; right:16px; z-index:999;
+  background:rgba(6,5,15,0.85); border:1px solid rgba(201,165,80,0.4);
+  color:#C9A550; font-size:13px; border-radius:6px;
+  padding:6px 12px; display:flex; align-items:center; gap:6px;
   cursor:pointer; -webkit-tap-highlight-color:transparent;
-  backdrop-filter:blur(4px);
+  font-family:'Cinzel',serif; letter-spacing:1px;
+  box-shadow:0 0 10px rgba(201,165,80,0.1);
 }
 #phone-glare {
   position:absolute; top:0; left:0; right:0; height:50%;
@@ -164,6 +165,22 @@ canvas#particles {
 #title-screen.active .deco-line { opacity:1; transform:scaleX(1); }
 #title-screen.active #t-les,#title-screen.active #t-cryptes,#title-screen.active #t-eternelles { opacity:1; transform:translateY(0); }
 #title-screen.active #t-sub { opacity:1; }
+#aar-logo {
+  position:absolute; top:clamp(28px,6vh,50px); left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; z-index:2;
+  opacity:0; animation:aarFadeIn 1s ease 0.2s forwards;
+}
+@keyframes aarFadeIn { to { opacity:1; } }
+#aar-svg { width:clamp(52px,13vw,68px); height:auto; filter:drop-shadow(0 0 12px rgba(26,188,205,0.3)); }
+#aar-text {
+  font-family:'Cinzel',serif; font-size:clamp(13px,3.5vw,17px);
+  color:#1abccd; letter-spacing:2px; margin-top:4px; font-weight:600;
+}
+#aar-fr { font-size:0.65em; color:#1E3A6E; vertical-align:super; }
+#aar-presents {
+  font-family:'Crimson Text',serif; font-style:italic;
+  font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:3px; margin-top:1px;
+}
 #tap-hint {
   position:absolute; bottom:clamp(36px,7vh,60px);
   font-family:'Cinzel',serif; font-size:10px; letter-spacing:3px;
@@ -1719,7 +1736,10 @@ canvas#particles {
   <div id="phone-notch"></div>
   <div id="phone-glare"></div>
   <div id="phone-screen">
-    <button id="global-home-btn" onclick="Nav.go('main-menu')" title="Menu principal">🏠</button>
+    <button id="global-home-btn" onclick="Nav.go('main-menu')" title="Menu principal">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C9A550" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Menu
+    </button>
     <canvas id="particles"></canvas>
 
     <!-- ── SPLASH ── -->
@@ -1737,6 +1757,18 @@ canvas#particles {
 
     <!-- ── TITLE ── -->
     <div id="title-screen" class="screen">
+      <div id="aar-logo">
+        <svg id="aar-svg" viewBox="0 0 380 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- Triangle gauche bleu marine -->
+          <polygon points="80,300 190,60 245,165 190,165 190,210 155,210 155,165 120,165" fill="#1E3A6E"/>
+          <!-- Triangle droit cyan -->
+          <polygon points="155,210 190,210 190,165 245,165 300,300 190,300" fill="#1ABCCD" opacity="0.9"/>
+          <!-- Superposition centre -->
+          <polygon points="190,165 245,165 220,215 190,215" fill="#1670A0" opacity="0.7"/>
+        </svg>
+        <div id="aar-text">aardesign<span id="aar-fr">.fr</span></div>
+        <div id="aar-presents">présente</div>
+      </div>
       <div id="title-wrap">
         <div class="deco-line"><div class="bar"></div><div class="gem">⬡</div><div class="bar"></div></div>
         <div id="t-les">Les</div>
