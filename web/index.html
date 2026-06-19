@@ -2921,7 +2921,7 @@ var ProfileManager = {
     for (var i=0;i<list.length;i++) { if (list[i].id===id){ idx=i; break; } }
     if (idx<0) return;
     if (metaData !== undefined && metaData !== null) list[idx].meta = metaData;
-    if (runData  !== undefined && runData  !== null) list[idx].run  = runData;
+    if (runData  !== undefined) list[idx].run = runData; // null efface la save de run
     list[idx].lastPlayed = Date.now();
     if (State.level) list[idx].level = State.level||1;
     this.saveAll(list);
@@ -3586,6 +3586,9 @@ var Combat = (function(){
             // Donjon terminé → marquer nettoyé + victoire
             if (State._currentZone) Meta.clearZone(State._currentZone);
             Meta.addRunResult();
+            // Effacer la save de run pour que "Continuer" ne recharge pas l'ancienne save
+            State.clearSave();
+            if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, null);
             Sfx.victory();
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
@@ -5772,6 +5775,8 @@ var App = {
     State._adReviveUsed = false;
     State._adGoldUsed = false;
     State._lastCombatGold = 0;
+    State.clearSave();
+    if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, null);
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
