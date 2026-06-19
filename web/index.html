@@ -621,6 +621,14 @@ canvas#particles {
   50%  { transform:translateX(8px) scale(1.02); }
   100% { transform:translateX(0) scale(1); filter:drop-shadow(0 0 20px rgba(200,50,50,0.4)); }
 }
+#cb-enemy-sprite.dead {
+  animation:enemy-dead 0.6s ease forwards;
+}
+@keyframes enemy-dead {
+  0%   { transform:scale(1); opacity:1; filter:brightness(3) saturate(0); }
+  60%  { transform:scale(1.2) rotate(-10deg); opacity:0.5; }
+  100% { transform:scale(0) rotate(20deg); opacity:0; }
+}
 #cb-enemy-name {
   font-family:'Cinzel',serif; font-size:13px; font-weight:700;
   color:#EDE8DF; letter-spacing:2px; text-transform:uppercase;
@@ -2816,7 +2824,7 @@ var ProfilesScreen = {
     State.hpMax = c.hp  + r.dhp  + (b.hp||0);
     State.atk   = c.atk + r.datk + (b.atk||0);
     State.def   = c.def + r.ddef + (b.def||0);
-    State.floor  = 1; State.gold = 0; State.kills = 0;
+    State.floor  = 1; State.gold = (b.startGold||0); State.kills = 0;
     State.xp = 0; State.level = 1;
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0; State.critBonus = b.crit||0;
@@ -3198,7 +3206,7 @@ var Combat = (function(){
   function tickStatuses() {
     // Appliquer et décrémenter
     statuses = statuses.filter(function(s){
-      if (s.type==='poison') { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('☠ Poison : -'+s.val+' PV','enemy'); }
+      if (s.type==='poison') { var pdmg=s.val; if(getPassive()==='poison_resist') pdmg=Math.ceil(pdmg*0.5); State.hp=Math.max(0,State.hp-pdmg); updatePlayerUI(); log('☠ Poison : -'+pdmg+' PV'+(pdmg<s.val?' (résistance naine)':''),'enemy'); }
       if (s.type==='burn')   { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('🔥 Brûlure : -'+s.val+' PV','enemy'); }
       s.turns--;
       return s.turns > 0;
@@ -3270,9 +3278,14 @@ var Combat = (function(){
     setButtons(false);
     statuses = []; enemyStatuses = []; renderStatuses();
     if (victory) {
-      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)/100));
+      var sprEl = document.getElementById('cb-enemy-sprite');
+      if (sprEl) { sprEl.classList.remove('hit'); sprEl.classList.add('dead'); }
+      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)));
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
+      if (Meta.bonuses.regenMeta) {
+        State.hp = Math.min(State.hpMax, State.hp + Meta.bonuses.regenMeta);
+      }
       if (State.regenPerFight) {
         State.hp = Math.min(State.hpMax, State.hp + State.regenPerFight);
         var pct = Math.round(State.hp/State.hpMax*100);
@@ -3343,6 +3356,11 @@ var Combat = (function(){
 
       // IA ennemi simple
       var action = Math.random();
+      // Esquive (meta bonus)
+      if ((Meta.bonuses.dodge||0) > 0 && Math.random() < Meta.bonuses.dodge) {
+        log('💨 Tu esquives l\'attaque !','player');
+        turnLocked=false; setButtons(true); return;
+      }
       var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def);
       playerDef = false;
 
@@ -3403,7 +3421,9 @@ var Combat = (function(){
 
       var heroName = State.name && State.name !== 'Aventurier' ? State.name : (r?r.name:'Héros');
       document.getElementById('cb-player-name').textContent = heroName + (c?' · '+c.name:'');
-      document.getElementById('cb-enemy-sprite').textContent = enemy.sprite;
+      var sprEl2 = document.getElementById('cb-enemy-sprite');
+      sprEl2.classList.remove('hit','dead');
+      sprEl2.textContent = enemy.sprite;
       document.getElementById('cb-enemy-name').textContent   = enemy.name;
       document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
       document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
@@ -3416,6 +3436,16 @@ var Combat = (function(){
       updatePotionBtn();
       setButtons(true);
       log('⚔ '+enemy.name+' surgit de l\'ombre !'+(enemy.boss?' ☠':''),'system');
+      // Elfe : initiative — frappe en premier
+      if (getPassive() === 'initiative') {
+        setTimeout(function(){
+          var res = calcDmg(State.atk, enemy.def);
+          enemy.hp = Math.max(0, enemy.hp - res.dmg);
+          enemyHitAnim(); showDmg(res.dmg, false, res.crit); updateEnemyUI();
+          log('🌿 Initiative elfique ! Tu frappes pour '+res.dmg+' dégâts avant l\'ennemi.','player');
+          if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); }
+        }, 500);
+      }
     },
 
     updatePlayerUI: function() { updatePlayerUI(); },
@@ -3423,13 +3453,21 @@ var Combat = (function(){
 
     playerAttack: function() {
       if (turnLocked) return;
-      var res = calcDmg(State.atk, enemy.def);
+      var atkBonus = (getPassive()==='rage' && State.hp < State.hpMax*0.3) ? 1.5 : 1;
+      var res = calcDmg(Math.round(State.atk * atkBonus), enemy.def);
+      if (atkBonus > 1) log('🟠 Rage orcque ! ATQ ×1.5','player');
       enemy.hp = Math.max(0, enemy.hp - res.dmg);
       enemyHitAnim();
       showDmg(res.dmg, false, res.crit);
       updateEnemyUI();
       if (res.crit) { Sfx.crit(); log('CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !','player'); }
       else          { Sfx.attack(); log('Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.','player'); }
+      // Vampirisme
+      if ((Meta.bonuses.lifesteal||0) > 0) {
+        var ls = Math.max(1, Math.round(res.dmg * Meta.bonuses.lifesteal));
+        State.hp = Math.min(State.hpMax, State.hp + ls);
+        updatePlayerUI(); log('🩸 Vampirisme +'+ls+' PV','player');
+      }
       if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); return; }
       enemyTurn();
     },
@@ -3590,45 +3628,47 @@ var Combat = (function(){
 // combat → utilisable dans le menu objet en combat
 // stats → { atk, def, hp, flee } appliqués à l'équip, retirés au déséquip
 var ITEMS = [
-  { ico:'⚔', name:'Épée Rouillée',      slot:'arme',      stats:{atk:4},        desc:'+4 ATQ' },
-  { ico:'🗡', name:'Dague Acérée',       slot:'arme',      stats:{atk:6},        desc:'+6 ATQ' },
-  { ico:'⚔', name:'Épée de Chevalier',  slot:'arme',      stats:{atk:10},       desc:'+10 ATQ' },
-  { ico:'🪄', name:'Baguette Arcane',    slot:'arme',      stats:{atk:12},       desc:'+12 ATQ mag.' },
-  { ico:'🪓', name:'Hache Barbare',      slot:'arme',      stats:{atk:14},       desc:'+14 ATQ brut' },
-  { ico:'🛡', name:'Bouclier Brisé',     slot:'bouclier',  stats:{def:5},        desc:'+5 DEF' },
-  { ico:'🛡', name:'Écu de Chevalier',   slot:'bouclier',  stats:{def:9},        desc:'+9 DEF' },
-  { ico:'🪖', name:'Casque de Fer',      slot:'heaume',    stats:{def:4},        desc:'+4 DEF' },
-  { ico:'🪖', name:'Heaume Enchanté',    slot:'heaume',    stats:{def:7,hp:10},  desc:'+7 DEF +10 PV' },
-  { ico:'🥋', name:'Armure de Cuir',     slot:'plastron',  stats:{def:6},        desc:'+6 DEF' },
-  { ico:'🥋', name:'Plastron d\'Acier',  slot:'plastron',  stats:{def:10},       desc:'+10 DEF' },
-  { ico:'🧤', name:'Gants de Feu',       slot:'gants',     stats:{atk:4},        desc:'+4 ATQ' },
-  { ico:'🧤', name:'Gantelets Lourds',   slot:'gants',     stats:{def:4},        desc:'+4 DEF' },
-  { ico:'👢', name:'Bottes Légères',     slot:'bottes',    stats:{flee:0.15},    desc:'+15% fuite' },
-  { ico:'👢', name:'Bottes de Guerre',   slot:'bottes',    stats:{def:3,atk:2},  desc:'+3 DEF +2 ATQ' },
-  { ico:'🪢', name:'Ceinture de Force',  slot:'ceinture',  stats:{atk:3,hp:15},  desc:'+3 ATQ +15 PV' },
-  { ico:'🪢', name:'Ceinture Renforcée', slot:'ceinture',  stats:{def:5},        desc:'+5 DEF' },
-  { ico:'🦵', name:'Jambières de Cuir',  slot:'jambieres', stats:{def:4},        desc:'+4 DEF' },
-  { ico:'🦵', name:'Cuissardes d\'Acier',slot:'jambieres', stats:{def:7},        desc:'+7 DEF' },
-  { ico:'📿', name:'Collier de Dents',   slot:'collier',   stats:{atk:3,def:3},  desc:'+3 ATQ +3 DEF' },
-  { ico:'💎', name:'Amulette Vitale',    slot:'collier',   stats:{hp:30},        desc:'+30 PV max' },
-  // Items de tier moyen
-  { ico:'⚔', name:'Épée de Sang',       slot:'arme',      stats:{atk:18},       desc:'+18 ATQ' },
-  { ico:'🪄', name:'Sceptre des Âmes',  slot:'arme',      stats:{atk:22,hp:-20},desc:'+22 ATQ −20 PV' },
-  { ico:'🛡', name:'Bouclier Enchanté', slot:'bouclier',  stats:{def:16},       desc:'+16 DEF' },
-  { ico:'🛡', name:'Égide de Lumière',  slot:'bouclier',  stats:{def:20,hp:15}, desc:'+20 DEF +15 PV' },
-  { ico:'🪖', name:'Heaume de Fer Noir',slot:'heaume',    stats:{def:14,atk:3}, desc:'+14 DEF +3 ATQ' },
-  { ico:'🥋', name:'Plastron des Rois', slot:'plastron',  stats:{def:18},       desc:'+18 DEF' },
-  { ico:'🥋', name:'Cuirasse Maudite',  slot:'plastron',  stats:{def:22,hp:-15},desc:'+22 DEF −15 PV' },
-  { ico:'🧤', name:'Gants du Titan',    slot:'gants',     stats:{atk:10,def:5}, desc:'+10 ATQ +5 DEF' },
-  { ico:'👢', name:'Bottes des Ombres', slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ' },
-  { ico:'🪢', name:'Ceinture Abyssale', slot:'ceinture',  stats:{hp:40,def:6},  desc:'+40 PV +6 DEF' },
-  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres',stats:{def:12,atk:4}, desc:'+12 DEF +4 ATQ' },
-  { ico:'💎', name:'Rubis du Néant',    slot:'collier',   stats:{atk:14,def:8}, desc:'+14 ATQ +8 DEF' },
-  { ico:'💎', name:'Saphir Éternel',    slot:'collier',   stats:{hp:60,def:10}, desc:'+60 PV +10 DEF' },
-  // Consommables (pas de slot, utilisables en combat ou auto)
+  // ── Tier 1 (étages 1-2) ──────────────────────────────────────────
+  { ico:'⚔', name:'Épée Rouillée',       slot:'arme',      stats:{atk:4},         desc:'+4 ATQ',            tier:1 },
+  { ico:'🗡', name:'Dague Acérée',        slot:'arme',      stats:{atk:6},         desc:'+6 ATQ',            tier:1 },
+  { ico:'🛡', name:'Bouclier Brisé',      slot:'bouclier',  stats:{def:5},         desc:'+5 DEF',            tier:1 },
+  { ico:'🪖', name:'Casque de Fer',       slot:'heaume',    stats:{def:4},         desc:'+4 DEF',            tier:1 },
+  { ico:'🥋', name:'Armure de Cuir',      slot:'plastron',  stats:{def:6},         desc:'+6 DEF',            tier:1 },
+  { ico:'🧤', name:'Gants de Feu',        slot:'gants',     stats:{atk:4},         desc:'+4 ATQ',            tier:1 },
+  { ico:'🧤', name:'Gantelets Lourds',    slot:'gants',     stats:{def:4},         desc:'+4 DEF',            tier:1 },
+  { ico:'👢', name:'Bottes Légères',      slot:'bottes',    stats:{flee:0.15},     desc:'+15% fuite',        tier:1 },
+  { ico:'🪢', name:'Ceinture Renforcée',  slot:'ceinture',  stats:{def:5},         desc:'+5 DEF',            tier:1 },
+  { ico:'🦵', name:'Jambières de Cuir',   slot:'jambieres', stats:{def:4},         desc:'+4 DEF',            tier:1 },
+  { ico:'📿', name:'Collier de Dents',    slot:'collier',   stats:{atk:3,def:3},   desc:'+3 ATQ +3 DEF',     tier:1 },
+  // ── Tier 2 (étages 3-4) ──────────────────────────────────────────
+  { ico:'⚔', name:'Épée de Chevalier',   slot:'arme',      stats:{atk:10},        desc:'+10 ATQ',           tier:2 },
+  { ico:'🪄', name:'Baguette Arcane',     slot:'arme',      stats:{atk:12},        desc:'+12 ATQ mag.',      tier:2 },
+  { ico:'🪓', name:'Hache Barbare',       slot:'arme',      stats:{atk:14},        desc:'+14 ATQ brut',      tier:2 },
+  { ico:'🛡', name:'Écu de Chevalier',    slot:'bouclier',  stats:{def:9},         desc:'+9 DEF',            tier:2 },
+  { ico:'🪖', name:'Heaume Enchanté',     slot:'heaume',    stats:{def:7,hp:10},   desc:'+7 DEF +10 PV',     tier:2 },
+  { ico:'🥋', name:'Plastron d\'Acier',   slot:'plastron',  stats:{def:10},        desc:'+10 DEF',           tier:2 },
+  { ico:'👢', name:'Bottes de Guerre',    slot:'bottes',    stats:{def:3,atk:2},   desc:'+3 DEF +2 ATQ',     tier:2 },
+  { ico:'🪢', name:'Ceinture de Force',   slot:'ceinture',  stats:{atk:3,hp:15},   desc:'+3 ATQ +15 PV',     tier:2 },
+  { ico:'🦵', name:'Cuissardes d\'Acier', slot:'jambieres', stats:{def:7},         desc:'+7 DEF',            tier:2 },
+  { ico:'💎', name:'Amulette Vitale',     slot:'collier',   stats:{hp:30},         desc:'+30 PV max',        tier:2 },
+  // ── Tier 3 (étages 5-6) ──────────────────────────────────────────
+  { ico:'⚔', name:'Épée de Sang',        slot:'arme',      stats:{atk:18},        desc:'+18 ATQ',           tier:3 },
+  { ico:'🪄', name:'Sceptre des Âmes',   slot:'arme',      stats:{atk:22,hp:-20}, desc:'+22 ATQ −20 PV',    tier:3 },
+  { ico:'🛡', name:'Bouclier Enchanté',  slot:'bouclier',  stats:{def:16},        desc:'+16 DEF',           tier:3 },
+  { ico:'🛡', name:'Égide de Lumière',   slot:'bouclier',  stats:{def:20,hp:15},  desc:'+20 DEF +15 PV',    tier:3 },
+  { ico:'🪖', name:'Heaume de Fer Noir', slot:'heaume',    stats:{def:14,atk:3},  desc:'+14 DEF +3 ATQ',    tier:3 },
+  { ico:'🥋', name:'Plastron des Rois',  slot:'plastron',  stats:{def:18},        desc:'+18 DEF',           tier:3 },
+  { ico:'🥋', name:'Cuirasse Maudite',   slot:'plastron',  stats:{def:22,hp:-15}, desc:'+22 DEF −15 PV',    tier:3 },
+  { ico:'🧤', name:'Gants du Titan',     slot:'gants',     stats:{atk:10,def:5},  desc:'+10 ATQ +5 DEF',    tier:3 },
+  { ico:'👢', name:'Bottes des Ombres',  slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ', tier:3 },
+  { ico:'🪢', name:'Ceinture Abyssale',  slot:'ceinture',  stats:{hp:40,def:6},   desc:'+40 PV +6 DEF',     tier:3 },
+  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ',    tier:3 },
+  { ico:'💎', name:'Rubis du Néant',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF',    tier:3 },
+  { ico:'💎', name:'Saphir Éternel',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF',    tier:3 },
+  // ── Consommables ─────────────────────────────────────────────────
   { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
   { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
-  { ico:'📜', name:'Parchemin de Soin', desc:'+1 Potion', effect:function(){ State.potions=(State.potions||0)+1; } },
+  { ico:'📜', name:'Parchemin de Soin',  desc:'+1 Potion', effect:function(){ State.potions=(State.potions||0)+1; } },
 ];
 
 // Appliquer les stats d'un item équipé
@@ -3649,26 +3689,27 @@ var Rooms = {
     document.getElementById('loot-gold-val').textContent = '+'+e.gold;
     var wrap = document.getElementById('loot-item-wrap');
     var btn  = document.getElementById('btn-loot-cont');
-    // Taux de drop légèrement plus élevé pour les boss
+    // Taux de drop plus élevé pour les boss
     var dropRate = e.boss ? 0.95 : 0.65;
     if (Math.random() < dropRate) {
-      // Sélection d'item pondérée par zone (items avec meilleures stats pour zones avancées)
-      var zoneOrder = ['grottes','foret','ruines','port','pics','cryptes'];
-      var zoneIdx = zoneOrder.indexOf(State._currentZone||'grottes');
+      // Sélection d'item par tier basé sur l'étage du donjon
+      var floor = State.floor || 1;
+      var maxTier = floor <= 2 ? 1 : (floor <= 4 ? 2 : 3);
       var equipItems = ITEMS.filter(function(it){ return it.slot; });
-      // Pool de base: tous les items équipables
-      // Mais pour zones avancées (idx>=2), favoriser items avec stats plus élevées
-      var pool = equipItems;
-      if (zoneIdx >= 2) {
-        // Trier par puissance totale et garder la moitié supérieure
-        pool = equipItems.slice().sort(function(a,b){
-          var pa = (a.stats?((a.stats.atk||0)+(a.stats.def||0)+(a.stats.hp||0)*0.3):0);
-          var pb = (b.stats?((b.stats.atk||0)+(b.stats.def||0)+(b.stats.hp||0)*0.3):0);
-          return pb-pa;
-        }).slice(0, Math.max(4, Math.round(equipItems.length*(1-zoneIdx*0.1))));
+      // 80% items du tier max, 15% tier inférieur, 5% tier supérieur (si existe)
+      var roll = Math.random();
+      var pool;
+      if (roll < 0.05 && maxTier < 3) {
+        pool = equipItems.filter(function(it){ return (it.tier||1) === maxTier+1; });
+      } else if (roll < 0.20 && maxTier > 1) {
+        pool = equipItems.filter(function(it){ return (it.tier||1) === maxTier-1; });
+      } else {
+        pool = equipItems.filter(function(it){ return (it.tier||1) === maxTier; });
       }
-      // Ajouter consommables dans le pool avec faible probabilité
-      if (Math.random() < 0.2) pool = ITEMS.filter(function(it){ return !it.slot; });
+      if (!pool.length) pool = equipItems.filter(function(it){ return (it.tier||1) <= maxTier; });
+      if (!pool.length) pool = equipItems;
+      // Consommables rares (10%)
+      if (Math.random() < 0.1) pool = ITEMS.filter(function(it){ return !it.slot; });
       var item = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
       document.getElementById('loot-item-ico').textContent  = item.ico;
       document.getElementById('loot-item-name').textContent = item.name;
@@ -3685,7 +3726,11 @@ var Rooms = {
       wrap.classList.remove('show');
       setTimeout(function(){ wrap.classList.add('show'); }, 50);
     } else {
-      wrap.classList.add('hidden');
+      wrap.classList.remove('hidden');
+      wrap.classList.add('show');
+      document.getElementById('loot-item-ico').textContent  = '🍃';
+      document.getElementById('loot-item-name').textContent = 'Aucun butin';
+      document.getElementById('loot-item-desc').textContent = 'L\'ennemi n\'avait rien de valeur...';
       Rooms._pendingItem = null;
       if (btn) btn.textContent = 'Continuer →';
     }
@@ -3697,7 +3742,6 @@ var Rooms = {
     if (item) {
       Rooms._pendingItem = null;
       if (item.slot) {
-        // Equippable → go to inventory
         State.inventory = State.inventory || [];
         if (State.inventory.length < 8) {
           State.inventory.push(item);
@@ -3719,12 +3763,60 @@ var Rooms = {
   showRest: function() {
     var heal = Math.round(State.hpMax * 0.35);
     var actual = Math.min(heal, State.hpMax - State.hp);
-    document.getElementById('rest-heal-val').textContent = '+'+actual+' PV';
     Rooms._healAmt = actual;
+    document.getElementById('rest-icon').textContent     = '🔥';
+    document.getElementById('rest-title').textContent    = 'Feu de camp';
+    document.getElementById('rest-desc').textContent     = 'Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.';
+    document.getElementById('rest-heal-val').textContent = '+'+actual+' PV';
+    document.getElementById('rest-heal-val').style.color = '';
+    document.getElementById('btn-rest-cont').textContent = 'Se reposer →';
     Nav.go('rest-screen');
   },
 
+  showMystery: function() {
+    var floor = State.floor || 1;
+    var events = [
+      function(){ State.atk += 6; return { ico:'🌟', label:'+6 ATQ', msg:'Un esprit guerrier renforce ton bras !' }; },
+      function(){ State.def += 5; return { ico:'🛡', label:'+5 DEF', msg:'Une armure spectrale enveloppe ton corps.' }; },
+      function(){ var g=40+floor*20; State.gold=(State.gold||0)+g; return { ico:'🪙', label:'+'+g+' 🪙', msg:'Un trésor oublié dissimulé derrière une dalle !' }; },
+      function(){ State.hp=State.hpMax; return { ico:'💧', label:'PV au maximum !', msg:'Une fontaine de vie restaure toutes tes forces.' }; },
+      function(){ State.potions=(State.potions||0)+2; return { ico:'🧪', label:'+2 Potions', msg:'Une cache de potions abandonnée par un aventurier.' }; },
+      function(){ State.hpMax+=20; State.hp=Math.min(State.hpMax,State.hp+20); return { ico:'❤', label:'+20 PV max', msg:'Une relique ancienne augmente ton endurance.' }; },
+      function(){ State.def=Math.max(0,(State.def||0)-4); return { ico:'💀', label:'-4 DEF', msg:'Une malédiction s\'accroche à ton armure...' }; },
+      function(){ var xpg=30+floor*15; gainXP(xpg); return { ico:'✨', label:'+'+xpg+' XP', msg:'Un grimoire antique transmet ses connaissances.' }; },
+    ];
+    var ev = events[Math.floor(Math.random()*events.length)]();
+    document.getElementById('rest-icon').textContent     = ev.ico;
+    document.getElementById('rest-title').textContent    = 'Salle Mystérieuse';
+    document.getElementById('rest-desc').textContent     = ev.msg;
+    document.getElementById('rest-heal-val').textContent = ev.label;
+    document.getElementById('btn-rest-cont').textContent = 'Continuer →';
+    Nav.go('rest-screen');
+  },
+
+  showTrap: function(onContinue) {
+    var dmg = Math.round(State.hpMax * 0.15);
+    State.hp = Math.max(1, State.hp - dmg);
+    document.getElementById('rest-icon').textContent     = '⚠';
+    document.getElementById('rest-title').textContent    = 'Piège !';
+    document.getElementById('rest-desc').textContent     = 'Tu déclenches un mécanisme caché. Les lames jaillissent des murs !';
+    document.getElementById('rest-heal-val').textContent = '-'+dmg+' PV';
+    document.getElementById('rest-heal-val').style.color = '#e05050';
+    document.getElementById('btn-rest-cont').textContent = 'Affronter l\'ennemi →';
+    Rooms._trapCallback = onContinue;
+    Nav.go('rest-screen');
+  },
+
+  _trapCallback: null,
+
   restContinue: function() {
+    document.getElementById('rest-heal-val').style.color = '';
+    if (Rooms._trapCallback) {
+      var cb = Rooms._trapCallback;
+      Rooms._trapCallback = null;
+      cb();
+      return;
+    }
     State.hp = Math.min(State.hpMax, State.hp + (Rooms._healAmt||0));
     updateMapHpBar();
     Nav.go('dungeon-map');
@@ -3763,7 +3855,16 @@ function refreshCombatHp() {
   }
 }
 
+function getPassive() {
+  var r = RACES.find(function(x){ return x.id===State.race; });
+  return r ? r.passive : null;
+}
+
 function gainXP(amount) {
+  // Humain : +10% XP
+  if (getPassive() === 'xp_boost') amount = Math.round(amount * 1.1);
+  // Meta bonus XP
+  if (Meta.bonuses.xpPct) amount = Math.round(amount * (1 + Meta.bonuses.xpPct));
   State.xp = (State.xp||0) + amount;
   State.level = State.level||1;
   var threshold = XP_PER_LEVEL[Math.min(State.level, XP_PER_LEVEL.length-1)];
@@ -3812,6 +3913,12 @@ var META_UPGRADES = [
   { id:'potion', ico:'🧪', name:'Alchimie',         desc:'+1 Potion de départ',  max:3, cost:80,  effect:function(){ Meta.bonuses.potions+=1; } },
   { id:'gold',   ico:'🪙', name:'Commerce',         desc:'+20% or gagné',        max:3, cost:100, effect:function(){ Meta.bonuses.goldPct+=0.2; } },
   { id:'crit',   ico:'🎯', name:'Instinct Meurtrier',desc:'+5% chance critique',  max:4, cost:90,  effect:function(){ Meta.bonuses.crit+=0.05; } },
+  { id:'dodge',  ico:'💨', name:'Esquive',           desc:'+5% esquiver une attaque', max:3, cost:100, effect:function(){ Meta.bonuses.dodge=(Meta.bonuses.dodge||0)+0.05; } },
+  { id:'timer',  ico:'⏱', name:'Réflexes',          desc:'+1s au chrono de combat',  max:3, cost:80,  effect:function(){ Meta.bonuses.timerBonus=(Meta.bonuses.timerBonus||0)+1; } },
+  { id:'lifesteal',ico:'🩸',name:'Vampirisme',       desc:'Récupère 10% des dégâts infligés', max:3, cost:120, effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.10; } },
+  { id:'regen',  ico:'🌿', name:'Régénération',      desc:'+3 PV après chaque victoire', max:5, cost:60, effect:function(){ Meta.bonuses.regenMeta=(Meta.bonuses.regenMeta||0)+3; } },
+  { id:'xpBoost',ico:'✨', name:'Sagesse',           desc:'+10% XP par combat',       max:3, cost:90,  effect:function(){ Meta.bonuses.xpPct=(Meta.bonuses.xpPct||0)+0.10; } },
+  { id:'startGold',ico:'💰',name:'Fortune',          desc:'+25 or au départ',         max:4, cost:80,  effect:function(){ Meta.bonuses.startGold=(Meta.bonuses.startGold||0)+25; } },
 ];
 
 var Meta = {
@@ -3820,7 +3927,7 @@ var Meta = {
   totalRuns: 0,
   bestFloor: 0,
   levels: {},
-  bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 },
+  bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0, dodge:0, timerBonus:0, lifesteal:0, regenMeta:0, xpPct:0, startGold:0 },
   clearedZones: {},
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
@@ -3833,7 +3940,8 @@ var Meta = {
       Meta.totalRuns   = d.totalRuns||0;
       Meta.bestFloor   = d.bestFloor||0;
       Meta.levels      = d.levels||{};
-      Meta.bonuses     = d.bonuses||{ atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0 };
+      var db = d.bonuses||{};
+      Meta.bonuses = { atk:db.atk||0, def:db.def||0, hp:db.hp||0, potions:db.potions||0, goldPct:db.goldPct||0, crit:db.crit||0, dodge:db.dodge||0, timerBonus:db.timerBonus||0, lifesteal:db.lifesteal||0, regenMeta:db.regenMeta||0, xpPct:db.xpPct||0, startGold:db.startGold||0 };
       Meta.clearedZones= d.clearedZones||{};
       Meta.chest       = d.chest||[];
     } catch(e){}
@@ -4119,7 +4227,7 @@ var DungeonMap = (function() {
   ];
 
   // Types de salles cachés
-  var ROOM_TYPES = ['combat','combat','combat','elite','rest','shop','mystery','combat','combat','trap'];
+  var ROOM_TYPES = ['combat','combat','elite','rest','shop','mystery','mystery','trap','combat','combat'];
 
   var nodes = [];
   var runSeed = 0;
@@ -4438,8 +4546,17 @@ var DungeonMap = (function() {
         Rooms.showRest();
       } else if (type === 'shop') {
         Rooms.showShop();
+      } else if (type === 'mystery') {
+        Rooms.showMystery();
+      } else if (type === 'trap') {
+        Rooms.showTrap(function() { startCombat('combat'); });
       } else {
-        // combat / elite / mystery / trap / boss → ennemi
+        startCombat(type);
+      }
+    }, 500);
+
+    function startCombat(type) {
+        // combat / elite / boss → ennemi
         var zone = State._currentZone;
         var pool = type === 'boss'
           ? ENEMIES.filter(function(e){ return e.boss && (!e.zones||!e.zones.length||!zone||e.zones.indexOf(zone)>=0); })
@@ -4460,9 +4577,8 @@ var DungeonMap = (function() {
         });
         Nav.go('combat-screen');
         setTimeout(function(){ Combat.start(enemyData); }, 350);
-      }
-    }, 500);
-  }
+    }
+  }  // close onTap
 
   return {
     _decors: null,
@@ -4976,7 +5092,7 @@ var App = {
     State.atk   = c.atk + r.datk + (b.atk||0);
     State.def   = c.def + r.ddef + (b.def||0);
     State.floor  = 1;
-    State.gold   = 0;
+    State.gold   = (b.startGold||0);
     State.kills  = 0;
     State.xp     = 0;
     State.level  = 1;
@@ -5015,7 +5131,7 @@ var App = {
     State.atk   = c.atk + r.datk + (b.atk||0);
     State.def   = c.def + r.ddef + (b.def||0);
     State.floor  = 1;
-    State.gold   = 0;
+    State.gold   = (b.startGold||0);
     State.kills  = 0;
     State.xp     = 0;
     State.level  = 1;
