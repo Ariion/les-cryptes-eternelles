@@ -1179,6 +1179,68 @@ canvas#particles {
 #hs-inn-bed     { top:55%;  left:68%; }
 #hs-inn-town    { bottom:6%; left:50%; transform:translateX(-50%); }
 
+/* ── NPC HOTSPOTS ── */
+.npc-hotspot {
+  position:absolute; display:flex; flex-direction:column; align-items:center; gap:2px;
+  cursor:pointer; transition:transform 0.2s ease;
+  user-select:none;
+}
+.npc-hotspot:hover { transform:scale(1.15); }
+.npc-avatar { font-size:32px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+.npc-name-tag {
+  font-family:'Cinzel',serif; font-size:9px; font-weight:700;
+  color:#C9A550; letter-spacing:1px; text-transform:uppercase;
+  background:rgba(10,8,6,0.7); padding:1px 5px; border-radius:3px;
+  white-space:nowrap;
+}
+#npc-bertrand  { bottom:38%; left:12%; }
+#npc-oswin     { bottom:50%; left:38%; }
+#npc-seraphine { bottom:22%; right:8%; }
+/* Inn status banner */
+#inn-status-banner {
+  position:absolute; bottom:15%; left:50%; transform:translateX(-50%);
+  background:rgba(50,120,50,0.9); color:#e8f5e8; font-family:'Crimson Text',serif;
+  font-size:13px; padding:6px 16px; border-radius:8px; pointer-events:none;
+  opacity:0; transition:opacity 0.3s; white-space:nowrap;
+}
+#inn-status-banner.show { opacity:1; }
+/* ── NPC DIALOGUE OVERLAY ── */
+#npc-overlay {
+  position:absolute; inset:0; background:rgba(5,3,2,0.85); z-index:80;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px;
+}
+#npc-box {
+  background:linear-gradient(160deg,#1a140d,#0e0b07); border:1px solid #5a4020;
+  border-radius:16px; padding:18px; width:88%; max-height:70%;
+  display:flex; flex-direction:column; gap:10px;
+  box-shadow:0 -4px 30px rgba(0,0,0,0.8);
+}
+#npc-portrait-ico { font-size:40px; text-align:center; }
+#npc-portrait-name {
+  font-family:'Cinzel',serif; font-size:14px; font-weight:700;
+  color:#C9A550; text-align:center; letter-spacing:2px;
+}
+#npc-speech {
+  font-family:'Crimson Text',serif; font-size:14px; color:#EDE8DF;
+  line-height:1.5; font-style:italic; text-align:center;
+}
+#npc-quest-info {
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
+  border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:4px;
+}
+#npc-quest-title { font-family:'Cinzel',serif; font-size:12px; color:#C9A550; font-weight:700; }
+#npc-quest-desc  { font-family:'Crimson Text',serif; font-size:13px; color:#EDE8DF; }
+#npc-quest-reward{ font-family:'Crimson Text',serif; font-size:12px; color:#7ec87e; }
+#npc-btns { display:flex; flex-direction:column; gap:6px; }
+#npc-btns button {
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
+  padding:8px; border-radius:8px; border:1px solid #5a4020; cursor:pointer;
+  background:rgba(201,165,80,0.12); color:#C9A550; transition:all 0.2s;
+}
+#npc-btns button:hover { background:rgba(201,165,80,0.25); }
+#npc-btn-accept { background:rgba(80,150,80,0.2); border-color:#3a7a3a; color:#7ec87e; }
+#npc-btn-claim  { background:rgba(201,165,80,0.25); border-color:#C9A550; color:#C9A550; }
+
 /* ── TOWN SCREEN ── */
 #town-screen {
   background:#0e0a05 url('images/town.png') center/cover no-repeat;
@@ -2008,6 +2070,42 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl">Aller en ville</div>
       </div>
+      <!-- NPC: aubergiste -->
+      <div class="npc-hotspot" id="npc-bertrand" onclick="Quests.openNpc('bertrand')">
+        <div class="npc-avatar">🧔</div>
+        <div class="npc-name-tag">Bertrand</div>
+      </div>
+      <!-- NPC: barde -->
+      <div class="npc-hotspot" id="npc-oswin" onclick="Quests.openNpc('oswin')">
+        <div class="npc-avatar">🎵</div>
+        <div class="npc-name-tag">Oswin</div>
+      </div>
+      <!-- NPC: mage -->
+      <div class="npc-hotspot" id="npc-seraphine" onclick="Quests.openNpc('seraphine')">
+        <div class="npc-avatar">🔮</div>
+        <div class="npc-name-tag">Séraphine</div>
+      </div>
+      <!-- bannière status -->
+      <div id="inn-status-banner"></div>
+    </div>
+
+    <!-- ── NPC DIALOGUE OVERLAY ── -->
+    <div id="npc-overlay" class="overlay" style="display:none">
+      <div id="npc-box">
+        <div id="npc-portrait-ico"></div>
+        <div id="npc-portrait-name"></div>
+        <div id="npc-speech"></div>
+        <div id="npc-quest-info" style="display:none">
+          <div id="npc-quest-title"></div>
+          <div id="npc-quest-desc"></div>
+          <div id="npc-quest-reward"></div>
+        </div>
+        <div id="npc-btns">
+          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none">Accepter la quête</button>
+          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none">Réclamer la récompense</button>
+          <button onclick="Quests.close()">Fermer</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── TOWN SCREEN ── -->
@@ -2829,6 +2927,7 @@ var ProfilesScreen = {
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0; State.critBonus = b.crit||0;
     State._zoneMod = { enemyMod:1, goldMod:1 }; State._currentZone = null;
+    State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
@@ -3245,10 +3344,12 @@ var Combat = (function(){
   var timerInterval = null;
   var timerSeconds = 5;
 
+  var timerMax = 5;
   function startTimer() {
     clearTimer();
-    timerSeconds = 5;
-    updateTimerUI(5);
+    timerMax = 5 + (Meta.bonuses.timerBonus||0);
+    timerSeconds = timerMax;
+    updateTimerUI(timerMax);
     timerInterval = setInterval(function() {
       timerSeconds--;
       updateTimerUI(timerSeconds);
@@ -3268,7 +3369,7 @@ var Combat = (function(){
   function updateTimerUI(s) {
     var bar = document.getElementById('cb-timer-bar');
     var txt = document.getElementById('cb-timer-txt');
-    if (bar) bar.style.width = Math.max(0, (s/5)*100) + '%';
+    if (bar) bar.style.width = Math.max(0, (s/timerMax)*100) + '%';
     if (bar) bar.style.background = s <= 2 ? '#e05050' : s <= 3 ? '#d08020' : '#C9A550';
     if (txt) txt.textContent = Math.max(0, s);
   }
@@ -3276,6 +3377,7 @@ var Combat = (function(){
   function endCombat(victory) {
     clearTimer();
     setButtons(false);
+    State.persistentStatuses = statuses.filter(function(s){ return s.type==='poison'||s.type==='burn'; });
     statuses = []; enemyStatuses = []; renderStatuses();
     if (victory) {
       var sprEl = document.getElementById('cb-enemy-sprite');
@@ -3428,7 +3530,9 @@ var Combat = (function(){
       document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
       document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
       document.getElementById('combat-result').classList.remove('show');
-      statuses = []; enemyStatuses = []; renderStatuses();
+      statuses = (State.persistentStatuses||[]).map(function(s){ return Object.assign({},s); });
+      enemyStatuses = []; renderStatuses();
+      if (statuses.length) log('⚠ Tu entres au combat affaibli ('+statuses.map(function(s){return s.type;}).join(', ')+') !','enemy');
 
       updatePlayerUI();
       updateEnemyUI();
@@ -3537,10 +3641,12 @@ var Combat = (function(){
       State.potions--;
       var heal = Math.round(State.hpMax * 0.35);
       State.hp = Math.min(State.hpMax, State.hp + heal);
-      updatePlayerUI();
+      State.persistentStatuses = [];
+      statuses = statuses.filter(function(s){ return s.type!=='poison'&&s.type!=='burn'; });
+      updatePlayerUI(); renderStatuses();
       updatePotionBtn();
       Sfx.potion();
-      log('🧪 Potion de soin ! +'+heal+' PV.','heal');
+      log('🧪 Potion de soin ! +'+heal+' PV. Statuts négatifs dissipés.','heal');
       enemyTurn();
     },
 
@@ -4961,13 +5067,22 @@ var InnRoom = {
     if (txt)  txt.textContent = hp + ' / ' + hpMax + ' PV';
   },
   rest: function() {
-    if ((State.hp||0) >= (State.hpMax||1)) {
-      alert('Tu es déjà en pleine forme !'); return;
-    }
+    var wasMaxHp = (State.hp||0) >= (State.hpMax||1);
+    var hadStatuses = (State.persistentStatuses||[]).length > 0;
+    if (wasMaxHp && !hadStatuses) { Sfx.heal && Sfx.heal(); return; }
     var heal = Math.ceil((State.hpMax||1) * 0.5);
     State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
+    State.persistentStatuses = [];
     InnRoom.updateHp();
+    InnRoom.showStatusBanner(hadStatuses ? '✨ Soigné ! Statuts négatifs dissipés.' : '✨ Tu récupères '+heal+' PV.');
     if (typeof Sfx !== 'undefined' && Sfx.heal) Sfx.heal();
+  },
+  showStatusBanner: function(msg) {
+    var b = document.getElementById('inn-status-banner');
+    if (!b) return;
+    b.textContent = msg;
+    b.classList.add('show');
+    setTimeout(function(){ b.classList.remove('show'); }, 2500);
   },
   showChest: function() {
     var gold = State.gold||0;
@@ -5101,6 +5216,7 @@ var App = {
     State.critBonus = b.crit||0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
+    State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
@@ -5140,6 +5256,7 @@ var App = {
     State.critBonus = b.crit||0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
+    State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
