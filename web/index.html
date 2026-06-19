@@ -1193,9 +1193,52 @@ canvas#particles {
   background:rgba(10,8,6,0.7); padding:1px 5px; border-radius:3px;
   white-space:nowrap;
 }
-#npc-bertrand  { bottom:38%; left:12%; }
-#npc-oswin     { bottom:50%; left:38%; }
-#npc-seraphine { bottom:22%; right:8%; }
+#npc-bertrand  { bottom:36%; left:10%; }
+#npc-oswin     { bottom:52%; left:42%; }
+#npc-seraphine { bottom:18%; right:6%; }
+/* Taverne screen */
+#taverne-screen {
+  background:
+    radial-gradient(ellipse at 18% 55%, rgba(220,110,20,0.55) 0%, transparent 38%),
+    radial-gradient(ellipse at 80% 75%, rgba(120,60,10,0.25) 0%, transparent 30%),
+    radial-gradient(ellipse at 55% 15%, rgba(160,100,30,0.15) 0%, transparent 35%),
+    #120a04 url('images/taverne.png') center/cover no-repeat;
+  justify-content:flex-start;
+}
+#taverne-header {
+  width:100%; display:flex; align-items:center; justify-content:center;
+  padding:14px 16px 10px; position:relative; z-index:5;
+  background:linear-gradient(180deg,rgba(5,2,0,0.8) 0%,transparent 100%);
+}
+#taverne-back {
+  position:absolute; left:14px;
+  font-family:'Cinzel',serif; font-size:20px; color:#C9A550;
+  cursor:pointer; line-height:1;
+}
+#taverne-title {
+  font-family:'Cinzel',serif; font-size:14px; font-weight:700;
+  color:#C9A550; letter-spacing:3px; text-transform:uppercase;
+  text-shadow:0 0 20px rgba(201,165,80,0.5);
+}
+.tav-deco { position:absolute; font-size:28px; pointer-events:none; opacity:0.6; }
+.tav-fire   { top:38%; left:6%; font-size:36px; opacity:0.8; animation:flicker 1.5s infinite alternate; }
+.tav-barrel { bottom:30%; left:4%; font-size:24px; opacity:0.5; }
+.tav-sign   { top:18%; right:10%; font-size:22px; opacity:0.5; }
+@keyframes flicker {
+  0%   { opacity:0.7; transform:scale(1); }
+  100% { opacity:1;   transform:scale(1.08); }
+}
+#tav-quest-badges {
+  position:absolute; top:60px; right:10px;
+  display:flex; flex-direction:column; gap:4px; z-index:5;
+}
+.tav-quest-badge {
+  font-family:'Cinzel',serif; font-size:9px; padding:3px 7px;
+  background:rgba(201,165,80,0.15); border:1px solid rgba(201,165,80,0.3);
+  border-radius:4px; color:#C9A550; white-space:nowrap;
+}
+.tav-quest-badge.completable { background:rgba(80,180,80,0.2); border-color:#3a9a3a; color:#7ec87e; animation:pulse-badge 1.5s infinite; }
+@keyframes pulse-badge { 0%,100%{opacity:1} 50%{opacity:0.5} }
 /* Inn status banner */
 #inn-status-banner {
   position:absolute; bottom:15%; left:50%; transform:translateX(-50%);
@@ -1299,6 +1342,7 @@ canvas#particles {
 #hs-reg-peaks   { top:68%; left:62%; }
 #hs-town-adventure { top:4%; left:50%; transform:translateX(-50%); }
 #hs-town-room      { bottom:6%; right:8%; }
+#hs-town-taverne { top:48%; left:62%; }
 /* badges danger */
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
 .hs-lbl.extreme{ border-color:rgba(160,30,160,0.6); color:#c060c0; }
@@ -2070,6 +2114,20 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl">Aller en ville</div>
       </div>
+      <!-- bannière status -->
+      <div id="inn-status-banner"></div>
+    </div>
+
+    <!-- ── TAVERNE SCREEN ── -->
+    <div id="taverne-screen" class="screen">
+      <div id="taverne-header">
+        <div id="taverne-back" onclick="Nav.go('town-screen')">←</div>
+        <div id="taverne-title">Le Gobelin Lyonnais</div>
+      </div>
+      <!-- Décoration intérieure -->
+      <div class="tav-deco tav-fire">🔥</div>
+      <div class="tav-deco tav-barrel">🪣</div>
+      <div class="tav-deco tav-sign">🍺</div>
       <!-- NPC: aubergiste -->
       <div class="npc-hotspot" id="npc-bertrand" onclick="Quests.openNpc('bertrand')">
         <div class="npc-avatar">🧔</div>
@@ -2077,7 +2135,7 @@ canvas#particles {
       </div>
       <!-- NPC: barde -->
       <div class="npc-hotspot" id="npc-oswin" onclick="Quests.openNpc('oswin')">
-        <div class="npc-avatar">🎵</div>
+        <div class="npc-avatar">🎸</div>
         <div class="npc-name-tag">Oswin</div>
       </div>
       <!-- NPC: mage -->
@@ -2085,8 +2143,8 @@ canvas#particles {
         <div class="npc-avatar">🔮</div>
         <div class="npc-name-tag">Séraphine</div>
       </div>
-      <!-- bannière status -->
-      <div id="inn-status-banner"></div>
+      <!-- quest badge indicators -->
+      <div id="tav-quest-badges"></div>
     </div>
 
     <!-- ── NPC DIALOGUE OVERLAY ── -->
@@ -2148,6 +2206,11 @@ canvas#particles {
       <div class="hotspot" id="hs-town-room" onclick="Nav.go('inn-room')">
         <div class="hs-ring"></div>
         <div class="hs-lbl safe">🛏 Ma chambre</div>
+      </div>
+      <!-- hotspot taverne -->
+      <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl">🍺 Taverne</div>
       </div>
     </div>
 
@@ -3024,6 +3087,7 @@ var Nav = {
         next.style.opacity = '1';
         setTimeout(function(){ next.style.transition=''; }, 500);
       });});
+      if (id === 'taverne-screen' && typeof Quests !== 'undefined') Quests.refreshBadges();
     }, prev ? 250 : 0);
   }
 };
@@ -4149,6 +4213,32 @@ var Quests = (function(){
     close: function() {
       var ov = document.getElementById('npc-overlay');
       ov.style.display = 'none';
+    },
+    refreshBadges: function() {
+      var cont = document.getElementById('tav-quest-badges');
+      if (!cont) return;
+      cont.innerHTML = '';
+      var npcs = ['bertrand','oswin','seraphine'];
+      npcs.forEach(function(npc) {
+        var active = (Meta.activeQuests||{})[npc];
+        if (!active) {
+          var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]); });
+          if (next) {
+            var b = document.createElement('div');
+            b.className = 'tav-quest-badge';
+            b.textContent = '📜 ' + NPC_DATA[npc].name.split(' ')[0];
+            cont.appendChild(b);
+          }
+        } else {
+          var def = QUEST_DEFS.find(function(q){ return q.id===active; });
+          if (def) {
+            var b = document.createElement('div');
+            b.className = 'tav-quest-badge' + (def.check() ? ' completable' : '');
+            b.textContent = (def.check() ? '✅ ' : '🗺 ') + NPC_DATA[npc].name.split(' ')[0];
+            cont.appendChild(b);
+          }
+        }
+      });
     },
   };
 })();
