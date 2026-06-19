@@ -1375,9 +1375,11 @@ canvas#particles {
 #town-back:active { transform:scale(0.93); }
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
-#hs-town-inn     { top:22%; left:16%; }
-#hs-town-forge   { top:65%; left:14%; }
-#hs-town-market  { top:44%; left:60%; }
+#hs-town-inn        { top:22%; left:16%; }
+#hs-town-forge      { top:65%; left:14%; }
+#hs-town-armurerie  { top:44%; left:60%; }
+#hs-town-couturier  { top:55%; left:36%; }
+#hs-town-bijoutier  { top:28%; left:72%; }
 #hs-town-temple  { top:20%; left:64%; }
 #hs-town-guild   { top:62%; left:42%; }
 
@@ -2251,20 +2253,30 @@ canvas#particles {
         <div id="town-back" onclick="Nav.go('inn-room')">←</div>
         <div id="town-title">Thornwall</div>
       </div>
-      <!-- hotspot auberge (haut gauche) -->
-      <div class="hotspot" id="hs-town-inn" onclick="TownScreen.goInn()">
+      <!-- hotspot chambre (haut gauche) - gratuit -->
+      <div class="hotspot" id="hs-town-inn" onclick="Nav.go('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Auberge · Repos</div>
+        <div class="hs-lbl safe">🛏 Chambre · Gratuit</div>
       </div>
-      <!-- hotspot forge (bas gauche) -->
+      <!-- hotspot forge (bas gauche) - armes -->
       <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Forgeron</div>
+        <div class="hs-lbl">⚒ Forge</div>
       </div>
-      <!-- hotspot marché (centre droit) -->
-      <div class="hotspot" id="hs-town-market" onclick="TownScreen.goShop('market')">
+      <!-- hotspot armurerie (centre droit) - armures/boucliers -->
+      <div class="hotspot" id="hs-town-armurerie" onclick="TownScreen.goShop('armurerie')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Marché</div>
+        <div class="hs-lbl">🛡 Armurerie</div>
+      </div>
+      <!-- hotspot couturier (centre) - ceintures/jambes/pieds/gants -->
+      <div class="hotspot" id="hs-town-couturier" onclick="TownScreen.goShop('couturier')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl">🧵 Couturier</div>
+      </div>
+      <!-- hotspot bijoutier (droite) - colliers/anneaux -->
+      <div class="hotspot" id="hs-town-bijoutier" onclick="TownScreen.goShop('bijoutier')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl">💍 Bijoutier</div>
       </div>
       <!-- hotspot temple (haut droit) -->
       <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
@@ -4532,16 +4544,31 @@ var SHOP_POOL = [
 
 Rooms._shopTab = 'buy';
 
-Rooms.showShop = function(fromScreen) {
+Rooms.showShop = function(fromScreen, category) {
   State._shopFrom = fromScreen || 'dungeon-map';
+  State._shopCategory = category || null;
   Rooms._shopTab = 'buy';
   document.getElementById('stab-buy').classList.add('active');
   document.getElementById('stab-sell').classList.remove('active');
-  // Sélection aléatoire de 4 items
-  var pool = SHOP_POOL.slice();
+  // Filtrer par catégorie si spécifiée
+  var SLOT_MAP = {
+    forge:     ['arme'],
+    armurerie: ['plastron','bouclier','heaume'],
+    couturier: ['ceinture','jambieres','bottes','gants'],
+    bijoutier: ['collier','bague']
+  };
+  var TITLE_MAP = {
+    forge:     '⚒ Forge',
+    armurerie: '🛡 Armurerie',
+    couturier: '🧵 Couturier',
+    bijoutier: '💍 Bijoutier'
+  };
+  var slots = category && SLOT_MAP[category];
+  var pool = slots ? SHOP_POOL.filter(function(i){ return slots.indexOf(i.slot)!==-1; }) : SHOP_POOL.slice();
   pool.sort(function(){ return Math.random()-0.5; });
-  var items = pool.slice(0,4);
+  var items = pool.slice(0, slots ? pool.length : 4);
   State._shopItems = items;
+  document.getElementById('shop-title').textContent = (category && TITLE_MAP[category]) || '🏪 Marchand Obscur';
   document.getElementById('shop-gold-val').textContent = State.gold||0;
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
@@ -5483,7 +5510,7 @@ var TownScreen = {
     InnRoom.enter();
   },
   goShop: function(type) {
-    Rooms.showShop('town-screen');
+    Rooms.showShop('town-screen', type);
   },
   goTemple: function() {
     // Soin partiel gratuit (une fois par visite)
