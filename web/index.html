@@ -157,20 +157,15 @@ canvas#particles {
 #title-screen.active #t-les,#title-screen.active #t-cryptes,#title-screen.active #t-eternelles { opacity:1; transform:translateY(0); }
 #title-screen.active #t-sub { opacity:1; }
 #aar-logo {
-  position:absolute; top:clamp(28px,6vh,50px); left:50%; transform:translateX(-50%);
+  position:absolute; top:clamp(32px,7vh,56px); left:50%; transform:translateX(-50%);
   display:flex; flex-direction:column; align-items:center; z-index:2;
   opacity:0; animation:aarFadeIn 1s ease 0.2s forwards;
 }
 @keyframes aarFadeIn { to { opacity:1; } }
-#aar-svg { width:clamp(52px,13vw,68px); height:auto; filter:drop-shadow(0 0 12px rgba(26,188,205,0.3)); }
-#aar-text {
-  font-family:'Cinzel',serif; font-size:clamp(13px,3.5vw,17px);
-  color:#1abccd; letter-spacing:2px; margin-top:4px; font-weight:600;
-}
-#aar-fr { font-size:0.65em; color:#1E3A6E; vertical-align:super; }
+#aar-png { width:clamp(90px,22vw,130px); height:auto; }
 #aar-presents {
   font-family:'Crimson Text',serif; font-style:italic;
-  font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:3px; margin-top:1px;
+  font-size:13px; color:rgba(255,255,255,0.35); letter-spacing:4px; margin-top:6px;
 }
 #tap-hint {
   position:absolute; bottom:clamp(36px,7vh,60px);
@@ -1788,30 +1783,12 @@ canvas#particles {
     <canvas id="particles"></canvas>
 
     <!-- ── SPLASH ── -->
-    <div id="splash" class="screen active">
-      <div id="splash-inner">
-        <svg viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="28,168 100,32 136,96 92,96 102,118 58,118" fill="#2D3A6B"/>
-          <polygon points="54,168 76,168 92,138 70,138" fill="#2D3A6B"/>
-          <polygon points="82,32 158,168 116,168 102,138 142,138 106,74" fill="#2EC4D6"/>
-          <polygon points="100,32 136,96 116,74" fill="#1a7a8e"/>
-        </svg>
-        <div id="splash-wordmark"><em>a</em>ardesign<sup>fr</sup></div>
-      </div>
-    </div>
+    <div id="splash" class="screen"></div>
 
     <!-- ── TITLE ── -->
-    <div id="title-screen" class="screen">
+    <div id="title-screen" class="screen active">
       <div id="aar-logo">
-        <svg id="aar-svg" viewBox="0 0 380 340" xmlns="http://www.w3.org/2000/svg">
-          <!-- Triangle gauche bleu marine -->
-          <polygon points="80,300 190,60 245,165 190,165 190,210 155,210 155,165 120,165" fill="#1E3A6E"/>
-          <!-- Triangle droit cyan -->
-          <polygon points="155,210 190,210 190,165 245,165 300,300 190,300" fill="#1ABCCD" opacity="0.9"/>
-          <!-- Superposition centre -->
-          <polygon points="190,165 245,165 220,215 190,215" fill="#1670A0" opacity="0.7"/>
-        </svg>
-        <div id="aar-text">aardesign<span id="aar-fr">.fr</span></div>
+        <img src="images/aardesign-logo.png" id="aar-png" alt="aardesign">
         <div id="aar-presents">présente</div>
       </div>
       <div id="title-wrap">
@@ -5535,20 +5512,14 @@ var menuShown = false;
 
 function runIntro() {
   tick();
-  Nav.current = 'splash';
-  screens['splash'].classList.add('active');
-  screens['splash'].style.opacity = '1';
-
-  setTimeout(function(){ document.getElementById('splash-inner').classList.add('show'); }, 200);
+  Nav.current = 'title-screen';
+  // Tap ou touch → aller au menu
   setTimeout(function(){
-    screens['splash'].style.transition = 'opacity 0.9s ease';
-    screens['splash'].style.opacity = '0';
-    setTimeout(function(){
-      screens['splash'].classList.remove('active');
-      Nav.current = null;
-      goToMenu();
-    }, 900);
-  }, 2100);
+    if (menuShown) return;
+    screens['title-screen'].addEventListener('click', goToMenu, { once:true });
+    screens['title-screen'].addEventListener('touchend', goToMenu, { once:true });
+  }, 800);
+  setTimeout(goToMenu, 10000);
 }
 
 function goToMenu() {
@@ -5789,15 +5760,18 @@ var WorldMap = {
 };
 
 var HUD = (function(){
-  var HIDDEN_SCREENS = {
-    'main-menu':1,'settings-screen':1,'title-screen':1,
-    'char-select':1,'profiles-screen':1,'splash':1
+  // HUD visible UNIQUEMENT en jeu (donjon, combat, ville, auberge, etc.)
+  var SHOWN_SCREENS = {
+    'dungeon-map':1,'combat-screen':1,'shop-screen':1,
+    'inn-room':1,'town-screen':1,'world-map':1,
+    'taverne-screen':1,'equip-screen':1,'chest-screen':1,
+    'hero-screen':1,'rest-screen':1,'loot-screen':1
   };
   return {
     update: function(screenId) {
       var el = document.getElementById('global-hud');
       if (!el) return;
-      el.style.display = HIDDEN_SCREENS[screenId] ? 'none' : 'flex';
+      el.style.display = SHOWN_SCREENS[screenId] ? 'flex' : 'none';
       HUD.updateGold();
     },
     updateGold: function() {
