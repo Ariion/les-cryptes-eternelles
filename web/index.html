@@ -88,15 +88,6 @@ body::before {
   position:absolute; inset:0;
   border-radius:52px; overflow:hidden; background:#06050f;
 }
-#global-home-btn {
-  position:absolute; bottom:18px; right:16px; z-index:999;
-  background:rgba(6,5,15,0.85); border:1px solid rgba(201,165,80,0.4);
-  color:#C9A550; font-size:13px; border-radius:6px;
-  padding:6px 12px; display:flex; align-items:center; gap:6px;
-  cursor:pointer; -webkit-tap-highlight-color:transparent;
-  font-family:'Cinzel',serif; letter-spacing:1px;
-  box-shadow:0 0 10px rgba(201,165,80,0.1);
-}
 #phone-glare {
   position:absolute; top:0; left:0; right:0; height:50%;
   border-radius:52px 52px 0 0;
@@ -218,6 +209,8 @@ canvas#particles {
   position:relative; z-index:2;
 }
 #menu-footer { position:absolute; bottom:9px; font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(201,165,80,0.15); z-index:2; }
+#menu-aar-logo { position:absolute; top:18px; left:50%; transform:translateX(-50%); z-index:3; opacity:0.85; }
+#menu-aar-img { height:clamp(36px,8vh,52px); width:auto; }
 
 /* ── BOUTONS COMMUNS ─────────────────────────────────────────── */
 .btn {
@@ -970,6 +963,42 @@ canvas#particles {
 .shop-item .si-price::before { content:'🪙'; font-size:14px; }
 .shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
 
+#global-hud {
+  position:absolute; top:12px; right:12px; z-index:998;
+  display:flex; flex-direction:column; align-items:flex-end; gap:5px;
+}
+#hud-menu-btn, #hud-quest-btn {
+  display:flex; align-items:center; gap:5px;
+  background:rgba(6,5,15,0.82); border:1px solid rgba(201,165,80,0.35);
+  color:#C9A550; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px;
+  border-radius:6px; padding:5px 10px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  backdrop-filter:blur(4px);
+  white-space:nowrap;
+}
+#hud-gold {
+  background:rgba(6,5,15,0.82); border:1px solid rgba(201,165,80,0.35);
+  color:#C9A550; font-family:'Cinzel',serif; font-size:11px;
+  border-radius:6px; padding:5px 10px;
+  backdrop-filter:blur(4px);
+}
+#hud-quest-modal {
+  display:none; position:absolute; inset:0; z-index:999;
+  background:rgba(0,0,0,0.75); align-items:center; justify-content:center;
+}
+#hud-quest-modal.show { display:flex; }
+#hud-quest-content {
+  background:#0e0a05; border:1px solid rgba(201,165,80,0.3);
+  border-radius:12px; padding:20px; width:80%; max-height:70%;
+  overflow-y:auto; display:flex; flex-direction:column; gap:10px;
+}
+#hud-quest-title { font-family:'Cinzel Decorative',serif; color:#C9A550; font-size:15px; text-align:center; }
+#hud-quest-list { font-family:'Crimson Text',serif; font-size:14px; color:#EDE8DF; display:flex; flex-direction:column; gap:8px; }
+#hud-quest-close {
+  margin-top:8px; background:transparent; border:1px solid rgba(201,165,80,0.3);
+  color:rgba(201,165,80,0.6); font-family:'Cinzel',serif; font-size:10px;
+  border-radius:6px; padding:8px; cursor:pointer; letter-spacing:1px;
+}
 /* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
 #floor-transition {
   position:absolute; inset:0; z-index:30;
@@ -1736,10 +1765,26 @@ canvas#particles {
   <div id="phone-notch"></div>
   <div id="phone-glare"></div>
   <div id="phone-screen">
-    <button id="global-home-btn" onclick="Nav.go('main-menu')" title="Menu principal">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C9A550" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Menu
-    </button>
+    <!-- HUD permanent : Menu + Or + Quêtes -->
+    <div id="global-hud">
+      <button id="hud-menu-btn" onclick="Nav.go('main-menu')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Menu
+      </button>
+      <div id="hud-gold">🪙 <span id="hud-gold-val">0</span></div>
+      <button id="hud-quest-btn" onclick="HUD.showQuests()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Quêtes
+      </button>
+    </div>
+    <!-- Modal quêtes rapides -->
+    <div id="hud-quest-modal">
+      <div id="hud-quest-content">
+        <div id="hud-quest-title">📜 Quêtes en cours</div>
+        <div id="hud-quest-list"></div>
+        <button id="hud-quest-close" onclick="document.getElementById('hud-quest-modal').classList.remove('show')">Fermer</button>
+      </div>
+    </div>
     <canvas id="particles"></canvas>
 
     <!-- ── SPLASH ── -->
@@ -1782,6 +1827,9 @@ canvas#particles {
     <!-- ── MAIN MENU ── -->
     <div id="main-menu" class="screen">
       <div id="menu-bg"></div>
+      <div id="menu-aar-logo">
+        <img src="images/aardesign-logo.png" id="menu-aar-img" alt="aardesign" onerror="this.style.display='none'">
+      </div>
       <div id="menu-hero">
         <div id="menu-eyebrow">Présente</div>
         <div id="menu-t-cryptes">Cryptes</div>
@@ -2032,7 +2080,6 @@ canvas#particles {
       <div id="shop-header-bar">
         <div id="shop-back-btn" onclick="Rooms.shopLeave()">←</div>
         <div id="shop-title">🏪 Marchand Obscur</div>
-        <div id="shop-gold-display">🪙 <span id="shop-gold-val">0</span></div>
       </div>
       <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
       <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
@@ -3212,14 +3259,12 @@ var Nav = {
     var prev = Nav.current;
     if (prev === id) return;
     Nav.current = id;
+    if (typeof HUD !== 'undefined') { HUD.update(id); HUD.updateGold(); }
     // Auto-save à chaque changement d'écran si un run est actif
     var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1};
     if (!menuScreens[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
       State.saveRun();
     }
-    // Afficher/cacher le bouton home
-    var homeBtn = document.getElementById('global-home-btn');
-    if (homeBtn) homeBtn.style.display = menuScreens[id] ? 'none' : 'flex';
     if (prev && typeof Sfx !== 'undefined') Sfx.nav();
     // Musique selon l'écran
     if (typeof Music !== 'undefined') {
@@ -3612,6 +3657,7 @@ var Combat = (function(){
       State._lastCombatGold = Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)) * (State._runGoldBonus||1) * 0.42);
       State._adGoldUsed = false;
       State.gold  = (State.gold||0)  + State._lastCombatGold;
+      if (typeof HUD !== 'undefined') HUD.updateGold();
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
       if (Meta.bonuses.regenMeta) {
@@ -4162,6 +4208,7 @@ var Rooms = {
       function(){ if((State.persistentStatuses||[]).length){ State.persistentStatuses=[]; return { ico:'✨', label:'Statuts dissipés !', msg:'Une lumière dorée dissipe tous tes maux.' }; } else { State.gold=(State.gold||0)+floor*30; return { ico:'🪙', label:'+'+floor*30+' 🪙', msg:'L\'air de la salle sent l\'or et la fortune.' }; } },
     ];
     var ev = events[Math.floor(Math.random()*events.length)]();
+    if (typeof HUD !== 'undefined') HUD.updateGold();
     document.getElementById('rest-icon').textContent     = ev.ico;
     document.getElementById('rest-title').textContent    = 'Salle Mystérieuse';
     document.getElementById('rest-desc').textContent     = ev.msg;
@@ -4447,7 +4494,7 @@ var Quests = (function(){
     claim: function() {
       if (!_currentQuest || !_currentNpc) return;
       var r = _currentQuest.reward;
-      if (r.gold)    { Meta.totalGold = (Meta.totalGold||0) + r.gold; State.gold = (State.gold||0) + r.gold; }
+      if (r.gold)    { Meta.totalGold = (Meta.totalGold||0) + r.gold; State.gold = (State.gold||0) + r.gold; if (typeof HUD !== 'undefined') HUD.updateGold(); }
       if (r.potions) { State.potions = (State.potions||0) + r.potions; }
       if (!Meta.completedQuests) Meta.completedQuests = {};
       Meta.completedQuests[_currentQuest.id] = true;
@@ -4675,7 +4722,6 @@ Rooms.showShop = function(fromScreen, category) {
   var items = pool.slice(0, slots ? pool.length : 4);
   State._shopItems = items;
   document.getElementById('shop-title').textContent = (category && TITLE_MAP[category]) || '🏪 Marchand Obscur';
-  document.getElementById('shop-gold-val').textContent = State.gold||0;
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
 };
@@ -4724,7 +4770,8 @@ Rooms._renderShopSell = function() {
       '<div class="si-price" style="color:#50c870">+'+sellPrice+'</div>';
     div.addEventListener('click', function(){
       State.gold = (State.gold||0) + sellPrice;
-      document.getElementById('shop-gold-val').textContent = State.gold;
+      var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold;
+      if (typeof HUD !== 'undefined') HUD.updateGold();
       if (entry.src === 'inv') {
         State.inventory.splice(entry.idx, 1);
       } else {
@@ -4774,6 +4821,7 @@ Rooms.shopBuy = function(idx) {
   }
   Sfx.buy && Sfx.buy();
   document.getElementById('shop-gold-val').textContent = State.gold;
+  if (typeof HUD !== 'undefined') HUD.updateGold();
   var cards = document.querySelectorAll('.shop-item');
   if (cards[idx]) cards[idx].classList.add('sold');
   document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c){
@@ -5498,17 +5546,9 @@ function runIntro() {
     setTimeout(function(){
       screens['splash'].classList.remove('active');
       Nav.current = null;
-      Nav.go('title-screen');
+      goToMenu();
     }, 900);
   }, 2100);
-
-  setTimeout(function(){
-    if (menuShown) return;
-    screens['title-screen'].addEventListener('click', goToMenu, { once:true });
-    screens['title-screen'].addEventListener('touchend', goToMenu, { once:true });
-  }, 3200);
-
-  setTimeout(goToMenu, 8500);
 }
 
 function goToMenu() {
@@ -5607,6 +5647,7 @@ var InnRoom = {
     State.persistentStatuses = [];
     InnRoom.updateHp();
     InnRoom.showStatusBanner(hadStatuses ? '✨ Repos (15 🪙) — Soigné ! Statuts dissipés.' : '✨ Repos (15 🪙) — +' + heal + ' PV. Pleine forme !');
+    if (typeof HUD !== 'undefined') HUD.updateGold();
     if (typeof Sfx !== 'undefined' && Sfx.heal) Sfx.heal();
   },
   showStatusBanner: function(msg) {
@@ -5641,6 +5682,7 @@ var RewardedAds = (function(){
         document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
         alert('🪙 ×2 ! Vous recevez ' + bonus + ' pièces supplémentaires !');
         document.getElementById('shop-gold-val') && (document.getElementById('shop-gold-val').textContent = State.gold);
+        if (typeof HUD !== 'undefined') HUD.updateGold();
       });
     },
     showRevive: function() {
@@ -5745,6 +5787,53 @@ var WorldMap = {
     });
   },
 };
+
+var HUD = (function(){
+  var HIDDEN_SCREENS = {
+    'main-menu':1,'settings-screen':1,'title-screen':1,
+    'char-select':1,'profiles-screen':1,'splash':1
+  };
+  return {
+    update: function(screenId) {
+      var el = document.getElementById('global-hud');
+      if (!el) return;
+      el.style.display = HIDDEN_SCREENS[screenId] ? 'none' : 'flex';
+      HUD.updateGold();
+    },
+    updateGold: function() {
+      var el = document.getElementById('hud-gold-val');
+      if (el) el.textContent = (State && State.gold) ? State.gold : 0;
+    },
+    showQuests: function() {
+      var modal = document.getElementById('hud-quest-modal');
+      var list  = document.getElementById('hud-quest-list');
+      if (!modal || !list) return;
+      // Construire la liste des quêtes actives
+      var html = '';
+      if (typeof QUEST_DEFS !== 'undefined' && typeof Meta !== 'undefined') {
+        var active = QUEST_DEFS.filter(function(q){
+          return !((Meta.completedQuests||{})[q.id]);
+        });
+        if (active.length === 0) {
+          html = '<div style="color:rgba(255,255,255,0.4);text-align:center">Aucune quête active</div>';
+        } else {
+          active.forEach(function(q){
+            var done = q.check ? q.check() : false;
+            html += '<div style="padding:8px;border:1px solid rgba(201,165,80,'+(done?'0.5':'0.15')+');border-radius:6px;opacity:'+(done?'1':'0.7')+'">'
+              + '<div style="color:#C9A550;font-size:12px">' + (done?'✅ ':'📜 ') + q.title + '</div>'
+              + '<div style="font-size:12px;margin-top:2px">' + q.desc + '</div>'
+              + '<div style="font-size:11px;color:#C9A550;margin-top:2px">Récompense : ' + q.rewardTxt + '</div>'
+              + '</div>';
+          });
+        }
+      } else {
+        html = '<div style="color:rgba(255,255,255,0.4);text-align:center">Pas de quêtes disponibles</div>';
+      }
+      list.innerHTML = html;
+      modal.classList.add('show');
+    }
+  };
+})();
 
 var App = {
   startRun: function() {
