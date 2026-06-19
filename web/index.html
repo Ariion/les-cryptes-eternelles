@@ -1375,13 +1375,16 @@ canvas#particles {
 #town-back:active { transform:scale(0.93); }
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
-#hs-town-inn        { top:22%; left:16%; }
+#hs-town-inn        { top:28%; left:16%; }
 #hs-town-forge      { top:65%; left:14%; }
-#hs-town-armurerie  { top:44%; left:60%; }
-#hs-town-couturier  { top:55%; left:36%; }
+#hs-town-armurerie  { bottom:6%; right:8%; }
+#hs-town-couturier  { top:40%; left:82%; }
 #hs-town-bijoutier  { top:28%; left:72%; }
-#hs-town-temple  { top:20%; left:64%; }
-#hs-town-guild   { top:62%; left:42%; }
+#hs-town-temple     { top:38%; left:64%; }
+#hs-town-guild      { top:62%; left:42%; }
+#hs-town-adventure  { bottom:10%; left:8%; }
+#hs-town-chateau    { top:8%; left:42%; }
+#hs-town-taverne    { top:58%; left:64%; }
 
 /* ── WORLD MAP (région) ── */
 #world-map {
@@ -2178,7 +2181,7 @@ canvas#particles {
       <!-- hotspot lit → repos -->
       <div class="hotspot" id="hs-inn-bed" onclick="InnRoom.rest()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Se reposer</div>
+        <div class="hs-lbl safe">Repos (15 🪙)</div>
       </div>
       <!-- bas écran → aller en ville -->
       <div class="hotspot" id="hs-inn-town" onclick="Nav.go('town-screen')">
@@ -2253,50 +2256,50 @@ canvas#particles {
         <div id="town-back" onclick="Nav.go('inn-room')">←</div>
         <div id="town-title">Thornwall</div>
       </div>
-      <!-- hotspot chambre (haut gauche) - gratuit -->
+      <!-- hotspot chambre (haut gauche) -->
       <div class="hotspot" id="hs-town-inn" onclick="Nav.go('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">🛏 Chambre · Gratuit</div>
+        <div class="hs-lbl safe">🛏 Chambre</div>
       </div>
       <!-- hotspot forge (bas gauche) - armes -->
       <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">⚒ Forge</div>
       </div>
-      <!-- hotspot armurerie (centre droit) - armures/boucliers -->
+      <!-- hotspot armurerie (bas droite) -->
       <div class="hotspot" id="hs-town-armurerie" onclick="TownScreen.goShop('armurerie')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">🛡 Armurerie</div>
       </div>
-      <!-- hotspot couturier (centre) - ceintures/jambes/pieds/gants -->
+      <!-- hotspot couturier (droite) -->
       <div class="hotspot" id="hs-town-couturier" onclick="TownScreen.goShop('couturier')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">🧵 Couturier</div>
       </div>
-      <!-- hotspot bijoutier (droite) - colliers/anneaux -->
+      <!-- hotspot bijoutier (droite haute) -->
       <div class="hotspot" id="hs-town-bijoutier" onclick="TownScreen.goShop('bijoutier')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">💍 Bijoutier</div>
       </div>
-      <!-- hotspot temple (haut droit) -->
+      <!-- hotspot église (centre droit) -->
       <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Temple · Soins</div>
+        <div class="hs-lbl safe">⛪ Église · Soins</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
       <div class="hotspot" id="hs-town-guild" onclick="State._heroFrom='town-screen';Meta.buildScreen();Nav.go('hero-screen')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">Guilde</div>
       </div>
-      <!-- hotspot aventure (haut centre) -->
+      <!-- hotspot aventure (bas gauche - pont) -->
       <div class="hotspot" id="hs-town-adventure" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
         <div class="hs-lbl extreme">⚔ Partir à l'aventure</div>
       </div>
-      <!-- hotspot chambre (retour auberge) -->
-      <div class="hotspot" id="hs-town-room" onclick="Nav.go('inn-room')">
+      <!-- hotspot château (haut centre) -->
+      <div class="hotspot" id="hs-town-chateau" onclick="TownScreen.goChateau()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">🛏 Ma chambre</div>
+        <div class="hs-lbl">🏰 Château</div>
       </div>
       <!-- hotspot taverne -->
       <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
@@ -2403,6 +2406,14 @@ canvas#particles {
             <div class="eq-slot-ico">🥋</div><div class="eq-slot-lbl">Plastron</div>
           </div>
           <div></div>
+          <!-- Ligne 6 : anneaux -->
+          <div class="eq-slot" id="eqs-bague_gauche" onclick="EquipScreen.clickSlot('bague_gauche')">
+            <div class="eq-slot-ico">💍</div><div class="eq-slot-lbl">Anneau G.</div>
+          </div>
+          <div></div>
+          <div class="eq-slot" id="eqs-bague_droite" onclick="EquipScreen.clickSlot('bague_droite')">
+            <div class="eq-slot-ico">💍</div><div class="eq-slot-lbl">Anneau D.</div>
+          </div>
         </div>
 
         <!-- Section Inventaire -->
@@ -5118,7 +5129,8 @@ var DungeonMap = (function() {
 // ── EQUIP SCREEN ─────────────────────────────────────────────────
 var SLOT_DEFAULTS = {
   heaume:'🪖', arme:'⚔', bouclier:'🛡', gants:'🧤',
-  bottes:'👢', ceinture:'🪢', jambieres:'🦵', collier:'📿', plastron:'🥋'
+  bottes:'👢', ceinture:'🪢', jambieres:'🦵', collier:'📿', plastron:'🥋',
+  bague_gauche:'💍', bague_droite:'💍'
 };
 
 var EquipScreen = {
@@ -5207,9 +5219,17 @@ var EquipScreen = {
       var idx = EquipScreen._selected.idx;
       var item = (State.inventory||[])[idx];
       if (!item) { EquipScreen._selected=null; EquipScreen.render(); return; }
-      if (item.slot && item.slot !== slot) {
+      // Bague items can go into bague_gauche or bague_droite
+      var itemSlot = item.slot;
+      var targetSlot = slot;
+      if (itemSlot === 'bague') {
+        if (targetSlot !== 'bague_gauche' && targetSlot !== 'bague_droite') {
+          EquipScreen._showTooltip(item, '⚠ Va dans Anneau G. ou Anneau D.');
+          return;
+        }
+      } else if (itemSlot && itemSlot !== targetSlot) {
         // Wrong slot
-        EquipScreen._showTooltip(item, '⚠ Va dans l\'emplacement : '+item.slot);
+        EquipScreen._showTooltip(item, '⚠ Va dans l\'emplacement : '+itemSlot);
         return;
       }
       // Unequip current if any
@@ -5249,7 +5269,7 @@ var EquipScreen = {
       // Select this item
       EquipScreen._selected = { type:'inv', idx:idx };
       EquipScreen.render();
-      var hint = item.slot ? 'Appuie sur l\'emplacement ' + item.slot : 'Consommable — non équipable ici';
+      var hint = item.slot === 'bague' ? 'Appuie sur Anneau G. ou Anneau D.' : (item.slot ? 'Appuie sur l\'emplacement ' + item.slot : 'Consommable — non équipable ici');
       EquipScreen._showTooltip(item, hint);
       return;
     }
@@ -5478,14 +5498,20 @@ var InnRoom = {
     if (txt)  txt.textContent = hp + ' / ' + hpMax + ' PV';
   },
   rest: function() {
+    var cost = 15;
     var wasMaxHp = (State.hp||0) >= (State.hpMax||1);
     var hadStatuses = (State.persistentStatuses||[]).length > 0;
-    if (wasMaxHp && !hadStatuses) { Sfx.heal && Sfx.heal(); return; }
-    var heal = Math.ceil((State.hpMax||1) * 0.5);
-    State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
+    if (wasMaxHp && !hadStatuses) { InnRoom.showStatusBanner('Vous êtes déjà en pleine forme !'); return; }
+    if ((State.gold||0) < cost) {
+      InnRoom.showStatusBanner('Il vous faut ' + cost + ' 🪙 pour passer la nuit.');
+      return;
+    }
+    State.gold -= cost;
+    var heal = (State.hpMax||1) - (State.hp||0);
+    State.hp = State.hpMax;
     State.persistentStatuses = [];
     InnRoom.updateHp();
-    InnRoom.showStatusBanner(hadStatuses ? '✨ Soigné ! Statuts négatifs dissipés.' : '✨ Tu récupères '+heal+' PV.');
+    InnRoom.showStatusBanner(hadStatuses ? '✨ Repos (15 🪙) — Soigné ! Statuts dissipés.' : '✨ Repos (15 🪙) — +' + heal + ' PV. Pleine forme !');
     if (typeof Sfx !== 'undefined' && Sfx.heal) Sfx.heal();
   },
   showStatusBanner: function(msg) {
@@ -5526,6 +5552,9 @@ var TownScreen = {
       InnRoom.updateHp();
       alert('✚ Le prêtre pose les mains sur toi. +' + heal + ' PV récupérés.');
     }
+  },
+  goChateau: function() {
+    alert('🏰 Le Château\n\nLes gardes vous bloquent l\'entrée.\n« Revenez quand vous aurez fait vos preuves, aventurier. »\n\n— Fonctionnalité à venir —');
   },
 };
 
