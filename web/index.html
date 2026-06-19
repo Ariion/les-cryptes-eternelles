@@ -88,6 +88,14 @@ body::before {
   position:absolute; inset:0;
   border-radius:52px; overflow:hidden; background:#06050f;
 }
+#global-home-btn {
+  position:absolute; top:14px; right:14px; z-index:999;
+  background:rgba(0,0,0,0.55); border:1px solid rgba(201,165,80,0.3);
+  color:#C9A550; font-size:18px; border-radius:50%;
+  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+  backdrop-filter:blur(4px);
+}
 #phone-glare {
   position:absolute; top:0; left:0; right:0; height:50%;
   border-radius:52px 52px 0 0;
@@ -1711,6 +1719,7 @@ canvas#particles {
   <div id="phone-notch"></div>
   <div id="phone-glare"></div>
   <div id="phone-screen">
+    <button id="global-home-btn" onclick="Nav.go('main-menu')" title="Menu principal">🏠</button>
     <canvas id="particles"></canvas>
 
     <!-- ── SPLASH ── -->
@@ -1970,9 +1979,8 @@ canvas#particles {
         <div class="go-stat-row"><span class="go-stat-lbl">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
         <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
       </div>
-      <button id="btn-go-retry" onclick="App.continueAfterVictory()">⚔ Continuer l'aventure</button>
-      <div id="go-ad-wrap"></div>
       <button id="btn-go-inn" onclick="App.continueAfterVictory()">🏠 Retour à l'auberge</button>
+      <div id="go-ad-wrap"></div>
       <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
     </div>
 
@@ -3172,6 +3180,14 @@ var Nav = {
     var prev = Nav.current;
     if (prev === id) return;
     Nav.current = id;
+    // Auto-save à chaque changement d'écran si un run est actif
+    var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1};
+    if (!menuScreens[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
+      State.saveRun();
+    }
+    // Afficher/cacher le bouton home
+    var homeBtn = document.getElementById('global-home-btn');
+    if (homeBtn) homeBtn.style.display = menuScreens[id] ? 'none' : 'flex';
     if (prev && typeof Sfx !== 'undefined') Sfx.nav();
     // Musique selon l'écran
     if (typeof Music !== 'undefined') {
