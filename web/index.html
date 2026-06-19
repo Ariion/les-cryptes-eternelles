@@ -3890,6 +3890,13 @@ var Rooms = {
       function(){ State.hpMax+=20; State.hp=Math.min(State.hpMax,State.hp+20); return { ico:'❤', label:'+20 PV max', msg:'Une relique ancienne augmente ton endurance.' }; },
       function(){ State.def=Math.max(0,(State.def||0)-4); return { ico:'💀', label:'-4 DEF', msg:'Une malédiction s\'accroche à ton armure...' }; },
       function(){ var xpg=30+floor*15; gainXP(xpg); return { ico:'✨', label:'+'+xpg+' XP', msg:'Un grimoire antique transmet ses connaissances.' }; },
+      function(){ State.atk+=3; State.def+=3; return { ico:'⚖', label:'+3 ATQ +3 DEF', msg:'Une balance mystique équilibre tes forces.' }; },
+      function(){ var g=20+floor*10; State.gold=(State.gold||0)+g; State.potions=(State.potions||0)+1; return { ico:'🎒', label:'+'+g+' 🪙 +1 🧪', msg:'Un sac d\'aventurier abandonné sur le sol !' }; },
+      function(){ State.hp=Math.max(1,State.hp-Math.round(State.hpMax*0.1)); State.atk+=8; return { ico:'🩸', label:'-10% PV / +8 ATQ', msg:'Un pacte de sang avec une entité sombre...' }; },
+      function(){ State.potions=(State.potions||0)+1; State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.2)); return { ico:'🌿', label:'+1 Potion +20% PV', msg:'Un sanctuaire de la nature t\'offre ses bienfaits.' }; },
+      function(){ State.hpMax+=30; State.hp=Math.min(State.hpMax,State.hp+30); return { ico:'💎', label:'+30 PV max', msg:'Un cristal de vie amplifie ton essence vitale.' }; },
+      function(){ State.atk+=4; State.def-=2; return { ico:'⚔', label:'+4 ATQ -2 DEF', msg:'Un guerrier fantôme partage ses secrets offensifs... au prix de ta garde.' }; },
+      function(){ if((State.persistentStatuses||[]).length){ State.persistentStatuses=[]; return { ico:'✨', label:'Statuts dissipés !', msg:'Une lumière dorée dissipe tous tes maux.' }; } else { State.gold=(State.gold||0)+floor*30; return { ico:'🪙', label:'+'+floor*30+' 🪙', msg:'L\'air de la salle sent l\'or et la fortune.' }; } },
     ];
     var ev = events[Math.floor(Math.random()*events.length)]();
     document.getElementById('rest-icon').textContent     = ev.ico;
@@ -4027,6 +4034,125 @@ var META_UPGRADES = [
   { id:'startGold',ico:'💰',name:'Fortune',          desc:'+25 or au départ',         max:4, cost:80,  effect:function(){ Meta.bonuses.startGold=(Meta.bonuses.startGold||0)+25; } },
 ];
 
+// ── QUESTS ────────────────────────────────────────────────────────
+var QUEST_DEFS = [
+  // Bertrand (aubergiste) — quêtes de combat
+  { id:'q_kill10',   npc:'bertrand',  title:'Chasse aux monstres',    desc:'Tue 10 monstres au total.',                          check:function(){ return (Meta.totalKills||0)>=10; },   reward:{ gold:80 },  rewardTxt:'80 🪙 or' },
+  { id:'q_kill30',   npc:'bertrand',  title:'Exterminateur',          desc:'Tue 30 monstres au total.',                          check:function(){ return (Meta.totalKills||0)>=30; },   reward:{ gold:160 }, rewardTxt:'160 🪙 or' },
+  { id:'q_kill100',  npc:'bertrand',  title:'Légende des Cryptes',    desc:'Tue 100 monstres. La taverne te craint et te respecte.', check:function(){ return (Meta.totalKills||0)>=100; }, reward:{ gold:400, potions:3 }, rewardTxt:'400 🪙 + 3 🧪' },
+  // Oswin (barde) — quêtes d'exploration
+  { id:'q_floor3',   npc:'oswin',     title:'L\'appel de l\'inconnu', desc:'Atteins l\'étage 3 d\'un donjon.',                   check:function(){ return (Meta.bestFloor||0)>=3; },     reward:{ gold:60 },  rewardTxt:'60 🪙 or' },
+  { id:'q_floor6',   npc:'oswin',     title:'Survivant des abysses',  desc:'Atteins l\'étage 6 (le dernier étage).',             check:function(){ return (Meta.bestFloor||0)>=6; },     reward:{ gold:200 }, rewardTxt:'200 🪙 or' },
+  { id:'q_zone2',    npc:'oswin',     title:'Globe-trotter',          desc:'Nettoie 2 zones différentes.',                       check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; }, reward:{ gold:300, potions:2 }, rewardTxt:'300 🪙 + 2 🧪' },
+  // Séraphine (mage) — quêtes d'accomplissement
+  { id:'q_run3',     npc:'seraphine', title:'Aventurier chevronné',   desc:'Accomplis 3 expéditions.',                           check:function(){ return (Meta.totalRuns||0)>=3; },     reward:{ gold:100 }, rewardTxt:'100 🪙 or' },
+  { id:'q_zone1',    npc:'seraphine', title:'Premier sang',           desc:'Nettoie ta première zone.',                          check:function(){ return Object.keys(Meta.clearedZones||{}).length>=1; }, reward:{ gold:150, potions:1 }, rewardTxt:'150 🪙 + 1 🧪' },
+  { id:'q_run10',    npc:'seraphine', title:'Pacte avec les ombres',  desc:'Accomplis 10 expéditions. Tu connais les Cryptes.',  check:function(){ return (Meta.totalRuns||0)>=10; },    reward:{ gold:500 }, rewardTxt:'500 🪙 or' },
+];
+
+var NPC_DATA = {
+  bertrand:  { ico:'🧔', name:'Bertrand',   greet:['Bienvenue à la taverne, aventurier ! Tu as l\'air d\'un gaillard solide.', 'Ah, te revoilà ! J\'espère que tu as laissé quelques monstres en chemin.', 'Une bière ? Non ? Bon, alors une mission peut-être ?'] },
+  oswin:     { ico:'🎸', name:'Oswin le Barde', greet:['*gratte sa luth* Ah, un visiteur ! J\'ai des chansons sur les donjons... et des quêtes aussi.', 'Chaque aventure mérite une chanson. La tienne commence-t-elle ici ?', 'J\'ai vu des héros partir et ne jamais revenir. Toi, tu reviendras — j\'en suis sûr.'] },
+  seraphine: { ico:'🔮', name:'Séraphine', greet:['Je lis l\'avenir dans les cristaux... et ton destin est lié aux Cryptes.', '*lève les yeux de son grimoire* Intéressant. Je sens une aura particulière sur toi.', 'Les arcanes me soufflent que tu pourrais m\'être utile, aventurier.'] },
+};
+
+var Quests = (function(){
+  var _currentNpc = null;
+  var _currentQuest = null;
+
+  function getCompletedQuests(){ return Meta.completedQuests||{}; }
+  function getActiveQuest(npc){ return (Meta.activeQuests||{})[npc]||null; }
+
+  function getNextQuest(npc) {
+    var done = getCompletedQuests();
+    var defs = QUEST_DEFS.filter(function(q){ return q.npc===npc && !done[q.id]; });
+    return defs[0]||null;
+  }
+
+  return {
+    openNpc: function(npc) {
+      _currentNpc = npc;
+      _currentQuest = null;
+      var nd = NPC_DATA[npc];
+      document.getElementById('npc-portrait-ico').textContent  = nd.ico;
+      document.getElementById('npc-portrait-name').textContent = nd.name;
+      document.getElementById('npc-btn-accept').style.display  = 'none';
+      document.getElementById('npc-btn-claim').style.display   = 'none';
+      document.getElementById('npc-quest-info').style.display  = 'none';
+
+      // Check if active quest is completable
+      var active = getActiveQuest(npc);
+      if (active) {
+        var def = QUEST_DEFS.find(function(q){ return q.id===active; });
+        if (def && def.check()) {
+          // Completable!
+          document.getElementById('npc-speech').textContent = 'Incroyable ! Tu as accompli ce que je t\'avais demandé. Voici ta récompense, aventurier !';
+          document.getElementById('npc-quest-title').textContent = '✅ ' + def.title;
+          document.getElementById('npc-quest-desc').textContent  = def.desc;
+          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
+          document.getElementById('npc-quest-info').style.display = '';
+          document.getElementById('npc-btn-claim').style.display  = '';
+          _currentQuest = def;
+        } else if (def) {
+          document.getElementById('npc-speech').textContent = '"' + def.title + '" — ' + def.desc + '\n\nContinue comme ça, aventurier. Je compte sur toi !';
+          document.getElementById('npc-quest-title').textContent = '🗺 En cours : ' + def.title;
+          document.getElementById('npc-quest-desc').textContent  = def.desc;
+          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
+          document.getElementById('npc-quest-info').style.display = '';
+        } else {
+          document.getElementById('npc-speech').textContent = nd.greet[Math.floor(Math.random()*nd.greet.length)];
+        }
+      } else {
+        var next = getNextQuest(npc);
+        if (next) {
+          _currentQuest = next;
+          document.getElementById('npc-speech').textContent = nd.greet[Math.floor(Math.random()*nd.greet.length)] + '\n\nJ\'aurais une mission pour toi, si tu es intéressé...';
+          document.getElementById('npc-quest-title').textContent  = '📜 ' + next.title;
+          document.getElementById('npc-quest-desc').textContent   = next.desc;
+          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + next.rewardTxt;
+          document.getElementById('npc-quest-info').style.display = '';
+          document.getElementById('npc-btn-accept').style.display = '';
+        } else {
+          document.getElementById('npc-speech').textContent = 'Tu as accompli tout ce que je pouvais te demander, héros. Je lèverai mon verre à ta santé !';
+        }
+      }
+
+      var ov = document.getElementById('npc-overlay');
+      ov.style.display = 'flex';
+      setTimeout(function(){ ov.style.opacity='1'; },10);
+    },
+
+    accept: function() {
+      if (!_currentQuest || !_currentNpc) return;
+      if (!Meta.activeQuests) Meta.activeQuests = {};
+      Meta.activeQuests[_currentNpc] = _currentQuest.id;
+      Meta.save();
+      document.getElementById('npc-btn-accept').style.display = 'none';
+      document.getElementById('npc-speech').textContent = 'Parfait ! Je savais que tu accepterais. Bonne chance, aventurier !';
+    },
+
+    claim: function() {
+      if (!_currentQuest || !_currentNpc) return;
+      var r = _currentQuest.reward;
+      if (r.gold)    { Meta.totalGold = (Meta.totalGold||0) + r.gold; State.gold = (State.gold||0) + r.gold; }
+      if (r.potions) { State.potions = (State.potions||0) + r.potions; }
+      if (!Meta.completedQuests) Meta.completedQuests = {};
+      Meta.completedQuests[_currentQuest.id] = true;
+      if (Meta.activeQuests) delete Meta.activeQuests[_currentNpc];
+      Meta.save();
+      document.getElementById('npc-btn-claim').style.display = 'none';
+      document.getElementById('npc-quest-info').style.display = 'none';
+      document.getElementById('npc-speech').textContent = '🎉 Récompense obtenue : ' + _currentQuest.rewardTxt + ' !\n\nMerci pour ton courage, héros !';
+      _currentQuest = null;
+    },
+
+    close: function() {
+      var ov = document.getElementById('npc-overlay');
+      ov.style.display = 'none';
+    },
+  };
+})();
+
 var Meta = {
   totalGold: 0,
   totalKills: 0,
@@ -4035,6 +4161,8 @@ var Meta = {
   levels: {},
   bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0, dodge:0, timerBonus:0, lifesteal:0, regenMeta:0, xpPct:0, startGold:0 },
   clearedZones: {},
+  activeQuests: {},
+  completedQuests: {},
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
 
@@ -4048,7 +4176,9 @@ var Meta = {
       Meta.levels      = d.levels||{};
       var db = d.bonuses||{};
       Meta.bonuses = { atk:db.atk||0, def:db.def||0, hp:db.hp||0, potions:db.potions||0, goldPct:db.goldPct||0, crit:db.crit||0, dodge:db.dodge||0, timerBonus:db.timerBonus||0, lifesteal:db.lifesteal||0, regenMeta:db.regenMeta||0, xpPct:db.xpPct||0, startGold:db.startGold||0 };
-      Meta.clearedZones= d.clearedZones||{};
+      Meta.clearedZones    = d.clearedZones||{};
+      Meta.activeQuests    = d.activeQuests||{};
+      Meta.completedQuests = d.completedQuests||{};
       Meta.chest       = d.chest||[];
     } catch(e){}
   },
@@ -4060,9 +4190,11 @@ var Meta = {
       totalRuns:    Meta.totalRuns,
       bestFloor:    Meta.bestFloor,
       levels:       Meta.levels,
-      bonuses:      Meta.bonuses,
-      clearedZones: Meta.clearedZones,
-      chest:        Meta.chest,
+      bonuses:        Meta.bonuses,
+      clearedZones:   Meta.clearedZones,
+      activeQuests:   Meta.activeQuests,
+      completedQuests:Meta.completedQuests,
+      chest:          Meta.chest,
     };
     localStorage.setItem('cge_meta', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
