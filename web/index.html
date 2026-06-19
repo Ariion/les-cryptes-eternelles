@@ -1381,11 +1381,11 @@ canvas#particles {
 #hs-town-inn        { top:32%; left:10%; }
 #hs-town-forge      { top:72%; left:8%; }
 #hs-town-armurerie  { bottom:4%; right:6%; }
-#hs-town-couturier  { top:48%; left:82%; }
-#hs-town-bijoutier  { top:34%; left:74%; }
-#hs-town-temple     { top:44%; left:60%; }
+#hs-town-couturier  { top:68%; left:80%; }
+#hs-town-bijoutier  { top:56%; left:48%; }
+#hs-town-temple     { top:36%; left:62%; }
 #hs-town-guild      { top:66%; left:38%; }
-#hs-town-adventure  { bottom:30%; left:4%; }
+#hs-town-adventure  { top:92%; left:6%; }
 #hs-town-chateau    { top:14%; left:38%; }
 #hs-town-taverne    { top:58%; left:64%; }
 
@@ -2288,7 +2288,7 @@ canvas#particles {
       <!-- hotspot église (centre droit) -->
       <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">⛪ Église · Soins</div>
+        <div class="hs-lbl">⛪ Église · Boutique</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
       <div class="hotspot" id="hs-town-guild" onclick="State._heroFrom='town-screen';Meta.buildScreen();Nav.go('hero-screen')">
@@ -4573,6 +4573,15 @@ var SHOP_POOL = [
   { ico:'🥋', name:'Armure des Cryptes',  desc:'+30 DEF +10 ATQ · Légendaire', cost:680, rarity:'legendary', slot:'plastron', stats:{def:30,atk:10} },
   // ── Mythique ──────────────────────────────────────────────────────
   { ico:'💍', name:'Anneau du Chaos',     desc:'+15 ATQ +15 DEF · Mythique', cost:999, rarity:'mythic', slot:'collier', stats:{atk:15,def:15} },
+  // ── Église : potions, sorts, parchemins ──────────────────────────
+  { ico:'🧴', name:'Petite Potion',       desc:'+1 Potion',         cost:12,  rarity:'common',    slot:'eglise', effect:function(){ State.potions=(State.potions||0)+1; } },
+  { ico:'💊', name:'Grande Potion',       desc:'+2 Potions',        cost:22,  rarity:'uncommon',  slot:'eglise', effect:function(){ State.potions=(State.potions||0)+2; } },
+  { ico:'✨', name:'Élixir Sacré',        desc:'Soin complet',      cost:45,  rarity:'rare',      slot:'eglise', effect:function(){ State.hp=State.hpMax; } },
+  { ico:'📜', name:'Parchemin de Feu',    desc:'Inflige 20 dégâts en combat', cost:18, rarity:'common',   slot:'eglise', scroll:'feu',   effect:function(){ State.scrolls=(State.scrolls||[]);State.scrolls.push({name:'Feu',dmg:20,ico:'🔥'}); } },
+  { ico:'📜', name:'Parchemin de Glace',  desc:'Inflige 15 dégâts + ralentit', cost:20, rarity:'uncommon', slot:'eglise', scroll:'glace', effect:function(){ State.scrolls=(State.scrolls||[]);State.scrolls.push({name:'Glace',dmg:15,slow:true,ico:'❄'}); } },
+  { ico:'📜', name:'Parchemin Sacré',     desc:'Inflige 30 dégâts · Rare', cost:55, rarity:'rare',     slot:'eglise', scroll:'sacre', effect:function(){ State.scrolls=(State.scrolls||[]);State.scrolls.push({name:'Sacré',dmg:30,ico:'✨'}); } },
+  { ico:'🔮', name:'Sort de Confusion',   desc:'L\'ennemi passe un tour', cost:30, rarity:'uncommon',  slot:'eglise', effect:function(){ State.scrolls=(State.scrolls||[]);State.scrolls.push({name:'Confusion',stun:true,ico:'🔮'}); } },
+  { ico:'🕯', name:'Bénédiction',         desc:'+5 ATQ pour ce run', cost:60, rarity:'rare',       slot:'eglise', effect:function(){ State.atk=(State.atk||0)+5; } },
 ];
 
 Rooms._shopTab = 'buy';
@@ -4588,13 +4597,15 @@ Rooms.showShop = function(fromScreen, category) {
     forge:     ['arme'],
     armurerie: ['plastron','bouclier','heaume'],
     couturier: ['ceinture','jambieres','bottes','gants'],
-    bijoutier: ['collier','bague']
+    bijoutier: ['collier','bague','bague_gauche','bague_droite'],
+    eglise:    ['eglise']
   };
   var TITLE_MAP = {
     forge:     '⚒ Forge',
     armurerie: '🛡 Armurerie',
     couturier: '🧵 Couturier',
-    bijoutier: '💍 Bijoutier'
+    bijoutier: '💍 Bijoutier',
+    eglise:    '⛪ Église · Boutique'
   };
   var slots = category && SLOT_MAP[category];
   var pool = slots ? SHOP_POOL.filter(function(i){ return slots.indexOf(i.slot)!==-1; }) : SHOP_POOL.slice();
@@ -5595,19 +5606,8 @@ var TownScreen = {
     Rooms.showShop('town-screen', type);
   },
   goTemple: function() {
-    // Soin partiel gratuit (une fois par visite)
-    var cost = 15;
-    if ((State.gold||0) < cost) {
-      alert('Le prêtre demande ' + cost + ' 🪙 pour te soigner. Il te manque de quoi.'); return;
-    }
-    var heal = Math.round((State.hpMax||1) * 0.4);
-    if (confirm('Offrande de ' + cost + ' 🪙 au temple pour +' + heal + ' PV ?')) {
-      State.gold -= cost;
-      State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
-      if (Sfx.heal) Sfx.heal();
-      InnRoom.updateHp();
-      alert('✚ Le prêtre pose les mains sur toi. +' + heal + ' PV récupérés.');
-    }
+    // Boutique de consommables de l'Église
+    Rooms.showShop('town-screen', 'eglise');
   },
   goChateau: function() {
     alert('🏰 Le Château\n\nLes gardes vous bloquent l\'entrée.\n« Revenez quand vous aurez fait vos preuves, aventurier. »\n\n— Fonctionnalité à venir —');
