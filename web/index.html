@@ -883,6 +883,9 @@ canvas#particles {
   cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 
+.btn-rewarded-ad { background:linear-gradient(135deg,#1a1a2e,#16213e); border:2px solid #C9A550; color:#C9A550; border-radius:8px; padding:10px 18px; font-size:14px; cursor:pointer; margin-top:8px; width:100%; text-align:center; }
+.btn-rewarded-ad:hover { background:#C9A550; color:#000; }
+
 /* ── REST ROOM ───────────────────────────────────────────────── */
 #rest-screen {
   background:#06050f;
@@ -1921,6 +1924,7 @@ canvas#particles {
         <div id="defeat-ico">💀</div>
         <div id="defeat-title">Défaite</div>
         <div id="defeat-lines"></div>
+        <div id="defeat-ad-wrap"></div>
         <button id="defeat-btn" onclick="Combat.leaveDefeat()">Retour à l'auberge</button>
       </div>
 
@@ -1952,6 +1956,7 @@ canvas#particles {
         </div>
       </div>
       <button id="btn-loot-cont" onclick="Rooms.lootContinue()">Continuer →</button>
+      <div id="loot-ad-wrap"></div>
     </div>
 
     <!-- ── GAME OVER ── -->
@@ -1965,6 +1970,7 @@ canvas#particles {
         <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
       </div>
       <button id="btn-go-retry" onclick="App.retryRun()">⚔ Recommencer</button>
+      <div id="go-ad-wrap"></div>
       <button id="btn-go-inn" onclick="App.retryRun()">🏠 Chambre d'auberge</button>
       <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
     </div>
@@ -3552,7 +3558,9 @@ var Combat = (function(){
     if (victory) {
       var sprEl = document.getElementById('cb-enemy-sprite');
       if (sprEl) { sprEl.classList.remove('hit'); sprEl.classList.add('dead'); }
-      State.gold  = (State.gold||0)  + Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)) * (State._runGoldBonus||1) * 0.42);
+      State._lastCombatGold = Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)) * (State._runGoldBonus||1) * 0.42);
+      State._adGoldUsed = false;
+      State.gold  = (State.gold||0)  + State._lastCombatGold;
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
       if (Meta.bonuses.regenMeta) {
@@ -3583,6 +3591,8 @@ var Combat = (function(){
             document.getElementById('go-floor').textContent = State.floor||1;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
+            var goAdWrap = document.getElementById('go-ad-wrap');
+            if (goAdWrap) goAdWrap.innerHTML = '';
             Nav.go('gameover-screen');
           } else {
             // Passer à l'étage suivant du même donjon
@@ -3607,6 +3617,12 @@ var Combat = (function(){
         var lines = '⚔ ATQ et DEF réduits (-12%)\n✦ -' + xpLoss + ' XP\n❤ Soigné à 15% des PV';
         document.getElementById('defeat-lines').innerHTML =
           '⚔ ATQ et DEF réduits (-12%)<br>✦ -' + xpLoss + ' XP<br>❤ Soigné à 15% des PV';
+        var defeatAdWrap = document.getElementById('defeat-ad-wrap');
+        if (defeatAdWrap) {
+          defeatAdWrap.innerHTML = !State._adReviveUsed
+            ? '<button class="btn-rewarded-ad" onclick="RewardedAds.showRevive()">📺 Regarder une pub → Revenir avec 30% HP</button>'
+            : '';
+        }
         document.getElementById('defeat-overlay').classList.add('show');
       }, 700);
     }
@@ -4018,6 +4034,14 @@ var Rooms = {
       document.getElementById('loot-item-desc').textContent = 'L\'ennemi n\'avait rien de valeur...';
       Rooms._pendingItem = null;
       if (btn) btn.textContent = 'Continuer →';
+    }
+    // Bouton pub rewarded (doubler l'or) — une fois par combat
+    var adWrap = document.getElementById('loot-ad-wrap');
+    if (adWrap) {
+      adWrap.innerHTML = '';
+      if (!State._adGoldUsed) {
+        adWrap.innerHTML = '<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleGold()">📺 Regarder une pub → Doubler l\'or gagné</button>';
+      }
     }
     Nav.go('loot-screen');
   },
@@ -5528,6 +5552,40 @@ var InnRoom = {
   },
 };
 
+// ── REWARDED ADS ──────────────────────────────────────────────────
+var RewardedAds = (function(){
+  // Placeholder — remplacer par Google AdSense Rewarded quand le compte est approuvé
+  function _mockAd(callback) {
+    // Simule une pub de 5 secondes (à remplacer par le vrai SDK)
+    var ok = confirm('📺 Une pub va être diffusée (5 secondes).\nCliquez OK pour simuler le visionnage.');
+    if (ok) setTimeout(callback, 500);
+  }
+  return {
+    showDoubleGold: function() {
+      if (State._adGoldUsed) return;
+      _mockAd(function(){
+        var bonus = State._lastCombatGold || 0;
+        State.gold = (State.gold||0) + bonus;
+        State._adGoldUsed = true;
+        document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
+        alert('🪙 ×2 ! Vous recevez ' + bonus + ' pièces supplémentaires !');
+        document.getElementById('shop-gold-val') && (document.getElementById('shop-gold-val').textContent = State.gold);
+      });
+    },
+    showRevive: function() {
+      if (State._adReviveUsed) return;
+      _mockAd(function(){
+        State._adReviveUsed = true;
+        var reviveHp = Math.floor((State.hpMax||30) * 0.3);
+        State.hp = reviveHp;
+        State.dead = false;
+        Nav.go('dungeon-map');
+        alert('💚 Vous revenez à la vie avec ' + reviveHp + ' PV !');
+      });
+    }
+  };
+})();
+
 // ── TOWN SCREEN ───────────────────────────────────────────────────
 var TownScreen = {
   goInn: function() {
@@ -5706,8 +5764,11 @@ var App = {
     State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
-    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
+    State._adReviveUsed = false;
+    State._adGoldUsed = false;
+    State._lastCombatGold = 0;
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
