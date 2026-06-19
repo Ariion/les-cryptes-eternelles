@@ -144,36 +144,40 @@ canvas#particles {
 #title-wrap { display:flex; flex-direction:column; align-items:center; position:relative; z-index:2; }
 .deco-line {
   display:flex; align-items:center; gap:12px; margin-bottom:12px;
-  opacity:0; transform:scaleX(0.3);
-  transition:opacity 0.6s ease 0.1s,transform 0.6s cubic-bezier(.22,1,.36,1) 0.1s;
+  opacity:0; transform:scaleX(0.2);
+  transition:opacity 1s ease 2.2s, transform 1s cubic-bezier(.22,1,.36,1) 2.2s;
 }
 .deco-line .bar { width:60px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.5),transparent); }
 .deco-line .gem { color:#C9A550; font-size:13px; }
-#t-les { font-family:'Cinzel',serif; font-size:12px; letter-spacing:10px; color:rgba(201,165,80,0.55); text-transform:uppercase; opacity:0; transform:translateY(10px); transition:opacity 0.5s ease 0.3s,transform 0.5s ease 0.3s; }
-#t-cryptes { font-family:'Cinzel Decorative',serif; font-size:clamp(42px,10.5vw,52px); font-weight:700; color:#C9A550; text-shadow:0 0 40px rgba(201,165,80,0.5),0 0 80px rgba(201,165,80,0.2); line-height:1; letter-spacing:2px; opacity:0; transform:translateY(18px); transition:opacity 0.7s ease 0.45s,transform 0.7s cubic-bezier(.22,1,.36,1) 0.45s; }
-#t-eternelles { font-family:'Cinzel',serif; font-size:clamp(20px,5.5vw,26px); font-weight:400; letter-spacing:7px; color:#EDE8DF; text-transform:uppercase; margin-top:5px; opacity:0; transform:translateY(14px); transition:opacity 0.6s ease 0.65s,transform 0.6s ease 0.65s; }
-#t-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(201,165,80,0.4); margin-top:22px; opacity:0; transition:opacity 0.6s ease 0.9s; }
+#t-les { font-family:'Cinzel',serif; font-size:12px; letter-spacing:10px; color:rgba(201,165,80,0.55); text-transform:uppercase; opacity:0; transform:translateY(14px); transition:opacity 0.8s ease 2.7s, transform 0.8s ease 2.7s; }
+#t-cryptes { font-family:'Cinzel Decorative',serif; font-size:clamp(42px,10.5vw,52px); font-weight:700; color:#C9A550; text-shadow:0 0 40px rgba(201,165,80,0.5),0 0 80px rgba(201,165,80,0.2); line-height:1; letter-spacing:2px; opacity:0; transform:translateY(22px); transition:opacity 1s ease 3.1s, transform 1s cubic-bezier(.22,1,.36,1) 3.1s; }
+#t-eternelles { font-family:'Cinzel',serif; font-size:clamp(20px,5.5vw,26px); font-weight:400; letter-spacing:7px; color:#EDE8DF; text-transform:uppercase; margin-top:5px; opacity:0; transform:translateY(14px); transition:opacity 0.9s ease 3.6s, transform 0.9s ease 3.6s; }
+#t-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(201,165,80,0.4); margin-top:22px; opacity:0; transition:opacity 1s ease 4.4s; }
 #title-screen.active .deco-line { opacity:1; transform:scaleX(1); }
 #title-screen.active #t-les,#title-screen.active #t-cryptes,#title-screen.active #t-eternelles { opacity:1; transform:translateY(0); }
 #title-screen.active #t-sub { opacity:1; }
 #aar-logo {
   position:absolute; top:clamp(32px,7vh,56px); left:50%; transform:translateX(-50%);
   display:flex; flex-direction:column; align-items:center; z-index:2;
-  opacity:0; animation:aarFadeIn 1s ease 0.2s forwards;
+  opacity:0; transition:opacity 1.4s ease 0.4s;
 }
-@keyframes aarFadeIn { to { opacity:1; } }
-#aar-png { width:clamp(90px,22vw,130px); height:auto; }
+#title-screen.active #aar-logo { opacity:1; }
+#aar-png { width:clamp(100px,26vw,150px); height:auto; filter:drop-shadow(0 0 18px rgba(26,188,205,0.25)); }
 #aar-presents {
   font-family:'Crimson Text',serif; font-style:italic;
-  font-size:13px; color:rgba(255,255,255,0.35); letter-spacing:4px; margin-top:6px;
+  font-size:13px; color:rgba(255,255,255,0.3); letter-spacing:5px; margin-top:8px;
+  opacity:0; transition:opacity 1s ease 1.6s;
 }
+#title-screen.active #aar-presents { opacity:1; }
 #tap-hint {
   position:absolute; bottom:clamp(36px,7vh,60px);
   font-family:'Cinzel',serif; font-size:10px; letter-spacing:3px;
-  color:rgba(201,165,80,0.4); text-transform:uppercase;
-  animation:breathe 2.5s ease-in-out infinite; z-index:2;
+  color:rgba(201,165,80,0.4); text-transform:uppercase; z-index:2;
+  opacity:0; transition:opacity 1.2s ease 5.5s;
+  animation:none;
 }
-@keyframes breathe { 0%,100%{opacity:0.2;} 50%{opacity:0.7;} }
+#title-screen.active #tap-hint { opacity:1; animation:breathe 2.8s ease-in-out 6s infinite; }
+@keyframes breathe { 0%,100%{opacity:0.15;} 50%{opacity:0.65;} }
 
 /* ── MAIN MENU ───────────────────────────────────────────────── */
 #main-menu { background:#06050f; justify-content:flex-start; }
@@ -1786,7 +1790,7 @@ canvas#particles {
     <div id="splash" class="screen"></div>
 
     <!-- ── TITLE ── -->
-    <div id="title-screen" class="screen active">
+    <div id="title-screen" class="screen">
       <div id="aar-logo">
         <img src="images/aardesign-logo.png" id="aar-png" alt="aardesign">
         <div id="aar-presents">présente</div>
@@ -5513,13 +5517,21 @@ var menuShown = false;
 function runIntro() {
   tick();
   Nav.current = 'title-screen';
-  // Tap ou touch → aller au menu
+  // Forcer HUD caché sur title screen
+  var hud = document.getElementById('global-hud');
+  if (hud) hud.style.display = 'none';
+  // Lancer les animations CSS après un court délai
+  setTimeout(function(){
+    var ts = screens['title-screen'];
+    if (ts) ts.classList.add('active');
+  }, 100);
+  // Activer tap après les animations
   setTimeout(function(){
     if (menuShown) return;
     screens['title-screen'].addEventListener('click', goToMenu, { once:true });
     screens['title-screen'].addEventListener('touchend', goToMenu, { once:true });
-  }, 800);
-  setTimeout(goToMenu, 10000);
+  }, 2000);
+  setTimeout(goToMenu, 14000);
 }
 
 function goToMenu() {
