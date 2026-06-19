@@ -904,17 +904,27 @@ canvas#particles {
   background:#06050f;
   background-image: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(60,40,0,0.45) 0%, transparent 60%);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  padding-top: 24px; gap:0;
+  padding-top: 0; gap:0;
 }
-#shop-title { font-family:'Cinzel Decorative',serif; font-size:20px; color:#C9A550; margin-bottom:4px; }
-#shop-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.45); margin-bottom:8px; }
+#shop-header-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  width:100%; padding:14px 16px 10px; flex-shrink:0;
+  border-bottom:1px solid rgba(201,165,80,0.15);
+}
+#shop-back-btn {
+  font-size:22px; color:rgba(201,165,80,0.7); cursor:pointer;
+  padding:4px 10px; -webkit-tap-highlight-color:transparent;
+}
+#shop-title { font-family:'Cinzel Decorative',serif; font-size:17px; color:#C9A550; text-align:center; flex:1; }
+#shop-gold-display { font-size:13px; color:#C9A550; }
+#shop-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.45); margin:6px 0 8px; }
 #shop-gold-display {
   display:flex; align-items:center; gap:8px; margin-bottom:20px;
   padding:8px 20px; border-radius:20px;
   background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
   font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550;
 }
-#shop-items { width:100%; padding:0 16px; display:flex; flex-direction:column; gap:10px; flex:1; }
+#shop-items { width:100%; padding:0 16px 20px; display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .shop-item {
   display:flex; align-items:center; gap:14px; padding:14px 16px;
   border-radius:10px; background:rgba(255,255,255,0.03);
@@ -934,13 +944,6 @@ canvas#particles {
 }
 .shop-item .si-price::before { content:'🪙'; font-size:14px; }
 .shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
-#btn-shop-leave {
-  margin:14px 16px 18px; width:calc(100% - 32px); height:50px;
-  border-radius:8px; border:1px solid rgba(255,255,255,0.1);
-  background:transparent; color:rgba(200,190,180,0.45);
-  font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase;
-  cursor:pointer; -webkit-tap-highlight-color:transparent; flex-shrink:0;
-}
 
 /* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
 #floor-transition {
@@ -1380,12 +1383,12 @@ canvas#particles {
 /* hotspots ville */
 #hs-town-inn        { top:32%; left:10%; }
 #hs-town-forge      { top:72%; left:8%; }
-#hs-town-armurerie  { bottom:4%; right:6%; }
+#hs-town-armurerie  { bottom:10%; right:6%; }
 #hs-town-couturier  { top:68%; left:80%; }
 #hs-town-bijoutier  { top:56%; left:48%; }
 #hs-town-temple     { top:36%; left:62%; }
 #hs-town-guild      { top:66%; left:38%; }
-#hs-town-adventure  { top:92%; left:6%; }
+#hs-town-adventure  { top:86%; left:6%; }
 #hs-town-chateau    { top:14%; left:38%; }
 #hs-town-taverne    { top:58%; left:64%; }
 
@@ -1986,15 +1989,17 @@ canvas#particles {
 
     <!-- ── BOUTIQUE ── -->
     <div id="shop-screen" class="screen">
-      <div id="shop-title">🏪 Marchand Obscur</div>
+      <div id="shop-header-bar">
+        <div id="shop-back-btn" onclick="Rooms.shopLeave()">←</div>
+        <div id="shop-title">🏪 Marchand Obscur</div>
+        <div id="shop-gold-display">🪙 <span id="shop-gold-val">0</span></div>
+      </div>
       <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
-      <div id="shop-gold-display">🪙 <span id="shop-gold-val">0</span> or</div>
       <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
         <div class="chest-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
         <div class="chest-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
       </div>
       <div id="shop-items"></div>
-      <button id="btn-shop-leave" onclick="Rooms.shopLeave()">Quitter la boutique →</button>
     </div>
 
     <!-- ── DUNGEON MAP ── -->
