@@ -1970,9 +1970,9 @@ canvas#particles {
         <div class="go-stat-row"><span class="go-stat-lbl">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
         <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
       </div>
-      <button id="btn-go-retry" onclick="App.retryRun()">⚔ Recommencer</button>
+      <button id="btn-go-retry" onclick="App.continueAfterVictory()">⚔ Continuer l'aventure</button>
       <div id="go-ad-wrap"></div>
-      <button id="btn-go-inn" onclick="App.retryRun()">🏠 Chambre d'auberge</button>
+      <button id="btn-go-inn" onclick="App.continueAfterVictory()">🏠 Retour à l'auberge</button>
       <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
     </div>
 
@@ -3583,18 +3583,24 @@ var Combat = (function(){
           var maxFloor = zd ? zd.floors : 6;
           var isLastFloor = (State.floor||1) >= maxFloor;
           if (isLastFloor) {
-            // Donjon terminé → marquer nettoyé + victoire
+            // Donjon terminé → marquer nettoyé, stats meta, mais le perso GARDE tout
             if (State._currentZone) Meta.clearZone(State._currentZone);
-            Meta.addRunResult();
-            // Effacer la save de run pour que "Continuer" ne recharge pas l'ancienne save
-            State.clearSave();
-            if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, null);
+            // Mise à jour stats sans vider l'or (le perso continue sa progression)
+            Meta.totalKills += State.kills||0;
+            Meta.totalRuns  += 1;
+            Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
+            Meta.save();
+            // Réinitialiser le floor pour le prochain donjon
+            State._currentZone = null;
+            State.floor = 1;
+            State._adGoldUsed = false;
+            State.saveRun();
             Sfx.victory();
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
             document.getElementById('go-quote').textContent = '"' + (zd ? zd.label : 'Le donjon') + ' est vaincu !"';
-            document.getElementById('go-floor').textContent = State.floor||1;
+            document.getElementById('go-floor').textContent = maxFloor;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
             var goAdWrap = document.getElementById('go-ad-wrap');
@@ -5750,6 +5756,11 @@ var App = {
   },
   showHero: function(){ State._heroFrom='inn-room'; Meta.buildScreen(); Nav.go('hero-screen'); },
   showSettings: function(){ Sfx.nav(); Nav.go('settings-screen'); },
+  continueAfterVictory: function() {
+    // Le perso garde tout — on retourne juste à l'auberge
+    Nav.go('inn-room');
+    setTimeout(function(){ InnRoom.enter(); }, 300);
+  },
   retryRun: function() {
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
