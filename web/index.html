@@ -707,6 +707,96 @@ canvas#particles {
   50%  { transform:translateX(8px) scale(1.02); }
   100% { transform:translateX(0) scale(1); filter:drop-shadow(0 0 20px rgba(200,50,50,0.4)); }
 }
+/* ── ATMOSPHÈRE MÉDIÉVALE ──────────────────────────────────── */
+/* Texture parchemin sur les écrans de shop/auberge/taverne */
+#shop-screen::before, #inn-room::before, #taverne-screen::before {
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+/* Lueur ambrée sur les textes dorés importants */
+#t-cryptes { text-shadow:0 0 40px rgba(201,165,80,0.6),0 0 80px rgba(201,165,80,0.25),0 0 3px rgba(255,220,100,0.8); }
+/* Flamme animée : embers en combat */
+#combat-screen::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:120px;
+  background:linear-gradient(to top, rgba(120,40,0,0.18) 0%, transparent 100%);
+  pointer-events:none; z-index:1;
+  animation:embers-glow 3s ease-in-out infinite alternate;
+}
+@keyframes embers-glow {
+  0%   { opacity:0.4; }
+  100% { opacity:0.85; }
+}
+/* Pulse doré sur les items rares+ au hover */
+.shop-item.rare:hover, .shop-item.epic:hover, .shop-item.legendary:hover, .shop-item.mythic:hover {
+  animation:rare-pulse 1.5s ease-in-out infinite;
+}
+@keyframes rare-pulse {
+  0%,100% { box-shadow:0 0 8px rgba(201,165,80,0.3); }
+  50%      { box-shadow:0 0 18px rgba(201,165,80,0.7), inset 0 0 8px rgba(201,165,80,0.1); }
+}
+/* Shake écran quand le joueur prend des dégâts */
+@keyframes screen-shake {
+  0%,100% { transform:translateX(0); }
+  20%     { transform:translateX(-4px) rotate(-0.3deg); }
+  40%     { transform:translateX(4px) rotate(0.3deg); }
+  60%     { transform:translateX(-3px); }
+  80%     { transform:translateX(3px); }
+}
+#phone-screen.shake { animation:screen-shake 0.35s ease; }
+/* Barre HP rouge animée quand critique */
+#cb-player-hp-wrap.danger #cb-player-hp-inner {
+  animation:danger-pulse 0.8s ease-in-out infinite;
+}
+@keyframes danger-pulse {
+  0%,100% { filter:brightness(1); }
+  50%     { filter:brightness(1.5); }
+}
+/* Level-up overlay amélioré */
+#levelup-overlay {
+  background:radial-gradient(ellipse 80% 60% at 50% 40%, rgba(100,70,0,0.95) 0%, rgba(6,5,15,0.98) 70%);
+}
+/* Particules d'embers flottantes dans l'auberge/donjon */
+.ember-particle {
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background:radial-gradient(circle, #ffaa44, #ff6600);
+  pointer-events:none; z-index:3;
+  animation:ember-float linear infinite;
+}
+@keyframes ember-float {
+  0%   { transform:translateY(0) translateX(0) scale(1); opacity:0.9; }
+  50%  { transform:translateY(-60px) translateX(15px) scale(0.7); opacity:0.6; }
+  100% { transform:translateY(-130px) translateX(-10px) scale(0); opacity:0; }
+}
+/* Bouton d'action combat : brillance au hover */
+.cb-btn:not(:disabled):hover {
+  filter:brightness(1.2);
+  transform:translateY(-1px);
+  transition:filter 0.15s, transform 0.15s;
+}
+/* Texte de log combat : animation d'entrée */
+.log-line {
+  animation:log-appear 0.25s ease;
+}
+@keyframes log-appear {
+  from { opacity:0; transform:translateX(-8px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+/* Dorure sur les titres de section */
+.hs-lbl { text-shadow:0 1px 3px rgba(0,0,0,0.8); }
+/* Animation apparition hotspot ville */
+.hotspot { transition:transform 0.2s ease; }
+.hotspot:active { transform:scale(0.92); }
+/* Lueur arc-en-ciel pour items mythic */
+.shop-item.mythic {
+  animation:mythic-shimmer 3s linear infinite;
+}
+@keyframes mythic-shimmer {
+  0%   { border-color: rgba(201,165,80,0.8); box-shadow:0 0 12px rgba(201,165,80,0.4); }
+  33%  { border-color: rgba(160,80,220,0.8); box-shadow:0 0 12px rgba(160,80,220,0.4); }
+  66%  { border-color: rgba(80,160,220,0.8); box-shadow:0 0 12px rgba(80,160,220,0.4); }
+  100% { border-color: rgba(201,165,80,0.8); box-shadow:0 0 12px rgba(201,165,80,0.4); }
+}
 #cb-enemy-sprite.dead {
   animation:enemy-dead 0.6s ease forwards;
 }
@@ -2582,6 +2672,7 @@ State.saveRun = function() {
       inventory: State.inventory || [],
       equipped: State.equipped || {},
       bag: State.bag || [],
+      scrolls: State.scrolls || [],
     };
     localStorage.setItem('cge_run', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
@@ -3171,6 +3262,7 @@ var ProfilesScreen = {
     State._zoneMod = { enemyMod:1, goldMod:1 }; State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
+    State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
     Nav.go('inn-room');
@@ -3276,6 +3368,10 @@ var Nav = {
       if (id === 'dungeon-map') {
         var dmEl = document.getElementById('dungeon-map');
         if (dmEl) { dmEl.className = dmEl.className.replace(/\bzone-\w+\b/g,'').trim(); if (State._currentZone) dmEl.classList.add('zone-'+State._currentZone); }
+      }
+      if (typeof Embers !== 'undefined') {
+        if (id==='dungeon-map'||id==='inn-room'||id==='combat-screen') Embers.startFor(id);
+        else Embers.stop();
       }
     }, prev ? 250 : 0);
   }
@@ -3767,6 +3863,9 @@ var Combat = (function(){
         State.hp = Math.max(0, State.hp - dmgResult.dmg);
         updatePlayerUI();
         hitFlash();
+        // Screen shake
+        var ps = document.getElementById('phone-screen');
+        if (ps) { ps.classList.add('shake'); setTimeout(function(){ ps.classList.remove('shake'); }, 350); }
         if (dmgResult.crit) Sfx.crit(); else Sfx.hit();
         log(enemy.name+(dmgResult.crit?' inflige un COUP CRITIQUE ':' t\'inflige ')+dmgResult.dmg+' dégâts !','enemy');
         showDmg(dmgResult.dmg, true, dmgResult.crit);
@@ -3964,6 +4063,32 @@ var Combat = (function(){
         });
         rows.appendChild(div);
       });
+      // Scrolls / Parchemins
+      (State.scrolls||[]).forEach(function(scroll, idx) {
+        hasItems = true;
+        var div = document.createElement('div');
+        div.className = 'item-row';
+        var scrollDesc = scroll.dmg ? 'Inflige '+scroll.dmg+' dégâts' : (scroll.stun ? 'L\'ennemi passe son tour' : '');
+        div.innerHTML = '<div class="ir-ico">'+scroll.ico+'</div><div class="ir-info"><div class="ir-name">Parchemin '+scroll.name+'</div><div class="ir-desc">'+scrollDesc+'</div></div><div class="ir-count">×1</div>';
+        div.addEventListener('click', function(){
+          Combat.closeItemMenu();
+          State.scrolls.splice(idx, 1);
+          if (scroll.dmg) {
+            enemy.hp = Math.max(0, enemy.hp - scroll.dmg);
+            updateEnemyUI();
+            log(scroll.ico+' Parchemin '+scroll.name+' ! −'+scroll.dmg+' PV à l\'ennemi.','player');
+            if (enemy.hp <= 0) { endCombat(true); return; }
+          }
+          if (scroll.stun) {
+            log('🔮 Confusion ! L\'ennemi perd son tour.','system');
+            // skip enemy turn
+            startTimer();
+            return;
+          }
+          enemyTurn();
+        });
+        rows.appendChild(div);
+      });
       if (!hasItems) {
         rows.innerHTML = '<div style="font-family:\'Crimson Text\',serif;font-size:13px;font-style:italic;color:rgba(237,232,223,0.3);text-align:center;padding:10px">Aucun objet utilisable</div>';
       }
@@ -4046,6 +4171,14 @@ var ITEMS = [
   { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ',    tier:3, rarity:'epic' },
   { ico:'💎', name:'Rubis du Néant',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF',    tier:3, rarity:'epic' },
   { ico:'💎', name:'Saphir Éternel',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF',    tier:3, rarity:'legendary' },
+  // ── Anneaux / Bagues ──────────────────────────────────────────────
+  { ico:'💍', name:'Anneau de Cuivre',   slot:'bague', stats:{atk:3},        desc:'+3 ATQ',           tier:1, rarity:'common' },
+  { ico:'💍', name:'Anneau Défensif',    slot:'bague', stats:{def:4},        desc:'+4 DEF',           tier:1, rarity:'common' },
+  { ico:'💍', name:'Anneau de Vigueur',  slot:'bague', stats:{hp:20},        desc:'+20 PV max',       tier:1, rarity:'common' },
+  { ico:'💎', name:'Anneau Enchanté',    slot:'bague', stats:{atk:5,def:3},  desc:'+5 ATQ +3 DEF',   tier:2, rarity:'uncommon' },
+  { ico:'💎', name:'Bague du Survivant', slot:'bague', stats:{hp:40,def:5},  desc:'+40 PV +5 DEF',   tier:2, rarity:'rare' },
+  { ico:'🔮', name:'Anneau de Puissance',slot:'bague', stats:{atk:10,hp:30}, desc:'+10 ATQ +30 PV',  tier:3, rarity:'epic' },
+  { ico:'⭐', name:'Anneau Légendaire',  slot:'bague', stats:{atk:12,def:12,hp:50}, desc:'+12 ATQ +12 DEF +50 PV', tier:3, rarity:'legendary' },
   // ── Légendaires rares (drop boss uniquement) ──────────────────────
   { ico:'⚔', name:'Lame de l\'Aube',    slot:'arme',      stats:{atk:28},        desc:'+28 ATQ',           tier:3, rarity:'legendary' },
   { ico:'🥋', name:'Armure des Cryptes', slot:'plastron',  stats:{def:30,atk:8},  desc:'+30 DEF +8 ATQ',    tier:3, rarity:'legendary' },
@@ -4231,7 +4364,38 @@ var Rooms = {
 };
 
 // ── XP & NIVEAU ──────────────────────────────────────────────────
-var XP_PER_LEVEL = [0, 30, 70, 120, 180, 250, 340, 440, 560, 700];
+var XP_PER_LEVEL = [
+  0,   // niveau 1
+  40,  // niveau 2
+  90,  // niveau 3
+  150, // niveau 4
+  230, // niveau 5
+  330, // niveau 6
+  450, // niveau 7
+  600, // niveau 8
+  780, // niveau 9
+  990, // niveau 10
+  1240,// niveau 11
+  1530,// niveau 12
+  1870,// niveau 13
+  2260,// niveau 14
+  2710,// niveau 15
+  3230,// niveau 16
+  3830,// niveau 17
+  4520,// niveau 18
+  5310,// niveau 19
+  6210,// niveau 20
+  7230,// niveau 21
+  8380,// niveau 22
+  9670,// niveau 23
+  11120,// niveau 24
+  12740,// niveau 25
+  14550,// niveau 26
+  16560,// niveau 27
+  18790,// niveau 28
+  21260,// niveau 29
+  24000 // niveau 30
+];
 
 var LEVEL_UP_CHOICES = [
   { ico:'⚔', name:'Tranchant',       desc:'+4 ATQ',           effect:function(){ State.atk+=4; } },
@@ -4243,6 +4407,14 @@ var LEVEL_UP_CHOICES = [
   { ico:'🔮', name:'Arcane',         desc:'+8 ATQ (fragile)', effect:function(){ State.atk+=8; State.hpMax=Math.max(10,State.hpMax-10); } },
   { ico:'🌿', name:'Régénération',   desc:'+3 PV après chaque combat', effect:function(){ State.regenPerFight=(State.regenPerFight||0)+3; } },
   { ico:'🎯', name:'Précision',      desc:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
+  { ico:'💪', name:'Force brute',     desc:'+6 ATQ',              effect:function(){ State.atk+=6; } },
+  { ico:'🏰', name:'Fortifié',        desc:'+8 DEF',              effect:function(){ State.def+=8; } },
+  { ico:'🌊', name:'Flux vital',      desc:'+40 PV max',          effect:function(){ State.hpMax+=40; State.hp=Math.min(State.hpMax,State.hp+20); } },
+  { ico:'⚗', name:'Grand Alchimiste',desc:'+3 Potions',          effect:function(){ State.potions=(State.potions||0)+3; } },
+  { ico:'🔥', name:'Embrasement',     desc:'+10 ATQ −10 PV max',  effect:function(){ State.atk+=10; State.hpMax=Math.max(20,State.hpMax-10); } },
+  { ico:'🧿', name:'Œil du destin',  desc:'Crit +15%',           effect:function(){ State.critBonus=(State.critBonus||0)+0.15; } },
+  { ico:'🩸', name:'Vampirisme',      desc:'Vol de vie +15%',     effect:function(){ State.lifesteal=(State.lifesteal||0)+0.15; } },
+  { ico:'🌑', name:'Ombre',           desc:'+5 ATQ +5 DEF +30 PV',effect:function(){ State.atk+=5;State.def+=5;State.hpMax+=30; } },
 ];
 
 function refreshCombatHp() {
@@ -4257,6 +4429,8 @@ function refreshCombatHp() {
     else if (pct>30) inner.style.background='linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
     else             inner.style.background='linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
   }
+  var wrap = document.getElementById('cb-player-hp-wrap');
+  if (wrap) wrap.classList.toggle('danger', pct <= 25);
 }
 
 function getPassive() {
@@ -4273,7 +4447,7 @@ function gainXP(amount) {
   State.level = State.level||1;
   var threshold = XP_PER_LEVEL[Math.min(State.level, XP_PER_LEVEL.length-1)];
   updateXPBar();
-  if (State.xp >= threshold && State.level < 9) {
+  if (State.xp >= threshold && State.level < 30) {
     State.xp -= threshold;
     State.level++;
     triggerLevelUp();
@@ -4648,6 +4822,12 @@ var SHOP_POOL = [
   { ico:'🥋', name:'Gambison Épais',    desc:'+8 DEF',           cost:40,  rarity:'uncommon',  slot:'plastron',  stats:{def:8} },
   { ico:'🧤', name:'Gants de Mage',     desc:'+5 ATQ',           cost:35,  rarity:'common',    slot:'gants',     stats:{atk:5} },
   { ico:'👢', name:'Sandales Agiles',   desc:'+20% fuite',       cost:28,  rarity:'common',    slot:'bottes',    stats:{flee:0.2} },
+  { ico:'🪢', name:'Ceinture de Cuir',   desc:'+4 DEF',           cost:28,  rarity:'common',    slot:'ceinture',  stats:{def:4} },
+  { ico:'🪢', name:'Ceinture de Bataille',desc:'+5 DEF +3 ATQ',   cost:65,  rarity:'uncommon',  slot:'ceinture',  stats:{def:5,atk:3} },
+  { ico:'🪢', name:'Ceinture Abyssale',   desc:'+8 DEF +30 PV',   cost:150, rarity:'rare',      slot:'ceinture',  stats:{def:8,hp:30} },
+  { ico:'🦵', name:'Jambières de Cuir',   desc:'+4 DEF',           cost:30,  rarity:'common',    slot:'jambieres', stats:{def:4} },
+  { ico:'🦵', name:'Cuissardes d\'Acier', desc:'+8 DEF',           cost:70,  rarity:'uncommon',  slot:'jambieres', stats:{def:8} },
+  { ico:'🦵', name:'Cuissardes Runiques', desc:'+12 DEF +4 ATQ · Épique', cost:280, rarity:'epic', slot:'jambieres', stats:{def:12,atk:4} },
   { ico:'🗡', name:'Stylet Empoisonné', desc:'+3 ATQ',           cost:40,  rarity:'uncommon',  slot:'arme',      stats:{atk:3} },
   // ── Rares ──────────────────────────────────────────────────────────
   { ico:'⚔', name:'Épée de Feu',       desc:'+12 ATQ · Rare',   cost:120, rarity:'rare',      slot:'arme',      stats:{atk:12} },
@@ -4661,6 +4841,13 @@ var SHOP_POOL = [
   // ── Légendaires ───────────────────────────────────────────────────
   { ico:'⚔', name:'Épée de l\'Éternité', desc:'+35 ATQ · Légendaire',   cost:620, rarity:'legendary', slot:'arme',     stats:{atk:35} },
   { ico:'🥋', name:'Armure des Cryptes',  desc:'+30 DEF +10 ATQ · Légendaire', cost:680, rarity:'legendary', slot:'plastron', stats:{def:30,atk:10} },
+  // ── Bijoutier : Anneaux / Bagues ─────────────────────────────────
+  { ico:'💍', name:'Anneau de Cuivre',   desc:'+3 ATQ',                    cost:25,  rarity:'common',    slot:'bague', stats:{atk:3} },
+  { ico:'💍', name:'Anneau Défensif',    desc:'+4 DEF',                    cost:25,  rarity:'common',    slot:'bague', stats:{def:4} },
+  { ico:'💎', name:'Anneau Enchanté',    desc:'+5 ATQ +3 DEF',             cost:80,  rarity:'uncommon',  slot:'bague', stats:{atk:5,def:3} },
+  { ico:'💎', name:'Bague du Survivant', desc:'+40 PV +5 DEF · Rare',      cost:145, rarity:'rare',      slot:'bague', stats:{hp:40,def:5} },
+  { ico:'🔮', name:'Anneau de Puissance',desc:'+10 ATQ +30 PV · Épique',   cost:290, rarity:'epic',      slot:'bague', stats:{atk:10,hp:30} },
+  { ico:'⭐', name:'Anneau Légendaire',  desc:'+12/+12/+50 · Légendaire',  cost:650, rarity:'legendary', slot:'bague', stats:{atk:12,def:12,hp:50} },
   // ── Mythique ──────────────────────────────────────────────────────
   { ico:'💍', name:'Anneau du Chaos',     desc:'+15 ATQ +15 DEF · Mythique', cost:999, rarity:'mythic', slot:'collier', stats:{atk:15,def:15} },
   // ── Église : potions, sorts, parchemins ──────────────────────────
@@ -5821,6 +6008,39 @@ var HUD = (function(){
   };
 })();
 
+var Embers = (function(){
+  var timers = [];
+  function spawnEmber(container) {
+    if (!container) return;
+    var e = document.createElement('div');
+    e.className = 'ember-particle';
+    var x = Math.random() * 90 + 5;
+    var dur = 2.5 + Math.random() * 2.5;
+    var delay = Math.random() * dur;
+    e.style.cssText = 'left:'+x+'%;bottom:'+( Math.random()*20)+'px;animation-duration:'+dur+'s;animation-delay:-'+delay+'s;';
+    container.appendChild(e);
+    setTimeout(function(){ if(e.parentNode) e.parentNode.removeChild(e); }, (dur+0.5)*1000);
+  }
+  function startFor(screenId) {
+    stop();
+    var screen = document.getElementById(screenId);
+    if (!screen) return;
+    // Spawn immédiat
+    for (var i=0;i<5;i++) spawnEmber(screen);
+    // Timer récurrent
+    timers.push(setInterval(function(){
+      if (document.getElementById(screenId) && document.getElementById(screenId).classList.contains('active')) {
+        spawnEmber(document.getElementById(screenId));
+      }
+    }, 600));
+  }
+  function stop() {
+    timers.forEach(function(t){ clearInterval(t); }); timers = [];
+    document.querySelectorAll('.ember-particle').forEach(function(e){ e.remove(); });
+  }
+  return { startFor:startFor, stop:stop };
+})();
+
 var App = {
   startRun: function() {
     // Récupère le nom saisi, crée ou met à jour le profil
@@ -5859,6 +6079,7 @@ var App = {
     State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
+    State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
     Nav.go('inn-room');
@@ -5904,6 +6125,7 @@ var App = {
     State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
+    State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
     State._adReviveUsed = false;
