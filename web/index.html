@@ -3094,7 +3094,7 @@ var ProfileManager = {
     this.setActiveId(id);
     // Restore meta
     if (p.meta) { localStorage.setItem('cge_meta', JSON.stringify(p.meta)); Meta.load(); }
-    else { Meta.load(); }
+    else { localStorage.removeItem('cge_meta'); Meta.load(); }
     // Restore run
     if (p.run) { localStorage.setItem('cge_run', JSON.stringify(p.run)); }
     else { localStorage.removeItem('cge_run'); }
