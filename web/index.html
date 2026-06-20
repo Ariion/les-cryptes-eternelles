@@ -542,28 +542,59 @@ canvas#particles {
 #dungeon-map.zone-cryptes { background:#0c0008; }
 #dm-bg {
   position:absolute; inset:0;
+  background-size:cover; background-position:center; background-repeat:no-repeat;
   background:
     radial-gradient(ellipse 80% 50% at 50% 50%, rgba(30,15,5,0.8) 0%, transparent 70%),
     radial-gradient(ellipse 100% 60% at 50% 0%, rgba(60,20,0,0.4) 0%, transparent 50%);
 }
-.zone-grottes #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(50,28,8,0.85) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 20% 80%, rgba(80,40,0,0.4) 0%, transparent 50%); }
-.zone-foret #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(8,30,8,0.85) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 80% 20%, rgba(20,60,10,0.4) 0%, transparent 50%); }
-.zone-ruines #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(25,20,40,0.85) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 30% 70%, rgba(50,30,80,0.4) 0%, transparent 50%); }
-.zone-port #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(5,20,45,0.85) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 70% 30%, rgba(10,40,80,0.4) 0%, transparent 50%); }
-.zone-pics #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(20,24,45,0.85) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 50% 0%, rgba(40,50,90,0.4) 0%, transparent 50%); }
-.zone-cryptes #dm-bg { background:
-  radial-gradient(ellipse 80% 50% at 50% 50%, rgba(40,0,30,0.9) 0%, transparent 70%),
-  radial-gradient(ellipse 100% 40% at 50% 100%, rgba(80,0,60,0.5) 0%, transparent 50%); }
+.zone-grottes #dm-bg {
+  background-image: url('images/grottes.jpg');
+  background-size:cover; background-position:center;
+  background-color:#0a0604;
+}
+.zone-grottes #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(10,6,4,0.55) 0%, rgba(10,6,4,0.82) 100%); }
+.zone-foret #dm-bg {
+  background-image: url('images/foret.jpg');
+  background-size:cover; background-position:center;
+  background-color:#040a04;
+}
+.zone-foret #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(4,10,4,0.55) 0%, rgba(4,10,4,0.82) 100%); }
+.zone-ruines #dm-bg {
+  background-image: url('images/ruines.jpg');
+  background-size:cover; background-position:center;
+  background-color:#0a0a10;
+}
+.zone-ruines #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(10,10,16,0.55) 0%, rgba(10,10,16,0.82) 100%); }
+.zone-port #dm-bg {
+  background-image: url('images/port.jpg');
+  background-size:cover; background-position:center;
+  background-color:#04060f;
+}
+.zone-port #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(4,6,15,0.55) 0%, rgba(4,6,15,0.82) 100%); }
+.zone-pics #dm-bg {
+  background-image: url('images/pics.jpg');
+  background-size:cover; background-position:center;
+  background-color:#07090f;
+}
+.zone-pics #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(7,9,15,0.55) 0%, rgba(7,9,15,0.82) 100%); }
+.zone-cryptes #dm-bg {
+  background-image: url('images/cryptes.jpg');
+  background-size:cover; background-position:center;
+  background-color:#0c0008;
+}
+.zone-cryptes #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(12,0,8,0.55) 0%, rgba(12,0,8,0.85) 100%); }
 /* ── RARETÉS ─────────────────────────────────────────────────── */
 .rarity-common    { border-color:rgba(160,160,160,0.45)!important; }
 .rarity-uncommon  { border-color:rgba(60,200,60,0.65)!important;  background:rgba(20,70,20,0.18)!important; }
