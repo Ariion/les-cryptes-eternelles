@@ -3171,7 +3171,9 @@ var ProfilesScreen = {
     if (list.length > 0) { Nav.go('profiles-screen'); } else { Nav.go('main-menu'); }
   },
 
+  _creating: false,
   createNew: function() {
+    this._creating = true;
     Nav.go('char-select');
     buildCharSelect();
     var inp = document.getElementById('cs-name-input');
@@ -6047,17 +6049,19 @@ var App = {
     var inp = document.getElementById('cs-name-input');
     var heroName = (inp && inp.value.trim()) ? inp.value.trim() : 'Aventurier';
     State.name = heroName;
-    // Si aucun profil actif, en créer un nouveau
-    if (!ProfileManager.getActiveId() || !ProfileManager.getActive()) {
+    // Créer un nouveau profil si aucun actif, ou si on vient du flux "créer un nouveau perso"
+    if (!ProfileManager.getActiveId() || !ProfileManager.getActive() || ProfilesScreen._creating) {
+      ProfilesScreen._creating = false;
       ProfileManager.create(heroName, State.race, State.cls);
+      // Réinitialiser la méta pour ce nouveau perso (pas de donjons déjà nettoyés)
+      Meta.clearedZones = {};
+      Meta.chest = [];
+      Meta.totalGold = 0; Meta.totalKills = 0; Meta.totalRuns = 0; Meta.bestFloor = 0;
+      Meta.levels = {}; Meta.bonuses = {atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0,dodge:0,timerBonus:0,lifesteal:0,regenMeta:0,xpPct:0,startGold:0};
+      Meta.activeQuests = {}; Meta.completedQuests = {};
+      Meta.save();
     } else {
-      // Met à jour le nom du profil actif si on recrée
-      var list = ProfileManager.getAll();
-      var actId = ProfileManager.getActiveId();
-      for (var i=0;i<list.length;i++){
-        if (list[i].id===actId){ list[i].name=heroName; list[i].race=State.race; list[i].cls=State.cls; break; }
-      }
-      ProfileManager.saveAll(list);
+      ProfilesScreen._creating = false;
     }
     State.clearSave(); // efface toute save précédente
     var r = RACES.find(function(x){ return x.id===State.race; });
