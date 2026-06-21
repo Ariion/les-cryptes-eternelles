@@ -3111,7 +3111,7 @@ var Sfx = (function(){
     defend:  function()  { tone(196,'sine',0.15,0.12); tone(247,'sine',0.10,0.10,0.08); },
     heal:    function()  { tone(523,'sine',0.12,0.08); tone(659,'sine',0.14,0.10,0.07); tone(784,'sine',0.12,0.12,0.15); },
     skill:   function()  { tone(392,'sawtooth',0.18,0.06); tone(523,'square',0.14,0.08,0.06); tone(659,'sine',0.12,0.12,0.13); vib([10,5,20]); },
-    potion:  function()  { tone(440,'sine',0.13,0.06); tone(554,'sine',0.15,0.08,0.06); tone(659,'sine',0.13,0.10,0.13); },
+    potion:  function()  { tone(440,'sine',0.13,0.06); tone(554,'sine',0.15,0.08,0.06); tone(659,'sine',0.13,0.10,0.13); vib([8,5,12]); },
     death:   function()  { tone(110,'sawtooth',0.20,0.25); noise(0.10,0.2,0.05); vib([30,15,50]); },
     victory: function()  { tone(523,'sine',0.16,0.1); tone(659,'sine',0.18,0.1,0.1); tone(784,'sine',0.20,0.15,0.2); tone(1047,'sine',0.18,0.25,0.35); },
     levelup: function()  { [523,659,784,1047].forEach(function(f,i){ tone(f,'sine',0.16,0.12,i*0.08); }); vib([15,5,15,5,30]); },
@@ -4853,7 +4853,24 @@ function triggerLevelUp() {
     });
     cards.appendChild(d);
   });
-  document.getElementById('levelup-overlay').classList.add('show');
+  // Particle burst
+  var overlay = document.getElementById('levelup-overlay');
+  for (var _i=0; _i<22; _i++) {
+    (function(i){
+      setTimeout(function(){
+        var p = document.createElement('div');
+        p.className = 'lu-particle';
+        var angle = (i/22)*Math.PI*2;
+        var dist = 80 + Math.random()*80;
+        var tx = Math.cos(angle)*dist, ty = Math.sin(angle)*dist - 40;
+        var dur = 0.6 + Math.random()*0.5;
+        p.style.cssText = 'left:50%;top:50%;margin:-3px;--tx:'+tx+'px;--ty:'+ty+'px;--dur:'+dur+'s';
+        overlay.appendChild(p);
+        setTimeout(function(){ if(p.parentNode) p.parentNode.removeChild(p); }, dur*1000+100);
+      }, i*18);
+    })(_i);
+  }
+  overlay.classList.add('show');
 }
 
 // ── MÉTA-PROGRESSION ─────────────────────────────────────────────
@@ -6391,7 +6408,19 @@ var HUD = (function(){
     var hdr = document.getElementById('game-header');
     if (!hdr) return;
     var show = SHOWN_SCREENS[screenId];
-    hdr.style.display = show ? 'flex' : 'none';
+    if (show) {
+      if (hdr.style.display === 'none') {
+        hdr.style.display = 'flex';
+        hdr.classList.remove('entering');
+        void hdr.offsetWidth;
+        hdr.classList.add('entering');
+        setTimeout(function(){ hdr.classList.remove('entering'); }, 400);
+      } else {
+        hdr.style.display = 'flex';
+      }
+    } else {
+      hdr.style.display = 'none';
+    }
     if (!show) return;
 
     // Name
