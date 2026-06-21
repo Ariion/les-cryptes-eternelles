@@ -1123,6 +1123,10 @@ canvas#particles {
 }
 .shop-item .si-price::before { content:'🪙'; font-size:14px; }
 .shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
+.si-price.race-tax { flex-direction:column; align-items:flex-end; gap:0; }
+.si-price.race-tax::before { display:none; }
+.si-price.race-tax::after { content:'🪙'; font-size:14px; }
+.orig-price { font-size:10px; color:rgba(201,165,80,0.4); text-decoration:line-through; }
 
 /* ── GAME HEADER fixe ─────────────────────────────────────────── */
 #game-header {
@@ -3153,6 +3157,7 @@ State.saveRun = function() {
       equipped: State.equipped || {},
       bag: State.bag || [],
       scrolls: State.scrolls || [],
+      mana: State.mana || 0, manaMax: State.manaMax || 0,
     };
     localStorage.setItem('cge_run', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
@@ -5463,8 +5468,19 @@ var NPC_DATA = {
     name:'Bertrand',
     dialogue: function() {
       var done = Meta.completedQuests||{};
-      if (!done['marta_debt']) return '"Tu es nouveau en ville ? Commande quelque chose ou laisse ta place."';
-      if (!done['bertrand_1']) return '"Je t\'ai vu quelque part. Sur la route, il y a trois semaines. Tu courais."\n\nIl marque une pause, vous étudie.\n\n"Je te parlerai davantage quand tu me prouveras que tu n\'es pas un lâche."';
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"Hé. On sert tout le monde ici, c\'est la règle."\nIl te regarde par-dessus son verre.\n"Mais je te surveille."';
+        if (race === 'Elfe') return '"Un Elfe, dans cette taverne."\nIl incline la tête légèrement.\n"Ça fait longtemps que votre peuple n\'est pas venu par ici."';
+        if (race === 'Nain') return '"Un Nain ! Excellent. Qu\'est-ce que tu veux boire ?"\nIl claque la table.\n"J\'ai du brassin des mines du Nord."';
+        return '"Tu es nouveau en ville ? Commande quelque chose ou laisse ta place."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"Je t\'ai vu. Sur la route — un Orc qui court seul, de nuit."\nIl plisse les yeux.\n"Quelqu\'un te poursuivait ? Ou tu fuyais quelque chose d\'autre ?\n\nProuve-moi que tu n\'es pas comme les autres."';
+        if (race === 'Elfe') return '"Je t\'ai reconnu. Tes yeux. J\'ai vu ce regard une fois, sur une Elfe mourante dans les Cryptes."\n\n"Elle m\'a dit quelque chose avant de mourir. Prouve-moi que tu mérites que je te le répète."';
+        if (race === 'Nain') return '"Bon, tu traînes encore ici."\nIl lève son verre avec un sourire.\n"Un Nain qui survit dans ces cryptes, ça mérite le respect. Montre-moi que t\'es sérieux."';
+        return '"Je t\'ai vu quelque part. Sur la route, il y a trois semaines. Tu courais."\n\nIl marque une pause, vous étudie.\n\n"Je te parlerai davantage quand tu me prouveras que tu n\'es pas un lâche."';
+      }
       if (!done['oswin_1'])    return '"Vas parler à Oswin. Il a l\'air idiot mais il sait des choses."';
       if (!done['seraphine_1'])return '"Séraphine te cherchait tout à l\'heure. Elle a l\'air de te connaître."';
       if (!done['bertrand_2']) return '"Tu progresses. Reviens quand tu auras vu le fond d\'un vrai donjon. J\'ai quelque chose pour toi."';
@@ -5496,11 +5512,22 @@ var NPC_DATA = {
     name:'Marta',
     dialogue: function() {
       var done = Meta.completedQuests||{};
+      var race = State.race||'Humain';
       if (!done['marta_debt']) {
         var gold = State.gold||0;
-        if (gold >= 50) return '"Tu as les 50 pièces ?"\nElle tend la main.\n"Bien. Et maintenant... laisse-moi te dire quelque chose."';
+        if (gold >= 50) {
+          if (race === 'Orc') return '"Tu as les 50 pièces ? Bien."\nElle recule d\'un pas en prenant l\'argent.\n"Je n\'ai rien contre votre peuple. Juste... faites attention à ce que les autres voient."';
+          if (race === 'Elfe') return '"Tu as les pièces ? Inattendu."\nElle accepte avec un regard méfiant.\n"Les Elfes règlent toujours leurs dettes. Je vais me souvenir de ça."';
+          if (race === 'Nain') return '"Bien, bien ! Un Nain qui honore sa parole — comme toujours."\nElle prend les pièces avec un sourire.\n"Ta réputation te précède."';
+          return '"Tu as les 50 pièces ?"\nElle tend la main.\n"Bien. Et maintenant... laisse-moi te dire quelque chose."';
+        }
+        if (race === 'Orc') return '"Je sais pas pourquoi je t\'ai gardé ici. Les autres clients posent des questions."\nElle baisse la voix.\n"Tu me dois '+(50-gold)+' pièces. Reviens vite."';
+        if (race === 'Elfe') return '"Un Elfe en dette... on m\'avait prévenue."\nElle t\'observe.\n"'+(50-gold)+' pièces. Et la prochaine fois, tu paies d\'avance."';
+        if (race === 'Nain') return '"Un Nain qui ne paie pas ? Ça m\'étonne."\nElle sourit malgré elle.\n"Il te manque '+(50-gold)+' pièces, ami. Va les gagner."';
         return '"Toujours en dette, je vois. Tu me dois '+(50-gold)+' pièces de plus.\nVa gagner de quoi payer. L\'auberge n\'est pas une charité."';
       }
+      if (race === 'Orc') return '"Tu as remboursé. Ça mérite le respect."\nElle te sert sans rechigner.\n"Les autres se calmeront. Donne-leur du temps."';
+      if (race === 'Elfe') return '"Ta dette est effacée. Et... tu as été à la hauteur."\nElle te regarde différemment.\n"La Lyonnesse — Bertrand te connaît peut-être."';
       return '"Tu n\'as plus de dette ici. Tu peux rester aussi longtemps que tu veux."\nElle essuie le comptoir.\n"La Lyonnesse, en face. Si quelqu\'un te connaît... ils seront là-bas."';
     }
   },
@@ -5861,15 +5888,20 @@ Rooms._renderShopBuy = function() {
   var cont = document.getElementById('shop-items');
   cont.innerHTML = '';
   items.forEach(function(item, idx) {
+    if (item.condition && !item.condition()) return;
     var div = document.createElement('div');
     var rar2 = item.rarity||'common';
-    div.className = 'shop-item rarity-'+rar2 + ((State.gold||0) < item.cost ? ' cant-afford' : '');
+    var displayCost = Rooms._racePriceMod(item.cost);
+    div.className = 'shop-item rarity-'+rar2 + ((State.gold||0) < displayCost ? ' cant-afford' : '');
     div.dataset.idx = idx;
     var rarLabel2 = (RARITY_LABELS||{})[rar2]||rar2;
+    var priceHtml = displayCost !== item.cost
+      ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
+      : '<div class="si-price">'+displayCost+'</div>';
     div.innerHTML =
       '<span class="si-ico">'+item.ico+'</span>'+
       '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
-      '<div class="si-price">'+item.cost+'</div>';
+      priceHtml;
     div.addEventListener('click', function(){ Rooms.shopBuy(idx); });
     cont.appendChild(div);
   });
@@ -5933,10 +5965,21 @@ Rooms.shopTab = function(tab) {
   if (tab==='buy') Rooms._renderShopBuy(); else Rooms._renderShopSell();
 };
 
+// Race tax: Orcs pay 20% more, Elfes pay 10% more (distrusted), Nains get 10% off
+Rooms._racePriceMod = function(base) {
+  var r = State.race;
+  if (r === 'Orc')    return Math.ceil(base * 1.20);
+  if (r === 'Elfe')   return Math.ceil(base * 1.10);
+  if (r === 'Nain')   return Math.floor(base * 0.90);
+  return base;
+};
+
 Rooms.shopBuy = function(idx) {
   var item = State._shopItems[idx];
-  if (!item || (State.gold||0) < item.cost) return;
-  State.gold -= item.cost;
+  if (!item) return;
+  var cost = Rooms._racePriceMod(item.cost);
+  if ((State.gold||0) < cost) return;
+  State.gold -= cost;
   // If item has a slot → add to inventory; otherwise apply effect
   if (item.slot) {
     State.inventory = State.inventory || [];
@@ -5955,7 +5998,8 @@ Rooms.shopBuy = function(idx) {
   var cards = document.querySelectorAll('.shop-item');
   if (cards[idx]) cards[idx].classList.add('sold');
   document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c){
-    var cost = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
+    var base = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
+    var cost = Rooms._racePriceMod(base);
     c.classList.toggle('cant-afford', (State.gold||0) < cost);
   });
 };
