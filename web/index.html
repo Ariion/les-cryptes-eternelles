@@ -1186,68 +1186,190 @@ canvas#particles {
 #cb-xp-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#6030a0,#a060e0); transition:width 0.5s ease; }
 #cb-level-badge { font-family:'Cinzel',serif; font-size:10px; font-weight:700; color:rgba(160,100,220,0.8); width:24px; }
 
-/* ── MON HÉROS (méta) ────────────────────────────────────────── */
+/* ── EQUIP SCREEN ──────────────────────────────────────────── */
 #hero-screen {
-  background:#06050f;
-  background-image:radial-gradient(ellipse 80% 50% at 50% 20%, rgba(40,10,70,0.5) 0%, transparent 60%);
-  flex-direction:column; align-items:center; justify-content:flex-start;
-  overflow:hidden;
+  background: #07060f;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow: hidden;
 }
-#hs-header {
-  width:100%; padding:18px 20px 0;
-  display:flex; align-items:center; gap:14px; flex-shrink:0;
+#eq-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(201,165,80,0.15);
+  flex-shrink: 0; position: relative; z-index: 2;
 }
-#hs-back {
-  width:38px; height:38px; border-radius:8px;
-  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
-  color:rgba(201,165,80,0.7); font-size:18px; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; flex-shrink:0; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+#eq-back {
+  font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer;
+  padding: 4px 10px; -webkit-tap-highlight-color: transparent;
 }
-#hs-back:active { transform:scale(0.93); }
-#hs-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
-#hs-gold-total { margin-left:auto; font-family:'Cinzel',serif; font-size:13px; color:#C9A550; }
-
-#hs-body {
-  width:100%; flex:1; padding:16px; display:flex; flex-direction:column; gap:10px;
-  overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
+#eq-title {
+  font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550;
+  letter-spacing: 1px;
 }
-#hs-body::-webkit-scrollbar { display:none; }
-
-#hs-stats-panel {
-  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:4px;
+/* Stats bar */
+#eq-stats-bar {
+  display: flex; gap: 0; flex-shrink: 0;
+  border-bottom: 1px solid rgba(201,165,80,0.1);
+  background: rgba(0,0,0,0.3);
 }
-.hs-stat-box {
-  padding:10px 8px; border-radius:8px; text-align:center;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.12);
+.eq-stat-pill {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 8px 4px;
+  border-right: 1px solid rgba(201,165,80,0.08);
 }
-.hs-stat-box .hsb-val { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#EDE8DF; }
-.hs-stat-box .hsb-lbl { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(201,165,80,0.4); margin-top:2px; }
-
-.hs-section-lbl {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px; color:rgba(201,165,80,0.4); text-transform:uppercase;
-  display:flex; align-items:center; gap:8px;
+.eq-stat-pill:last-child { border-right: none; }
+.eq-stat-ico { font-size: 14px; line-height: 1; }
+.eq-stat-val {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: #C9A550;
 }
-.hs-section-lbl::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(201,165,80,0.2),transparent); }
-
-.upgrade-card {
-  display:flex; align-items:center; gap:14px; padding:13px 16px;
-  border-radius:10px; background:rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.15); cursor:pointer;
-  transition:all 0.15s; -webkit-tap-highlight-color:transparent; position:relative;
+.eq-stat-lbl {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 1px;
+  color: rgba(201,165,80,0.4); text-transform: uppercase; margin-top: 1px;
 }
-.upgrade-card:active { transform:scale(0.98); }
-.upgrade-card.maxed { opacity:0.35; pointer-events:none; }
-.upgrade-card .uc-ico  { font-size:26px; flex-shrink:0; }
-.upgrade-card .uc-info { flex:1; }
-.upgrade-card .uc-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
-.upgrade-card .uc-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.5); margin-top:1px; }
-.upgrade-card .uc-prog { font-size:10px; color:rgba(201,165,80,0.35); margin-top:3px; font-family:'Cinzel',serif; }
-.upgrade-card .uc-cost {
-  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550;
-  display:flex; align-items:center; gap:4px; flex-shrink:0;
+/* Scrollable body */
+#eq-body {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 12px 14px 200px;
+  display: flex; flex-direction: column; gap: 6px;
 }
-.upgrade-card .uc-cost::before { content:'🪙'; font-size:14px; }
-.upgrade-card.cant-afford .uc-cost { color:rgba(200,80,80,0.7); }
+/* Section labels */
+.eq-section-lbl {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  color: rgba(201,165,80,0.35); text-transform: uppercase;
+  padding: 8px 0 4px; border-bottom: 1px solid rgba(201,165,80,0.08);
+  margin-bottom: 2px;
+}
+/* Slot row */
+.eq-slot-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.08);
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 60px;
+}
+.eq-slot-row:active { background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.25); }
+.eq-slot-row.has-item { border-color: rgba(201,165,80,0.18); }
+.eq-slot-ico {
+  width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(201,165,80,0.12);
+}
+.eq-slot-row.has-item .eq-slot-ico {
+  background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.3);
+}
+.eq-slot-info { flex: 1; min-width: 0; }
+.eq-slot-name {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
+  color: rgba(201,165,80,0.4); text-transform: uppercase; margin-bottom: 3px;
+}
+.eq-slot-item-name {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: #EDE8DF;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.eq-slot-empty {
+  font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px;
+  color: rgba(237,232,223,0.2);
+}
+.eq-slot-stat {
+  font-family: 'Cinzel', serif; font-size: 10px; color: rgba(201,165,80,0.6);
+  margin-top: 2px;
+}
+.eq-slot-arrow {
+  color: rgba(201,165,80,0.25); font-size: 14px; flex-shrink: 0;
+}
+/* Inventory grid */
+#eq-inv-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-top: 4px;
+}
+.eq-inv-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 12px 8px; border-radius: 10px; text-align: center;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.1);
+  cursor: pointer; transition: all 0.15s; min-height: 90px;
+  -webkit-tap-highlight-color: transparent;
+}
+.eq-inv-card:active { background: rgba(201,165,80,0.1); }
+.eq-inv-card.empty {
+  border-style: dashed; opacity: 0.3; cursor: default; pointer-events: none;
+}
+.eq-inv-card .card-ico { font-size: 28px; line-height: 1; }
+.eq-inv-card .card-name {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600; color: #EDE8DF;
+  line-height: 1.2;
+}
+.eq-inv-card .card-stat {
+  font-family: 'Cinzel', serif; font-size: 10px; color: rgba(201,165,80,0.6);
+}
+/* Item detail panel (bottom sheet) */
+#eq-detail-panel {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+  background: linear-gradient(160deg, #1a1208, #0e0a04);
+  border-top: 1px solid rgba(201,165,80,0.3);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 32px;
+  display: none; flex-direction: column; gap: 14px;
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.7);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+}
+#eq-detail-panel.open { display: flex; }
+#eq-detail-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(201,165,80,0.3); margin: 0 auto -6px;
+}
+#eq-detail-top { display: flex; align-items: center; gap: 14px; }
+#eq-detail-ico {
+  font-size: 40px; width: 64px; height: 64px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.3);
+}
+#eq-detail-info { flex: 1; }
+#eq-detail-name {
+  font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #EDE8DF;
+}
+#eq-detail-slot {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
+  color: rgba(201,165,80,0.45); text-transform: uppercase; margin-top: 2px;
+}
+#eq-detail-desc {
+  font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px;
+  color: rgba(237,232,223,0.55); line-height: 1.4;
+}
+#eq-detail-stats {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.eq-ds {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 8px;
+  background: rgba(201,165,80,0.08); border: 1px solid rgba(201,165,80,0.2);
+  font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #C9A550;
+}
+#eq-detail-btns { display: flex; gap: 10px; }
+#eq-detail-btns button {
+  flex: 1; padding: 12px; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  cursor: pointer; border: 1px solid; transition: all 0.15s;
+}
+#eq-detail-equip {
+  background: rgba(201,165,80,0.18); border-color: rgba(201,165,80,0.5); color: #C9A550;
+}
+#eq-detail-equip:active { background: rgba(201,165,80,0.35); }
+#eq-detail-remove {
+  background: rgba(200,60,60,0.1); border-color: rgba(200,60,60,0.3); color: rgba(220,100,100,0.8);
+}
+#eq-detail-remove:active { background: rgba(200,60,60,0.25); }
+#eq-detail-close {
+  background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: rgba(237,232,223,0.4);
+  flex: 0.6;
+}
+#eq-detail-overlay {
+  position: absolute; inset: 0; z-index: 19; display: none;
+}
+#eq-detail-overlay.open { display: block; }
 
 /* ── SETTINGS ── */
 #settings-screen {
@@ -2349,21 +2471,164 @@ canvas#particles {
 
     <!-- ── MON HÉROS ── -->
     <div id="hero-screen" class="screen">
-      <div id="hs-header">
-        <div id="hs-back" onclick="Nav.go(State._heroFrom||'inn-room')">←</div>
-        <div id="hs-title">Mon Héros</div>
-        <div id="hs-gold-total">🪙 <span id="hs-gold-val">0</span></div>
+      <div id="eq-header">
+        <div id="eq-back" onclick="EquipScreen.close()">←</div>
+        <div id="eq-title">Équipement</div>
+        <div style="width:40px"></div>
       </div>
-      <div id="hs-body">
-        <div id="hs-stats-panel">
-          <div class="hs-stat-box"><div class="hsb-val" id="hs-runs">0</div><div class="hsb-lbl">Runs</div></div>
-          <div class="hs-stat-box"><div class="hsb-val" id="hs-best">0</div><div class="hsb-lbl">Meilleur étage</div></div>
-          <div class="hs-stat-box"><div class="hsb-val" id="hs-kills">0</div><div class="hsb-lbl">Kills totaux</div></div>
+      <!-- Stats bar -->
+      <div id="eq-stats-bar">
+        <div class="eq-stat-pill">
+          <div class="eq-stat-ico">⚔</div>
+          <div class="eq-stat-val" id="eqs-atk">0</div>
+          <div class="eq-stat-lbl">ATQ</div>
         </div>
-        <div class="hs-section-lbl">Améliorations permanentes</div>
-        <div id="hs-upgrades"></div>
+        <div class="eq-stat-pill">
+          <div class="eq-stat-ico">🛡</div>
+          <div class="eq-stat-val" id="eqs-def">0</div>
+          <div class="eq-stat-lbl">DEF</div>
+        </div>
+        <div class="eq-stat-pill">
+          <div class="eq-stat-ico">❤</div>
+          <div class="eq-stat-val" id="eqs-hp">0</div>
+          <div class="eq-stat-lbl">PV</div>
+        </div>
+        <div class="eq-stat-pill">
+          <div class="eq-stat-ico">✨</div>
+          <div class="eq-stat-val" id="eqs-lvl">1</div>
+          <div class="eq-stat-lbl">NIV.</div>
+        </div>
       </div>
-      <button id="hs-close-btn" onclick="Nav.go(State._heroFrom||'inn-room')">← Fermer</button>
+      <!-- Scrollable body -->
+      <div id="eq-body">
+        <div class="eq-section-lbl">Armement</div>
+        <div class="eq-slot-row" id="eq-row-arme"      onclick="EquipScreen.tapSlot('arme')">
+          <div class="eq-slot-ico" id="eq-ico-arme">⚔</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Arme</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-arme">Aucune</div>
+            <div class="eq-slot-stat" id="eq-stat-arme"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-bouclier"  onclick="EquipScreen.tapSlot('bouclier')">
+          <div class="eq-slot-ico" id="eq-ico-bouclier">🛡</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Bouclier</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bouclier">Aucun</div>
+            <div class="eq-slot-stat" id="eq-stat-bouclier"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+
+        <div class="eq-section-lbl">Armure</div>
+        <div class="eq-slot-row" id="eq-row-heaume"    onclick="EquipScreen.tapSlot('heaume')">
+          <div class="eq-slot-ico" id="eq-ico-heaume">🪖</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Heaume</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-heaume">Aucun</div>
+            <div class="eq-slot-stat" id="eq-stat-heaume"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-plastron"  onclick="EquipScreen.tapSlot('plastron')">
+          <div class="eq-slot-ico" id="eq-ico-plastron">🥋</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Plastron</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-plastron">Aucun</div>
+            <div class="eq-slot-stat" id="eq-stat-plastron"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-gants"     onclick="EquipScreen.tapSlot('gants')">
+          <div class="eq-slot-ico" id="eq-ico-gants">🧤</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Gantelets</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-gants">Aucuns</div>
+            <div class="eq-slot-stat" id="eq-stat-gants"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-ceinture"  onclick="EquipScreen.tapSlot('ceinture')">
+          <div class="eq-slot-ico" id="eq-ico-ceinture">➰</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Ceinture</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-ceinture">Aucune</div>
+            <div class="eq-slot-stat" id="eq-stat-ceinture"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-jambieres" onclick="EquipScreen.tapSlot('jambieres')">
+          <div class="eq-slot-ico" id="eq-ico-jambieres">🦵</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Jambières</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-jambieres">Aucunes</div>
+            <div class="eq-slot-stat" id="eq-stat-jambieres"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-bottes"    onclick="EquipScreen.tapSlot('bottes')">
+          <div class="eq-slot-ico" id="eq-ico-bottes">👢</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Bottes</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bottes">Aucunes</div>
+            <div class="eq-slot-stat" id="eq-stat-bottes"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+
+        <div class="eq-section-lbl">Bijoux</div>
+        <div class="eq-slot-row" id="eq-row-collier"       onclick="EquipScreen.tapSlot('collier')">
+          <div class="eq-slot-ico" id="eq-ico-collier">📿</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Collier</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-collier">Aucun</div>
+            <div class="eq-slot-stat" id="eq-stat-collier"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-bague_gauche"  onclick="EquipScreen.tapSlot('bague_gauche')">
+          <div class="eq-slot-ico" id="eq-ico-bague_gauche">💍</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Bague gauche</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_gauche">Aucune</div>
+            <div class="eq-slot-stat" id="eq-stat-bague_gauche"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+        <div class="eq-slot-row" id="eq-row-bague_droite"  onclick="EquipScreen.tapSlot('bague_droite')">
+          <div class="eq-slot-ico" id="eq-ico-bague_droite">💍</div>
+          <div class="eq-slot-info">
+            <div class="eq-slot-name">Bague droite</div>
+            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_droite">Aucune</div>
+            <div class="eq-slot-stat" id="eq-stat-bague_droite"></div>
+          </div>
+          <div class="eq-slot-arrow">›</div>
+        </div>
+
+        <div class="eq-section-lbl">Inventaire · <span id="eq-inv-count">0</span>/8</div>
+        <div id="eq-inv-grid"></div>
+      </div>
+
+      <!-- Item detail bottom sheet -->
+      <div id="eq-detail-overlay" onclick="EquipScreen.closeDetail()"></div>
+      <div id="eq-detail-panel">
+        <div id="eq-detail-handle"></div>
+        <div id="eq-detail-top">
+          <div id="eq-detail-ico">?</div>
+          <div id="eq-detail-info">
+            <div id="eq-detail-name">—</div>
+            <div id="eq-detail-slot">—</div>
+          </div>
+        </div>
+        <div id="eq-detail-desc"></div>
+        <div id="eq-detail-stats"></div>
+        <div id="eq-detail-btns">
+          <button id="eq-detail-close"  onclick="EquipScreen.closeDetail()">Fermer</button>
+          <button id="eq-detail-remove" onclick="EquipScreen.detailRemove()" style="display:none">Retirer</button>
+          <button id="eq-detail-equip"  onclick="EquipScreen.detailEquip()"  style="display:none">Équiper</button>
+        </div>
+      </div>
     </div>
 
     <!-- ── PARAMÈTRES ── -->
