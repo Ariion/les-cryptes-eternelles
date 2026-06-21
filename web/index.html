@@ -1715,106 +1715,109 @@ canvas#particles {
    ÉCRAN ÉQUIPEMENT / INVENTAIRE
    ══════════════════════════════════════════════════════════════════ */
 #equip-screen {
-  background:#06050f;
-  background-image: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(60,40,100,0.4) 0%, transparent 65%);
+  background:#07060f;
   flex-direction:column; align-items:stretch; padding:0; gap:0; overflow:hidden;
 }
 #eq-header {
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 16px 10px; flex-shrink:0;
+  border-bottom:1px solid rgba(201,165,80,0.15); position:relative; z-index:2;
+}
+#eq-back { font-size:22px; color:rgba(201,165,80,0.7); cursor:pointer; padding:4px 10px; -webkit-tap-highlight-color:transparent; }
+#eq-title { font-family:'Cinzel Decorative',serif; font-size:16px; color:#C9A550; letter-spacing:1px; }
+/* Stats bar */
+#eq-stats-bar {
+  display:flex; flex-shrink:0;
   border-bottom:1px solid rgba(201,165,80,0.1);
+  background:rgba(0,0,0,0.3);
 }
-#eq-back { width:36px; height:36px; display:flex; align-items:center; justify-content:center;
-  border-radius:50%; border:1px solid rgba(255,255,255,0.1); cursor:pointer;
-  color:rgba(237,232,223,0.6); font-size:16px; -webkit-tap-highlight-color:transparent; }
-#eq-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#C9A550; letter-spacing:1px; }
-#eq-gold { font-family:'Cinzel',serif; font-size:13px; color:#C9A550; }
-
-#eq-body { flex:1; overflow-y:auto; padding:10px 12px 20px; display:flex; flex-direction:column; gap:10px; }
-
-/* ── Grille équipement ── */
-#eq-char-grid {
-  display:grid;
-  grid-template-columns:64px 1fr 64px;
-  grid-template-rows:repeat(4, 64px);
-  gap:6px;
-  align-items:center;
+.eq-stat-pill {
+  flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 4px;
+  border-right:1px solid rgba(201,165,80,0.08);
 }
-.eq-slot {
-  width:62px; height:62px;
-  border-radius:10px; border:1px solid rgba(201,165,80,0.2);
-  background:rgba(255,255,255,0.03);
+.eq-stat-pill:last-child { border-right:none; }
+.eq-stat-pill-ico { font-size:14px; line-height:1; }
+.eq-stat-pill-val { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550; }
+.eq-stat-pill-lbl { font-family:'Cinzel',serif; font-size:8px; letter-spacing:1px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-top:1px; }
+/* Body */
+#eq-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 180px; display:flex; flex-direction:column; gap:6px; }
+.eq-section-lbl {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.35);
+  text-transform:uppercase; padding:8px 0 4px;
+  border-bottom:1px solid rgba(201,165,80,0.08); margin-bottom:2px;
+}
+/* Slot rows */
+.eq-slot-row {
+  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.08);
+  cursor:pointer; transition:background 0.15s,border-color 0.15s;
+  -webkit-tap-highlight-color:transparent; min-height:60px;
+}
+.eq-slot-row:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.25); }
+.eq-slot-row.has-item { border-color:rgba(201,165,80,0.22); }
+.eq-slot-cell-ico {
+  width:44px; height:44px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(201,165,80,0.12);
+}
+.eq-slot-row.has-item .eq-slot-cell-ico { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.3); }
+.eq-slot-cell-info { flex:1; min-width:0; }
+.eq-slot-cell-name { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-bottom:3px; }
+.eq-slot-cell-item { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:#EDE8DF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.eq-slot-cell-empty { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(237,232,223,0.22); }
+.eq-slot-cell-stat { font-family:'Cinzel',serif; font-size:10px; color:rgba(201,165,80,0.6); margin-top:2px; }
+.eq-slot-cell-arrow { color:rgba(201,165,80,0.22); font-size:18px; flex-shrink:0; }
+/* Inventory grid 2 cols */
+#eq-inv-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
+.eq-inv-card {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; cursor:pointer; position:relative;
-  -webkit-tap-highlight-color:transparent; transition:all 0.15s;
+  gap:4px; padding:14px 8px; border-radius:10px; text-align:center;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.1);
+  cursor:pointer; transition:all 0.15s; min-height:96px;
+  -webkit-tap-highlight-color:transparent;
 }
-.eq-slot:active { transform:scale(0.94); background:rgba(201,165,80,0.08); }
-.eq-slot.filled { border-color:rgba(201,165,80,0.55); background:rgba(201,165,80,0.07); }
-.eq-slot.filled::after {
-  content:''; position:absolute; inset:0; border-radius:10px;
-  box-shadow:0 0 12px rgba(201,165,80,0.15) inset;
+.eq-inv-card:active { background:rgba(201,165,80,0.1); }
+.eq-inv-card.empty { border-style:dashed; opacity:0.25; cursor:default; pointer-events:none; }
+.eq-inv-card .eic-ico { font-size:30px; line-height:1; }
+.eq-inv-card .eic-name { font-family:'Cinzel',serif; font-size:10px; font-weight:600; color:#EDE8DF; line-height:1.2; }
+.eq-inv-card .eic-stat { font-family:'Cinzel',serif; font-size:10px; color:rgba(201,165,80,0.6); }
+/* Detail bottom sheet */
+#eq-detail-overlay { position:absolute; inset:0; z-index:19; display:none; background:rgba(0,0,0,0.4); }
+#eq-detail-overlay.open { display:block; }
+#eq-detail-panel {
+  position:absolute; bottom:0; left:0; right:0; z-index:20;
+  background:linear-gradient(160deg,#1c1408,#0e0a04);
+  border-top:1px solid rgba(201,165,80,0.3); border-radius:20px 20px 0 0;
+  padding:16px 20px 36px; display:none; flex-direction:column; gap:14px;
+  box-shadow:0 -20px 60px rgba(0,0,0,0.8);
 }
-.eq-slot-ico { font-size:22px; }
-.eq-slot-lbl {
-  font-family:'Cinzel',serif; font-size:7px; letter-spacing:0.5px;
-  color:rgba(237,232,223,0.35); text-transform:uppercase; line-height:1;
+#eq-detail-panel.open { display:flex; }
+#eq-detail-handle { width:36px; height:4px; border-radius:2px; background:rgba(201,165,80,0.3); margin:0 auto 4px; }
+#eq-detail-top { display:flex; align-items:center; gap:14px; }
+#eq-detail-ico {
+  font-size:36px; width:60px; height:60px; border-radius:12px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(201,165,80,0.1); border:1px solid rgba(201,165,80,0.3);
 }
-.eq-slot.filled .eq-slot-lbl { color:#C9A550; font-size:8px; }
-.eq-slot-stat { font-family:'Cinzel',serif; font-size:9px; color:rgba(201,165,80,0.7); }
+#eq-detail-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#EDE8DF; }
+#eq-detail-slot-lbl { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.45); text-transform:uppercase; margin-top:2px; }
+#eq-detail-desc { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(237,232,223,0.55); line-height:1.4; }
+#eq-detail-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.eq-chip {
+  display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#C9A550;
+}
+#eq-detail-btns { display:flex; gap:10px; }
+#eq-detail-btns button {
+  flex:1; padding:12px; border-radius:10px;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
+  cursor:pointer; border:1px solid; transition:all 0.15s;
+}
+#eq-btn-close  { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(237,232,223,0.4); flex:0 0 auto; padding:12px 16px; }
+#eq-btn-remove { background:rgba(200,60,60,0.1); border-color:rgba(200,60,60,0.3); color:rgba(220,100,100,0.8); }
+#eq-btn-equip  { background:rgba(201,165,80,0.18); border-color:rgba(201,165,80,0.5); color:#C9A550; }
 
-/* ── Panneau personnage (centre) ── */
-#eq-char-panel {
-  grid-column:2; grid-row:1/5; height:256px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:6px; padding:8px 4px;
-}
-#eq-char-sprite { font-size:44px; line-height:1; }
-#eq-char-name { font-family:'Cinzel',serif; font-size:10px; color:#C9A550; letter-spacing:0.5px; text-align:center; }
-#eq-char-stats { display:flex; flex-direction:column; gap:3px; width:100%; margin-top:4px; }
-.eq-stat-row {
-  display:flex; align-items:center; justify-content:center; gap:4px;
-  font-family:'Cinzel',serif; font-size:10px; color:rgba(237,232,223,0.7);
-}
-.eq-stat-ico { font-size:11px; }
-.eq-stat-val { color:#EDE8DF; font-weight:700; }
-
-/* ── Section titre ── */
-.eq-section-title {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.5);
-  text-transform:uppercase; text-align:center; padding:4px 0;
-  border-top:1px solid rgba(201,165,80,0.1);
-}
-
-/* ── Grille inventaire ── */
-#eq-inv-grid {
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
-}
-.inv-slot {
-  aspect-ratio:1; border-radius:8px;
-  border:1px dashed rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.02);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; cursor:pointer; position:relative;
-  -webkit-tap-highlight-color:transparent; transition:all 0.15s; padding:4px;
-}
-.inv-slot.occupied { border-color:rgba(201,165,80,0.3); background:rgba(201,165,80,0.05); border-style:solid; }
-.inv-slot:active { transform:scale(0.94); }
-.inv-slot .inv-ico { font-size:20px; }
-.inv-slot .inv-name { font-family:'Cinzel',serif; font-size:7px; color:rgba(237,232,223,0.55); text-align:center; line-height:1.2; }
-.inv-slot .inv-stat { font-family:'Cinzel',serif; font-size:8px; color:rgba(201,165,80,0.7); }
-.inv-slot .inv-sell { font-family:'Cinzel',serif; font-size:7px; color:rgba(200,80,80,0.6); display:none; }
-
-/* ── Tooltip équip ── */
-#eq-tooltip {
-  position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
-  background:#0e0910; border:1px solid rgba(201,165,80,0.4); border-radius:8px;
-  padding:8px 10px; min-width:130px; z-index:50; pointer-events:none;
-  opacity:0; transition:opacity 0.15s;
-}
-#eq-tooltip.show { opacity:1; }
-#eq-tooltip-name { font-family:'Cinzel',serif; font-size:10px; color:#C9A550; margin-bottom:3px; }
-#eq-tooltip-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(237,232,223,0.7); }
-#eq-tooltip-action { font-family:'Cinzel',serif; font-size:9px; color:rgba(200,80,80,0.7); margin-top:4px; }
 
 /* ══════════════════════════════════════════════════════════════════
    COFFRE / STOCKAGE
@@ -2661,80 +2664,46 @@ canvas#particles {
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
         <div id="eq-title">Équipement</div>
-        <div id="eq-gold">🪙 <span id="eq-gold-val">0</span></div>
+        <div style="width:32px"></div>
+      </div>
+      <div id="eq-stats-bar">
+        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">⚔</div><div class="eq-stat-pill-val" id="eqs-atk">0</div><div class="eq-stat-pill-lbl">ATQ</div></div>
+        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">🛡</div><div class="eq-stat-pill-val" id="eqs-def">0</div><div class="eq-stat-pill-lbl">DEF</div></div>
+        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">❤</div><div class="eq-stat-pill-val" id="eqs-hp">0/0</div><div class="eq-stat-pill-lbl">PV</div></div>
+        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">✨</div><div class="eq-stat-pill-val" id="eqs-lvl">1</div><div class="eq-stat-pill-lbl">NIV.</div></div>
       </div>
       <div id="eq-body">
-        <!-- Grille 3 colonnes: gauche | personnage | droite -->
-        <div id="eq-char-grid">
-          <!-- Colonne gauche -->
-          <div class="eq-slot" id="eqs-heaume"    onclick="EquipScreen.clickSlot('heaume')">
-            <div class="eq-slot-ico">🪖</div><div class="eq-slot-lbl">Heaume</div>
-          </div>
-          <!-- Panneau personnage (s'étend sur 4 lignes, col 2) -->
-          <div id="eq-char-panel">
-            <div id="eq-char-sprite">⚔</div>
-            <div id="eq-char-name">Héros</div>
-            <div id="eq-char-stats">
-              <div class="eq-stat-row"><span class="eq-stat-ico">⚔</span><span id="eq-s-atk" class="eq-stat-val">0</span></div>
-              <div class="eq-stat-row"><span class="eq-stat-ico">🛡</span><span id="eq-s-def" class="eq-stat-val">0</span></div>
-              <div class="eq-stat-row"><span class="eq-stat-ico">❤</span><span id="eq-s-hp" class="eq-stat-val">0/0</span></div>
-              <div class="eq-stat-row"><span class="eq-stat-ico">✨</span><span id="eq-s-lvl" class="eq-stat-val">Niv.1</span></div>
-            </div>
-          </div>
-          <!-- Col droite -->
-          <div class="eq-slot" id="eqs-collier"   onclick="EquipScreen.clickSlot('collier')">
-            <div class="eq-slot-ico">📿</div><div class="eq-slot-lbl">Collier</div>
-          </div>
-
-          <div class="eq-slot" id="eqs-arme"      onclick="EquipScreen.clickSlot('arme')">
-            <div class="eq-slot-ico">⚔</div><div class="eq-slot-lbl">Arme</div>
-          </div>
-          <!-- col2 row2 = char panel (auto) -->
-          <div class="eq-slot" id="eqs-bouclier"  onclick="EquipScreen.clickSlot('bouclier')">
-            <div class="eq-slot-ico">🛡</div><div class="eq-slot-lbl">Bouclier</div>
-          </div>
-
-          <div class="eq-slot" id="eqs-gants"     onclick="EquipScreen.clickSlot('gants')">
-            <div class="eq-slot-ico">🧤</div><div class="eq-slot-lbl">Gants</div>
-          </div>
-          <!-- col2 row3 = char panel (auto) -->
-          <div class="eq-slot" id="eqs-ceinture"  onclick="EquipScreen.clickSlot('ceinture')">
-            <div class="eq-slot-ico">🪢</div><div class="eq-slot-lbl">Ceinture</div>
-          </div>
-
-          <div class="eq-slot" id="eqs-bottes"    onclick="EquipScreen.clickSlot('bottes')">
-            <div class="eq-slot-ico">👢</div><div class="eq-slot-lbl">Bottes</div>
-          </div>
-          <!-- col2 row4 = char panel (auto) -->
-          <div class="eq-slot" id="eqs-jambieres" onclick="EquipScreen.clickSlot('jambieres')">
-            <div class="eq-slot-ico">🦵</div><div class="eq-slot-lbl">Jambières</div>
-          </div>
-
-          <!-- Ligne 5 : plastron centré -->
-          <div></div>
-          <div class="eq-slot" id="eqs-plastron"  onclick="EquipScreen.clickSlot('plastron')">
-            <div class="eq-slot-ico">🥋</div><div class="eq-slot-lbl">Plastron</div>
-          </div>
-          <div></div>
-          <!-- Ligne 6 : anneaux -->
-          <div class="eq-slot" id="eqs-bague_gauche" onclick="EquipScreen.clickSlot('bague_gauche')">
-            <div class="eq-slot-ico">💍</div><div class="eq-slot-lbl">Anneau G.</div>
-          </div>
-          <div></div>
-          <div class="eq-slot" id="eqs-bague_droite" onclick="EquipScreen.clickSlot('bague_droite')">
-            <div class="eq-slot-ico">💍</div><div class="eq-slot-lbl">Anneau D.</div>
-          </div>
-        </div>
-
-        <!-- Section Inventaire -->
-        <div class="eq-section-title">🎒 Inventaire · <span id="eq-inv-count">0</span>/8</div>
+        <div class="eq-section-lbl">Armement</div>
+        <div class="eq-slot-row" id="eqr-arme"         onclick="EquipScreen.tapSlot('arme')">        <div class="eq-slot-cell-ico" id="eqi-arme">⚔</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Arme</div><div id="eqn-arme" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-arme"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-bouclier"     onclick="EquipScreen.tapSlot('bouclier')">    <div class="eq-slot-cell-ico" id="eqi-bouclier">🛡</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bouclier</div><div id="eqn-bouclier" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-bouclier"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-section-lbl">Armure</div>
+        <div class="eq-slot-row" id="eqr-heaume"       onclick="EquipScreen.tapSlot('heaume')">      <div class="eq-slot-cell-ico" id="eqi-heaume">🪖</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Heaume</div><div id="eqn-heaume" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-heaume"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-plastron"     onclick="EquipScreen.tapSlot('plastron')">    <div class="eq-slot-cell-ico" id="eqi-plastron">🥋</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Plastron</div><div id="eqn-plastron" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-plastron"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-gants"        onclick="EquipScreen.tapSlot('gants')">       <div class="eq-slot-cell-ico" id="eqi-gants">🧤</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Gantelets</div><div id="eqn-gants" class="eq-slot-cell-empty">Aucuns</div><div class="eq-slot-cell-stat" id="eqst-gants"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-ceinture"     onclick="EquipScreen.tapSlot('ceinture')">    <div class="eq-slot-cell-ico" id="eqi-ceinture">🪢</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Ceinture</div><div id="eqn-ceinture" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-ceinture"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-jambieres"    onclick="EquipScreen.tapSlot('jambieres')">   <div class="eq-slot-cell-ico" id="eqi-jambieres">🦵</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Jambières</div><div id="eqn-jambieres" class="eq-slot-cell-empty">Aucunes</div><div class="eq-slot-cell-stat" id="eqst-jambieres"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-bottes"       onclick="EquipScreen.tapSlot('bottes')">      <div class="eq-slot-cell-ico" id="eqi-bottes">👢</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bottes</div><div id="eqn-bottes" class="eq-slot-cell-empty">Aucunes</div><div class="eq-slot-cell-stat" id="eqst-bottes"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-section-lbl">Bijoux</div>
+        <div class="eq-slot-row" id="eqr-collier"      onclick="EquipScreen.tapSlot('collier')">     <div class="eq-slot-cell-ico" id="eqi-collier">📿</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Collier</div><div id="eqn-collier" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-collier"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-bague_gauche" onclick="EquipScreen.tapSlot('bague_gauche')"><div class="eq-slot-cell-ico" id="eqi-bague_gauche">💍</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bague gauche</div><div id="eqn-bague_gauche" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-bague_gauche"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-slot-row" id="eqr-bague_droite" onclick="EquipScreen.tapSlot('bague_droite')"><div class="eq-slot-cell-ico" id="eqi-bague_droite">💍</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bague droite</div><div id="eqn-bague_droite" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-bague_droite"></div></div><div class="eq-slot-cell-arrow">›</div></div>
+        <div class="eq-section-lbl">Inventaire · <span id="eq-inv-count">0</span>/8</div>
         <div id="eq-inv-grid"></div>
-
-        <!-- Tooltip flottant -->
-        <div id="eq-tooltip">
-          <div id="eq-tooltip-name"></div>
-          <div id="eq-tooltip-desc"></div>
-          <div id="eq-tooltip-action"></div>
+      </div>
+      <!-- Bottom sheet détail -->
+      <div id="eq-detail-overlay" onclick="EquipScreen.closeDetail()"></div>
+      <div id="eq-detail-panel">
+        <div id="eq-detail-handle"></div>
+        <div id="eq-detail-top">
+          <div id="eq-detail-ico">?</div>
+          <div><div id="eq-detail-name">—</div><div id="eq-detail-slot-lbl">—</div></div>
+        </div>
+        <div id="eq-detail-desc"></div>
+        <div id="eq-detail-chips"></div>
+        <div id="eq-detail-btns">
+          <button id="eq-btn-close"  onclick="EquipScreen.closeDetail()">✕</button>
+          <button id="eq-btn-remove" onclick="EquipScreen.detailRemove()" style="display:none">Retirer</button>
+          <button id="eq-btn-equip"  onclick="EquipScreen.detailEquip()"  style="display:none">Équiper</button>
         </div>
       </div>
     </div>
@@ -5585,175 +5554,157 @@ var SLOT_DEFAULTS = {
   bague_gauche:'💍', bague_droite:'💍'
 };
 
-var EquipScreen = {
+var EquipScreen = (function(){
+  var _from = 'inn-room';
+  var _detail = null;
+
+  var SLOT_LABELS = { arme:'Arme', bouclier:'Bouclier', heaume:'Heaume', plastron:'Plastron', gants:'Gantelets', ceinture:'Ceinture', jambieres:'Jambières', bottes:'Bottes', collier:'Collier', bague_gauche:'Bague gauche', bague_droite:'Bague droite' };
+  var SLOT_ICO    = { arme:'⚔', bouclier:'🛡', heaume:'🪖', plastron:'🥋', gants:'🧤', ceinture:'🪢', jambieres:'🦵', bottes:'👢', collier:'📿', bague_gauche:'💍', bague_droite:'💍' };
+
+  function _stat(item) {
+    if (!item||!item.stats) return '';
+    var s=item.stats, p=[];
+    if(s.atk) p.push('+'+s.atk+' ATQ');
+    if(s.def) p.push('+'+s.def+' DEF');
+    if(s.hp)  p.push('+'+s.hp+' PV');
+    if(s.crit)p.push('+'+s.crit+'% CRIT');
+    return p.join(' · ');
+  }
+
+  function _refresh() {
+    var eq = State.equipped||{};
+    Object.keys(SLOT_LABELS).forEach(function(slot){
+      var item = eq[slot];
+      var row  = document.getElementById('eqr-'+slot);
+      var ico  = document.getElementById('eqi-'+slot);
+      var name = document.getElementById('eqn-'+slot);
+      var stat = document.getElementById('eqst-'+slot);
+      if(!row) return;
+      if(item){
+        row.classList.add('has-item');
+        if(ico)  ico.textContent = item.ico||SLOT_ICO[slot]||'?';
+        if(name){ name.textContent=item.name; name.className='eq-slot-cell-item'; }
+        if(stat) stat.textContent=_stat(item);
+      } else {
+        row.classList.remove('has-item');
+        if(ico)  ico.textContent = SLOT_ICO[slot]||'?';
+        if(name){ name.textContent='Aucun(e)'; name.className='eq-slot-cell-empty'; }
+        if(stat) stat.textContent='';
+      }
+    });
+    var a=document.getElementById('eqs-atk'); if(a) a.textContent=State.atk||0;
+    var d=document.getElementById('eqs-def'); if(d) d.textContent=State.def||0;
+    var h=document.getElementById('eqs-hp');  if(h) h.textContent=(State.hp||0)+'/'+(State.hpMax||0);
+    var l=document.getElementById('eqs-lvl'); if(l) l.textContent=State.level||1;
+    _refreshInv();
+  }
+
+  function _refreshInv() {
+    var inv=State.inventory||[], grid=document.getElementById('eq-inv-grid'), cnt=document.getElementById('eq-inv-count');
+    if(!grid) return;
+    if(cnt) cnt.textContent=inv.length;
+    grid.innerHTML='';
+    for(var i=0;i<8;i++){
+      var card=document.createElement('div');
+      if(inv[i]){
+        var it=inv[i]; var idx=i;
+        card.className='eq-inv-card rarity-'+(it.rarity||'common');
+        card.innerHTML='<div class="eic-ico">'+it.ico+'</div><div class="eic-name">'+it.name+'</div><div class="eic-stat">'+_stat(it)+'</div>';
+        (function(item,ii){ card.addEventListener('click',function(){ _showDetail({item:item,src:'inv',idx:ii}); }); })(it,idx);
+      } else {
+        card.className='eq-inv-card empty';
+        card.innerHTML='<div style="font-size:22px;opacity:0.15">·</div>';
+      }
+      grid.appendChild(card);
+    }
+  }
+
+  function _showDetail(ctx) {
+    _detail=ctx;
+    var item=ctx.item;
+    document.getElementById('eq-detail-ico').textContent  = item.ico||'?';
+    document.getElementById('eq-detail-name').textContent = item.name||'—';
+    document.getElementById('eq-detail-slot-lbl').textContent = SLOT_LABELS[item.slot]||SLOT_LABELS[ctx.slot]||'';
+    document.getElementById('eq-detail-desc').textContent = item.desc||'';
+    var chips=document.getElementById('eq-detail-chips'); chips.innerHTML='';
+    if(item.stats){
+      var s=item.stats;
+      [['⚔','atk','ATQ'],['🛡','def','DEF'],['❤','hp','PV'],['✨','crit','CRIT%']].forEach(function(t){
+        if(s[t[1]]){ var c=document.createElement('div'); c.className='eq-chip'; c.innerHTML=t[0]+' +'+s[t[1]]+' <span style="font-size:9px;opacity:0.5">'+t[2]+'</span>'; chips.appendChild(c); }
+      });
+    }
+    var eqBtn=document.getElementById('eq-btn-equip'), rmBtn=document.getElementById('eq-btn-remove');
+    if(ctx.src==='slot'){ eqBtn.style.display='none'; rmBtn.style.display=''; }
+    else { eqBtn.style.display=''; rmBtn.style.display='none'; }
+    document.getElementById('eq-detail-panel').classList.add('open');
+    document.getElementById('eq-detail-overlay').classList.add('open');
+  }
+
+  function _closeDetail() {
+    _detail=null;
+    document.getElementById('eq-detail-panel').classList.remove('open');
+    document.getElementById('eq-detail-overlay').classList.remove('open');
+  }
+
+  return {
   _from: 'inn-room',
-  _selected: null, // { type:'slot'|'inv', slot/idx }
+  _selected: null, // legacy compat
 
   open: function(from) {
-    EquipScreen._from = from || 'inn-room';
-    EquipScreen._selected = null;
+    _from = from || 'inn-room';
     State.equipped = State.equipped || {};
     State.inventory = State.inventory || [];
-    EquipScreen.render();
+    _refresh();
     Nav.go('equip-screen');
   },
 
-  close: function() {
-    Nav.go(EquipScreen._from);
+  close: function() { _closeDetail(); Nav.go(_from||'inn-room'); },
+  closeDetail: _closeDetail,
+
+  tapSlot: function(slot) {
+    var item = (State.equipped||{})[slot];
+    if(item) _showDetail({item:item, slot:slot, src:'slot'});
   },
 
-  render: function() {
-    // Stats
-    var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
-    var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
-    document.getElementById('eq-char-sprite').textContent = (r&&r.icon)||'⚔';
-    document.getElementById('eq-char-name').textContent = (r&&r.name||'') + ' ' + (c&&c.name||'');
-    document.getElementById('eq-s-atk').textContent = State.atk||0;
-    document.getElementById('eq-s-def').textContent = State.def||0;
-    document.getElementById('eq-s-hp').textContent = (State.hp||0)+'/'+(State.hpMax||0);
-    document.getElementById('eq-s-lvl').textContent = 'Niv.'+(State.level||1);
-    document.getElementById('eq-gold-val').textContent = State.gold||0;
-    // Slots
-    Object.keys(SLOT_DEFAULTS).forEach(function(slot) {
-      var el = document.getElementById('eqs-'+slot);
-      if (!el) return;
-      var item = State.equipped[slot];
-      el.innerHTML = '';
-      if (item) {
-        el.classList.add('filled');
-        el.innerHTML = '<div class="eq-slot-ico">'+item.ico+'</div><div class="eq-slot-lbl">'+item.name.split(' ').slice(0,2).join(' ')+'</div>'+(item.stats && item.stats.atk ? '<div class="eq-slot-stat">+'+item.stats.atk+'⚔</div>' : (item.stats && item.stats.def ? '<div class="eq-slot-stat">+'+item.stats.def+'🛡</div>' : ''));
-      } else {
-        el.classList.remove('filled');
-        el.innerHTML = '<div class="eq-slot-ico">'+SLOT_DEFAULTS[slot]+'</div><div class="eq-slot-lbl">'+slot.charAt(0).toUpperCase()+slot.slice(1)+'</div>';
-      }
-    });
-    // Inventory grid
-    var grid = document.getElementById('eq-inv-grid');
-    grid.innerHTML = '';
-    var inv = State.inventory || [];
-    document.getElementById('eq-inv-count').textContent = inv.length;
-    var maxSlots = 8;
-    for (var i = 0; i < maxSlots; i++) {
-      var div = document.createElement('div');
-      div.className = 'inv-slot' + (inv[i] ? ' occupied' : '');
-      if (inv[i]) {
-        var it = inv[i];
-        div.innerHTML = '<div class="inv-ico">'+it.ico+'</div><div class="inv-name">'+it.name+'</div><div class="inv-stat">'+it.desc+'</div>';
-        (function(idx){ div.addEventListener('click', function(){ EquipScreen.clickInv(idx); }); })(i);
-      }
-      grid.appendChild(div);
-    }
-    // Highlight selected
-    if (EquipScreen._selected) {
-      if (EquipScreen._selected.type==='slot') {
-        var sel = document.getElementById('eqs-'+EquipScreen._selected.slot);
-        if (sel) sel.style.borderColor = '#C9A550';
-      } else if (EquipScreen._selected.type==='inv') {
-        var cells = grid.querySelectorAll('.inv-slot');
-        if (cells[EquipScreen._selected.idx]) cells[EquipScreen._selected.idx].style.borderColor = '#C9A550';
-      }
-    }
+  detailEquip: function() {
+    if(!_detail||_detail.src!=='inv') return;
+    var item=_detail.item, inv=State.inventory||[];
+    var targetSlot=item.slot==='bague' ? (!State.equipped.bague_gauche?'bague_gauche':'bague_droite') : item.slot;
+    if(State.equipped[targetSlot]){ var old=State.equipped[targetSlot]; applyItemStats(old,-1); inv.splice(_detail.idx,1,old); }
+    else { inv.splice(_detail.idx,1); }
+    State.equipped[targetSlot]=item; applyItemStats(item,1);
+    State.hp=Math.min(State.hp,State.hpMax); State.inventory=inv;
+    _closeDetail(); _refresh();
+    if(typeof updateMapHpBar!=='undefined') updateMapHpBar();
+    if(typeof State.saveRun==='function') State.saveRun();
   },
 
-  clickSlot: function(slot) {
-    var equipped = State.equipped[slot];
-    if (!EquipScreen._selected) {
-      if (equipped) {
-        // Show unequip prompt via selection
-        EquipScreen._selected = { type:'slot', slot:slot };
-        EquipScreen.render();
-        EquipScreen._showTooltip(equipped, 'Appuie encore pour déséquiper');
-      }
-      return;
-    }
-    // Something is selected — if inv item selected, equip it here
-    if (EquipScreen._selected.type === 'inv') {
-      var idx = EquipScreen._selected.idx;
-      var item = (State.inventory||[])[idx];
-      if (!item) { EquipScreen._selected=null; EquipScreen.render(); return; }
-      // Bague items can go into bague_gauche or bague_droite
-      var itemSlot = item.slot;
-      var targetSlot = slot;
-      if (itemSlot === 'bague') {
-        if (targetSlot !== 'bague_gauche' && targetSlot !== 'bague_droite') {
-          EquipScreen._showTooltip(item, '⚠ Va dans Anneau G. ou Anneau D.');
-          return;
-        }
-      } else if (itemSlot && itemSlot !== targetSlot) {
-        // Wrong slot
-        EquipScreen._showTooltip(item, '⚠ Va dans l\'emplacement : '+itemSlot);
-        return;
-      }
-      // Unequip current if any
-      if (equipped) {
-        applyItemStats(equipped, -1);
-        State.inventory.push(equipped);
-      }
-      // Equip new
-      applyItemStats(item, +1);
-      State.equipped[slot] = item;
-      State.inventory.splice(idx, 1);
-      if (State.hp > State.hpMax) State.hp = State.hpMax;
-      EquipScreen._selected = null;
-      updateMapHpBar && updateMapHpBar();
-      EquipScreen.render();
-    } else if (EquipScreen._selected.type === 'slot' && EquipScreen._selected.slot === slot) {
-      // Unequip
-      if (equipped) {
-        applyItemStats(equipped, -1);
-        if (State.inventory.length < 8) State.inventory.push(equipped);
-        State.equipped[slot] = null;
-        State.hp = Math.min(State.hp, State.hpMax);
-        updateMapHpBar && updateMapHpBar();
-      }
-      EquipScreen._selected = null;
-      EquipScreen.render();
-    } else {
-      EquipScreen._selected = null;
-      EquipScreen.render();
-    }
+  detailRemove: function() {
+    if(!_detail||_detail.src!=='slot') return;
+    var slot=_detail.slot||(_detail.item&&_detail.item.slot);
+    var item=State.equipped[slot]; if(!item) return;
+    State.inventory=State.inventory||[];
+    if(State.inventory.length>=8){ CGEModal.alert('Inventaire plein','Libère une place avant de retirer cet équipement.'); return; }
+    applyItemStats(item,-1); State.equipped[slot]=null;
+    State.hp=Math.min(State.hp,State.hpMax); State.inventory.push(item);
+    _closeDetail(); _refresh();
+    if(typeof State.saveRun==='function') State.saveRun();
   },
 
+  render: function() { _refresh(); }, // legacy compat
+
+  clickSlot: function(slot) { }, // legacy — replaced by tapSlot
   clickInv: function(idx) {
-    var item = (State.inventory||[])[idx];
-    if (!item) return;
-    if (!EquipScreen._selected) {
-      // Select this item
-      EquipScreen._selected = { type:'inv', idx:idx };
-      EquipScreen.render();
-      var hint = item.slot === 'bague' ? 'Appuie sur Anneau G. ou Anneau D.' : (item.slot ? 'Appuie sur l\'emplacement ' + item.slot : 'Consommable — non équipable ici');
-      EquipScreen._showTooltip(item, hint);
-      return;
-    }
-    // Already selected same → deselect
-    if (EquipScreen._selected.type==='inv' && EquipScreen._selected.idx===idx) {
-      EquipScreen._selected = null; EquipScreen.render(); return;
-    }
-    // Swap two inventory items
-    var a = EquipScreen._selected.idx;
-    if (EquipScreen._selected.type==='inv') {
-      var tmp = State.inventory[a];
-      State.inventory[a] = State.inventory[idx];
-      State.inventory[idx] = tmp;
-    }
-    EquipScreen._selected = null; EquipScreen.render();
+    var item=(State.inventory||[])[idx]; if(!item) return;
+    _showDetail({item:item,src:'inv',idx:idx});
   },
 
-  _showTooltip: function(item, action) {
-    var tt = document.getElementById('eq-tooltip');
-    document.getElementById('eq-tooltip-name').textContent = item.ico+' '+item.name;
-    document.getElementById('eq-tooltip-desc').textContent = item.desc;
-    document.getElementById('eq-tooltip-action').textContent = action||'';
-    tt.classList.add('show');
-    clearTimeout(EquipScreen._ttTimer);
-    EquipScreen._ttTimer = setTimeout(function(){ tt.classList.remove('show'); }, 2500);
-  },
+  _showTooltip: function(){}, // legacy stub
 
-  // Quick access from dungeon bag button
-  openFromDungeon: function() {
-    EquipScreen.open('dungeon-map');
-  },
-};
+  openFromDungeon: function(){ this.open('dungeon-map'); },
+
+  };
+})();
 
 // ── CHEST SCREEN ─────────────────────────────────────────────────
 var ChestScreen = {
