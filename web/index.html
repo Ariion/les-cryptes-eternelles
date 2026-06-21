@@ -1931,6 +1931,52 @@ canvas#particles {
   padding: 2px 4px;
   line-height: 1;
 }
+
+/* ── CUSTOM MODAL ─────────────────────────────────────────── */
+#cge-modal-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(4,3,8,0.88);
+  display:none; align-items:center; justify-content:center;
+  padding:24px;
+}
+#cge-modal-overlay.open { display:flex; }
+#cge-modal-box {
+  background:linear-gradient(160deg,#1a1208,#0e0a04);
+  border:1px solid rgba(201,165,80,0.4);
+  border-radius:16px;
+  width:100%; max-width:340px;
+  box-shadow:0 0 60px rgba(201,165,80,0.15);
+  overflow:hidden;
+  display:flex; flex-direction:column;
+}
+#cge-modal-img {
+  width:100%; height:160px; object-fit:cover; object-position:center top;
+  display:none;
+}
+#cge-modal-img.visible { display:block; }
+#cge-modal-body { padding:24px 20px 20px; display:flex; flex-direction:column; gap:12px; }
+#cge-modal-title {
+  font-family:'Cinzel Decorative',serif; font-size:15px; font-weight:700;
+  color:#C9A550; text-align:center; letter-spacing:1px;
+}
+#cge-modal-text {
+  font-family:'Crimson Text',serif; font-size:14px; font-style:italic;
+  color:rgba(237,232,223,0.75); text-align:center; line-height:1.5;
+}
+#cge-modal-btns { display:flex; gap:10px; margin-top:8px; }
+#cge-modal-btns button {
+  flex:1; padding:11px; border-radius:10px;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
+  cursor:pointer; transition:all 0.15s; border:1px solid;
+}
+#cge-modal-ok {
+  background:rgba(201,165,80,0.18); border-color:rgba(201,165,80,0.5); color:#C9A550;
+}
+#cge-modal-ok:active { background:rgba(201,165,80,0.35); }
+#cge-modal-cancel {
+  background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(237,232,223,0.5);
+}
+#cge-modal-cancel:active { background:rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -2876,15 +2922,15 @@ var Sfx = (function(){
       localStorage.setItem('cge_par', parOn?'1':'0');
     },
     confirmReset: function() {
-      if (confirm('⚠ Réinitialiser TOUT ?\n\n• Tous les aventuriers et leurs sauvegardes\n• Méta-progression (or, kills, upgrades)\n• Coffre, donjons nettoyés\n\nCette action est irréversible.')) {
+      CGEModal.confirm('Réinitialiser tout ?', 'Tous les aventuriers, méta-progression, donjons nettoyés seront supprimés. Cette action est irréversible.', function() {
         ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus','cge_profiles','cge_active'].forEach(function(k){ localStorage.removeItem(k); });
         Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
         Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
         Meta.clearedZones={}; Meta.chest=[];
         State.hp=0; State.hpMax=0; State.name='Aventurier';
         Nav.go('main-menu');
-        alert('✓ Tout a été réinitialisé.');
-      }
+        CGEModal.alert('Réinitialisation', 'Tout a été réinitialisé. Bonne aventure !');
+      });
     },
     load: function() {
       sfxOn = localStorage.getItem('cge_sfx') !== '0';
@@ -3323,10 +3369,10 @@ var ProfilesScreen = {
     });
     cont.querySelectorAll('.prof-card-del').forEach(function(btn){
       btn.addEventListener('click', function(){
-        if (confirm('Supprimer cet aventurier ? Cette action est irréversible.')) {
+        CGEModal.confirm('Supprimer ?', 'Supprimer cet aventurier ? Cette action est irréversible.', function() {
           ProfileManager.deleteProfile(btn.dataset.id);
           ProfilesScreen.render();
-        }
+        });
       });
     });
   },
@@ -3374,7 +3420,7 @@ var ProfilesScreen = {
     this._exportId = id;
     this._mode = 'export';
     var code = ProfileManager.exportCode(id);
-    if (!code) { alert('Impossible d\'exporter ce profil.'); return; }
+    if (!code) { CGEModal.alert('Erreur', 'Impossible d\'exporter ce profil.'); return; }
     var modal = document.getElementById('code-modal');
     document.getElementById('code-modal-title').textContent = '📤 Code de sauvegarde';
     document.getElementById('code-modal-sub').textContent = 'Copie ce code et partage-le. Il suffit de le coller dans "Importer" sur un autre appareil.';
@@ -3401,21 +3447,21 @@ var ProfilesScreen = {
   copyCode: function() {
     var ta = document.getElementById('code-modal-textarea');
     ta.select();
-    try { document.execCommand('copy'); alert('✓ Code copié dans le presse-papier !'); }
+    try { document.execCommand('copy'); CGEModal.alert('Copié !', 'Code copié dans le presse-papier.'); }
     catch(e) {
-      try { navigator.clipboard.writeText(ta.value).then(function(){ alert('✓ Copié !'); }); }
-      catch(e2) { alert('Copie manuelle : sélectionne tout le texte ci-dessus.'); }
+      try { navigator.clipboard.writeText(ta.value).then(function(){ CGEModal.alert('Copié !', 'Code copié avec succès.'); }); }
+      catch(e2) { CGEModal.alert('Copie manuelle', 'Sélectionne tout le texte ci-dessus et copie-le manuellement.'); }
     }
   },
 
   doImport: function() {
     var code = document.getElementById('code-modal-textarea').value.trim();
-    if (!code) { alert('Colle un code d\'abord !'); return; }
+    if (!code) { CGEModal.alert('Champ vide', 'Colle un code d\'abord !'); return; }
     var p = ProfileManager.importCode(code);
-    if (!p) { alert('Code invalide ou corrompu.'); return; }
+    if (!p) { CGEModal.alert('Erreur', 'Code invalide ou corrompu.'); return; }
     this.closeModal();
     this.render();
-    alert('✓ Aventurier "'+p.name+'" importé avec succès !');
+    CGEModal.alert('Importé !', 'Aventurier "'+p.name+'" importé avec succès !');
   },
 
   closeModal: function() {
@@ -5083,7 +5129,7 @@ Rooms.shopBuy = function(idx) {
     if (State.inventory.length < 8) {
       State.inventory.push(item);
     } else {
-      alert('Inventaire plein ! Équipe ou vends un objet d\'abord.');
+      CGEModal.alert('Inventaire plein', 'Équipe ou vends un objet avant d\'en acheter un nouveau.');
       State.gold += item.cost; return;
     }
   } else if (item.effect) {
@@ -5760,7 +5806,7 @@ var ChestScreen = {
               // Move chest → inventory
               var item = Meta.chest[idx];
               if (!item) return;
-              if ((State.inventory||[]).length >= 8) { alert('Inventaire plein !'); return; }
+              if ((State.inventory||[]).length >= 8) { CGEModal.alert('Inventaire plein', 'Tu ne peux pas porter plus de 8 objets.'); return; }
               Meta.chest.splice(idx, 1);
               State.inventory.push(item);
               Meta.save();
@@ -5786,7 +5832,7 @@ var ChestScreen = {
               // Move inv → chest
               var item = (State.inventory||[])[jdx];
               if (!item) return;
-              if ((Meta.chest||[]).length >= 20) { alert('Coffre plein !'); return; }
+              if ((Meta.chest||[]).length >= 20) { CGEModal.alert('Coffre plein', 'Le coffre ne peut contenir plus de 20 objets.'); return; }
               State.inventory.splice(jdx, 1);
               Meta.chest.push(item);
               Meta.save();
@@ -5932,7 +5978,7 @@ var InnRoom = {
   showChest: function() {
     var gold = State.gold||0;
     var potions = State.potions||0;
-    alert('🪙 Or : ' + gold + '\n🧪 Potions : ' + potions + '\n⚔ ATQ : ' + (State.atk||0) + '  🛡 DEF : ' + (State.def||0));
+    CGEModal.alert('Inventaire', 'Or : ' + gold + '  •  Potions : ' + potions + '\nATQ : ' + (State.atk||0) + '  •  DEF : ' + (State.def||0));
   },
 };
 
@@ -5941,8 +5987,7 @@ var RewardedAds = (function(){
   // Placeholder — remplacer par Google AdSense Rewarded quand le compte est approuvé
   function _mockAd(callback) {
     // Simule une pub de 5 secondes (à remplacer par le vrai SDK)
-    var ok = confirm('📺 Une pub va être diffusée (5 secondes).\nCliquez OK pour simuler le visionnage.');
-    if (ok) setTimeout(callback, 500);
+    CGEModal.show({ title: 'Publicité', text: 'Une pub va être diffusée (5 secondes). Confirmer pour simuler le visionnage.', okLabel: 'Voir la pub', cancelLabel: 'Annuler', onOk: function(){ setTimeout(callback, 500); } });
   }
   return {
     showDoubleGold: function() {
@@ -5952,7 +5997,7 @@ var RewardedAds = (function(){
         State.gold = (State.gold||0) + bonus;
         State._adGoldUsed = true;
         document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
-        alert('🪙 ×2 ! Vous recevez ' + bonus + ' pièces supplémentaires !');
+        CGEModal.alert('Or doublé !', '×2 ! Vous recevez ' + bonus + ' pièces supplémentaires !');
         document.getElementById('shop-gold-val') && (document.getElementById('shop-gold-val').textContent = State.gold);
         if (typeof HUD !== 'undefined') HUD.updateGold();
       });
@@ -5965,7 +6010,7 @@ var RewardedAds = (function(){
         State.hp = reviveHp;
         State.dead = false;
         Nav.go('dungeon-map');
-        alert('💚 Vous revenez à la vie avec ' + reviveHp + ' PV !');
+        CGEModal.alert('Résurrection !', 'Vous revenez à la vie avec ' + reviveHp + ' PV !');
       });
     }
   };
@@ -5986,7 +6031,7 @@ var TownScreen = {
     Rooms.showShop('town-screen', 'eglise');
   },
   goChateau: function() {
-    alert('🏰 Le Château\n\nLes gardes vous bloquent l\'entrée.\n« Revenez quand vous aurez fait vos preuves, aventurier. »\n\n— Fonctionnalité à venir —');
+    CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes devant toi. « Le Château reste fermé aux aventuriers pour l\'instant. Revenez quand vous aurez prouvé votre valeur. »', 'images/chateau-gardes.jpg');
   },
 };
 
@@ -6011,31 +6056,41 @@ var WorldMap = {
     if (Meta.clearedZones[zoneId]) warnings.push('⚰ Ce donjon a déjà été nettoyé. Les monstres sont plus forts au retour !');
     if (!Meta.isZoneUnlocked(zoneId)) warnings.push('⚠ Zone non recommandée pour ton niveau de progression.');
     if (lvl < zone.minLevel) warnings.push('💀 Niveau conseillé : ' + zone.minLevel + ' (tu es niveau ' + lvl + ').');
+    function doEnter() {
+      State._zoneMod = {
+        hpMult:   zone.hpMult||1,
+        atkMult:  zone.atkMult||1,
+        defMult:  zone.defMult||1,
+        goldMult: zone.goldMult||1,
+        // legacy compat
+        enemyMod: zone.hpMult||1,
+        goldMod:  zone.goldMult||1,
+      };
+      var resumeFloor = (State._currentZone === zoneId && (State.floor||1) > 1) ? (State.floor||1) : 1;
+      State._currentZone = zoneId;
+      State.floor = resumeFloor;
+      State._runGoldBonus = State._runGoldBonus || 1;
+      Nav.go('dungeon-map');
+      if (resumeFloor === 1) {
+        setTimeout(function(){
+          RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
+        }, 350);
+      } else {
+        setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
+      }
+    }
+
     if (warnings.length) {
-      var ok = confirm(warnings.join('\n') + '\n\nEntrer quand même ? (À tes risques et périls !)');
-      if (!ok) return;
+      CGEModal.show({
+        title: 'Attention, Aventurier',
+        text: warnings.join('\n\n'),
+        okLabel: 'Entrer quand même',
+        cancelLabel: 'Reculer',
+        onOk: doEnter
+      });
+      return;
     }
-    State._zoneMod = {
-      hpMult:   zone.hpMult||1,
-      atkMult:  zone.atkMult||1,
-      defMult:  zone.defMult||1,
-      goldMult: zone.goldMult||1,
-      // legacy compat
-      enemyMod: zone.hpMult||1,
-      goldMod:  zone.goldMult||1,
-    };
-    var resumeFloor = (State._currentZone === zoneId && (State.floor||1) > 1) ? (State.floor||1) : 1;
-    State._currentZone = zoneId;
-    State.floor = resumeFloor;
-    State._runGoldBonus = State._runGoldBonus || 1;
-    Nav.go('dungeon-map');
-    if (resumeFloor === 1) {
-      setTimeout(function(){
-        RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
-      }, 350);
-    } else {
-      setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
-    }
+    doEnter();
   },
 
   updateHotspots: function() {
@@ -6254,6 +6309,58 @@ var CloudSync = (function() {
   return { init:init, signIn:signIn, signOut:signOut, getUser:getUser, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI };
 })();
 
+// ── CUSTOM MODAL ──────────────────────────────────────────────────────────
+var CGEModal = (function() {
+  function show(opts) {
+    // opts: { title, text, img, okLabel, cancelLabel, onOk, onCancel }
+    var overlay = document.getElementById('cge-modal-overlay');
+    var imgEl   = document.getElementById('cge-modal-img');
+    var titleEl = document.getElementById('cge-modal-title');
+    var textEl  = document.getElementById('cge-modal-text');
+    var okBtn   = document.getElementById('cge-modal-ok');
+    var cancelBtn = document.getElementById('cge-modal-cancel');
+
+    titleEl.textContent = opts.title || '';
+    textEl.textContent  = opts.text  || '';
+
+    if (opts.img) {
+      imgEl.src = opts.img;
+      imgEl.className = 'visible';
+    } else {
+      imgEl.src = '';
+      imgEl.className = '';
+    }
+
+    okBtn.textContent = opts.okLabel || 'Continuer';
+    okBtn.onclick = function() { close(); if (opts.onOk) opts.onOk(); };
+
+    if (opts.cancelLabel) {
+      cancelBtn.style.display = '';
+      cancelBtn.textContent = opts.cancelLabel;
+      cancelBtn.onclick = function() { close(); if (opts.onCancel) opts.onCancel(); };
+    } else {
+      cancelBtn.style.display = 'none';
+    }
+
+    overlay.classList.add('open');
+  }
+
+  function close() {
+    document.getElementById('cge-modal-overlay').classList.remove('open');
+  }
+
+  // Drop-in replacements
+  function alert(title, text, img) {
+    show({ title:title, text:text, img:img||null, okLabel:'Compris' });
+  }
+
+  function confirm(title, text, onOk, onCancel, img) {
+    show({ title:title, text:text, img:img||null, okLabel:'Confirmer', cancelLabel:'Annuler', onOk:onOk, onCancel:onCancel });
+  }
+
+  return { show:show, close:close, alert:alert, confirm:confirm };
+})();
+
 var App = {
   startRun: function() {
     // Récupère le nom saisi, crée ou met à jour le profil
@@ -6383,5 +6490,20 @@ window.addEventListener('load', function(){
   runIntro();
 });
 </script>
+
+<!-- Custom Modal -->
+<div id="cge-modal-overlay">
+  <div id="cge-modal-box">
+    <img id="cge-modal-img" src="" alt="">
+    <div id="cge-modal-body">
+      <div id="cge-modal-title"></div>
+      <div id="cge-modal-text"></div>
+      <div id="cge-modal-btns">
+        <button id="cge-modal-cancel" style="display:none"></button>
+        <button id="cge-modal-ok">Continuer</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
