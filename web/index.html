@@ -1159,10 +1159,20 @@ canvas#particles {
   color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
   border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
 }
+/* XP bar row in game header */
+#gh-row3 { display: flex; align-items: center; gap: 8px; }
+#gh-xp-bar-outer { flex:1; height:4px; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden; }
+#gh-xp-bar-inner { height:100%; border-radius:2px; background:linear-gradient(90deg,#6030a0,#a060e0); transition:width 0.4s ease; width:0%; }
+#gh-xp-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(160,100,220,0.55); white-space:nowrap; }
 /* Screens with header get top padding */
-.has-game-header { padding-top: 68px !important; }
+.has-game-header { padding-top: 82px !important; }
 /* Legacy hud — hidden */
 #global-hud { display: none !important; }
+/* Combat duplicates removed — game header handles HP/XP */
+#cb-player-info { display: none !important; }
+#cb-xp-wrap { display: none !important; }
+/* Inn header removed — game header replaces it */
+#inn-header { display: none !important; }
 /* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
 #floor-transition {
   position:absolute; inset:0; z-index:30;
@@ -1588,7 +1598,7 @@ canvas#particles {
 }
 .hotspot:active .hs-ring { background:rgba(201,165,80,0.4); }
 /* positions hotspots chambre */
-#hs-inn-window  { top:15%;  left:41%; transform:translateX(-50%); }
+#hs-inn-window  { top:40%;  left:50%; transform:translateX(-50%); }
 #hs-inn-armoire { top:22%;  left:12%; }
 #hs-inn-chest   { top:65%;  left:10%; }
 #hs-inn-bed     { top:55%;  left:68%; }
@@ -2059,6 +2069,10 @@ canvas#particles {
         <div id="gh-hp-bar-outer"><div id="gh-hp-bar-inner" style="width:100%"></div></div>
         <div id="gh-hp-text">100/100</div>
         <div id="gh-gold">🪙 <span id="hud-gold-val">0</span></div>
+      </div>
+      <div id="gh-row3">
+        <div id="gh-xp-bar-outer"><div id="gh-xp-bar-inner" style="width:0%"></div></div>
+        <div id="gh-xp-label">XP</div>
       </div>
     </div>
     <!-- Modal quêtes actives -->
@@ -3882,16 +3896,7 @@ var Combat = (function(){
   }
 
   function updatePlayerUI() {
-    var hp    = State.hp;
-    var hpMax = State.hpMax;
-    var pct   = Math.max(0, Math.min(100, Math.round(hp/hpMax*100)));
-    document.getElementById('cb-player-hp-inner').style.width = pct+'%';
-    document.getElementById('cb-player-hp-text').textContent = hp+'/'+hpMax;
-    // Couleur selon PV
-    var bar = document.getElementById('cb-player-hp-inner');
-    if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#7a1010,#c83030,#e05050)';
-    else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
-    else               bar.style.background = 'linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
+    if (typeof HUD !== 'undefined') HUD.updateHP();
   }
 
   function updateEnemyUI() {
@@ -4051,9 +4056,7 @@ var Combat = (function(){
       }
       if (State.regenPerFight) {
         State.hp = Math.min(State.hpMax, State.hp + State.regenPerFight);
-        var pct = Math.round(State.hp/State.hpMax*100);
-        document.getElementById('cb-player-hp-inner').style.width = pct+'%';
-        document.getElementById('cb-player-hp-text').textContent = State.hp+'/'+State.hpMax;
+        if (typeof HUD !== 'undefined') HUD.updateHP();
       }
       var wasBoss = !!enemy.boss;
       Sfx.gold();
@@ -4727,19 +4730,7 @@ var LEVEL_UP_CHOICES = [
 ];
 
 function refreshCombatHp() {
-  var hp = State.hp||0, hpMax = State.hpMax||1;
-  var pct = Math.max(0, Math.min(100, Math.round(hp/hpMax*100)));
-  var inner = document.getElementById('cb-player-hp-inner');
-  var text  = document.getElementById('cb-player-hp-text');
-  if (inner) inner.style.width = pct+'%';
-  if (text)  text.textContent  = hp+'/'+hpMax;
-  if (inner) {
-    if (pct>60)      inner.style.background='linear-gradient(90deg,#7a1010,#c83030,#e05050)';
-    else if (pct>30) inner.style.background='linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
-    else             inner.style.background='linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
-  }
-  var wrap = document.getElementById('cb-player-hp-wrap');
-  if (wrap) wrap.classList.toggle('danger', pct <= 25);
+  if (typeof HUD !== 'undefined') HUD.updateHP();
 }
 
 function getPassive() {
@@ -4764,11 +4755,7 @@ function gainXP(amount) {
 }
 
 function updateXPBar() {
-  var lvl = State.level||1;
-  var threshold = XP_PER_LEVEL[Math.min(lvl, XP_PER_LEVEL.length-1)];
-  var pct = threshold > 0 ? Math.min(100, Math.round((State.xp||0)/threshold*100)) : 100;
-  document.getElementById('cb-xp-fill').style.width = pct+'%';
-  document.getElementById('cb-level-badge').textContent = lvl;
+  if (typeof HUD !== 'undefined') HUD.updateXP();
 }
 
 function triggerLevelUp() {
@@ -6358,6 +6345,26 @@ var HUD = (function(){
     // Gold
     var gv = document.getElementById('hud-gold-val');
     if (gv) gv.textContent = (State && State.gold) ? State.gold : 0;
+
+    // XP bar
+    if (typeof XP_PER_LEVEL !== 'undefined' && State) {
+      var lvl2 = State.level||1;
+      var thr = XP_PER_LEVEL[Math.min(lvl2, XP_PER_LEVEL.length-1)];
+      var xpPct = thr > 0 ? Math.min(100, Math.round((State.xp||0)/thr*100)) : 100;
+      var xpBar = document.getElementById('gh-xp-bar-inner');
+      if (xpBar) xpBar.style.width = xpPct+'%';
+    }
+  }
+
+  function _updateXP() {
+    if (typeof XP_PER_LEVEL === 'undefined' || !State) return;
+    var lvl2 = State.level||1;
+    var thr = XP_PER_LEVEL[Math.min(lvl2, XP_PER_LEVEL.length-1)];
+    var xpPct = thr > 0 ? Math.min(100, Math.round((State.xp||0)/thr*100)) : 100;
+    var xpBar = document.getElementById('gh-xp-bar-inner');
+    if (xpBar) xpBar.style.width = xpPct+'%';
+    var lv = document.getElementById('gh-level');
+    if (lv) lv.textContent = 'Niv. '+lvl2;
   }
 
   return {
@@ -6369,10 +6376,16 @@ var HUD = (function(){
     updateHP: function() {
       var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
       var bar = document.getElementById('gh-hp-bar-inner');
-      if (bar) bar.style.width = pct + '%';
+      if (bar) {
+        bar.style.width = pct + '%';
+        if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#7a1010,#c83030,#e05050)';
+        else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#8a5000,#d08000,#e0a020)';
+        else               bar.style.background = 'linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
+      }
       var txt = document.getElementById('gh-hp-text');
       if (txt) txt.textContent = (State.hp||0) + '/' + (State.hpMax||0);
     },
+    updateXP: function() { _updateXP(); },
     showQuests: function() {
       var modal = document.getElementById('gh-quest-modal');
       var list  = document.getElementById('gh-quest-list');
