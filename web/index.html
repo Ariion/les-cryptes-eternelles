@@ -5425,13 +5425,7 @@ var DungeonMap = (function() {
       mctx.stroke();
     }
 
-    // Label spécial boss / start
-    if (n.id === 0) {
-      mctx.font = '10px Cinzel,serif';
-      mctx.fillStyle = 'rgba(201,165,80,0.5)';
-      mctx.textAlign='center'; mctx.textBaseline='top';
-      mctx.fillText('ENTRÉE', x, y+r+4);
-    }
+    // Label spécial boss
     if (n.id === 10 && n.state === 'available') {
       mctx.font = 'bold 10px Cinzel,serif';
       mctx.fillStyle = 'rgba(220,80,80,0.8)';
