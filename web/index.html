@@ -551,7 +551,7 @@ canvas#particles {
 }
 .zone-grottes #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(10,6,4,0.55) 0%, rgba(10,6,4,0.82) 100%); }
+  background: linear-gradient(to bottom, rgba(10,6,4,0.18) 0%, rgba(10,6,4,0.45) 100%); }
 .zone-foret #dm-bg {
   background-image: url('images/foret.jpg');
   background-size:cover; background-position:center;
@@ -559,7 +559,7 @@ canvas#particles {
 }
 .zone-foret #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(4,10,4,0.55) 0%, rgba(4,10,4,0.82) 100%); }
+  background: linear-gradient(to bottom, rgba(4,10,4,0.18) 0%, rgba(4,10,4,0.45) 100%); }
 .zone-ruines #dm-bg {
   background-image: url('images/ruines.jpg');
   background-size:cover; background-position:center;
@@ -567,7 +567,7 @@ canvas#particles {
 }
 .zone-ruines #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(10,10,16,0.55) 0%, rgba(10,10,16,0.82) 100%); }
+  background: linear-gradient(to bottom, rgba(10,10,16,0.18) 0%, rgba(10,10,16,0.45) 100%); }
 .zone-port #dm-bg {
   background-image: url('images/port.jpg');
   background-size:cover; background-position:center;
@@ -575,7 +575,7 @@ canvas#particles {
 }
 .zone-port #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(4,6,15,0.55) 0%, rgba(4,6,15,0.82) 100%); }
+  background: linear-gradient(to bottom, rgba(4,6,15,0.18) 0%, rgba(4,6,15,0.45) 100%); }
 .zone-pics #dm-bg {
   background-image: url('images/pics.jpg');
   background-size:cover; background-position:center;
@@ -583,7 +583,7 @@ canvas#particles {
 }
 .zone-pics #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(7,9,15,0.55) 0%, rgba(7,9,15,0.82) 100%); }
+  background: linear-gradient(to bottom, rgba(7,9,15,0.18) 0%, rgba(7,9,15,0.45) 100%); }
 .zone-cryptes #dm-bg {
   background-image: url('images/cryptes.jpg');
   background-size:cover; background-position:center;
@@ -591,7 +591,7 @@ canvas#particles {
 }
 .zone-cryptes #dm-bg::after {
   content:''; position:absolute; inset:0;
-  background: linear-gradient(to bottom, rgba(12,0,8,0.55) 0%, rgba(12,0,8,0.85) 100%); }
+  background: linear-gradient(to bottom, rgba(12,0,8,0.18) 0%, rgba(12,0,8,0.48) 100%); }
 /* ── RARETÉS ─────────────────────────────────────────────────── */
 .rarity-common    { border-color:rgba(160,160,160,0.45)!important; }
 .rarity-uncommon  { border-color:rgba(60,200,60,0.65)!important;  background:rgba(20,70,20,0.18)!important; }
@@ -2279,7 +2279,7 @@ canvas#particles {
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
       <button id="dm-camp-btn" onclick="Nav.go('world-map')">🗺 Voyager</button>
-      <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')">🎒</button>
+      <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C9A550" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v1H7V6a2 2 0 0 1 2-2z"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7v2a4 4 0 0 0 8 0V7"/><circle cx="12" cy="14" r="1.5" fill="#C9A550" stroke="none"/></svg></button>
       <!-- Bag overlay -->
       <div id="bag-overlay">
         <div id="bag-overlay-box">
@@ -5415,10 +5415,10 @@ var DungeonMap = (function() {
 
     computePositions();
 
-    // Fond semi-transparent — laisse passer l'image de zone
+    // Fond légèrement teinté — laisse passer l'image de zone
     var bgGrad = mctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.7);
-    bgGrad.addColorStop(0,'rgba(10,6,2,0.55)');
-    bgGrad.addColorStop(1,'rgba(4,2,1,0.72)');
+    bgGrad.addColorStop(0,'rgba(6,3,1,0.22)');
+    bgGrad.addColorStop(1,'rgba(2,1,0,0.38)');
     mctx.fillStyle = bgGrad;
     mctx.fillRect(0,0,W,H);
 
