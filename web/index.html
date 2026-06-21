@@ -1213,6 +1213,65 @@ canvas#particles {
 #cb-xp-wrap { display: none !important; }
 /* Inn header removed — game header replaces it */
 #inn-header { display: none !important; }
+/* ── STORY INTRO ─────────────────────────────────────────────── */
+#story-intro {
+  background:#000; z-index:5;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 30px 60px; gap:0; overflow:hidden;
+}
+#si-text {
+  width:100%; min-height:140px;
+  font-family:'Crimson Text',serif; font-size:17px; line-height:1.8;
+  color:rgba(237,232,223,0.85); text-align:center; letter-spacing:0.3px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.si-line {
+  opacity:0; transform:translateY(6px);
+  transition:opacity 0.7s ease, transform 0.7s ease;
+}
+.si-line.vis { opacity:1; transform:translateY(0); }
+.si-line-em {
+  font-style:italic; color:rgba(201,165,80,0.75); font-size:16px;
+}
+#si-choices {
+  width:100%; display:flex; flex-direction:column; gap:9px;
+  margin-top:28px; opacity:0; transition:opacity 0.5s ease; pointer-events:none;
+}
+#si-choices.show { opacity:1; pointer-events:all; }
+.si-choice {
+  width:100%; padding:13px 16px;
+  background:transparent; border:1px solid rgba(237,232,223,0.12);
+  color:rgba(237,232,223,0.65); font-family:'Crimson Text',serif;
+  font-size:15px; font-style:italic; letter-spacing:0.2px;
+  border-radius:5px; cursor:pointer; text-align:left; position:relative; overflow:hidden;
+  transition:all 0.18s ease; -webkit-tap-highlight-color:transparent;
+}
+.si-choice:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.4); color:#C9A550; }
+#si-name-wrap {
+  width:100%; margin-top:28px; display:flex; flex-direction:column; align-items:center; gap:12px;
+  opacity:0; pointer-events:none; transition:opacity 0.5s ease;
+}
+#si-name-wrap.show { opacity:1; pointer-events:all; }
+#si-name-input {
+  width:100%; background:transparent; border:none;
+  border-bottom:1px solid rgba(201,165,80,0.35);
+  color:#EDE8DF; font-family:'Cinzel',serif; font-size:22px;
+  text-align:center; padding:10px 0; outline:none; letter-spacing:3px;
+}
+#si-name-input::placeholder { color:rgba(201,165,80,0.2); font-style:italic; font-family:'Crimson Text',serif; font-size:14px; letter-spacing:1px; }
+#si-name-btn {
+  padding:12px 30px; background:transparent;
+  border:1px solid rgba(201,165,80,0.3); color:rgba(201,165,80,0.65);
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px;
+  border-radius:5px; cursor:pointer; transition:all 0.18s;
+  -webkit-tap-highlight-color:transparent;
+}
+#si-name-btn:active { background:rgba(201,165,80,0.12); color:#C9A550; }
+#si-skip {
+  position:absolute; bottom:18px; right:18px;
+  font-family:'Cinzel',serif; font-size:8px; letter-spacing:1px;
+  color:rgba(255,255,255,0.12); background:none; border:none; cursor:pointer; padding:8px;
+}
 /* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
 #floor-transition {
   position:absolute; inset:0; z-index:30;
@@ -2205,6 +2264,17 @@ canvas#particles {
     </div>
 
     <!-- ── CHARACTER SELECT ── -->
+    <!-- ── STORY INTRO ── -->
+    <div id="story-intro" class="screen">
+      <div id="si-text"></div>
+      <div id="si-choices"></div>
+      <div id="si-name-wrap">
+        <input id="si-name-input" type="text" maxlength="20" placeholder="ton nom..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <button id="si-name-btn" onclick="StoryIntro.confirmName()">C'est mon nom</button>
+      </div>
+      <button id="si-skip" onclick="StoryIntro.skip()">Passer →</button>
+    </div>
+
     <div id="char-select" class="screen">
       <div id="cs-bg"></div>
 
@@ -3535,11 +3605,8 @@ var ProfilesScreen = {
 
   _creating: false,
   createNew: function() {
-    this._creating = true;
-    Nav.go('char-select');
-    buildCharSelect();
-    var inp = document.getElementById('cs-name-input');
-    if (inp) inp.value = '';
+    this._creating = false; // StoryIntro will set it when done
+    StoryIntro.start();
   },
 
   render: function() {
@@ -3709,6 +3776,174 @@ function spawnRipple(el, e) {
   }, {passive:true});
 })();
 
+// ── STORY INTRO ────────────────────────────────────────────────────
+var StoryIntro = (function(){
+  var _c = {};   // choices accumulated
+  var _idx = 0;
+
+  var SCENES = [
+    // 0 — Éveil
+    { type:'auto', delay:2800,
+      lines:['Noir.','Absolument tout est noir.','Puis... une sensation.'] },
+    // 1 — Première sensation
+    { type:'choice',
+      lines:['La première chose que tu ressens...'],
+      choices:[
+        { text:'Le froid. Un froid glacial.', key:'trait', val:'cold' },
+        { text:'La douleur. Partout.', key:'trait', val:'pain' },
+        { text:'Rien. Absolument rien.', key:'trait', val:'void' }
+      ]
+    },
+    // 2 — Une voix
+    { type:'choice',
+      lines:['Une voix. Lointaine.', 'Elle parle de toi.'],
+      choices:[
+        { text:'"Il respire encore."', key:'voice', val:'survivor' },
+        { text:'"Par les dieux... réveille-toi."', key:'voice', val:'divine' },
+        { text:'"Quelqu\'un l\'a trouvé."', key:'voice', val:'found' }
+      ]
+    },
+    // 3 — La lumière
+    { type:'auto', delay:3000,
+      lines:['La lumière arrive.','Brutalement.','Un plafond de bois. Une bougie vacillante.','Tu ne reconnais rien.'] },
+    // 4 — Le vide
+    { type:'auto', delay:2200,
+      lines:['Tu cherches quelque chose.','Un nom.','Il n\'est pas là.'] },
+    // 5 — Race
+    { type:'choice',
+      lines:['Dans le brouillard de ton esprit...','Une forme. La tienne ?'],
+      choices:[
+        { text:'Massive. Rugueuse. Taillée dans la pierre.', key:'race', val:'Nain' },
+        { text:'Fine. Presque transparente. Faite pour disparaître.', key:'race', val:'Elfe' },
+        { text:'Large. Puissante. Une rage froide sous la peau.', key:'race', val:'Orc' },
+        { text:'Ordinaire. Mais tes yeux — ils observent tout.', key:'race', val:'Humain' }
+      ]
+    },
+    // 6 — Classe
+    { type:'choice',
+      lines:['Un instinct remonte.','Quelque chose que ton corps sait faire.'],
+      choices:[
+        { text:'Tes mains cherchent une lame. C\'est un réflexe.', key:'cls', val:'Guerrier' },
+        { text:'Des mots étranges murmurent dans ta tête. Du feu.', key:'cls', val:'Mage' },
+        { text:'Tes yeux balaient l\'horizon avant tout le reste.', key:'cls', val:'Chasseur' },
+        { text:'Un coup. Unique. Invisible. C\'est tout ce que tu sais.', key:'cls', val:'Assassin' },
+        { text:'Tu veux protéger. Avant même de savoir qui.', key:'cls', val:'Prêtre' },
+        { text:'Tu souffres. Et tu souris. Ça ne s\'arrête pas.', key:'cls', val:'Barbare' }
+      ]
+    },
+    // 7 — Nom
+    { type:'input',
+      lines:['Un mot remonte. Juste un.','Comment t\'appelle-t-on ?'] },
+    // 8 — Marta (fin)
+    { type:'auto', delay:4200, finish:true,
+      lines:[
+        'Soudain — une voix dans la pièce.',
+        'Réelle, cette fois.',
+        '"Enfin réveillé ? Vous avez dormi trois jours."',
+        'Une femme dans l\'embrasure de la porte.',
+        '"Je suis Marta. Et vous me devez de l\'argent."'
+      ]
+    }
+  ];
+
+  function _clear() {
+    var t = document.getElementById('si-text');
+    var ch = document.getElementById('si-choices');
+    var nw = document.getElementById('si-name-wrap');
+    if (t)  t.innerHTML = '';
+    if (ch) { ch.innerHTML = ''; ch.classList.remove('show'); }
+    if (nw) { nw.classList.remove('show'); document.getElementById('si-name-input').value = ''; }
+  }
+
+  function _typeLines(lines, done) {
+    var t = document.getElementById('si-text');
+    if (!t) return;
+    var i = 0;
+    function next() {
+      if (i >= lines.length) { if (done) done(); return; }
+      var line = lines[i++];
+      var sp = document.createElement('div');
+      sp.className = 'si-line' + (line.charAt(0) === '"' ? ' si-line-em' : '');
+      sp.textContent = line;
+      t.appendChild(sp);
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        sp.classList.add('vis');
+        // Delay based on length: short = 1s, long = 1.8s
+        var wait = Math.min(1800, Math.max(1000, line.length * 35));
+        setTimeout(next, wait + 300);
+      }); });
+    }
+    next();
+  }
+
+  function _scene(idx) {
+    _idx = idx;
+    var sc = SCENES[idx];
+    if (!sc) return;
+    _clear();
+    _typeLines(sc.lines, function() {
+      if (sc.type === 'auto') {
+        setTimeout(function(){
+          if (sc.finish) _finish(); else _scene(idx+1);
+        }, sc.delay || 2000);
+      } else if (sc.type === 'choice') {
+        var ch = document.getElementById('si-choices');
+        ch.innerHTML = '';
+        sc.choices.forEach(function(opt) {
+          var btn = document.createElement('button');
+          btn.className = 'si-choice ripple-el';
+          btn.textContent = opt.text;
+          btn.addEventListener('click', function(){
+            _c[opt.key] = opt.val;
+            if (typeof Sfx !== 'undefined') Sfx.nav();
+            _scene(idx+1);
+          });
+          ch.appendChild(btn);
+        });
+        setTimeout(function(){ ch.classList.add('show'); }, 80);
+      } else if (sc.type === 'input') {
+        var nw = document.getElementById('si-name-wrap');
+        nw.classList.add('show');
+        setTimeout(function(){ document.getElementById('si-name-input').focus(); }, 350);
+      }
+    });
+  }
+
+  function _finish() {
+    State.race = _c.race || 'Humain';
+    State.cls  = _c.cls  || 'Guerrier';
+    var heroName = _c.name || 'Étranger';
+    var inp = document.getElementById('cs-name-input');
+    if (inp) inp.value = heroName;
+    State._introChoices = _c;
+    State._showMartaIntro = true;
+    ProfilesScreen._creating = true;
+    App.startRun();
+  }
+
+  return {
+    start: function() {
+      _c = {}; _idx = 0;
+      Nav.go('story-intro');
+      setTimeout(function(){ _scene(0); }, 500);
+    },
+    confirmName: function() {
+      var val = (document.getElementById('si-name-input').value||'').trim();
+      if (!val) { document.getElementById('si-name-input').focus(); return; }
+      _c.name = val;
+      if (typeof Sfx !== 'undefined') Sfx.nav();
+      _scene(_idx + 1);
+    },
+    skip: function() {
+      ProfilesScreen._creating = true;
+      Nav.go('char-select');
+      buildCharSelect();
+      var inp = document.getElementById('cs-name-input');
+      if (inp) inp.value = '';
+    }
+  };
+})();
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -3721,7 +3956,7 @@ var Nav = {
     Nav.current = id;
     if (typeof HUD !== 'undefined') { HUD.update(id); HUD.updateGold(); }
     // Auto-save à chaque changement d'écran si un run est actif
-    var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1};
+    var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1,'story-intro':1};
     if (!menuScreens[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
       State.saveRun();
     }
@@ -3732,7 +3967,7 @@ var Nav = {
       else if (id==='dungeon-map') Music.play('dungeon');
       else if (id==='inn-room') Music.play('menu');
       else if (id==='world-map') { Music.play('dungeon'); if (typeof WorldMap !== 'undefined') WorldMap.updateHotspots(); }
-      else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen') Music.play('menu');
+      else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen'||id==='story-intro') Music.stop();
       else if (id==='gameover-screen') Music.stop();
     }
     if (prev && screens[prev]) {
@@ -4118,9 +4353,8 @@ var Combat = (function(){
     if (victory) {
       var sprEl = document.getElementById('cb-enemy-sprite');
       if (sprEl) { sprEl.classList.remove('hit'); sprEl.classList.add('dead'); }
-      State._lastCombatGold = Math.floor((enemy.gold||0) * (1 + (Meta.bonuses.goldPct||0)) * (State._runGoldBonus||1) * 0.42);
+      State._lastCombatGold = 0; // or trouvé en donjon, pas en combat
       State._adGoldUsed = false;
-      State.gold  = (State.gold||0)  + State._lastCombatGold;
       if (typeof HUD !== 'undefined') HUD.updateGold();
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
@@ -6222,6 +6456,30 @@ var InnRoom = {
     InnRoom.updateHp();
     if (typeof HUD !== 'undefined') HUD.updateHP();
     State.saveRun(); // auto-save à chaque retour à l'auberge
+    // Dialogue Marta — première arrivée
+    if (State._showMartaIntro) {
+      State._showMartaIntro = false;
+      State.saveRun();
+      setTimeout(function(){
+        var trait = (State._introChoices || {}).trait;
+        var opener = trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
+          : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
+          : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.';
+        CGEModal.show({
+          title: 'Marta',
+          text: opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."',
+          okLabel: 'Compris',
+          onOk: function() {
+            // Première quête : payer Marta
+            if (typeof Meta !== 'undefined' && !(Meta.completedQuests||{})['marta_debt']) {
+              Meta.activeQuests = Meta.activeQuests || {};
+              Meta.activeQuests['marta_debt'] = true;
+              Meta.save();
+            }
+          }
+        });
+      }, 600);
+    }
   },
   updateHp: function() {
     var hp = State.hp||0, hpMax = State.hpMax||1;
