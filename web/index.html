@@ -776,6 +776,19 @@ canvas#particles {
   80%     { transform:translateX(3px); }
 }
 #phone-screen.shake { animation:screen-shake 0.35s ease; }
+/* ── RIPPLE ─────────────────────────────────────────────────── */
+.ripple-el { position:relative; overflow:hidden; }
+.ripple-wave {
+  position:absolute; border-radius:50%; transform:scale(0);
+  animation:ripple-out 0.55s linear forwards;
+  background:rgba(255,255,255,0.18); pointer-events:none;
+}
+@keyframes ripple-out { to { transform:scale(4); opacity:0; } }
+/* ── HEADER VALUE FLASH ──────────────────────────────────────── */
+@keyframes hdr-flash { 0%{opacity:1} 40%{opacity:0;transform:scale(1.25)} 100%{opacity:1;transform:scale(1)} }
+.hdr-val-flash { animation:hdr-flash 0.35s ease; }
+@keyframes hdr-slide-in { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+#game-header.entering { animation:hdr-slide-in 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
 /* Barre HP rouge animée quand critique */
 #cb-player-hp-wrap.danger #cb-player-hp-inner {
   animation:danger-pulse 0.8s ease-in-out infinite;
@@ -858,6 +871,33 @@ canvas#particles {
   20%  { opacity:1; transform:translate(-50%,-80%) scale(1.2); }
   100% { opacity:0; transform:translate(-50%,-160%) scale(0.9); }
 }
+#heal-float {
+  position:absolute; top:40%; left:50%;
+  font-family:'Cinzel',serif; font-size:22px; font-weight:900;
+  color:#50e090; text-shadow:0 0 10px rgba(60,200,100,0.7);
+  pointer-events:none; z-index:10; opacity:0;
+}
+#heal-float.show { animation:heal-up 1s ease-out forwards; }
+@keyframes heal-up {
+  0%   { opacity:1; transform:translate(-50%,-50%) scale(0.7); }
+  20%  { opacity:1; transform:translate(-50%,-70%) scale(1.1); }
+  100% { opacity:0; transform:translate(-50%,-170%) scale(0.9); }
+}
+/* ── LEVEL-UP PARTICLES ──────────────────────────────────────── */
+.lu-particle {
+  position:absolute; width:6px; height:6px; border-radius:50%;
+  background:radial-gradient(circle, #FFE066, #C9A550);
+  pointer-events:none; z-index:26;
+  animation:lu-particle-fly var(--dur,0.8s) ease-out forwards;
+}
+@keyframes lu-particle-fly {
+  0%   { opacity:1; transform:translate(0,0) scale(1); }
+  100% { opacity:0; transform:translate(var(--tx,0),var(--ty,-120px)) scale(0.2); }
+}
+#levelup-overlay.show #lu-level-num {
+  animation: lu-num-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes lu-num-in { from{transform:scale(0.3);opacity:0} to{transform:scale(1);opacity:1} }
 
 /* ── Log de combat ── */
 #cb-log-zone {
@@ -1570,7 +1610,7 @@ canvas#particles {
 }
 /* hotspots génériques */
 .hotspot {
-  position:absolute; z-index:5; cursor:pointer;
+  position:absolute; z-index:5; cursor:pointer; overflow:hidden;
   -webkit-tap-highlight-color:transparent;
   display:flex; flex-direction:column; align-items:center;
 }
@@ -2259,6 +2299,7 @@ canvas#particles {
           <div id="cb-enemy-hp-text">50/50</div>
         </div>
         <div id="dmg-float"></div>
+        <div id="heal-float"></div>
       </div>
 
       <!-- Log -->
@@ -3645,6 +3686,29 @@ var ProfilesScreen = {
   },
 };
 
+// ── RIPPLE ────────────────────────────────────────────────────────
+function spawnRipple(el, e) {
+  var r = el.getBoundingClientRect();
+  var cx = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - r.left;
+  var cy = (e.changedTouches ? e.changedTouches[0].clientY : e.clientY) - r.top;
+  var size = Math.max(r.width, r.height) * 2;
+  var rr = document.createElement('span');
+  rr.className = 'ripple-wave';
+  rr.style.cssText = 'width:'+size+'px;height:'+size+'px;top:'+(cy-size/2)+'px;left:'+(cx-size/2)+'px';
+  el.appendChild(rr);
+  setTimeout(function(){ if(rr.parentNode) rr.parentNode.removeChild(rr); }, 600);
+}
+(function attachRipples(){
+  document.querySelectorAll('.cb-btn,.lu-card').forEach(function(el){ el.classList.add('ripple-el'); });
+  document.addEventListener('touchstart', function(e) {
+    var t = e.target.closest('.cb-btn,.lu-card,.hotspot,.hs-btn,button:not([data-no-ripple]),[data-ripple]');
+    if (t) { t.classList.add('ripple-el'); spawnRipple(t, e); }
+    if (t && typeof Sfx !== 'undefined' && t.tagName === 'BUTTON' && !t.classList.contains('cb-btn')) {
+      Sfx.nav();
+    }
+  }, {passive:true});
+})();
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -3673,9 +3737,9 @@ var Nav = {
     }
     if (prev && screens[prev]) {
       var el = screens[prev];
-      el.style.transition = 'opacity 0.4s ease';
+      el.style.transition = 'opacity 0.2s ease';
       el.style.opacity = '0';
-      setTimeout(function(){ el.classList.remove('active'); el.style.opacity=''; el.style.transition=''; }, 400);
+      setTimeout(function(){ el.classList.remove('active'); el.style.opacity=''; el.style.transition=''; }, 200);
     }
     setTimeout(function(){
       var next = screens[id];
@@ -3683,9 +3747,9 @@ var Nav = {
       next.style.opacity = '0';
       next.classList.add('active');
       requestAnimationFrame(function(){ requestAnimationFrame(function(){
-        next.style.transition = 'opacity 0.5s ease';
+        next.style.transition = 'opacity 0.25s ease';
         next.style.opacity = '1';
-        setTimeout(function(){ next.style.transition=''; }, 500);
+        setTimeout(function(){ next.style.transition=''; }, 250);
       });});
       if (id === 'taverne-screen' && typeof Quests !== 'undefined') Quests.refreshBadges();
       if (id === 'dungeon-map') {
