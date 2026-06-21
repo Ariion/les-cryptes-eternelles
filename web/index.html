@@ -1836,109 +1836,6 @@ canvas#particles {
 /* ══════════════════════════════════════════════════════════════════
    ÉCRAN ÉQUIPEMENT / INVENTAIRE
    ══════════════════════════════════════════════════════════════════ */
-#equip-screen {
-  background:#07060f;
-  flex-direction:column; align-items:stretch; padding:0; gap:0; overflow:hidden;
-}
-#eq-header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 16px 10px; flex-shrink:0;
-  border-bottom:1px solid rgba(201,165,80,0.15); position:relative; z-index:2;
-}
-#eq-back { font-size:22px; color:rgba(201,165,80,0.7); cursor:pointer; padding:4px 10px; -webkit-tap-highlight-color:transparent; }
-#eq-title { font-family:'Cinzel Decorative',serif; font-size:16px; color:#C9A550; letter-spacing:1px; }
-/* Stats bar */
-#eq-stats-bar {
-  display:flex; flex-shrink:0;
-  border-bottom:1px solid rgba(201,165,80,0.1);
-  background:rgba(0,0,0,0.3);
-}
-.eq-stat-pill {
-  flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 4px;
-  border-right:1px solid rgba(201,165,80,0.08);
-}
-.eq-stat-pill:last-child { border-right:none; }
-.eq-stat-pill-ico { font-size:14px; line-height:1; }
-.eq-stat-pill-val { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550; }
-.eq-stat-pill-lbl { font-family:'Cinzel',serif; font-size:8px; letter-spacing:1px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-top:1px; }
-/* Body */
-#eq-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px 180px; display:flex; flex-direction:column; gap:6px; }
-.eq-section-lbl {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.35);
-  text-transform:uppercase; padding:8px 0 4px;
-  border-bottom:1px solid rgba(201,165,80,0.08); margin-bottom:2px;
-}
-/* Slot rows */
-.eq-slot-row {
-  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.08);
-  cursor:pointer; transition:background 0.15s,border-color 0.15s;
-  -webkit-tap-highlight-color:transparent; min-height:60px;
-}
-.eq-slot-row:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.25); }
-.eq-slot-row.has-item { border-color:rgba(201,165,80,0.22); }
-.eq-slot-cell-ico {
-  width:44px; height:44px; border-radius:8px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:24px;
-  background:rgba(255,255,255,0.04); border:1px solid rgba(201,165,80,0.12);
-}
-.eq-slot-row.has-item .eq-slot-cell-ico { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.3); }
-.eq-slot-cell-info { flex:1; min-width:0; }
-.eq-slot-cell-name { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-bottom:3px; }
-.eq-slot-cell-item { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:#EDE8DF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.eq-slot-cell-empty { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(237,232,223,0.22); }
-.eq-slot-cell-stat { font-family:'Cinzel',serif; font-size:10px; color:rgba(201,165,80,0.6); margin-top:2px; }
-.eq-slot-cell-arrow { color:rgba(201,165,80,0.22); font-size:18px; flex-shrink:0; }
-/* Inventory grid 2 cols */
-#eq-inv-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
-.eq-inv-card {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:4px; padding:14px 8px; border-radius:10px; text-align:center;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.1);
-  cursor:pointer; transition:all 0.15s; min-height:96px;
-  -webkit-tap-highlight-color:transparent;
-}
-.eq-inv-card:active { background:rgba(201,165,80,0.1); }
-.eq-inv-card.empty { border-style:dashed; opacity:0.25; cursor:default; pointer-events:none; }
-.eq-inv-card .eic-ico { font-size:30px; line-height:1; }
-.eq-inv-card .eic-name { font-family:'Cinzel',serif; font-size:10px; font-weight:600; color:#EDE8DF; line-height:1.2; }
-.eq-inv-card .eic-stat { font-family:'Cinzel',serif; font-size:10px; color:rgba(201,165,80,0.6); }
-/* Detail bottom sheet */
-#eq-detail-overlay { position:absolute; inset:0; z-index:19; display:none; background:rgba(0,0,0,0.4); }
-#eq-detail-overlay.open { display:block; }
-#eq-detail-panel {
-  position:absolute; bottom:0; left:0; right:0; z-index:20;
-  background:linear-gradient(160deg,#1c1408,#0e0a04);
-  border-top:1px solid rgba(201,165,80,0.3); border-radius:20px 20px 0 0;
-  padding:16px 20px 36px; display:none; flex-direction:column; gap:14px;
-  box-shadow:0 -20px 60px rgba(0,0,0,0.8);
-}
-#eq-detail-panel.open { display:flex; }
-#eq-detail-handle { width:36px; height:4px; border-radius:2px; background:rgba(201,165,80,0.3); margin:0 auto 4px; }
-#eq-detail-top { display:flex; align-items:center; gap:14px; }
-#eq-detail-ico {
-  font-size:36px; width:60px; height:60px; border-radius:12px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(201,165,80,0.1); border:1px solid rgba(201,165,80,0.3);
-}
-#eq-detail-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#EDE8DF; }
-#eq-detail-slot-lbl { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.45); text-transform:uppercase; margin-top:2px; }
-#eq-detail-desc { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(237,232,223,0.55); line-height:1.4; }
-#eq-detail-chips { display:flex; flex-wrap:wrap; gap:8px; }
-.eq-chip {
-  display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px;
-  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
-  font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#C9A550;
-}
-#eq-detail-btns { display:flex; gap:10px; }
-#eq-detail-btns button {
-  flex:1; padding:12px; border-radius:10px;
-  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
-  cursor:pointer; border:1px solid; transition:all 0.15s;
-}
-#eq-btn-close  { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(237,232,223,0.4); flex:0 0 auto; padding:12px 16px; }
-#eq-btn-remove { background:rgba(200,60,60,0.1); border-color:rgba(200,60,60,0.3); color:rgba(220,100,100,0.8); }
-#eq-btn-equip  { background:rgba(201,165,80,0.18); border-color:rgba(201,165,80,0.5); color:#C9A550; }
 
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1994,14 +1891,6 @@ canvas#particles {
   color:rgba(237,232,223,0.25); text-align:center; padding:8px 0 4px;
 }
 
-/* ── HERO SCREEN close btn ── */
-#hs-close-btn {
-  margin:auto 16px 20px; width:calc(100% - 32px); height:46px;
-  border-radius:8px; border:1px solid rgba(255,255,255,0.1);
-  background:transparent; color:rgba(200,190,180,0.4);
-  font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; text-transform:uppercase;
-  cursor:pointer; -webkit-tap-highlight-color:transparent;
-}
 /* ancien CSS world-map supprimé — inutile avec l'image */
 /* Google Account */
 #google-account-wrap {
@@ -5819,155 +5708,220 @@ var SLOT_DEFAULTS = {
   bague_gauche:'💍', bague_droite:'💍'
 };
 
-var EquipScreen = (function(){
+var EquipScreen = (function() {
   var _from = 'inn-room';
-  var _detail = null;
+  var _detail = null; // { item, slot, src } — currently shown in detail panel
 
-  var SLOT_LABELS = { arme:'Arme', bouclier:'Bouclier', heaume:'Heaume', plastron:'Plastron', gants:'Gantelets', ceinture:'Ceinture', jambieres:'Jambières', bottes:'Bottes', collier:'Collier', bague_gauche:'Bague gauche', bague_droite:'Bague droite' };
-  var SLOT_ICO    = { arme:'⚔', bouclier:'🛡', heaume:'🪖', plastron:'🥋', gants:'🧤', ceinture:'🪢', jambieres:'🦵', bottes:'👢', collier:'📿', bague_gauche:'💍', bague_droite:'💍' };
+  var SLOT_LABELS = {
+    arme:'Arme', bouclier:'Bouclier', heaume:'Heaume', plastron:'Plastron',
+    gants:'Gantelets', ceinture:'Ceinture', jambieres:'Jambières', bottes:'Bottes',
+    collier:'Collier', bague_gauche:'Bague gauche', bague_droite:'Bague droite'
+  };
 
-  function _stat(item) {
-    if (!item||!item.stats) return '';
-    var s=item.stats, p=[];
-    if(s.atk) p.push('+'+s.atk+' ATQ');
-    if(s.def) p.push('+'+s.def+' DEF');
-    if(s.hp)  p.push('+'+s.hp+' PV');
-    if(s.crit)p.push('+'+s.crit+'% CRIT');
-    return p.join(' · ');
+  var SLOT_DEFAULT_ICO = {
+    arme:'⚔', bouclier:'🛡', heaume:'🪖', plastron:'🥋',
+    gants:'🧤', ceinture:'➰', jambieres:'🦵', bottes:'👢',
+    collier:'📿', bague_gauche:'💍', bague_droite:'💍'
+  };
+
+  function _statSummary(item) {
+    if (!item || !item.stats) return '';
+    var s = item.stats;
+    var parts = [];
+    if (s.atk)  parts.push('+'+s.atk+' ATQ');
+    if (s.def)  parts.push('+'+s.def+' DEF');
+    if (s.hp)   parts.push('+'+s.hp+' PV');
+    if (s.crit) parts.push('+'+s.crit+'% CRIT');
+    return parts.join(' · ');
   }
 
-  function _refresh() {
-    var eq = State.equipped||{};
-    Object.keys(SLOT_LABELS).forEach(function(slot){
+  function _refreshSlots() {
+    var eq = State.equipped || {};
+    var slots = ['arme','bouclier','heaume','plastron','gants','ceinture','jambieres','bottes','collier','bague_gauche','bague_droite'];
+    slots.forEach(function(slot) {
       var item = eq[slot];
-      var row  = document.getElementById('eqr-'+slot);
-      var ico  = document.getElementById('eqi-'+slot);
-      var name = document.getElementById('eqn-'+slot);
-      var stat = document.getElementById('eqst-'+slot);
-      if(!row) return;
-      if(item){
+      var row  = document.getElementById('eq-row-'+slot);
+      var ico  = document.getElementById('eq-ico-'+slot);
+      var name = document.getElementById('eq-name-'+slot);
+      var stat = document.getElementById('eq-stat-'+slot);
+      if (!row) return;
+      if (item) {
         row.classList.add('has-item');
-        if(ico)  ico.textContent = item.ico||SLOT_ICO[slot]||'?';
-        if(name){ name.textContent=item.name; name.className='eq-slot-cell-item'; }
-        if(stat) stat.textContent=_stat(item);
+        if (ico)  { ico.textContent = item.ico || SLOT_DEFAULT_ICO[slot] || '?'; }
+        if (name) { name.textContent = item.name; name.className = 'eq-slot-item-name'; }
+        if (stat) { stat.textContent = _statSummary(item); }
       } else {
         row.classList.remove('has-item');
-        if(ico)  ico.textContent = SLOT_ICO[slot]||'?';
-        if(name){ name.textContent='Aucun(e)'; name.className='eq-slot-cell-empty'; }
-        if(stat) stat.textContent='';
+        if (ico)  { ico.textContent = SLOT_DEFAULT_ICO[slot] || '?'; }
+        if (name) { name.textContent = 'Aucun(e)'; name.className = 'eq-slot-item-name eq-slot-empty'; }
+        if (stat) { stat.textContent = ''; }
       }
     });
-    var a=document.getElementById('eqs-atk'); if(a) a.textContent=State.atk||0;
-    var d=document.getElementById('eqs-def'); if(d) d.textContent=State.def||0;
-    var h=document.getElementById('eqs-hp');  if(h) h.textContent=(State.hp||0)+'/'+(State.hpMax||0);
-    var l=document.getElementById('eqs-lvl'); if(l) l.textContent=State.level||1;
-    _refreshInv();
+
+    // Stats bar
+    var atkEl = document.getElementById('eqs-atk');
+    var defEl = document.getElementById('eqs-def');
+    var hpEl  = document.getElementById('eqs-hp');
+    var lvlEl = document.getElementById('eqs-lvl');
+    if (atkEl) atkEl.textContent = State.atk || 0;
+    if (defEl) defEl.textContent = State.def || 0;
+    if (hpEl)  hpEl.textContent  = (State.hp||0)+'/'+( State.hpMax||0);
+    if (lvlEl) lvlEl.textContent = State.level || 1;
+
+    // Inventory
+    _refreshInventory();
   }
 
-  function _refreshInv() {
-    var inv=State.inventory||[], grid=document.getElementById('eq-inv-grid'), cnt=document.getElementById('eq-inv-count');
-    if(!grid) return;
-    if(cnt) cnt.textContent=inv.length;
-    grid.innerHTML='';
-    for(var i=0;i<8;i++){
-      var card=document.createElement('div');
-      if(inv[i]){
-        var it=inv[i]; var idx=i;
-        card.className='eq-inv-card rarity-'+(it.rarity||'common');
-        card.innerHTML='<div class="eic-ico">'+it.ico+'</div><div class="eic-name">'+it.name+'</div><div class="eic-stat">'+_stat(it)+'</div>';
-        (function(item,ii){ card.addEventListener('click',function(){ _showDetail({item:item,src:'inv',idx:ii}); }); })(it,idx);
+  function _refreshInventory() {
+    var inv  = State.inventory || [];
+    var grid = document.getElementById('eq-inv-grid');
+    var cnt  = document.getElementById('eq-inv-count');
+    if (!grid) return;
+    if (cnt) cnt.textContent = inv.length;
+    grid.innerHTML = '';
+    var total = Math.max(8, inv.length + (inv.length < 8 ? 8 - inv.length : 0));
+    for (var i = 0; i < 8; i++) {
+      var card = document.createElement('div');
+      if (i < inv.length) {
+        var it = inv[i];
+        var idx = i;
+        card.className = 'eq-inv-card rarity-'+(it.rarity||'common');
+        card.innerHTML =
+          '<div class="card-ico">'+it.ico+'</div>'+
+          '<div class="card-name">'+it.name+'</div>'+
+          '<div class="card-stat">'+_statSummary(it)+'</div>';
+        (function(item, ii) {
+          card.addEventListener('click', function() {
+            showDetail({ item:item, src:'inv', idx:ii });
+          });
+        })(it, idx);
       } else {
-        card.className='eq-inv-card empty';
-        card.innerHTML='<div style="font-size:22px;opacity:0.15">·</div>';
+        card.className = 'eq-inv-card empty';
+        card.innerHTML = '<div style="font-size:20px;opacity:0.2">+</div>';
       }
       grid.appendChild(card);
     }
   }
 
-  function _showDetail(ctx) {
-    _detail=ctx;
-    var item=ctx.item;
-    document.getElementById('eq-detail-ico').textContent  = item.ico||'?';
-    document.getElementById('eq-detail-name').textContent = item.name||'—';
-    document.getElementById('eq-detail-slot-lbl').textContent = SLOT_LABELS[item.slot]||SLOT_LABELS[ctx.slot]||'';
-    document.getElementById('eq-detail-desc').textContent = item.desc||'';
-    var chips=document.getElementById('eq-detail-chips'); chips.innerHTML='';
-    if(item.stats){
-      var s=item.stats;
-      [['⚔','atk','ATQ'],['🛡','def','DEF'],['❤','hp','PV'],['✨','crit','CRIT%']].forEach(function(t){
-        if(s[t[1]]){ var c=document.createElement('div'); c.className='eq-chip'; c.innerHTML=t[0]+' +'+s[t[1]]+' <span style="font-size:9px;opacity:0.5">'+t[2]+'</span>'; chips.appendChild(c); }
+  function showDetail(ctx) {
+    // ctx = { item, slot (if equipped), src ('slot'|'inv'), idx }
+    _detail = ctx;
+    var item = ctx.item;
+    var panel = document.getElementById('eq-detail-panel');
+    var overlay = document.getElementById('eq-detail-overlay');
+
+    document.getElementById('eq-detail-ico').textContent  = item.ico || '?';
+    document.getElementById('eq-detail-name').textContent = item.name || '—';
+    document.getElementById('eq-detail-slot').textContent = SLOT_LABELS[item.slot] || SLOT_LABELS[ctx.slot] || '';
+    document.getElementById('eq-detail-desc').textContent = item.desc || '';
+
+    // Stats chips
+    var statsDiv = document.getElementById('eq-detail-stats');
+    statsDiv.innerHTML = '';
+    if (item.stats) {
+      var s = item.stats;
+      [['⚔','atk','ATQ'],['🛡','def','DEF'],['❤','hp','PV'],['✨','crit','CRIT%']].forEach(function(t) {
+        if (s[t[1]]) {
+          var chip = document.createElement('div');
+          chip.className = 'eq-ds';
+          chip.innerHTML = t[0]+' <span>+'+s[t[1]]+'</span> <span style="font-size:9px;opacity:0.5">'+t[2]+'</span>';
+          statsDiv.appendChild(chip);
+        }
       });
     }
-    var eqBtn=document.getElementById('eq-btn-equip'), rmBtn=document.getElementById('eq-btn-remove');
-    if(ctx.src==='slot'){ eqBtn.style.display='none'; rmBtn.style.display=''; }
-    else { eqBtn.style.display=''; rmBtn.style.display='none'; }
-    document.getElementById('eq-detail-panel').classList.add('open');
-    document.getElementById('eq-detail-overlay').classList.add('open');
+
+    var equipBtn  = document.getElementById('eq-detail-equip');
+    var removeBtn = document.getElementById('eq-detail-remove');
+    if (ctx.src === 'slot') {
+      // Equipped item — show Remove
+      equipBtn.style.display  = 'none';
+      removeBtn.style.display = '';
+    } else {
+      // Inventory item — show Equip
+      equipBtn.style.display  = '';
+      removeBtn.style.display = 'none';
+    }
+
+    panel.classList.add('open');
+    overlay.classList.add('open');
   }
 
-  function _closeDetail() {
-    _detail=null;
+  function closeDetail() {
+    _detail = null;
     document.getElementById('eq-detail-panel').classList.remove('open');
     document.getElementById('eq-detail-overlay').classList.remove('open');
   }
 
-  return {
-  _from: 'inn-room',
-  _selected: null, // legacy compat
+  function detailEquip() {
+    if (!_detail || _detail.src !== 'inv') return;
+    var item = _detail.item;
+    var inv  = State.inventory || [];
+    // Determine target slot
+    var targetSlot = item.slot;
+    if (targetSlot === 'bague') {
+      targetSlot = (!State.equipped.bague_gauche) ? 'bague_gauche' : 'bague_droite';
+    }
+    // If slot occupied, swap to inventory
+    if (State.equipped[targetSlot]) {
+      var old = State.equipped[targetSlot];
+      applyItemStats(old, -1);
+      inv.splice(_detail.idx, 1, old);
+    } else {
+      inv.splice(_detail.idx, 1);
+    }
+    State.equipped[targetSlot] = item;
+    applyItemStats(item, 1);
+    State.hp = Math.min(State.hp, State.hpMax);
+    State.inventory = inv;
+    closeDetail();
+    _refreshSlots();
+    if (typeof State.saveRun === 'function') State.saveRun();
+  }
 
-  open: function(from) {
-    _from = from || 'inn-room';
-    State.equipped = State.equipped || {};
+  function detailRemove() {
+    if (!_detail || _detail.src !== 'slot') return;
+    var slot = _detail.slot || (_detail.item && _detail.item.slot);
+    var item = State.equipped[slot];
+    if (!item) return;
     State.inventory = State.inventory || [];
-    _refresh();
-    Nav.go('equip-screen');
-  },
+    if (State.inventory.length >= 8) {
+      CGEModal.alert('Inventaire plein', 'Libère une place dans ton sac avant de retirer cet équipement.');
+      return;
+    }
+    applyItemStats(item, -1);
+    State.equipped[slot] = null;
+    State.hp = Math.min(State.hp, State.hpMax);
+    State.inventory.push(item);
+    closeDetail();
+    _refreshSlots();
+    if (typeof State.saveRun === 'function') State.saveRun();
+  }
 
-  close: function() { _closeDetail(); Nav.go(_from||'inn-room'); },
-  closeDetail: _closeDetail,
+  function tapSlot(slot) {
+    var item = (State.equipped || {})[slot];
+    if (item) {
+      showDetail({ item:item, slot:slot, src:'slot' });
+    }
+    // If empty slot, do nothing (or could show inventory filtered by slot)
+  }
 
-  tapSlot: function(slot) {
-    var item = (State.equipped||{})[slot];
-    if(item) _showDetail({item:item, slot:slot, src:'slot'});
-  },
-
-  detailEquip: function() {
-    if(!_detail||_detail.src!=='inv') return;
-    var item=_detail.item, inv=State.inventory||[];
-    var targetSlot=item.slot==='bague' ? (!State.equipped.bague_gauche?'bague_gauche':'bague_droite') : item.slot;
-    if(State.equipped[targetSlot]){ var old=State.equipped[targetSlot]; applyItemStats(old,-1); inv.splice(_detail.idx,1,old); }
-    else { inv.splice(_detail.idx,1); }
-    State.equipped[targetSlot]=item; applyItemStats(item,1);
-    State.hp=Math.min(State.hp,State.hpMax); State.inventory=inv;
-    _closeDetail(); _refresh();
-    if(typeof updateMapHpBar!=='undefined') updateMapHpBar();
-    if(typeof State.saveRun==='function') State.saveRun();
-  },
-
-  detailRemove: function() {
-    if(!_detail||_detail.src!=='slot') return;
-    var slot=_detail.slot||(_detail.item&&_detail.item.slot);
-    var item=State.equipped[slot]; if(!item) return;
-    State.inventory=State.inventory||[];
-    if(State.inventory.length>=8){ CGEModal.alert('Inventaire plein','Libère une place avant de retirer cet équipement.'); return; }
-    applyItemStats(item,-1); State.equipped[slot]=null;
-    State.hp=Math.min(State.hp,State.hpMax); State.inventory.push(item);
-    _closeDetail(); _refresh();
-    if(typeof State.saveRun==='function') State.saveRun();
-  },
-
-  render: function() { _refresh(); }, // legacy compat
-
-  clickSlot: function(slot) { }, // legacy — replaced by tapSlot
-  clickInv: function(idx) {
-    var item=(State.inventory||[])[idx]; if(!item) return;
-    _showDetail({item:item,src:'inv',idx:idx});
-  },
-
-  _showTooltip: function(){}, // legacy stub
-
-  openFromDungeon: function(){ this.open('dungeon-map'); },
-
+  return {
+    open: function(from) {
+      _from = from || 'inn-room';
+      State._heroFrom = _from;
+      _refreshSlots();
+      Nav.go('hero-screen');
+    },
+    close: function() {
+      closeDetail();
+      Nav.go(_from || 'inn-room');
+    },
+    tapSlot: tapSlot,
+    showDetail: showDetail,
+    closeDetail: closeDetail,
+    detailEquip: detailEquip,
+    detailRemove: detailRemove,
+    refresh: _refreshSlots
   };
 })();
 
