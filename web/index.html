@@ -541,11 +541,8 @@ canvas#particles {
 #dungeon-map.zone-pics    { background:#07090f; }
 #dungeon-map.zone-cryptes { background:#0c0008; }
 #dm-bg {
-  position:absolute; inset:0;
-  background-size:cover; background-position:center; background-repeat:no-repeat;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 50%, rgba(30,15,5,0.8) 0%, transparent 70%),
-    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(60,20,0,0.4) 0%, transparent 50%);
+  position:absolute; inset:0; z-index:0;
+  background-size:cover; background-position:center top; background-repeat:no-repeat;
 }
 .zone-grottes #dm-bg {
   background-image: url('images/grottes.jpg');
@@ -665,9 +662,9 @@ canvas#particles {
 #dm-canvas-wrap {
   flex:1; position:relative; z-index:2;
   display:flex; align-items:center; justify-content:center;
-  padding:8px 0;
+  padding:0; width:100%;
 }
-#map-canvas { display:block; }
+#map-canvas { display:block; width:100% !important; }
 
 #dm-footer {
   width:100%; padding:8px 20px 16px;
@@ -5418,16 +5415,16 @@ var DungeonMap = (function() {
 
     computePositions();
 
-    // Fond parchemin/crypte
+    // Fond semi-transparent — laisse passer l'image de zone
     var bgGrad = mctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*0.7);
-    bgGrad.addColorStop(0,'rgba(28,18,8,0.95)');
-    bgGrad.addColorStop(1,'rgba(8,5,2,0.98)');
+    bgGrad.addColorStop(0,'rgba(10,6,2,0.55)');
+    bgGrad.addColorStop(1,'rgba(4,2,1,0.72)');
     mctx.fillStyle = bgGrad;
     mctx.fillRect(0,0,W,H);
 
     // Grille vieille carte
     mctx.save();
-    mctx.globalAlpha = 0.05;
+    mctx.globalAlpha = 0.04;
     mctx.strokeStyle = '#8a6a30';
     mctx.lineWidth = 1;
     for(var gx=0;gx<W;gx+=20){ mctx.beginPath(); mctx.moveTo(gx,0); mctx.lineTo(gx,H); mctx.stroke(); }
