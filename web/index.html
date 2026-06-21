@@ -2248,6 +2248,7 @@ canvas#particles {
       <div id="shop-header-bar">
         <div id="shop-back-btn" onclick="Rooms.shopLeave()">←</div>
         <div id="shop-title">🏪 Marchand Obscur</div>
+        <div style="font-family:'Cinzel',serif;font-size:12px;color:#C9A550;display:flex;align-items:center;gap:4px">🪙 <span id="shop-gold-val">0</span></div>
       </div>
       <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
       <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
@@ -4990,6 +4991,7 @@ Rooms.showShop = function(fromScreen, category) {
   var items = pool.slice(0, slots ? pool.length : 4);
   State._shopItems = items;
   document.getElementById('shop-title').textContent = (category && TITLE_MAP[category]) || '🏪 Marchand Obscur';
+  var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold||0;
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
 };
@@ -5088,7 +5090,7 @@ Rooms.shopBuy = function(idx) {
     item.effect();
   }
   Sfx.buy && Sfx.buy();
-  document.getElementById('shop-gold-val').textContent = State.gold;
+  var _sgv2 = document.getElementById('shop-gold-val'); if (_sgv2) _sgv2.textContent = State.gold;
   if (typeof HUD !== 'undefined') HUD.updateGold();
   var cards = document.querySelectorAll('.shop-item');
   if (cards[idx]) cards[idx].classList.add('sold');
