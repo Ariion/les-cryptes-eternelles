@@ -3760,7 +3760,7 @@ var Nav = {
         if (id==='dungeon-map'||id==='inn-room'||id==='combat-screen') Embers.startFor(id);
         else Embers.stop();
       }
-    }, prev ? 250 : 0);
+    }, prev ? 150 : 0);
   }
 };
 
@@ -3971,6 +3971,15 @@ var Combat = (function(){
     if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#1a6a1a,#2db82d,#50d050)';
     else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#6a6a10,#b8b820,#d0d040)';
     else               bar.style.background = 'linear-gradient(90deg,#6a1a10,#b83020,#d05040)';
+  }
+
+  function showHeal(amount) {
+    var el = document.getElementById('heal-float');
+    if (!el) return;
+    el.textContent = '+' + amount;
+    el.className = '';
+    void el.offsetWidth;
+    el.className = 'show';
   }
 
   function showDmg(amount, isPlayer, isCrit) {
@@ -4318,6 +4327,7 @@ var Combat = (function(){
       if ((Meta.bonuses.lifesteal||0) > 0) {
         var ls = Math.max(1, Math.round(res.dmg * Meta.bonuses.lifesteal));
         State.hp = Math.min(State.hpMax, State.hp + ls);
+        showHeal(ls);
         updatePlayerUI(); log('🩸 Vampirisme +'+ls+' PV','player');
       }
       if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); return; }
@@ -4367,6 +4377,7 @@ var Combat = (function(){
       } else if (c.id === 'Prêtre') {
         var heal = Math.round(State.hpMax * 0.3);
         State.hp = Math.min(State.hpMax, State.hp + heal);
+        showHeal(heal);
         updatePlayerUI();
         Sfx.heal();
         log('Soin divin ! +'+heal+' PV récupérés.','heal');
@@ -4389,6 +4400,7 @@ var Combat = (function(){
       State.potions--;
       var heal = Math.round(State.hpMax * 0.35);
       State.hp = Math.min(State.hpMax, State.hp + heal);
+      showHeal(heal);
       State.persistentStatuses = [];
       statuses = statuses.filter(function(s){ return s.type!=='poison'&&s.type!=='burn'; });
       updatePlayerUI(); renderStatuses();
@@ -4415,6 +4427,7 @@ var Combat = (function(){
           State.potions--;
           var heal = Math.round(State.hpMax * 0.35);
           State.hp = Math.min(State.hpMax, State.hp + heal);
+          showHeal(heal);
           updatePlayerUI();
           Sfx.potion();
           log('Potion de soin ! +'+heal+' PV.','heal');
@@ -6427,7 +6440,7 @@ var HUD = (function(){
     var thr = XP_PER_LEVEL[Math.min(lvl2, XP_PER_LEVEL.length-1)];
     var xpPct = thr > 0 ? Math.min(100, Math.round((State.xp||0)/thr*100)) : 100;
     var xpBar = document.getElementById('gh-xp-bar-inner');
-    if (xpBar) xpBar.style.width = xpPct+'%';
+    if (xpBar) { xpBar.style.width = xpPct+'%'; xpBar.classList.remove('hdr-val-flash'); void xpBar.offsetWidth; xpBar.classList.add('hdr-val-flash'); }
     var lv = document.getElementById('gh-level');
     if (lv) lv.textContent = 'Niv. '+lvl2;
   }
@@ -6436,7 +6449,7 @@ var HUD = (function(){
     update: function(screenId) { _refresh(screenId); },
     updateGold: function() {
       var gv = document.getElementById('hud-gold-val');
-      if (gv) gv.textContent = (State && State.gold) ? State.gold : 0;
+      if (gv) { gv.textContent = (State && State.gold) ? State.gold : 0; gv.classList.remove('hdr-val-flash'); void gv.offsetWidth; gv.classList.add('hdr-val-flash'); }
     },
     updateHP: function() {
       var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
@@ -6448,7 +6461,7 @@ var HUD = (function(){
         else               bar.style.background = 'linear-gradient(90deg,#5a0000,#a00000,#cc2020)';
       }
       var txt = document.getElementById('gh-hp-text');
-      if (txt) txt.textContent = (State.hp||0) + '/' + (State.hpMax||0);
+      if (txt) { txt.textContent = (State.hp||0) + '/' + (State.hpMax||0); txt.classList.remove('hdr-val-flash'); void txt.offsetWidth; txt.classList.add('hdr-val-flash'); }
     },
     updateXP: function() { _updateXP(); },
     showQuests: function() {
