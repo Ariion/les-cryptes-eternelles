@@ -649,15 +649,15 @@ canvas#particles {
   font-family:'Cinzel Decorative',serif; font-size:22px; font-weight:700;
   color:#C9A550; line-height:1;
 }
-#dm-hp-bar-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
-#dm-hp-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(237,100,100,0.6); }
+#dm-header-left { display:flex; flex-direction:column; gap:2px; }
+#dm-hp-bar-wrap { display:flex; align-items:center; gap:6px; margin-top:4px; }
 #dm-hp-bar {
-  width:100px; height:8px; border-radius:4px;
+  width:80px; height:7px; border-radius:4px;
   background:rgba(255,255,255,0.06); border:1px solid rgba(200,60,60,0.3);
   overflow:hidden;
 }
 #dm-hp-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,#8b1a1a,#d44); transition:width 0.4s ease; }
-#dm-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(220,140,140,0.8); }
+#dm-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(220,140,140,0.8); white-space:nowrap; }
 
 #dm-canvas-wrap {
   flex:1; position:relative; z-index:2;
@@ -2308,14 +2308,13 @@ canvas#particles {
     <div id="dungeon-map" class="screen">
       <div id="dm-bg"></div>
       <div id="dm-header">
-        <div>
+        <div id="dm-header-left">
           <div id="dm-floor-label">Étage</div>
           <div id="dm-floor-num">I</div>
-        </div>
-        <div id="dm-hp-bar-wrap">
-          <div id="dm-hp-label">VITALITÉ</div>
-          <div id="dm-hp-bar"><div id="dm-hp-fill" style="width:100%"></div></div>
-          <div id="dm-hp-text">100 / 100</div>
+          <div id="dm-hp-bar-wrap">
+            <div id="dm-hp-bar"><div id="dm-hp-fill" style="width:100%"></div></div>
+            <div id="dm-hp-text">100 / 100</div>
+          </div>
         </div>
       </div>
       <div id="dm-canvas-wrap">
