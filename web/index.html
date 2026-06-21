@@ -1084,42 +1084,85 @@ canvas#particles {
 .shop-item .si-price::before { content:'🪙'; font-size:14px; }
 .shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
 
-#global-hud {
-  position:absolute; top:12px; right:12px; z-index:998;
-  display:none; flex-direction:column; align-items:flex-end; gap:5px;
+/* ── GAME HEADER fixe ─────────────────────────────────────────── */
+#game-header {
+  display: none;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 998;
+  flex-direction: column;
+  background: linear-gradient(to bottom, rgba(4,3,10,0.96) 0%, rgba(4,3,10,0.82) 100%);
+  border-bottom: 1px solid rgba(201,165,80,0.18);
+  backdrop-filter: blur(6px);
+  padding: 8px 14px 8px;
+  gap: 5px;
 }
-#hud-menu-btn, #hud-quest-btn {
-  display:flex; align-items:center; gap:5px;
-  background:rgba(6,5,15,0.82); border:1px solid rgba(201,165,80,0.35);
-  color:#C9A550; font-family:'Cinzel',serif; font-size:10px; letter-spacing:1px;
-  border-radius:6px; padding:5px 10px; cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  backdrop-filter:blur(4px);
-  white-space:nowrap;
+#gh-row1 {
+  display: flex; align-items: center; justify-content: space-between;
 }
-#hud-gold {
-  background:rgba(6,5,15,0.82); border:1px solid rgba(201,165,80,0.35);
-  color:#C9A550; font-family:'Cinzel',serif; font-size:11px;
-  border-radius:6px; padding:5px 10px;
-  backdrop-filter:blur(4px);
+#gh-name {
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+  color: #EDE8DF; letter-spacing: 1px;
+  text-transform: uppercase;
 }
-#hud-quest-modal {
-  display:none; position:absolute; inset:0; z-index:999;
-  background:rgba(0,0,0,0.75); align-items:center; justify-content:center;
+#gh-floor-badge {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px;
+  color: rgba(201,165,80,0.55); display: none;
 }
-#hud-quest-modal.show { display:flex; }
-#hud-quest-content {
-  background:#0e0a05; border:1px solid rgba(201,165,80,0.3);
-  border-radius:12px; padding:20px; width:80%; max-height:70%;
-  overflow-y:auto; display:flex; flex-direction:column; gap:10px;
+#gh-btns { display: flex; gap: 6px; }
+#gh-btn-menu, #gh-btn-quests {
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.3);
+  color: #C9A550; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+  border-radius: 6px; padding: 4px 9px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; white-space: nowrap;
 }
-#hud-quest-title { font-family:'Cinzel Decorative',serif; color:#C9A550; font-size:15px; text-align:center; }
-#hud-quest-list { font-family:'Crimson Text',serif; font-size:14px; color:#EDE8DF; display:flex; flex-direction:column; gap:8px; }
-#hud-quest-close {
-  margin-top:8px; background:transparent; border:1px solid rgba(201,165,80,0.3);
-  color:rgba(201,165,80,0.6); font-family:'Cinzel',serif; font-size:10px;
-  border-radius:6px; padding:8px; cursor:pointer; letter-spacing:1px;
+#gh-row2 {
+  display: flex; align-items: center; gap: 10px;
 }
+#gh-level {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+  color: rgba(201,165,80,0.7); white-space: nowrap; flex-shrink: 0;
+}
+#gh-hp-bar-outer {
+  flex: 1; height: 7px; border-radius: 4px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(200,60,60,0.25);
+  overflow: hidden;
+}
+#gh-hp-bar-inner {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, #7a1010, #c83030, #e05050);
+  transition: width 0.4s ease;
+}
+#gh-hp-text {
+  font-family: 'Cinzel', serif; font-size: 9px; color: rgba(220,140,140,0.8);
+  white-space: nowrap; flex-shrink: 0;
+}
+#gh-gold {
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+  color: #C9A550; white-space: nowrap; flex-shrink: 0;
+  display: flex; align-items: center; gap: 3px;
+}
+/* Quest modal */
+#gh-quest-modal {
+  display: none; position: absolute; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.75); align-items: center; justify-content: center;
+}
+#gh-quest-modal.show { display: flex; }
+#gh-quest-content {
+  background: #0e0a05; border: 1px solid rgba(201,165,80,0.3);
+  border-radius: 12px; padding: 20px; width: 80%; max-height: 70%;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+}
+#gh-quest-title { font-family: 'Cinzel Decorative', serif; color: #C9A550; font-size: 15px; text-align: center; }
+#gh-quest-list  { font-family: 'Crimson Text', serif; font-size: 14px; color: #EDE8DF; display: flex; flex-direction: column; gap: 8px; }
+#gh-quest-close {
+  margin-top: 8px; background: transparent; border: 1px solid rgba(201,165,80,0.3);
+  color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
+  border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
+}
+/* Screens with header get top padding */
+.has-game-header { padding-top: 68px !important; }
+/* Legacy hud — hidden */
+#global-hud { display: none !important; }
 /* ── TRANSITION ÉTAGE ────────────────────────────────────────── */
 #floor-transition {
   position:absolute; inset:0; z-index:30;
@@ -1999,24 +2042,31 @@ canvas#particles {
   <div id="phone-notch"></div>
   <div id="phone-glare"></div>
   <div id="phone-screen">
-    <!-- HUD permanent : Menu + Or + Quêtes -->
-    <div id="global-hud">
-      <button id="hud-menu-btn" onclick="Nav.go('main-menu')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Menu
-      </button>
-      <div id="hud-gold">🪙 <span id="hud-gold-val">0</span></div>
-      <button id="hud-quest-btn" onclick="HUD.showQuests()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Quêtes
-      </button>
+    <!-- Legacy HUD (caché) -->
+    <div id="global-hud" style="display:none"></div>
+    <!-- Header fixe de jeu -->
+    <div id="game-header">
+      <div id="gh-row1">
+        <div id="gh-name">Aventurier</div>
+        <div id="gh-floor-badge"></div>
+        <div id="gh-btns">
+          <button id="gh-btn-menu"   onclick="Nav.go('main-menu')">⌂ Menu</button>
+          <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes</button>
+        </div>
+      </div>
+      <div id="gh-row2">
+        <div id="gh-level">Niv. 1</div>
+        <div id="gh-hp-bar-outer"><div id="gh-hp-bar-inner" style="width:100%"></div></div>
+        <div id="gh-hp-text">100/100</div>
+        <div id="gh-gold">🪙 <span id="hud-gold-val">0</span></div>
+      </div>
     </div>
-    <!-- Modal quêtes rapides -->
-    <div id="hud-quest-modal">
-      <div id="hud-quest-content">
-        <div id="hud-quest-title">📜 Quêtes en cours</div>
-        <div id="hud-quest-list"></div>
-        <button id="hud-quest-close" onclick="document.getElementById('hud-quest-modal').classList.remove('show')">Fermer</button>
+    <!-- Modal quêtes actives -->
+    <div id="gh-quest-modal">
+      <div id="gh-quest-content">
+        <div id="gh-quest-title">📜 Quêtes en cours</div>
+        <div id="gh-quest-list"></div>
+        <button id="gh-quest-close" onclick="document.getElementById('gh-quest-modal').classList.remove('show')">Fermer</button>
       </div>
     </div>
     <canvas id="particles"></canvas>
@@ -2154,7 +2204,7 @@ canvas#particles {
     </div>
 
     <!-- ── COMBAT ── -->
-    <div id="combat-screen" class="screen">
+    <div id="combat-screen" class="screen has-game-header">
       <div id="cb-bg"></div>
       <div id="hit-flash"></div>
 
@@ -2256,7 +2306,7 @@ canvas#particles {
     </div>
 
     <!-- ── LOOT ── -->
-    <div id="loot-screen" class="screen">
+    <div id="loot-screen" class="screen has-game-header">
       <div id="loot-title">Victoire !</div>
       <div id="loot-sub">L'ennemi est vaincu</div>
       <div id="loot-gold-wrap">
@@ -2293,7 +2343,7 @@ canvas#particles {
     </div>
 
     <!-- ── REPOS ── -->
-    <div id="rest-screen" class="screen">
+    <div id="rest-screen" class="screen has-game-header">
       <div id="rest-icon">🔥</div>
       <div>
         <div id="rest-title">Feu de camp</div>
@@ -2304,7 +2354,7 @@ canvas#particles {
     </div>
 
     <!-- ── BOUTIQUE ── -->
-    <div id="shop-screen" class="screen">
+    <div id="shop-screen" class="screen has-game-header">
       <div id="shop-header-bar">
         <div id="shop-back-btn" onclick="Rooms.shopLeave()">←</div>
         <div id="shop-title">🏪 Marchand Obscur</div>
@@ -2319,18 +2369,8 @@ canvas#particles {
     </div>
 
     <!-- ── DUNGEON MAP ── -->
-    <div id="dungeon-map" class="screen">
+    <div id="dungeon-map" class="screen has-game-header">
       <div id="dm-bg"></div>
-      <div id="dm-header">
-        <div id="dm-header-left">
-          <div id="dm-floor-label">Étage</div>
-          <div id="dm-floor-num">I</div>
-          <div id="dm-hp-bar-wrap">
-            <div id="dm-hp-bar"><div id="dm-hp-fill" style="width:100%"></div></div>
-            <div id="dm-hp-text">100 / 100</div>
-          </div>
-        </div>
-      </div>
       <div id="dm-canvas-wrap">
         <canvas id="map-canvas"></canvas>
       </div>
@@ -2359,7 +2399,7 @@ canvas#particles {
     </div>
 
     <!-- ── MON HÉROS ── -->
-    <div id="hero-screen" class="screen">
+    <div id="hero-screen" class="screen has-game-header">
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
         <div id="eq-title">Équipement</div>
@@ -2624,7 +2664,7 @@ canvas#particles {
     </div>
 
     <!-- ── INN ROOM (HUB) ── -->
-    <div id="inn-room" class="screen">
+    <div id="inn-room" class="screen has-game-header">
       <div id="inn-header">
         <div id="inn-hero-name">Aventurier</div>
         <div id="inn-hp-bar-wrap"><div id="inn-hp-bar-fill"></div></div>
@@ -2660,7 +2700,7 @@ canvas#particles {
     </div>
 
     <!-- ── TAVERNE SCREEN ── -->
-    <div id="taverne-screen" class="screen">
+    <div id="taverne-screen" class="screen has-game-header">
       <div id="taverne-header">
         <div id="taverne-back" onclick="Nav.go('town-screen')">←</div>
         <div id="taverne-title">Le Gobelin Lyonnais</div>
@@ -2718,7 +2758,7 @@ canvas#particles {
     </div>
 
     <!-- ── TOWN SCREEN ── -->
-    <div id="town-screen" class="screen">
+    <div id="town-screen" class="screen has-game-header">
       <div id="town-header">
         <div id="town-back" onclick="Nav.go('inn-room')">←</div>
         <div id="town-title">Thornwall</div>
@@ -2776,7 +2816,7 @@ canvas#particles {
     </div>
 
     <!-- ── WORLD MAP (région) ── -->
-    <div id="world-map" class="screen">
+    <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
         <div id="wm-back" onclick="Nav.go('inn-room')">←</div>
         <div id="wm-title">La Région</div>
@@ -2814,7 +2854,7 @@ canvas#particles {
     </div>
 
     <!-- ── ÉQUIPEMENT / INVENTAIRE ── -->
-    <div id="equip-screen" class="screen">
+    <div id="equip-screen" class="screen has-game-header">
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
         <div id="eq-title">Équipement</div>
@@ -2863,7 +2903,7 @@ canvas#particles {
     </div>
 
     <!-- ── COFFRE ── -->
-    <div id="chest-screen" class="screen">
+    <div id="chest-screen" class="screen has-game-header">
       <div id="chest-header">
         <div id="chest-back" onclick="ChestScreen.close()">←</div>
         <div id="chest-title">⚰ Coffre</div>
@@ -5299,9 +5339,7 @@ function advanceFloor() {
 }
 
 function updateMapHpBar() {
-  var pct = Math.max(0, Math.min(100, Math.round(State.hp/State.hpMax*100)));
-  document.getElementById('dm-hp-fill').style.width = pct+'%';
-  document.getElementById('dm-hp-text').textContent = State.hp+' / '+State.hpMax;
+  if (typeof HUD !== 'undefined') HUD.updateHP();
 }
 
 // ── DUNGEON MAP ───────────────────────────────────────────────────
@@ -5417,11 +5455,8 @@ var DungeonMap = (function() {
   }
 
   function updateFloorUI(floor, hp, hpMax) {
-    var labels = ['I','II','III','IV','V','VI'];
-    document.getElementById('dm-floor-num').textContent = labels[(floor-1)] || String(floor);
-    var pct = Math.max(0, Math.min(100, Math.round(hp/hpMax*100)));
-    document.getElementById('dm-hp-fill').style.width = pct+'%';
-    document.getElementById('dm-hp-text').textContent = hp+' / '+hpMax;
+    State.hp = hp; State.hpMax = hpMax;
+    if (typeof HUD !== 'undefined') HUD.update('dungeon-map');
   }
 
   function drawPath(ax,ay,bx,by,done) {
@@ -6279,48 +6314,84 @@ var WorldMap = {
 };
 
 var HUD = (function(){
-  // HUD visible UNIQUEMENT en jeu (donjon, combat, ville, auberge, etc.)
   var SHOWN_SCREENS = {
     'dungeon-map':1,'combat-screen':1,'shop-screen':1,
     'inn-room':1,'town-screen':1,'world-map':1,
     'taverne-screen':1,'equip-screen':1,'chest-screen':1,
     'hero-screen':1,'rest-screen':1,'loot-screen':1
   };
+  var FLOOR_LABELS = ['I','II','III','IV','V','VI'];
+
+  function _refresh(screenId) {
+    var hdr = document.getElementById('game-header');
+    if (!hdr) return;
+    var show = SHOWN_SCREENS[screenId];
+    hdr.style.display = show ? 'flex' : 'none';
+    if (!show) return;
+
+    // Name
+    var nm = document.getElementById('gh-name');
+    if (nm) nm.textContent = (State && State.name) ? State.name.toUpperCase() : 'AVENTURIER';
+
+    // Floor badge (only in dungeon)
+    var fb = document.getElementById('gh-floor-badge');
+    if (fb) {
+      if (screenId === 'dungeon-map' && State && State.floor) {
+        fb.textContent = 'ÉTAGE ' + (FLOOR_LABELS[State.floor-1] || State.floor);
+        fb.style.display = 'block';
+      } else {
+        fb.style.display = 'none';
+      }
+    }
+
+    // Level
+    var lv = document.getElementById('gh-level');
+    if (lv) lv.textContent = 'Niv. ' + ((State && State.level) || 1);
+
+    // HP bar
+    var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
+    var bar = document.getElementById('gh-hp-bar-inner');
+    if (bar) bar.style.width = pct + '%';
+    var txt = document.getElementById('gh-hp-text');
+    if (txt) txt.textContent = (State ? (State.hp||0) : 0) + '/' + (State ? (State.hpMax||0) : 0);
+
+    // Gold
+    var gv = document.getElementById('hud-gold-val');
+    if (gv) gv.textContent = (State && State.gold) ? State.gold : 0;
+  }
+
   return {
-    update: function(screenId) {
-      var el = document.getElementById('global-hud');
-      if (!el) return;
-      el.style.display = SHOWN_SCREENS[screenId] ? 'flex' : 'none';
-      HUD.updateGold();
-    },
+    update: function(screenId) { _refresh(screenId); },
     updateGold: function() {
-      var el = document.getElementById('hud-gold-val');
-      if (el) el.textContent = (State && State.gold) ? State.gold : 0;
+      var gv = document.getElementById('hud-gold-val');
+      if (gv) gv.textContent = (State && State.gold) ? State.gold : 0;
+    },
+    updateHP: function() {
+      var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
+      var bar = document.getElementById('gh-hp-bar-inner');
+      if (bar) bar.style.width = pct + '%';
+      var txt = document.getElementById('gh-hp-text');
+      if (txt) txt.textContent = (State.hp||0) + '/' + (State.hpMax||0);
     },
     showQuests: function() {
-      var modal = document.getElementById('hud-quest-modal');
-      var list  = document.getElementById('hud-quest-list');
+      var modal = document.getElementById('gh-quest-modal');
+      var list  = document.getElementById('gh-quest-list');
       if (!modal || !list) return;
-      // Construire la liste des quêtes actives
       var html = '';
       if (typeof QUEST_DEFS !== 'undefined' && typeof Meta !== 'undefined') {
-        var active = QUEST_DEFS.filter(function(q){
-          return !((Meta.completedQuests||{})[q.id]);
-        });
+        var active = QUEST_DEFS.filter(function(q){ return !((Meta.completedQuests||{})[q.id]); });
         if (active.length === 0) {
           html = '<div style="color:rgba(255,255,255,0.4);text-align:center">Aucune quête active</div>';
         } else {
           active.forEach(function(q){
             var done = q.check ? q.check() : false;
-            html += '<div style="padding:8px;border:1px solid rgba(201,165,80,'+(done?'0.5':'0.15')+');border-radius:6px;opacity:'+(done?'1':'0.7')+'">'
-              + '<div style="color:#C9A550;font-size:12px">' + (done?'✅ ':'📜 ') + q.title + '</div>'
-              + '<div style="font-size:12px;margin-top:2px">' + q.desc + '</div>'
-              + '<div style="font-size:11px;color:#C9A550;margin-top:2px">Récompense : ' + q.rewardTxt + '</div>'
+            html += '<div style="padding:8px;border:1px solid rgba(201,165,80,'+(done?'0.5':'0.15')+');border-radius:6px">'
+              + '<div style="color:#C9A550;font-size:12px">'+(done?'✅ ':'📜 ')+q.title+'</div>'
+              + '<div style="font-size:12px;margin-top:2px">'+q.desc+'</div>'
+              + '<div style="font-size:11px;color:#C9A550;margin-top:2px">Récompense : '+q.rewardTxt+'</div>'
               + '</div>';
           });
         }
-      } else {
-        html = '<div style="color:rgba(255,255,255,0.4);text-align:center">Pas de quêtes disponibles</div>';
       }
       list.innerHTML = html;
       modal.classList.add('show');
