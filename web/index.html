@@ -2795,6 +2795,10 @@ canvas#particles {
         <div id="inn-hp-bar-wrap"><div id="inn-hp-bar-fill"></div></div>
         <div id="inn-hp-text">-- / -- PV</div>
       </div>
+      <!-- Marta NPC -->
+      <div class="npc-hotspot" id="npc-marta" onclick="Quests.openNpc('marta')" style="position:absolute;top:62%;left:6%">
+        <div class="npc-name-tag">Marta</div>
+      </div>
       <!-- hotspot fenêtre → région -->
       <div class="hotspot" id="hs-inn-window" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
@@ -2828,7 +2832,7 @@ canvas#particles {
     <div id="taverne-screen" class="screen has-game-header">
       <div id="taverne-header">
         <div id="taverne-back" onclick="Nav.go('town-screen')">←</div>
-        <div id="taverne-title">Le Gobelin Lyonnais</div>
+        <div id="taverne-title">La Lyonnesse</div>
       </div>
       <!-- Décoration intérieure -->
       <div class="tav-deco tav-fire">🔥</div>
@@ -2836,17 +2840,14 @@ canvas#particles {
       <div class="tav-deco tav-sign">🍺</div>
       <!-- NPC: aubergiste -->
       <div class="npc-hotspot" id="npc-bertrand" onclick="Quests.openNpc('bertrand')">
-        <div class="npc-avatar">🧔</div>
         <div class="npc-name-tag">Bertrand</div>
       </div>
       <!-- NPC: barde -->
       <div class="npc-hotspot" id="npc-oswin" onclick="Quests.openNpc('oswin')">
-        <div class="npc-avatar">🎸</div>
         <div class="npc-name-tag">Oswin</div>
       </div>
       <!-- NPC: mage -->
       <div class="npc-hotspot" id="npc-seraphine" onclick="Quests.openNpc('seraphine')">
-        <div class="npc-avatar">🔮</div>
         <div class="npc-name-tag">Séraphine</div>
       </div>
       <!-- quest badge indicators -->
@@ -5174,25 +5175,205 @@ var RunMods = (function(){
   };
 })();
 
+// ── STORY QUESTS (débloquées uniquement via PNJ / déclencheurs) ────
 var QUEST_DEFS = [
-  // Bertrand (aubergiste) — quêtes de combat
-  { id:'q_kill10',   npc:'bertrand',  title:'Chasse aux monstres',    desc:'Tue 10 monstres au total.',                          check:function(){ return (Meta.totalKills||0)>=10; },   reward:{ gold:80 },  rewardTxt:'80 🪙 or' },
-  { id:'q_kill30',   npc:'bertrand',  title:'Exterminateur',          desc:'Tue 30 monstres au total.',                          check:function(){ return (Meta.totalKills||0)>=30; },   reward:{ gold:160 }, rewardTxt:'160 🪙 or' },
-  { id:'q_kill100',  npc:'bertrand',  title:'Légende des Cryptes',    desc:'Tue 100 monstres. La taverne te craint et te respecte.', check:function(){ return (Meta.totalKills||0)>=100; }, reward:{ gold:400, potions:3 }, rewardTxt:'400 🪙 + 3 🧪' },
-  // Oswin (barde) — quêtes d'exploration
-  { id:'q_floor3',   npc:'oswin',     title:'L\'appel de l\'inconnu', desc:'Atteins l\'étage 3 d\'un donjon.',                   check:function(){ return (Meta.bestFloor||0)>=3; },     reward:{ gold:60 },  rewardTxt:'60 🪙 or' },
-  { id:'q_floor6',   npc:'oswin',     title:'Survivant des abysses',  desc:'Atteins l\'étage 6 (le dernier étage).',             check:function(){ return (Meta.bestFloor||0)>=6; },     reward:{ gold:200 }, rewardTxt:'200 🪙 or' },
-  { id:'q_zone2',    npc:'oswin',     title:'Globe-trotter',          desc:'Nettoie 2 zones différentes.',                       check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; }, reward:{ gold:300, potions:2 }, rewardTxt:'300 🪙 + 2 🧪' },
-  // Séraphine (mage) — quêtes d'accomplissement
-  { id:'q_run3',     npc:'seraphine', title:'Aventurier chevronné',   desc:'Accomplis 3 expéditions.',                           check:function(){ return (Meta.totalRuns||0)>=3; },     reward:{ gold:100 }, rewardTxt:'100 🪙 or' },
-  { id:'q_zone1',    npc:'seraphine', title:'Premier sang',           desc:'Nettoie ta première zone.',                          check:function(){ return Object.keys(Meta.clearedZones||{}).length>=1; }, reward:{ gold:150, potions:1 }, rewardTxt:'150 🪙 + 1 🧪' },
-  { id:'q_run10',    npc:'seraphine', title:'Pacte avec les ombres',  desc:'Accomplis 10 expéditions. Tu connais les Cryptes.',  check:function(){ return (Meta.totalRuns||0)>=10; },    reward:{ gold:500 }, rewardTxt:'500 🪙 or' },
+
+  // ═══ ACTE I — L'ÉTRANGER ═══════════════════════════════════════
+
+  // Marta (auto-déclenchée à la première arrivée)
+  { id:'marta_debt', npc:'marta', act:1,
+    title:'La Dette',
+    desc:'Marta t\'a soigné trois jours. Tu lui dois 50 pièces d\'or.\nRends-lui ce que tu lui dois.',
+    check:function(){ return (State.gold||0)>=50; },
+    reward:{ gold:0, _deduct:50 },
+    rewardTxt:'Ta liberté — et peut-être une piste.',
+    claimText:'Marta hoche la tête, soulagée. "Bien. Je me demandais si tu allais fuir comme les autres."\nElle se penche vers toi, voix basse.\n"La Lyonnesse — la taverne en face. Il y a des gens là-bas qui t\'ont demandé. Des gens qui te connaissent, apparemment."\nElle marque une pause.\n"Ou qui prétendent te connaître."'
+  },
+
+  // Bertrand — chap 1 : la rencontre
+  { id:'bertrand_1', npc:'bertrand', act:1,
+    title:'Méfiance',
+    desc:'Bertrand affirme t\'avoir vu sur la route de Thornwall il y a trois semaines — tu courais. Mais il n\'a pas l\'air prêt à tout dire. Prouve que tu sais survivre.\n→ Tue 5 créatures.',
+    check:function(){ return (Meta.totalKills||0)>=5; },
+    reward:{ gold:30 },
+    rewardTxt:'30 🪙',
+    claimText:'"Pas mal. Tu sais te battre."\nIl s\'assoit en face de toi et baisse la voix.\n"Je t\'ai vu il y a trois semaines. Sur la Route des Pierres. Tu courais vers la ville, sans arme, sans manteau. Tu regardais derrière toi comme si le diable te poursuivait."\n\n"Quand tu t\'es écroulé devant L\'Écu Brisé... on a pensé que tu étais mort."\n\n"Ce qui me trouble... c\'est que dans ta main serrée, tu tenais un parchemin. Marta l\'a gardé quelque part."\n\nNouvelle quête disponible : parle à Oswin.'
+  },
+
+  // Oswin — chap 1 : la prophétie
+  { id:'oswin_1', npc:'oswin', act:1,
+    unlockAfter:'bertrand_1',
+    title:'L\'Éveillé',
+    desc:'Oswin dit avoir une chanson sur toi — une prophétie ancienne qui parle d\'un étranger sans mémoire.\nPour savoir si c\'est bien toi : atteins l\'étage 3 d\'un donjon.',
+    check:function(){ return (Meta.bestFloor||0)>=3; },
+    reward:{ gold:60 },
+    rewardTxt:'60 🪙',
+    claimText:'"Tu es revenu. Bien."\nOswin pose sa luth et te regarde différemment — plus de sourire.\n"La chanson s\'appelle *La Ballade de l\'Éveillé*. Elle date de cent ans. Elle décrit quelqu\'un qui revient d\'entre les morts, sans nom, sans passé."\n\n"Elle décrit aussi les Cryptes Éternelles — les vraies, pas les vieilles caves que tu arpentes. Des Cryptes qui respirent. Qui se souviennent."\n\n"Il y a une femme ici qui en sait plus que moi. Séraphine. Elle t\'observe depuis ton arrivée."'
+  },
+
+  // Séraphine — chap 1 : l'aura
+  { id:'seraphine_1', npc:'seraphine', act:1,
+    unlockAfter:'oswin_1',
+    title:'Le Fragment d\'Âme',
+    desc:'Séraphine affirme détecter quelque chose d\'anormal dans ton aura — une signature magique qui ne devrait plus exister depuis cent ans.\nPour qu\'elle puisse l\'analyser : rapporte-lui un objet des profondeurs en nettoyant une zone entière.',
+    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=1; },
+    reward:{ gold:100 },
+    rewardTxt:'100 🪙 + une vérité',
+    claimText:'"Je m\'en doutais."\nSéraphine referme son grimoire et te fixe.\n"L\'aura que tu portes... elle appartient à quelqu\'un qui est mort il y a exactement cent ans. Quelqu\'un qui s\'appelait l\'Éveillé — comme dans la chanson d\'Oswin."\n\n"Ce n\'est pas une coïncidence. Tu portes un fragment de son âme. Peut-être tout son être, transféré dans un nouveau corps."\n\nElle hésite.\n"Si c\'est vrai... alors tu te rappelles peut-être des choses, sans savoir d\'où elles viennent. Des réflexes. Des peurs irrationnelles. Des visages que tu n\'as jamais vus."\n\n"Et si c\'est vrai... quelqu\'un d\'autre le sait aussi. Et cette personne ne veut pas que tu descendes dans les vraies Cryptes."'
+  },
+
+  // ═══ ACTE II — LE FILS DU NÉANT ═════════════════════════════════
+
+  // Bertrand — chap 2 : le passé qui revient
+  { id:'bertrand_2', npc:'bertrand', act:2,
+    unlockAfter:'seraphine_1',
+    title:'La Mémoire des Pierres',
+    desc:'Bertrand a quelque chose à te montrer — le parchemin qu\'on a trouvé dans ta main à ton arrivée. Mais d\'abord il veut savoir si tu peux vraiment survivre aux profondeurs.\n→ Atteins l\'étage 6 d\'un donjon.',
+    check:function(){ return (Meta.bestFloor||0)>=6; },
+    reward:{ gold:150 },
+    rewardTxt:'150 🪙 + le parchemin',
+    claimText:'"Tu es allé au bout. Bien."\nBertrand sort un petit rouleau de parchemin froissé, jauni.\n"On l\'a trouvé dans ta main. On ne comprend pas l\'écriture — ce n\'est pas une langue connue."\n\nTu le déplie. Et quelque chose en toi... reconnaît les symboles. Pas consciemment. Mais tes yeux s\'arrêtent sur une phrase, et sans même réfléchir tu murmures :\n\n*"Le sceau tient encore. Pour combien de temps ?"*\n\n"Tu viens de lire ça ?", dit Bertrand, blême.\n\n"Je... je ne sais pas comment."'
+  },
+
+  // Oswin — chap 2 : le livre
+  { id:'oswin_2', npc:'oswin', act:2,
+    unlockAfter:'bertrand_2',
+    title:'La Ballade des Ruines',
+    desc:'Oswin a retrouvé des archives dans les Ruines de l\'Ancien Monde — il prétend y avoir vu un portrait qui te ressemble.\nNettoie les Ruines pour confirmer.',
+    check:function(){ return !!(Meta.clearedZones||{})['ruines']; },
+    reward:{ gold:200 },
+    rewardTxt:'200 🪙 + une révélation',
+    claimText:'"Tu l\'as vu, n\'est-ce pas ?"\nOswin sort un carnet couvert de notes.\n"Le portrait dans la bibliothèque des Ruines. *Il te ressemble trait pour trait.*"\n\n"Le titre du livre sous le portrait : *Mémoires de l\'Éveillé, gardien du Sceau, an 847.*"\n\n"Nous sommes en 947. Il y a cent ans exactement."\n\nOswin marque une pause. Il n\'a plus du tout l\'air d\'un barde joyeux.\n\n"Il y a quelque chose que je ne t\'ai pas dit. Quelque chose que... tu mérites de savoir. Mais pas ici. Pas maintenant. Viens me voir quand tu auras parlé à Séraphine."'
+  },
+
+  // Séraphine — chap 2 : la prison
+  { id:'seraphine_2', npc:'seraphine', act:2,
+    unlockAfter:'oswin_2',
+    title:'Ce Qui Est Enfermé',
+    desc:'Séraphine a trouvé quelque chose dans les archives secrètes de la Guilde des Mages — quelque chose sur les vraies Cryptes Éternelles.\nAccomplis 10 expéditions pour gagner sa confiance totale.',
+    check:function(){ return (Meta.totalRuns||0)>=10; },
+    reward:{ gold:300 },
+    rewardTxt:'300 🪙 + la vérité',
+    claimText:'"Assieds-toi. Ce que je vais te dire ne quitte pas cette table."\n\nSéraphine te verse du vin.\n\n"Les Cryptes Éternelles ne sont pas un donjon. Ce sont les fondations d\'une PRISON. Construite il y a mille ans pour enfermer quelque chose que les gens appelaient le Dieu de la Mémoire."\n\n"Un être qui se nourrissait des souvenirs. Des identités. Il pouvait effacer une civilisation entière — pas en la tuant, mais en lui faisant oublier qu\'elle avait existé."\n\n"L\'Éveillé du siècle passé a renforcé le sceau au prix de sa propre existence. Il est devenu *une partie du verrou*."\n\n"Toi... tu es soit son successeur désigné. Soit la clé que quelqu\'un utilise pour l\'ouvrir."\n\nElle te regarde dans les yeux.\n\n"Et je commence à penser qu\'Oswin n\'est pas vraiment un barde."'
+  },
+
+  // ═══ ACTE III — LA VÉRITÉ ════════════════════════════════════════
+
+  // Bertrand — chap 3 : l'héritage
+  { id:'bertrand_3', npc:'bertrand', act:3,
+    unlockAfter:'seraphine_2',
+    title:'Le Sang des Gardiens',
+    desc:'Bertrand a quelque chose à avouer — sur sa famille et les Cryptes. Mais d\'abord il veut voir si tu peux t\'en sortir contre les créatures les plus redoutables.\n→ Tue 100 monstres.',
+    check:function(){ return (Meta.totalKills||0)>=100; },
+    reward:{ gold:400 },
+    rewardTxt:'400 🪙',
+    claimText:'"Mon grand-père était gardien des Cryptes. Un des derniers."\nBertrand s\'essuie les mains sur son tablier, nerveux.\n"Il m\'a dit, avant de mourir : *si un étranger arrive sans mémoire, fuis. Ou aide-le. Les deux sont dangereux.*"\n\n"Je suis resté. J\'ai choisi de t\'aider."\n\n"Il m\'a dit aussi autre chose. Que le Dieu de la Mémoire a des *Voix* dans le monde — des agents qui servent depuis des siècles, qui ne vieillissent pas, qui préparent sa libération."\n\n"Ces Voix... elles se font passer pour des gens ordinaires. Des aubergistes. Des marchands. Des bardes."\n\nIl te regarde droit dans les yeux.\n\n"Fais attention à Oswin."'
+  },
+
+  // Oswin — chap 3 : le masque
+  { id:'oswin_3', npc:'oswin', act:3,
+    unlockAfter:'bertrand_3',
+    title:'La Voix du Dieu',
+    desc:'Oswin t\'a demandé de venir le voir. Mais quelque chose a changé dans son regard.\nAffronte-toi à toi-même : nettoie 3 zones différentes.',
+    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=3; },
+    reward:{ gold:0 },
+    rewardTxt:'Une révélation',
+    claimText:'"Tu commences à comprendre."\nOswin ne joue plus la comédie. Sa voix a changé — plus profonde, presque distante.\n"Oui. Je suis une Voix. Je sers depuis cent quarante ans."\n\n"Mais écoute-moi avant de te mettre en colère."\n\n"Je ne suis pas ton ennemi. Je suis... las. Cent quarante ans à servir un dieu que je n\'ai jamais vu. Je voulais juste... que quelqu\'un descende dans les Cryptes et règle ça. Dans un sens ou dans l\'autre."\n\n"La vérité : tu peux renforcer le sceau, comme l\'Éveillé du passé. Ou tu peux libérer le Dieu de la Mémoire — et il nous effacera tous. Ou peut-être qu\'il sera différent maintenant. Peut-être qu\'une prison d\'un siècle l\'a changé."\n\n"Séraphine te dira quoi faire. Moi... je suis fatigué de choisir pour les autres."'
+  },
+
+  // Séraphine — chap 3 : le dernier choix
+  { id:'seraphine_3', npc:'seraphine', act:3,
+    unlockAfter:'oswin_3',
+    title:'Le Verrou ou la Clé',
+    desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 50 et nettoie 4 zones.',
+    check:function(){ return (State.level||1)>=50 && Object.keys(Meta.clearedZones||{}).length>=4; },
+    reward:{ gold:1000 },
+    rewardTxt:'1000 🪙 + accès aux Cryptes',
+    claimText:'"Tu es prêt."\nSéraphine sort un cristal noir de son manteau.\n"Ceci ouvre le dernier niveau des Cryptes. Là où l\'Éveillé a tout sacrifié."\n\n"Quand tu descendras, des souvenirs te reviendront. Pas les tiens — les siens. Les tiens sont peut-être les mêmes."\n\n"À un moment, tu auras le choix : poser le cristal sur l\'autel et renforcer le sceau, ou le briser et libérer ce qui est en dessous."\n\n"Je t\'ai tout dit ce que je sais. Le reste... c\'est à toi."\n\nElle pose sa main sur ton épaule.\n"Quelle que soit ta décision — je comprends."'
+  },
+
+  // ═══ ACTE IV — L'ÉVEILLÉ ════════════════════════════════════════
+  // (débloqué après seraphine_3, joué dans les Cryptes via fragments de mémoire)
+  { id:'cryptes_final', npc:'bertrand', act:4,
+    unlockAfter:'seraphine_3',
+    title:'Les Cryptes Éternelles',
+    desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 30 expéditions.',
+    check:function(){ return (Meta.totalRuns||0)>=30; },
+    reward:{ gold:2000, potions:10 },
+    rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
+    claimText:'"Tu es revenu."\nBertrand te regarde différemment. Avec quelque chose qui ressemble à du soulagement.\n"Je ne saurai jamais ce que tu as choisi là-en bas. Mais... le monde est toujours là. Donc tu as fait quelque chose de bien."\n\nIl lève son verre.\n\n"À l\'Éveillé. Quel que soit son vrai nom."'
+  },
 ];
 
+// Quelles quêtes sont débloquées (visibles au PNJ) ?
+function isQuestUnlocked(q) {
+  if (!q.unlockAfter) return true;
+  return !!((Meta.completedQuests||{})[q.unlockAfter]);
+}
+
 var NPC_DATA = {
-  bertrand:  { ico:'🧔', name:'Bertrand',   greet:['Bienvenue à la taverne, aventurier ! Tu as l\'air d\'un gaillard solide.', 'Ah, te revoilà ! J\'espère que tu as laissé quelques monstres en chemin.', 'Une bière ? Non ? Bon, alors une mission peut-être ?'] },
-  oswin:     { ico:'🎸', name:'Oswin le Barde', greet:['*gratte sa luth* Ah, un visiteur ! J\'ai des chansons sur les donjons... et des quêtes aussi.', 'Chaque aventure mérite une chanson. La tienne commence-t-elle ici ?', 'J\'ai vu des héros partir et ne jamais revenir. Toi, tu reviendras — j\'en suis sûr.'] },
-  seraphine: { ico:'🔮', name:'Séraphine', greet:['Je lis l\'avenir dans les cristaux... et ton destin est lié aux Cryptes.', '*lève les yeux de son grimoire* Intéressant. Je sens une aura particulière sur toi.', 'Les arcanes me soufflent que tu pourrais m\'être utile, aventurier.'] },
+  bertrand: {
+    name:'Bertrand',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['marta_debt']) return '"Tu es nouveau en ville ? Commande quelque chose ou laisse ta place."';
+      if (!done['bertrand_1']) return '"Je t\'ai vu quelque part. Sur la route, il y a trois semaines. Tu courais."\n\nIl marque une pause, vous étudie.\n\n"Je te parlerai davantage quand tu me prouveras que tu n\'es pas un lâche."';
+      if (!done['oswin_1'])    return '"Vas parler à Oswin. Il a l\'air idiot mais il sait des choses."';
+      if (!done['seraphine_1'])return '"Séraphine te cherchait tout à l\'heure. Elle a l\'air de te connaître."';
+      if (!done['bertrand_2']) return '"Tu progresses. Reviens quand tu auras vu le fond d\'un vrai donjon. J\'ai quelque chose pour toi."';
+      if (!done['oswin_2'])    return '"Parle à Oswin. Il a trouvé quelque chose dans les ruines."';
+      if (!done['seraphine_2'])return '"Séraphine peut t\'expliquer ce que signifie ce parchemin. Fais-lui confiance."';
+      if (!done['bertrand_3']) return '"Mon grand-père disait que les vrais ennemis sourient le plus."';
+      if (!done['oswin_3'])    return '"Fais attention à Oswin. Ce n\'est pas ce qu\'il prétend être."';
+      if (!done['seraphine_3'])return '"Séraphine peut t\'ouvrir le chemin. Va lui parler."';
+      return '"Tu as accompli ce que personne n\'osait faire, ami. Je lèverai mon verre à ta santé pour le reste de mes jours."';
+    }
+  },
+  oswin: {
+    name:'Oswin',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['marta_debt'])  return '"*accorde sa luth sans te regarder*\nJe joue, tu écoutes. C\'est comme ça que ça marche."';
+      if (!done['bertrand_1'])  return '"*te regarde longuement*\nIl y a quelque chose dans tes yeux. Quelque chose que je reconnais sans savoir d\'où."\n\nIl replonge dans sa musique, pensif.';
+      if (!done['oswin_1'])     return '"Tu viens de la part de Bertrand ? Bien."\n\nIl baisse sa luth.\n\n"J\'ai une chanson. Vieille de cent ans. Elle parle de quelqu\'un qui ressemble étrangement à toi."';
+      if (!done['seraphine_1']) return '"Tu devrais aller voir Séraphine. Elle a l\'air bizarre, oui. Mais elle sait des choses sur les Cryptes que personne d\'autre ne sait."';
+      if (!done['bertrand_2'])  return '"*joue doucement*\nLe parchemin que Bertrand garde... demande-le lui. Il est temps."';
+      if (!done['oswin_2'])     return '"Je suis allé dans les Ruines. J\'ai vu quelque chose qui m\'a troublé. Reviens me voir quand tu les auras nettoyées."';
+      if (!done['seraphine_2']) return '"Ce que j\'ai à te dire peut attendre que Séraphine t\'ait tout expliqué."';
+      if (!done['bertrand_3'])  return '"Bertrand sait plus qu\'il ne dit. Sa famille est liée à tout ça."';
+      if (!done['oswin_3'])     return '"*te regarde dans les yeux sans sourire*\nIl est temps que je sois honnête avec toi."';
+      return '"*soupir*\nJe suis fatigué, ami. Cent quarante ans de mensonges, c\'est long.\nJe joue juste de la musique maintenant. Vraiment."';
+    }
+  },
+  marta: {
+    name:'Marta',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['marta_debt']) {
+        var gold = State.gold||0;
+        if (gold >= 50) return '"Tu as les 50 pièces ?"\nElle tend la main.\n"Bien. Et maintenant... laisse-moi te dire quelque chose."';
+        return '"Toujours en dette, je vois. Tu me dois '+(50-gold)+' pièces de plus.\nVa gagner de quoi payer. L\'auberge n\'est pas une charité."';
+      }
+      return '"Tu n\'as plus de dette ici. Tu peux rester aussi longtemps que tu veux."\nElle essuie le comptoir.\n"La Lyonnesse, en face. Si quelqu\'un te connaît... ils seront là-bas."';
+    }
+  },
+  seraphine: {
+    name:'Séraphine',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['marta_debt'])  return '"*lève à peine les yeux de son grimoire*\nTu es celui dont parle Oswin ? Intéressant. Reviens quand tu seras moins... vague."';
+      if (!done['bertrand_1'])  return '"Je sens quelque chose sur toi. Une aura ancienne. Mais je ne peux pas encore en parler.\nParle aux autres d\'abord."';
+      if (!done['oswin_1'])     return '"Oswin t\'a-t-il parlé de la prophétie ? Non ? Va le voir."';
+      if (!done['seraphine_1']) return '"Bien. Oswin m\'a prévenue que tu viendrais."\n\n"L\'aura que tu dégages... elle n\'appartient pas à ce siècle. Je dois l\'analyser."\n\n"Rapporte-moi quelque chose des profondeurs — un fragment des Cryptes. Nettoie une zone entière."';
+      if (!done['bertrand_2'])  return '"Bertrand détient quelque chose d\'important. Il est temps qu\'il te fasse confiance."';
+      if (!done['oswin_2'])     return '"Oswin a parlé d\'un portrait dans les Ruines. Je pense savoir ce que c\'est. Va l\'aider à vérifier."';
+      if (!done['seraphine_2']) return '"Ce que j\'ai découvert dans les archives... c\'est plus grave que ce que je pensais.\nReviens me voir quand Oswin t\'aura tout dit sur le livre."';
+      if (!done['bertrand_3'])  return '"Il faut que Bertrand te parle de sa famille. C\'est important pour comprendre l\'histoire complète."';
+      if (!done['oswin_3'])     return '"*voix grave*\nOswin est une Voix du Dieu. Tu le sais maintenant.\nMais laisse-lui le temps de se confesser lui-même."';
+      if (!done['seraphine_3']) return '"Tu es prêt à entendre la suite ?"';
+      return '"Le cristal est dans tes mains maintenant. Le reste t\'appartient."\n\nElle te regarde avec quelque chose qui ressemble à de la fierté.\n\n"Quelle que soit ta décision — je comprends."';
+    }
+  },
 };
 
 var Quests = (function(){
@@ -5213,46 +5394,52 @@ var Quests = (function(){
       _currentNpc = npc;
       _currentQuest = null;
       var nd = NPC_DATA[npc];
-      document.getElementById('npc-portrait-ico').textContent  = nd.ico;
+      // Portrait : juste le nom, plus d'icône emoji
+      var portIco = document.getElementById('npc-portrait-ico');
+      if (portIco) portIco.textContent = '';
       document.getElementById('npc-portrait-name').textContent = nd.name;
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
 
-      // Check if active quest is completable
+      // Dialogue contextuel basé sur la progression narrative
+      var speechText = (typeof nd.dialogue === 'function') ? nd.dialogue() : '';
+
+      // Quête active en cours pour ce PNJ ?
       var active = getActiveQuest(npc);
       if (active) {
         var def = QUEST_DEFS.find(function(q){ return q.id===active; });
-        if (def && def.check()) {
-          // Completable!
-          document.getElementById('npc-speech').textContent = 'Incroyable ! Tu as accompli ce que je t\'avais demandé. Voici ta récompense, aventurier !';
-          document.getElementById('npc-quest-title').textContent = '✅ ' + def.title;
-          document.getElementById('npc-quest-desc').textContent  = def.desc;
+        if (def && def.check && def.check()) {
+          document.getElementById('npc-speech').textContent = def.claimText || 'Tu as accompli ce que je t\'avais demandé.';
+          document.getElementById('npc-quest-title').textContent  = '✅ ' + def.title;
+          document.getElementById('npc-quest-desc').textContent   = def.desc;
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
           document.getElementById('npc-btn-claim').style.display  = '';
           _currentQuest = def;
         } else if (def) {
-          document.getElementById('npc-speech').textContent = '"' + def.title + '" — ' + def.desc + '\n\nContinue comme ça, aventurier. Je compte sur toi !';
-          document.getElementById('npc-quest-title').textContent = '🗺 En cours : ' + def.title;
-          document.getElementById('npc-quest-desc').textContent  = def.desc;
+          document.getElementById('npc-speech').textContent = speechText + '\n\n— En cours : ' + def.title + '\n' + def.desc;
+          document.getElementById('npc-quest-title').textContent  = '🗺 En cours : ' + def.title;
+          document.getElementById('npc-quest-desc').textContent   = def.desc;
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
         } else {
-          document.getElementById('npc-speech').textContent = nd.greet[Math.floor(Math.random()*nd.greet.length)];
+          document.getElementById('npc-speech').textContent = speechText;
         }
       } else {
-        var next = getNextQuest(npc);
+        // Chercher la prochaine quête débloquée pour ce PNJ
+        var done = Meta.completedQuests||{};
+        var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !done[q.id] && isQuestUnlocked(q); });
         if (next) {
           _currentQuest = next;
-          document.getElementById('npc-speech').textContent = nd.greet[Math.floor(Math.random()*nd.greet.length)] + '\n\nJ\'aurais une mission pour toi, si tu es intéressé...';
+          document.getElementById('npc-speech').textContent = speechText;
           document.getElementById('npc-quest-title').textContent  = '📜 ' + next.title;
           document.getElementById('npc-quest-desc').textContent   = next.desc;
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + next.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
           document.getElementById('npc-btn-accept').style.display = '';
         } else {
-          document.getElementById('npc-speech').textContent = 'Tu as accompli tout ce que je pouvais te demander, héros. Je lèverai mon verre à ta santé !';
+          document.getElementById('npc-speech').textContent = speechText;
         }
       }
 
@@ -5267,21 +5454,22 @@ var Quests = (function(){
       Meta.activeQuests[_currentNpc] = _currentQuest.id;
       Meta.save();
       document.getElementById('npc-btn-accept').style.display = 'none';
-      document.getElementById('npc-speech').textContent = 'Parfait ! Je savais que tu accepterais. Bonne chance, aventurier !';
+      document.getElementById('npc-speech').textContent = 'Quête acceptée. Bonne chance.';
     },
 
     claim: function() {
       if (!_currentQuest || !_currentNpc) return;
       var r = _currentQuest.reward;
-      if (r.gold)    { Meta.totalGold = (Meta.totalGold||0) + r.gold; State.gold = (State.gold||0) + r.gold; if (typeof HUD !== 'undefined') HUD.updateGold(); }
-      if (r.potions) { State.potions = (State.potions||0) + r.potions; }
+      if (r.gold && r.gold > 0) { Meta.totalGold=(Meta.totalGold||0)+r.gold; State.gold=(State.gold||0)+r.gold; if(typeof HUD!=='undefined') HUD.updateGold(); }
+      if (r._deduct) { State.gold = Math.max(0, (State.gold||0)-r._deduct); if(typeof HUD!=='undefined') HUD.updateGold(); }
+      if (r.potions) { State.potions=(State.potions||0)+r.potions; }
       if (!Meta.completedQuests) Meta.completedQuests = {};
       Meta.completedQuests[_currentQuest.id] = true;
       if (Meta.activeQuests) delete Meta.activeQuests[_currentNpc];
-      Meta.save();
+      Meta.save(); State.saveRun();
       document.getElementById('npc-btn-claim').style.display = 'none';
       document.getElementById('npc-quest-info').style.display = 'none';
-      document.getElementById('npc-speech').textContent = '🎉 Récompense obtenue : ' + _currentQuest.rewardTxt + ' !\n\nMerci pour ton courage, héros !';
+      document.getElementById('npc-speech').textContent = '✅ ' + _currentQuest.rewardTxt;
       _currentQuest = null;
     },
 
@@ -6757,16 +6945,18 @@ var HUD = (function(){
       if (!modal || !list) return;
       var html = '';
       if (typeof QUEST_DEFS !== 'undefined' && typeof Meta !== 'undefined') {
-        var active = QUEST_DEFS.filter(function(q){ return !((Meta.completedQuests||{})[q.id]); });
+        // N'afficher que les quêtes activement acceptées
+        var activeIds = Object.values(Meta.activeQuests||{});
+        var active = QUEST_DEFS.filter(function(q){ return activeIds.indexOf(q.id) !== -1; });
         if (active.length === 0) {
-          html = '<div style="color:rgba(255,255,255,0.4);text-align:center">Aucune quête active</div>';
+          html = '<div style="color:rgba(255,255,255,0.4);text-align:center;font-family:Crimson Text,serif;font-style:italic;padding:12px">Aucune quête en cours.<br><span style="font-size:11px">Parle aux habitants de la ville.</span></div>';
         } else {
           active.forEach(function(q){
             var done = q.check ? q.check() : false;
             html += '<div style="padding:8px;border:1px solid rgba(201,165,80,'+(done?'0.5':'0.15')+');border-radius:6px">'
-              + '<div style="color:#C9A550;font-size:12px">'+(done?'✅ ':'📜 ')+q.title+'</div>'
-              + '<div style="font-size:12px;margin-top:2px">'+q.desc+'</div>'
-              + '<div style="font-size:11px;color:#C9A550;margin-top:2px">Récompense : '+q.rewardTxt+'</div>'
+              + '<div style="color:#C9A550;font-size:12px;font-family:Cinzel,serif">'+(done?'✅ ':'📜 ')+q.title+'</div>'
+              + '<div style="font-size:12px;margin-top:4px;white-space:pre-line">'+q.desc+'</div>'
+              + (done ? '<div style="font-size:11px;color:#50d090;margin-top:4px">✓ Objectif accompli — retourne voir le PNJ</div>' : '')
               + '</div>';
           });
         }
