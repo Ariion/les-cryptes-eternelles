@@ -1204,6 +1204,40 @@ canvas#particles {
 #gh-xp-bar-outer { flex:1; height:4px; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden; }
 #gh-xp-bar-inner { height:100%; border-radius:2px; background:linear-gradient(90deg,#6030a0,#a060e0); transition:width 0.4s ease; width:0%; }
 #gh-xp-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(160,100,220,0.55); white-space:nowrap; }
+/* ── MANA BAR (Mage & Prêtre) ──────────────────────────────── */
+#gh-row4 { display:none; align-items:center; gap:8px; }
+#gh-row4.show { display:flex; }
+#gh-mana-bar-outer { flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,0.06); border:1px solid rgba(60,120,255,0.2); overflow:hidden; }
+#gh-mana-bar-inner { height:100%; border-radius:3px; background:linear-gradient(90deg,#1a3a9a,#3060dd,#60a0ff); transition:width 0.35s ease; width:100%; }
+#gh-mana-text { font-family:'Cinzel',serif; font-size:9px; color:rgba(100,160,255,0.8); white-space:nowrap; flex-shrink:0; }
+#gh-mana-label { font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(60,120,255,0.5); white-space:nowrap; }
+/* ── SPELL PICKER (Mage & Prêtre) ──────────────────────────── */
+#spell-overlay {
+  display:none; position:absolute; inset:0; z-index:20;
+  background:rgba(0,0,0,0.7); align-items:flex-end; justify-content:center;
+  padding-bottom:80px;
+}
+#spell-overlay.show { display:flex; }
+#spell-box {
+  width:100%; background:rgba(8,6,20,0.97); border-top:1px solid rgba(60,120,255,0.3);
+  padding:14px 12px 10px; display:flex; flex-direction:column; gap:8px;
+}
+#spell-title { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:rgba(60,120,255,0.6); text-align:center; margin-bottom:4px; }
+.spell-btn {
+  width:100%; padding:12px 14px; background:rgba(20,30,80,0.6);
+  border:1px solid rgba(60,120,255,0.25); border-radius:6px;
+  color:#a0c0ff; font-family:'Crimson Text',serif; font-size:14px;
+  text-align:left; cursor:pointer; display:flex; align-items:center; gap:10px;
+  -webkit-tap-highlight-color:transparent; position:relative; overflow:hidden;
+}
+.spell-btn:active { background:rgba(40,60,160,0.5); border-color:rgba(60,120,255,0.6); }
+.spell-btn.disabled { opacity:0.35; pointer-events:none; }
+.spell-btn .sp-ico { font-size:20px; flex-shrink:0; }
+.spell-btn .sp-info { flex:1; }
+.spell-btn .sp-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#c0d8ff; }
+.spell-btn .sp-desc { font-size:12px; color:rgba(160,200,255,0.6); margin-top:1px; }
+.spell-btn .sp-cost { font-family:'Cinzel',serif; font-size:10px; color:#60a0ff; flex-shrink:0; }
+#spell-cancel { font-family:'Cinzel',serif; font-size:9px; color:rgba(255,255,255,0.25); background:none; border:none; cursor:pointer; padding:6px; text-align:center; }
 /* Screens with header get top padding */
 .has-game-header { padding-top: 82px !important; }
 /* Legacy hud — hidden */
@@ -2173,6 +2207,11 @@ canvas#particles {
         <div id="gh-xp-bar-outer"><div id="gh-xp-bar-inner" style="width:0%"></div></div>
         <div id="gh-xp-label">XP</div>
       </div>
+      <div id="gh-row4">
+        <div id="gh-mana-bar-outer"><div id="gh-mana-bar-inner" style="width:100%"></div></div>
+        <div id="gh-mana-text">60/60</div>
+        <div id="gh-mana-label">MANA</div>
+      </div>
     </div>
     <!-- Modal quêtes actives -->
     <div id="gh-quest-modal">
@@ -2401,6 +2440,15 @@ canvas#particles {
         <button class="cb-btn cb-btn-flee" onclick="Combat.playerFlee()">
           🏃 Fuir (risqué)
         </button>
+      </div>
+
+      <!-- Spell picker (Mage & Prêtre) -->
+      <div id="spell-overlay">
+        <div id="spell-box">
+          <div id="spell-title">CHOISIR UN SORT</div>
+          <div id="spell-list"></div>
+          <button id="spell-cancel" onclick="Combat.closeSpells()">Annuler</button>
+        </div>
       </div>
 
       <!-- Item select overlay (inside combat screen) -->
@@ -4171,6 +4219,33 @@ function getBossForZone(zone, floor) {
   return bosses[0] || ENEMIES.find(function(e){ return e.boss; });
 }
 
+// ── SORTS (Mage & Prêtre) ────────────────────────────────────────
+var SPELLS = {
+  Mage: [
+    { id:'fireball',  ico:'🔥', name:'Boule de Feu',   cost:20, desc:'1.8× ATQ — dégâts de feu',
+      cast:function(enemy){ var d=Math.round(State.atk*1.8); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Boule de feu ! '+d+' dégâts de feu !',crit:true}; } },
+    { id:'lightning', ico:'⚡', name:'Éclair',          cost:15, desc:'1.4× ATQ + Étourdi 1 tour',
+      cast:function(enemy){ var d=Math.round(State.atk*1.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Éclair ! '+d+' dégâts + étourdi !',crit:false,stun:1}; } },
+    { id:'blizzard',  ico:'❄', name:'Blizzard',         cost:32, desc:'2.4× ATQ — dégâts de glace',
+      unlockLevel:8,
+      cast:function(enemy){ var d=Math.round(State.atk*2.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Blizzard ! '+d+' dégâts de glace !',crit:true}; } },
+    { id:'arcane',    ico:'🔮', name:'Tempête Arcane',  cost:45, desc:'3.0× ATQ — dégâts purs',
+      unlockLevel:15,
+      cast:function(enemy){ var d=Math.round(State.atk*3.0); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tempête arcane ! '+d+' dégâts purs !',crit:true}; } },
+  ],
+  Prêtre: [
+    { id:'heal_sm',   ico:'💚', name:'Soin Léger',      cost:12, desc:'Récup 25% PV max',
+      cast:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin léger ! +'+h+' PV.'}; } },
+    { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     cost:28, desc:'Récup 55% PV max',
+      cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !'}; } },
+    { id:'shield',    ico:'✨', name:'Bouclier Divin',  cost:18, desc:'+12 DEF pendant 2 tours',
+      cast:function(){ State.def+=12; return {log:'Bouclier divin ! +12 DEF pour 2 tours.',shield:2}; } },
+    { id:'smite',     ico:'⚡', name:'Jugement',        cost:22, desc:'1.2× ATQ + Brûlure 2 tours',
+      unlockLevel:8,
+      cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',burn:2}; } },
+  ]
+};
+
 // ── COMBAT ────────────────────────────────────────────────────────
 var Combat = (function(){
   var enemy = null;
@@ -4180,6 +4255,27 @@ var Combat = (function(){
   var logLines = [];
   var statuses = []; // { type:'poison'|'burn'|'stun'|'shield', turns, val }
   var enemyStatuses = [];
+
+  function hasMana() { return State.cls === 'Mage' || State.cls === 'Prêtre'; }
+  function manaRegen() { return State.cls === 'Mage' ? 12 : State.cls === 'Prêtre' ? 8 : 0; }
+
+  function updateManaBar() {
+    var row = document.getElementById('gh-row4');
+    if (!row) return;
+    if (!hasMana()) { row.classList.remove('show'); return; }
+    row.classList.add('show');
+    var pct = State.manaMax > 0 ? Math.round((State.mana||0)/State.manaMax*100) : 0;
+    var bar = document.getElementById('gh-mana-bar-inner');
+    var txt = document.getElementById('gh-mana-text');
+    if (bar) bar.style.width = pct+'%';
+    if (txt) txt.textContent = (State.mana||0)+'/'+State.manaMax;
+  }
+
+  function regenMana() {
+    if (!hasMana()) return;
+    State.mana = Math.min(State.manaMax, (State.mana||0) + manaRegen());
+    updateManaBar();
+  }
 
   function log(msg, type) {
     type = type || 'system';
@@ -4303,12 +4399,21 @@ var Combat = (function(){
   function updateSkillBtn() {
     var cd = document.getElementById('skill-cd');
     var btn = document.getElementById('btn-skill');
-    if (skillCd > 0) {
-      cd.textContent = skillCd+' tour'+(skillCd>1?'s':'');
-      btn.disabled = true;
+    if (hasMana()) {
+      // Pour Mage/Prêtre : afficher le mana minimum requis
+      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return !s.unlockLevel || (State.level||1)>=s.unlockLevel; });
+      var minCost = spells.length ? spells.reduce(function(m,s){ return Math.min(m,s.cost); }, 999) : 99;
+      var hasMp = (State.mana||0) >= minCost;
+      if (cd) cd.textContent = (State.mana||0)+' MP';
+      if (btn) btn.disabled = !hasMp;
     } else {
-      cd.textContent = '';
-      btn.disabled = false;
+      if (skillCd > 0) {
+        if (cd) cd.textContent = skillCd+' tour'+(skillCd>1?'s':'');
+        if (btn) btn.disabled = true;
+      } else {
+        if (cd) cd.textContent = '';
+        if (btn) btn.disabled = false;
+      }
     }
   }
 
@@ -4493,8 +4598,9 @@ var Combat = (function(){
 
       if (State.hp <= 0) { endCombat(false); return; }
 
-      // Cooldown compétence
-      if (skillCd > 0) skillCd--;
+      // Cooldown compétence (classes sans mana) + regen mana
+      if (!hasMana() && skillCd > 0) skillCd--;
+      regenMana();
       updateSkillBtn();
 
       turnLocked = false;
@@ -4509,6 +4615,11 @@ var Combat = (function(){
       skillCd = 0;
       turnLocked = false;
       logLines = [];
+      // Regen mana partielle entre les combats (50% récupéré)
+      if (hasMana() && State.manaMax > 0) {
+        State.mana = Math.min(State.manaMax, (State.mana||0) + Math.round(State.manaMax * 0.5));
+      }
+      updateManaBar();
 
       var r = RACES.find(function(x){ return x.id===State.race; });
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
@@ -4578,21 +4689,22 @@ var Combat = (function(){
     },
 
     playerSkill: function() {
-      if (turnLocked || skillCd > 0) return;
+      if (turnLocked) return;
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
+      // Mage & Prêtre : ouvrir le sélecteur de sorts
+      if (hasMana()) {
+        if ((State.mana||0) <= 0) { log('Plus de mana !','system'); return; }
+        Combat.openSpells();
+        return;
+      }
+      // Autres classes : cooldown classique
+      if (skillCd > 0) return;
       skillCd = 3;
       updateSkillBtn();
       Sfx.skill();
       if (c.id === 'Guerrier') {
         State.def += 8; playerDef = true;
         log('Bouclier de fer ! (+8 DEF ce tour)','player');
-        enemyTurn();
-      } else if (c.id === 'Mage') {
-        var dmg = Math.round(State.atk * 1.8);
-        enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
-        log('Boule de feu ! '+dmg+' dégâts de feu à '+enemy.name+' !','player');
-        if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Chasseur') {
         var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
@@ -4609,14 +4721,6 @@ var Combat = (function(){
         log('Frappe critique garantie ! '+dmg+' dégâts.','player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
-      } else if (c.id === 'Prêtre') {
-        var heal = Math.round(State.hpMax * 0.3);
-        State.hp = Math.min(State.hpMax, State.hp + heal);
-        showHeal(heal);
-        updatePlayerUI();
-        Sfx.heal();
-        log('Soin divin ! +'+heal+' PV récupérés.','heal');
-        enemyTurn();
       } else if (c.id === 'Barbare') {
         var dmg = Math.round(State.atk * 1.6);
         if (State.hp < State.hpMax * 0.3) dmg = Math.round(dmg * 1.5);
@@ -4626,6 +4730,49 @@ var Combat = (function(){
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       }
+    },
+
+    openSpells: function() {
+      var list = document.getElementById('spell-list');
+      list.innerHTML = '';
+      var spells = (SPELLS[State.cls]||[]);
+      spells.forEach(function(sp) {
+        var lvlOk = !sp.unlockLevel || (State.level||1) >= sp.unlockLevel;
+        var mpOk  = (State.mana||0) >= sp.cost;
+        var btn = document.createElement('button');
+        btn.className = 'spell-btn ripple-el' + ((!lvlOk || !mpOk) ? ' disabled' : '');
+        btn.innerHTML = '<span class="sp-ico">'+sp.ico+'</span>'
+          + '<span class="sp-info"><div class="sp-name">'+sp.name+'</div>'
+          + '<div class="sp-desc">'+(lvlOk ? sp.desc : 'Débloqué niveau '+sp.unlockLevel)+'</div></span>'
+          + '<span class="sp-cost">'+sp.cost+' MP</span>';
+        if (lvlOk && mpOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
+        list.appendChild(btn);
+      });
+      document.getElementById('spell-overlay').classList.add('show');
+    },
+
+    closeSpells: function() {
+      document.getElementById('spell-overlay').classList.remove('show');
+    },
+
+    castSpell: function(sp) {
+      Combat.closeSpells();
+      if (turnLocked) return;
+      if ((State.mana||0) < sp.cost) { log('Plus assez de mana !','system'); return; }
+      State.mana = Math.max(0, (State.mana||0) - sp.cost);
+      updateManaBar();
+      updateSkillBtn();
+      Sfx.skill();
+      clearTimer();
+      var res = sp.cast(enemy);
+      if (res.dmg) { enemyHitAnim(); showDmg(res.dmg, false, res.crit); updateEnemyUI(); }
+      if (res.heal) { showHeal(res.heal); updatePlayerUI(); Sfx.heal(); }
+      if (res.stun) { addStatus(enemyStatuses, 'stun', res.stun, 0); }
+      if (res.burn) { addStatus(enemyStatuses, 'burn', res.burn, Math.round(State.atk*0.3)); }
+      if (res.shield) { addStatus(statuses, 'shield', res.shield, 0); State.def += 12; }
+      log(res.log, res.heal ? 'heal' : 'player');
+      if (enemy.hp <= 0) { endCombat(true); return; }
+      enemyTurn();
     },
 
     usePotion: function() {
@@ -5624,6 +5771,8 @@ var SHOP_POOL = [
   // Consommables
   { ico:'💊', name:'Potion Suprême',     desc:'+2 Potions',      cost:20,  rarity:'common',    effect:function(){ State.potions=(State.potions||0)+2; } },
   { ico:'🩹', name:'Soin Immédiat',      desc:'Récup 50% PV',    cost:25,  rarity:'common',    effect:function(){ State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.5)); } },
+  { ico:'💧', name:'Fiole de Mana',      desc:'Récup 30 mana (Mage/Prêtre)', cost:20, rarity:'common', effect:function(){ if(State.manaMax>0) State.mana=Math.min(State.manaMax,(State.mana||0)+30); }, condition:function(){ return State.manaMax>0; } },
+  { ico:'🔷', name:'Cristal de Mana',    desc:'Mana au maximum',   cost:40,  rarity:'rare',      effect:function(){ if(State.manaMax>0) State.mana=State.manaMax; }, condition:function(){ return State.manaMax>0; } },
   { ico:'🧪', name:'Élixir de Force',    desc:'+1 Potion force',  cost:35,  rarity:'uncommon',  combat:true, effect:function(){ State.potions=(State.potions||0)+1; } },
   // Équipements communs / peu communs
   { ico:'⚔', name:'Épée du Marché',     desc:'+5 ATQ',           cost:30,  rarity:'common',    slot:'arme',      stats:{atk:5} },
@@ -7206,6 +7355,10 @@ var App = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
     State.fleeBonus = 0;
+    // Mana (Mage & Prêtre uniquement)
+    if (State.cls === 'Mage')   { State.manaMax = 60; State.mana = 60; }
+    else if (State.cls === 'Prêtre') { State.manaMax = 50; State.mana = 50; }
+    else { State.manaMax = 0; State.mana = 0; }
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
