@@ -6126,6 +6126,7 @@ var InnRoom = {
     var heroName = State.name && State.name !== 'Aventurier' ? State.name + ' · ' : '';
     if (el) el.textContent = heroName + (r.icon||'') + ' ' + r.name + ' ' + c.name;
     InnRoom.updateHp();
+    if (typeof HUD !== 'undefined') HUD.updateHP();
     State.saveRun(); // auto-save à chaque retour à l'auberge
   },
   updateHp: function() {
@@ -6150,7 +6151,7 @@ var InnRoom = {
     State.persistentStatuses = [];
     InnRoom.updateHp();
     InnRoom.showStatusBanner(hadStatuses ? '✨ Repos (15 🪙) — Soigné ! Statuts dissipés.' : '✨ Repos (15 🪙) — +' + heal + ' PV. Pleine forme !');
-    if (typeof HUD !== 'undefined') HUD.updateGold();
+    if (typeof HUD !== 'undefined') { HUD.updateGold(); HUD.updateHP(); }
     if (typeof Sfx !== 'undefined' && Sfx.heal) Sfx.heal();
   },
   showStatusBanner: function(msg) {
