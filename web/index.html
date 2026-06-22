@@ -4763,97 +4763,97 @@ function updateStats() {
 // zones: tableau des zones où cet ennemi peut apparaître (vide = toutes)
 var ENEMIES = [
   // ── Grottes des Ombres ──────────────────────────────────────────
-  { name:'Squelette',            sprite:'💀', hp:60,  atk:14, def:4,  gold:14, xp:18, floor:1, zones:['grottes'] },
-  { name:'Slime Corrosif',       sprite:'🟢', hp:50,  atk:12, def:1,  gold:10, xp:12, floor:1, zones:['grottes'] },
-  { name:'Gobelin Sauvage',      sprite:'👺', hp:65,  atk:16, def:5,  gold:18, xp:22, floor:1, zones:['grottes'] },
-  { name:'Chauve-Souris Géante', sprite:'🦇', hp:55,  atk:15, def:2,  gold:12, xp:15, floor:1, zones:['grottes'] },
-  { name:'Rat des Abysses',      sprite:'🐀', hp:45,  atk:18, def:0,  gold:8,  xp:10, floor:1, zones:['grottes'] },
-  { name:'Golem de Boue',        sprite:'🪨', hp:90,  atk:16, def:8,  gold:22, xp:28, floor:2, zones:['grottes'] },
-  { name:'Orc de Caverne',       sprite:'👹', hp:100, atk:20, def:7,  gold:26, xp:32, floor:3, zones:['grottes'] },
-  { name:'Gardien des Grottes',  sprite:'💀', hp:55,  atk:10, def:5,  gold:120,xp:150,floor:4, boss:true, zones:['grottes'] },
+  { name:'Squelette', nameEn:'Skeleton',            sprite:'💀', hp:60,  atk:14, def:4,  gold:14, xp:18, floor:1, zones:['grottes'] },
+  { name:'Slime Corrosif', nameEn:'Corrosive Slime',       sprite:'🟢', hp:50,  atk:12, def:1,  gold:10, xp:12, floor:1, zones:['grottes'] },
+  { name:'Gobelin Sauvage', nameEn:'Wild Goblin',      sprite:'👺', hp:65,  atk:16, def:5,  gold:18, xp:22, floor:1, zones:['grottes'] },
+  { name:'Chauve-Souris Géante', nameEn:'Giant Bat', sprite:'🦇', hp:55,  atk:15, def:2,  gold:12, xp:15, floor:1, zones:['grottes'] },
+  { name:'Rat des Abysses', nameEn:'Abyss Rat',      sprite:'🐀', hp:45,  atk:18, def:0,  gold:8,  xp:10, floor:1, zones:['grottes'] },
+  { name:'Golem de Boue', nameEn:'Mud Golem',        sprite:'🪨', hp:90,  atk:16, def:8,  gold:22, xp:28, floor:2, zones:['grottes'] },
+  { name:'Orc de Caverne', nameEn:'Cave Orc',       sprite:'👹', hp:100, atk:20, def:7,  gold:26, xp:32, floor:3, zones:['grottes'] },
+  { name:'Gardien des Grottes', nameEn:'Cave Guardian',  sprite:'💀', hp:55,  atk:10, def:5,  gold:120,xp:150,floor:4, boss:true, zones:['grottes'] },
 
   // ── Forêt des Âmes Perdues ──────────────────────────────────────
-  { name:'Loup Fantôme',         sprite:'🐺', hp:80,  atk:18, def:5,  gold:22, xp:28, floor:1, zones:['foret'] },
-  { name:'Dryade Corrompue',     sprite:'🌿', hp:70,  atk:20, def:3,  gold:20, xp:25, floor:1, zones:['foret'] },
-  { name:'Araignée Géante',      sprite:'🕷', hp:90,  atk:22, def:6,  gold:28, xp:35, floor:2, zones:['foret'], poison:true },
-  { name:'Esprit de la Forêt',   sprite:'👻', hp:85,  atk:25, def:4,  gold:30, xp:38, floor:2, zones:['foret'] },
-  { name:'Ours Maudit',          sprite:'🐻', hp:120, atk:22, def:10, gold:35, xp:45, floor:3, zones:['foret'] },
-  { name:'Chasseur de Primes',   sprite:'🏹', hp:95,  atk:28, def:6,  gold:38, xp:48, floor:3, zones:['foret'] },
-  { name:'Seigneur de la Forêt', sprite:'🌳', hp:250, atk:32, def:14, gold:180,xp:200,floor:5, boss:true, zones:['foret'] },
+  { name:'Loup Fantôme', nameEn:'Ghost Wolf',         sprite:'🐺', hp:80,  atk:18, def:5,  gold:22, xp:28, floor:1, zones:['foret'] },
+  { name:'Dryade Corrompue', nameEn:'Corrupted Dryad',     sprite:'🌿', hp:70,  atk:20, def:3,  gold:20, xp:25, floor:1, zones:['foret'] },
+  { name:'Araignée Géante', nameEn:'Giant Spider',      sprite:'🕷', hp:90,  atk:22, def:6,  gold:28, xp:35, floor:2, zones:['foret'], poison:true },
+  { name:'Esprit de la Forêt', nameEn:'Forest Spirit',   sprite:'👻', hp:85,  atk:25, def:4,  gold:30, xp:38, floor:2, zones:['foret'] },
+  { name:'Ours Maudit', nameEn:'Cursed Bear',          sprite:'🐻', hp:120, atk:22, def:10, gold:35, xp:45, floor:3, zones:['foret'] },
+  { name:'Chasseur de Primes', nameEn:'Bounty Hunter',   sprite:'🏹', hp:95,  atk:28, def:6,  gold:38, xp:48, floor:3, zones:['foret'] },
+  { name:'Seigneur de la Forêt', nameEn:'Forest Lord', sprite:'🌳', hp:250, atk:32, def:14, gold:180,xp:200,floor:5, boss:true, zones:['foret'] },
 
   // ── Ruines d'Astavar ────────────────────────────────────────────
-  { name:'Fantôme Affamé',       sprite:'👻', hp:80,  atk:20, def:8,  gold:25, xp:32, floor:1, zones:['ruines'] },
-  { name:'Golem de Pierre',      sprite:'🗿', hp:140, atk:22, def:14, gold:40, xp:50, floor:2, zones:['ruines'] },
-  { name:'Nécromant',            sprite:'🧙', hp:110, atk:30, def:5,  gold:50, xp:62, floor:2, zones:['ruines'] },
-  { name:'Guerrier Ancien',      sprite:'⚔',  hp:130, atk:26, def:12, gold:45, xp:55, floor:3, zones:['ruines'] },
-  { name:'Sphinge Brisée',       sprite:'🦁', hp:150, atk:28, def:10, gold:55, xp:70, floor:4, zones:['ruines'] },
-  { name:'Lich Mineure',         sprite:'💀', hp:300, atk:38, def:15, gold:220,xp:260,floor:5, boss:true, zones:['ruines'] },
+  { name:'Fantôme Affamé', nameEn:'Hungry Ghost',       sprite:'👻', hp:80,  atk:20, def:8,  gold:25, xp:32, floor:1, zones:['ruines'] },
+  { name:'Golem de Pierre', nameEn:'Stone Golem',      sprite:'🗿', hp:140, atk:22, def:14, gold:40, xp:50, floor:2, zones:['ruines'] },
+  { name:'Nécromant', nameEn:'Necromancer',            sprite:'🧙', hp:110, atk:30, def:5,  gold:50, xp:62, floor:2, zones:['ruines'] },
+  { name:'Guerrier Ancien', nameEn:'Ancient Warrior',      sprite:'⚔',  hp:130, atk:26, def:12, gold:45, xp:55, floor:3, zones:['ruines'] },
+  { name:'Sphinge Brisée', nameEn:'Broken Sphinx',       sprite:'🦁', hp:150, atk:28, def:10, gold:55, xp:70, floor:4, zones:['ruines'] },
+  { name:'Lich Mineure', nameEn:'Minor Lich',         sprite:'💀', hp:300, atk:38, def:15, gold:220,xp:260,floor:5, boss:true, zones:['ruines'] },
 
   // ── Port des Tempêtes ───────────────────────────────────────────
-  { name:'Pirate Maudit',        sprite:'🏴‍☠️',hp:110, atk:26, def:8,  gold:40, xp:50, floor:1, zones:['port'] },
-  { name:'Sirène Vengeresse',    sprite:'🧜', hp:100, atk:30, def:5,  gold:45, xp:55, floor:2, zones:['port'] },
-  { name:'Kraken Juvénile',      sprite:'🦑', hp:160, atk:28, def:12, gold:55, xp:68, floor:3, zones:['port'] },
-  { name:'Démon des Mers',       sprite:'😈', hp:130, atk:34, def:10, gold:60, xp:75, floor:3, zones:['port'] },
-  { name:'Tempête Incarnée',     sprite:'⛈',  hp:145, atk:32, def:8,  gold:58, xp:72, floor:4, zones:['port'] },
-  { name:'Leviathan des Abysses',sprite:'🌊', hp:380, atk:44, def:18, gold:300,xp:340,floor:5, boss:true, zones:['port'] },
+  { name:'Pirate Maudit', nameEn:'Cursed Pirate',        sprite:'🏴‍☠️',hp:110, atk:26, def:8,  gold:40, xp:50, floor:1, zones:['port'] },
+  { name:'Sirène Vengeresse', nameEn:'Vengeful Siren',    sprite:'🧜', hp:100, atk:30, def:5,  gold:45, xp:55, floor:2, zones:['port'] },
+  { name:'Kraken Juvénile', nameEn:'Juvenile Kraken',      sprite:'🦑', hp:160, atk:28, def:12, gold:55, xp:68, floor:3, zones:['port'] },
+  { name:'Démon des Mers', nameEn:'Sea Demon',       sprite:'😈', hp:130, atk:34, def:10, gold:60, xp:75, floor:3, zones:['port'] },
+  { name:'Tempête Incarnée', nameEn:'Living Storm',     sprite:'⛈',  hp:145, atk:32, def:8,  gold:58, xp:72, floor:4, zones:['port'] },
+  { name:'Leviathan des Abysses', nameEn:'Abyss Leviathan',sprite:'🌊', hp:380, atk:44, def:18, gold:300,xp:340,floor:5, boss:true, zones:['port'] },
 
   // ── Pics du Néant ───────────────────────────────────────────────
-  { name:'Yéti Déchaîné',        sprite:'🏔', hp:160, atk:32, def:14, gold:60, xp:75, floor:1, zones:['pics'] },
-  { name:'Griffon de Pierre',    sprite:'🦅', hp:140, atk:38, def:10, gold:65, xp:82, floor:2, zones:['pics'] },
-  { name:'Géant des Glaces',     sprite:'❄',  hp:200, atk:35, def:18, gold:75, xp:95, floor:3, zones:['pics'] },
-  { name:'Dragon des Pics',      sprite:'🐲', hp:180, atk:42, def:12, gold:80, xp:100,floor:4, zones:['pics'] },
-  { name:'Ange Déchu',           sprite:'👼', hp:220, atk:40, def:15, gold:90, xp:110,floor:4, zones:['pics'] },
-  { name:'Seigneur du Néant',    sprite:'🌑', hp:500, atk:55, def:22, gold:400,xp:450,floor:6, boss:true, zones:['pics'] },
+  { name:'Yéti Déchaîné', nameEn:'Raging Yeti',        sprite:'🏔', hp:160, atk:32, def:14, gold:60, xp:75, floor:1, zones:['pics'] },
+  { name:'Griffon de Pierre', nameEn:'Stone Griffon',    sprite:'🦅', hp:140, atk:38, def:10, gold:65, xp:82, floor:2, zones:['pics'] },
+  { name:'Géant des Glaces', nameEn:'Ice Giant',     sprite:'❄',  hp:200, atk:35, def:18, gold:75, xp:95, floor:3, zones:['pics'] },
+  { name:'Dragon des Pics', nameEn:'Peak Dragon',      sprite:'🐲', hp:180, atk:42, def:12, gold:80, xp:100,floor:4, zones:['pics'] },
+  { name:'Ange Déchu', nameEn:'Fallen Angel',           sprite:'👼', hp:220, atk:40, def:15, gold:90, xp:110,floor:4, zones:['pics'] },
+  { name:'Seigneur du Néant', nameEn:'Lord of the Void',    sprite:'🌑', hp:500, atk:55, def:22, gold:400,xp:450,floor:6, boss:true, zones:['pics'] },
 
   // ── Les Cryptes Éternelles ──────────────────────────────────────
-  { name:'Vampire Lord',         sprite:'🧛', hp:220, atk:44, def:18, gold:90, xp:110,floor:1, zones:['cryptes'] },
-  { name:'Ombre Maudite',        sprite:'🌑', hp:200, atk:48, def:12, gold:95, xp:118,floor:2, zones:['cryptes'] },
-  { name:'Démon Antique',        sprite:'👿', hp:240, atk:46, def:20, gold:100,xp:125,floor:3, zones:['cryptes'] },
-  { name:'Spectre Éternel',      sprite:'💀', hp:210, atk:50, def:14, gold:105,xp:130,floor:4, zones:['cryptes'] },
-  { name:'Liche Ancienne',       sprite:'🧙', hp:280, atk:52, def:18, gold:120,xp:150,floor:4, zones:['cryptes'] },
-  { name:'Seigneur des Cryptes', sprite:'☠',  hp:400, atk:65, def:28, gold:500,xp:500,floor:6, boss:true, zones:['cryptes'] },
-  { name:'Gardien Éternel',      sprite:'⚰',  hp:350, atk:60, def:25, gold:450,xp:460,floor:5, boss:true, zones:['cryptes'] },
+  { name:'Vampire Lord', nameEn:'Vampire Lord',         sprite:'🧛', hp:220, atk:44, def:18, gold:90, xp:110,floor:1, zones:['cryptes'] },
+  { name:'Ombre Maudite', nameEn:'Cursed Shadow',        sprite:'🌑', hp:200, atk:48, def:12, gold:95, xp:118,floor:2, zones:['cryptes'] },
+  { name:'Démon Antique', nameEn:'Ancient Demon',        sprite:'👿', hp:240, atk:46, def:20, gold:100,xp:125,floor:3, zones:['cryptes'] },
+  { name:'Spectre Éternel', nameEn:'Eternal Spectre',      sprite:'💀', hp:210, atk:50, def:14, gold:105,xp:130,floor:4, zones:['cryptes'] },
+  { name:'Liche Ancienne', nameEn:'Ancient Lich',       sprite:'🧙', hp:280, atk:52, def:18, gold:120,xp:150,floor:4, zones:['cryptes'] },
+  { name:'Seigneur des Cryptes', nameEn:'Crypt Lord', sprite:'☠',  hp:400, atk:65, def:28, gold:500,xp:500,floor:6, boss:true, zones:['cryptes'] },
+  { name:'Gardien Éternel', nameEn:'Eternal Guardian',      sprite:'⚰',  hp:350, atk:60, def:25, gold:450,xp:460,floor:5, boss:true, zones:['cryptes'] },
   // ── MARAIS DE VAELTHAR (niveau 28-35) ────────────────────────────
-  { name:'Crapaud Venimeux',     sprite:'🐸', hp:130, atk:28, def:8,  gold:45, xp:55, floor:1, zones:['marais'], poison:true },
-  { name:'Sangsue Géante',       sprite:'🐛', hp:120, atk:30, def:6,  gold:48, xp:60, floor:1, zones:['marais'] },
-  { name:'Rôdeur des Brumes',    sprite:'👤', hp:145, atk:34, def:10, gold:55, xp:68, floor:2, zones:['marais'] },
-  { name:'Crocodile Maudit',     sprite:'🐊', hp:170, atk:32, def:14, gold:58, xp:72, floor:2, zones:['marais'] },
-  { name:'Sorcière des Marais',  sprite:'🧙', hp:155, atk:38, def:8,  gold:65, xp:80, floor:3, zones:['marais'], poison:true },
-  { name:'Noyé Éternel',        sprite:'🌊', hp:165, atk:36, def:12, gold:62, xp:78, floor:3, zones:['marais'] },
-  { name:'Serpent de Boue',      sprite:'🐍', hp:180, atk:35, def:10, gold:70, xp:88, floor:4, zones:['marais'], poison:true },
-  { name:'Dame des Eaux Noires', sprite:'🧜', hp:500, atk:50, def:20, gold:380,xp:420,floor:5, boss:true, zones:['marais'] },
+  { name:'Crapaud Venimeux', nameEn:'Venomous Toad',     sprite:'🐸', hp:130, atk:28, def:8,  gold:45, xp:55, floor:1, zones:['marais'], poison:true },
+  { name:'Sangsue Géante', nameEn:'Giant Leech',       sprite:'🐛', hp:120, atk:30, def:6,  gold:48, xp:60, floor:1, zones:['marais'] },
+  { name:'Rôdeur des Brumes', nameEn:'Mist Stalker',    sprite:'👤', hp:145, atk:34, def:10, gold:55, xp:68, floor:2, zones:['marais'] },
+  { name:'Crocodile Maudit', nameEn:'Cursed Crocodile',     sprite:'🐊', hp:170, atk:32, def:14, gold:58, xp:72, floor:2, zones:['marais'] },
+  { name:'Sorcière des Marais', nameEn:'Swamp Witch',  sprite:'🧙', hp:155, atk:38, def:8,  gold:65, xp:80, floor:3, zones:['marais'], poison:true },
+  { name:'Noyé Éternel', nameEn:'Eternal Drowned',        sprite:'🌊', hp:165, atk:36, def:12, gold:62, xp:78, floor:3, zones:['marais'] },
+  { name:'Serpent de Boue', nameEn:'Mud Serpent',      sprite:'🐍', hp:180, atk:35, def:10, gold:70, xp:88, floor:4, zones:['marais'], poison:true },
+  { name:'Dame des Eaux Noires', nameEn:'Lady of the Black Waters', sprite:'🧜', hp:500, atk:50, def:20, gold:380,xp:420,floor:5, boss:true, zones:['marais'] },
   // ── CALDERA D'ASZGOL (niveau 42-50) ──────────────────────────────
-  { name:'Salamandre de Lave',   sprite:'🦎', hp:195, atk:42, def:16, gold:80, xp:100,floor:1, zones:['volcan'] },
-  { name:'Golem de Pierre Fondue',sprite:'🪨',hp:220, atk:38, def:24, gold:85, xp:105,floor:2, zones:['volcan'] },
-  { name:'Démon Igné',           sprite:'🔥', hp:200, atk:46, def:14, gold:90, xp:112,floor:2, zones:['volcan'] },
-  { name:'Phénix Maudit',        sprite:'🦅', hp:240, atk:44, def:18, gold:95, xp:120,floor:3, zones:['volcan'] },
-  { name:'Wyrm de Cendre',       sprite:'🐉', hp:260, atk:48, def:20, gold:100,xp:125,floor:4, zones:['volcan'] },
-  { name:'Cultiste de la Flamme',sprite:'🧎', hp:210, atk:52, def:12, gold:105,xp:130,floor:4, zones:['volcan'] },
-  { name:'Titan du Volcan',      sprite:'🌋', hp:650, atk:70, def:30, gold:500,xp:560,floor:6, boss:true, zones:['volcan'] },
+  { name:'Salamandre de Lave', nameEn:'Lava Salamander',   sprite:'🦎', hp:195, atk:42, def:16, gold:80, xp:100,floor:1, zones:['volcan'] },
+  { name:'Golem de Pierre Fondue', nameEn:'Molten Stone Golem',sprite:'🪨',hp:220, atk:38, def:24, gold:85, xp:105,floor:2, zones:['volcan'] },
+  { name:'Démon Igné', nameEn:'Fire Demon',           sprite:'🔥', hp:200, atk:46, def:14, gold:90, xp:112,floor:2, zones:['volcan'] },
+  { name:'Phénix Maudit', nameEn:'Cursed Phoenix',        sprite:'🦅', hp:240, atk:44, def:18, gold:95, xp:120,floor:3, zones:['volcan'] },
+  { name:'Wyrm de Cendre', nameEn:'Ash Wyrm',       sprite:'🐉', hp:260, atk:48, def:20, gold:100,xp:125,floor:4, zones:['volcan'] },
+  { name:'Cultiste de la Flamme', nameEn:'Flame Cultist',sprite:'🧎', hp:210, atk:52, def:12, gold:105,xp:130,floor:4, zones:['volcan'] },
+  { name:'Titan du Volcan', nameEn:'Volcano Titan',      sprite:'🌋', hp:650, atk:70, def:30, gold:500,xp:560,floor:6, boss:true, zones:['volcan'] },
   // ── CHÂTEAU MAUDIT (niveau 55-65) ─────────────────────────────
-  { name:'Chevalier Maudit',    sprite:'⚔',  hp:300, atk:75, def:35, gold:130,xp:160,floor:1, zones:['chateau_maudit'] },
-  { name:'Noble Corrompu',      sprite:'🎩', hp:280, atk:80, def:30, gold:140,xp:175,floor:2, zones:['chateau_maudit'] },
-  { name:'Majordome Démoniaque',sprite:'🕯', hp:320, atk:72, def:40, gold:135,xp:168,floor:2, zones:['chateau_maudit'] },
-  { name:'Armure Animée',       sprite:'🛡', hp:380, atk:68, def:55, gold:145,xp:180,floor:3, zones:['chateau_maudit'] },
-  { name:'Fantôme du Roi',      sprite:'👑', hp:340, atk:85, def:28, gold:150,xp:190,floor:4, zones:['chateau_maudit'] },
-  { name:'Reine de Cendres',    sprite:'🩸', hp:1200,atk:110,def:60, gold:900,xp:1000,floor:7, boss:true, zones:['chateau_maudit'] },
+  { name:'Chevalier Maudit', nameEn:'Cursed Knight',    sprite:'⚔',  hp:300, atk:75, def:35, gold:130,xp:160,floor:1, zones:['chateau_maudit'] },
+  { name:'Noble Corrompu', nameEn:'Corrupted Noble',      sprite:'🎩', hp:280, atk:80, def:30, gold:140,xp:175,floor:2, zones:['chateau_maudit'] },
+  { name:'Majordome Démoniaque', nameEn:'Demonic Butler',sprite:'🕯', hp:320, atk:72, def:40, gold:135,xp:168,floor:2, zones:['chateau_maudit'] },
+  { name:'Armure Animée', nameEn:'Animated Armour',       sprite:'🛡', hp:380, atk:68, def:55, gold:145,xp:180,floor:3, zones:['chateau_maudit'] },
+  { name:'Fantôme du Roi', nameEn:'King\'s Ghost',      sprite:'👑', hp:340, atk:85, def:28, gold:150,xp:190,floor:4, zones:['chateau_maudit'] },
+  { name:'Reine de Cendres', nameEn:'Ash Queen',    sprite:'🩸', hp:1200,atk:110,def:60, gold:900,xp:1000,floor:7, boss:true, zones:['chateau_maudit'] },
   // ── CITÉ OUBLIÉE (niveau 65-78) ──────────────────────────────
-  { name:'Citoyen Pétrifié',   sprite:'🗿', hp:500, atk:95, def:50, gold:180,xp:220,floor:1, zones:['cite_oubliee'] },
-  { name:'Juge Ancien',         sprite:'⚖', hp:480, atk:100,def:45, gold:190,xp:235,floor:2, zones:['cite_oubliee'] },
-  { name:'Sentinelle de Marbre',sprite:'🏛', hp:550, atk:90, def:65, gold:185,xp:228,floor:3, zones:['cite_oubliee'] },
-  { name:'Archiviste Corrompu', sprite:'📜', hp:520, atk:105,def:40, gold:195,xp:242,floor:4, zones:['cite_oubliee'] },
-  { name:'Architecte du Vide',  sprite:'🌑', hp:2000,atk:140,def:80, gold:1800,xp:2000,floor:8, boss:true, zones:['cite_oubliee'] },
+  { name:'Citoyen Pétrifié', nameEn:'Petrified Citizen',   sprite:'🗿', hp:500, atk:95, def:50, gold:180,xp:220,floor:1, zones:['cite_oubliee'] },
+  { name:'Juge Ancien', nameEn:'Ancient Judge',         sprite:'⚖', hp:480, atk:100,def:45, gold:190,xp:235,floor:2, zones:['cite_oubliee'] },
+  { name:'Sentinelle de Marbre', nameEn:'Marble Sentinel',sprite:'🏛', hp:550, atk:90, def:65, gold:185,xp:228,floor:3, zones:['cite_oubliee'] },
+  { name:'Archiviste Corrompu', nameEn:'Corrupted Archivist', sprite:'📜', hp:520, atk:105,def:40, gold:195,xp:242,floor:4, zones:['cite_oubliee'] },
+  { name:'Architecte du Vide', nameEn:'Architect of the Void',  sprite:'🌑', hp:2000,atk:140,def:80, gold:1800,xp:2000,floor:8, boss:true, zones:['cite_oubliee'] },
   // ── GOUFFRE ASTRAL (niveau 78-90) ────────────────────────────
-  { name:'Écho de Guerrier',    sprite:'👤', hp:800, atk:130,def:60, gold:280,xp:340,floor:1, zones:['gouffre_astral'] },
-  { name:'Larme de Dieu',       sprite:'💧', hp:750, atk:140,def:50, gold:290,xp:355,floor:2, zones:['gouffre_astral'] },
-  { name:'Absence Incarnée',    sprite:'🌀', hp:850, atk:135,def:70, gold:285,xp:348,floor:4, zones:['gouffre_astral'] },
-  { name:'Phage Mémoriel',      sprite:'🧠', hp:3500,atk:200,def:120,gold:3000,xp:3500,floor:8, boss:true, zones:['gouffre_astral'] },
+  { name:'Écho de Guerrier', nameEn:'Warrior Echo',    sprite:'👤', hp:800, atk:130,def:60, gold:280,xp:340,floor:1, zones:['gouffre_astral'] },
+  { name:'Larme de Dieu', nameEn:'Tear of God',       sprite:'💧', hp:750, atk:140,def:50, gold:290,xp:355,floor:2, zones:['gouffre_astral'] },
+  { name:'Absence Incarnée', nameEn:'Embodied Absence',    sprite:'🌀', hp:850, atk:135,def:70, gold:285,xp:348,floor:4, zones:['gouffre_astral'] },
+  { name:'Phage Mémoriel', nameEn:'Memory Phage',      sprite:'🧠', hp:3500,atk:200,def:120,gold:3000,xp:3500,floor:8, boss:true, zones:['gouffre_astral'] },
   // ── CRYPTES PROFONDES (niveau 90-100) ────────────────────────
-  { name:'Gardien du Sceau',    sprite:'🔮', hp:1500,atk:200,def:120,gold:500,xp:600,floor:1, zones:['cryptes_profondes'] },
-  { name:'Ombre Primordiale',   sprite:'⬛', hp:1600,atk:220,def:100,gold:520,xp:640,floor:3, zones:['cryptes_profondes'] },
-  { name:'Éveillé Perdu',       sprite:'👁', hp:1800,atk:210,def:130,gold:540,xp:670,floor:5, zones:['cryptes_profondes'] },
-  { name:'Fragment de Mémoire', sprite:'💎', hp:2000,atk:230,def:140,gold:560,xp:700,floor:7, zones:['cryptes_profondes'] },
-  { name:'Le Dieu de la Mémoire',sprite:'☯', hp:10000,atk:350,def:200,gold:9999,xp:9999,floor:10, boss:true, zones:['cryptes_profondes'] },
+  { name:'Gardien du Sceau', nameEn:'Seal Guardian',    sprite:'🔮', hp:1500,atk:200,def:120,gold:500,xp:600,floor:1, zones:['cryptes_profondes'] },
+  { name:'Ombre Primordiale', nameEn:'Primordial Shadow',   sprite:'⬛', hp:1600,atk:220,def:100,gold:520,xp:640,floor:3, zones:['cryptes_profondes'] },
+  { name:'Éveillé Perdu', nameEn:'Lost Awakened',       sprite:'👁', hp:1800,atk:210,def:130,gold:540,xp:670,floor:5, zones:['cryptes_profondes'] },
+  { name:'Fragment de Mémoire', nameEn:'Memory Fragment', sprite:'💎', hp:2000,atk:230,def:140,gold:560,xp:700,floor:7, zones:['cryptes_profondes'] },
+  { name:'Le Dieu de la Mémoire', nameEn:'The God of Memory',sprite:'☯', hp:10000,atk:350,def:200,gold:9999,xp:9999,floor:10, boss:true, zones:['cryptes_profondes'] },
 ];
 
 function getEnemiesForFloor(floor) {
@@ -5164,8 +5164,7 @@ var Combat = (function(){
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
-            var zdLabel = zd ? (CGE_LANG === 'en' && zd.labelEn ? zd.labelEn : zd.label) : (CGE_LANG === 'en' ? 'The dungeon' : 'Le donjon');
-            document.getElementById('go-quote').textContent = '"' + zdLabel + (CGE_LANG === 'en' ? ' has been conquered!"' : ' est vaincu !"');
+            document.getElementById('go-quote').textContent = '"' + (zd ? zd.label : 'Le donjon') + ' est vaincu !"';
             document.getElementById('go-floor').textContent = maxFloor;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
@@ -5299,7 +5298,7 @@ var Combat = (function(){
       var sprEl2 = document.getElementById('cb-enemy-sprite');
       sprEl2.classList.remove('hit','dead');
       sprEl2.textContent = enemy.sprite;
-      document.getElementById('cb-enemy-name').textContent   = enemy.name;
+      document.getElementById('cb-enemy-name').textContent   = CGE_LANG === 'en' && enemy.nameEn ? enemy.nameEn : enemy.name;
       document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
       document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
       document.getElementById('combat-result').classList.remove('show');
@@ -5576,58 +5575,58 @@ var RARITY_LABELS = { common:'Commun', uncommon:'Peu commun', rare:'Rare', epic:
 var RARITY_ORDER  = ['common','uncommon','rare','epic','legendary','mythic'];
 var ITEMS = [
   // ── Tier 1 (étages 1-2) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée Rouillée',       slot:'arme',      stats:{atk:4},         desc:'+4 ATQ',            tier:1, rarity:'common' },
-  { ico:'🗡', name:'Dague Acérée',        slot:'arme',      stats:{atk:6},         desc:'+6 ATQ',            tier:1, rarity:'common' },
-  { ico:'🛡', name:'Bouclier Brisé',      slot:'bouclier',  stats:{def:5},         desc:'+5 DEF',            tier:1, rarity:'common' },
-  { ico:'🪖', name:'Casque de Fer',       slot:'heaume',    stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
-  { ico:'🥋', name:'Armure de Cuir',      slot:'plastron',  stats:{def:6},         desc:'+6 DEF',            tier:1, rarity:'common' },
-  { ico:'🧤', name:'Gants de Feu',        slot:'gants',     stats:{atk:4},         desc:'+4 ATQ',            tier:1, rarity:'common' },
-  { ico:'🧤', name:'Gantelets Lourds',    slot:'gants',     stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
-  { ico:'👢', name:'Bottes Légères',      slot:'bottes',    stats:{flee:0.15},     desc:'+15% fuite',        tier:1, rarity:'uncommon' },
-  { ico:'🪢', name:'Ceinture Renforcée',  slot:'ceinture',  stats:{def:5},         desc:'+5 DEF',            tier:1, rarity:'common' },
-  { ico:'🦵', name:'Jambières de Cuir',   slot:'jambieres', stats:{def:4},         desc:'+4 DEF',            tier:1, rarity:'common' },
-  { ico:'📿', name:'Collier de Dents',    slot:'collier',   stats:{atk:3,def:3},   desc:'+3 ATQ +3 DEF',     tier:1, rarity:'uncommon' },
+  { ico:'⚔', name:'Épée Rouillée', nameEn:'Rusty Sword',       slot:'arme',      stats:{atk:4},         desc:'+4 ATQ',  descEn:'+4 ATK',           tier:1, rarity:'common' },
+  { ico:'🗡', name:'Dague Acérée', nameEn:'Sharp Dagger',        slot:'arme',      stats:{atk:6},         desc:'+6 ATQ',  descEn:'+6 ATK',           tier:1, rarity:'common' },
+  { ico:'🛡', name:'Bouclier Brisé', nameEn:'Broken Shield',      slot:'bouclier',  stats:{def:5},         desc:'+5 DEF',  descEn:'+5 DEF',           tier:1, rarity:'common' },
+  { ico:'🪖', name:'Casque de Fer', nameEn:'Iron Helm',       slot:'heaume',    stats:{def:4},         desc:'+4 DEF',  descEn:'+4 DEF',           tier:1, rarity:'common' },
+  { ico:'🥋', name:'Armure de Cuir', nameEn:'Leather Armour',      slot:'plastron',  stats:{def:6},         desc:'+6 DEF',  descEn:'+6 DEF',           tier:1, rarity:'common' },
+  { ico:'🧤', name:'Gants de Feu', nameEn:'Fire Gauntlets',        slot:'gants',     stats:{atk:4},         desc:'+4 ATQ',  descEn:'+4 ATK',           tier:1, rarity:'common' },
+  { ico:'🧤', name:'Gantelets Lourds', nameEn:'Heavy Gauntlets',    slot:'gants',     stats:{def:4},         desc:'+4 DEF',  descEn:'+4 DEF',           tier:1, rarity:'common' },
+  { ico:'👢', name:'Bottes Légères', nameEn:'Light Boots',      slot:'bottes',    stats:{flee:0.15},     desc:'+15% fuite', descEn:'+15% flee',     tier:1, rarity:'uncommon' },
+  { ico:'🪢', name:'Ceinture Renforcée', nameEn:'Reinforced Belt',  slot:'ceinture',  stats:{def:5},         desc:'+5 DEF',  descEn:'+5 DEF',           tier:1, rarity:'common' },
+  { ico:'🦵', name:'Jambières de Cuir', nameEn:'Leather Greaves',   slot:'jambieres', stats:{def:4},         desc:'+4 DEF',  descEn:'+4 DEF',           tier:1, rarity:'common' },
+  { ico:'📿', name:'Collier de Dents', nameEn:'Tooth Necklace',    slot:'collier',   stats:{atk:3,def:3},   desc:'+3 ATQ +3 DEF', descEn:'+3 ATK +3 DEF', tier:1, rarity:'uncommon' },
   // ── Tier 2 (étages 3-4) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée de Chevalier',   slot:'arme',      stats:{atk:10},        desc:'+10 ATQ',           tier:2, rarity:'uncommon' },
-  { ico:'🪄', name:'Baguette Arcane',     slot:'arme',      stats:{atk:12},        desc:'+12 ATQ mag.',      tier:2, rarity:'rare' },
-  { ico:'🪓', name:'Hache Barbare',       slot:'arme',      stats:{atk:14},        desc:'+14 ATQ brut',      tier:2, rarity:'rare' },
-  { ico:'🛡', name:'Écu de Chevalier',    slot:'bouclier',  stats:{def:9},         desc:'+9 DEF',            tier:2, rarity:'uncommon' },
-  { ico:'🪖', name:'Heaume Enchanté',     slot:'heaume',    stats:{def:7,hp:10},   desc:'+7 DEF +10 PV',     tier:2, rarity:'rare' },
-  { ico:'🥋', name:'Plastron d\'Acier',   slot:'plastron',  stats:{def:10},        desc:'+10 DEF',           tier:2, rarity:'uncommon' },
-  { ico:'👢', name:'Bottes de Guerre',    slot:'bottes',    stats:{def:3,atk:2},   desc:'+3 DEF +2 ATQ',     tier:2, rarity:'uncommon' },
-  { ico:'🪢', name:'Ceinture de Force',   slot:'ceinture',  stats:{atk:3,hp:15},   desc:'+3 ATQ +15 PV',     tier:2, rarity:'rare' },
-  { ico:'🦵', name:'Cuissardes d\'Acier', slot:'jambieres', stats:{def:7},         desc:'+7 DEF',            tier:2, rarity:'uncommon' },
-  { ico:'💎', name:'Amulette Vitale',     slot:'collier',   stats:{hp:30},         desc:'+30 PV max',        tier:2, rarity:'rare' },
+  { ico:'⚔', name:'Épée de Chevalier', nameEn:'Knight's Sword',   slot:'arme',      stats:{atk:10},        desc:'+10 ATQ', descEn:'+10 ATK',          tier:2, rarity:'uncommon' },
+  { ico:'🪄', name:'Baguette Arcane', nameEn:'Arcane Wand',     slot:'arme',      stats:{atk:12},        desc:'+12 ATQ mag.', descEn:'+12 mag. ATK', tier:2, rarity:'rare' },
+  { ico:'🪓', name:'Hache Barbare', nameEn:'Barbarian Axe',       slot:'arme',      stats:{atk:14},        desc:'+14 ATQ brut', descEn:'+14 raw ATK',  tier:2, rarity:'rare' },
+  { ico:'🛡', name:'Écu de Chevalier', nameEn:'Knight's Shield',    slot:'bouclier',  stats:{def:9},         desc:'+9 DEF',  descEn:'+9 DEF',           tier:2, rarity:'uncommon' },
+  { ico:'🪖', name:'Heaume Enchanté', nameEn:'Enchanted Helm',     slot:'heaume',    stats:{def:7,hp:10},   desc:'+7 DEF +10 PV', descEn:'+7 DEF +10 HP', tier:2, rarity:'rare' },
+  { ico:'🥋', name:'Plastron d\'Acier', nameEn:'Steel Breastplate',   slot:'plastron',  stats:{def:10},        desc:'+10 DEF', descEn:'+10 DEF',          tier:2, rarity:'uncommon' },
+  { ico:'👢', name:'Bottes de Guerre', nameEn:'War Boots',    slot:'bottes',    stats:{def:3,atk:2},   desc:'+3 DEF +2 ATQ', descEn:'+3 DEF +2 ATK', tier:2, rarity:'uncommon' },
+  { ico:'🪢', name:'Ceinture de Force', nameEn:'Belt of Strength',   slot:'ceinture',  stats:{atk:3,hp:15},   desc:'+3 ATQ +15 PV', descEn:'+3 ATK +15 HP', tier:2, rarity:'rare' },
+  { ico:'🦵', name:'Cuissardes d\'Acier', nameEn:'Steel Cuisses', slot:'jambieres', stats:{def:7},         desc:'+7 DEF',  descEn:'+7 DEF',           tier:2, rarity:'uncommon' },
+  { ico:'💎', name:'Amulette Vitale', nameEn:'Vital Amulet',     slot:'collier',   stats:{hp:30},         desc:'+30 PV max', descEn:'+30 max HP',    tier:2, rarity:'rare' },
   // ── Tier 3 (étages 5-6) ──────────────────────────────────────────
-  { ico:'⚔', name:'Épée de Sang',        slot:'arme',      stats:{atk:18},        desc:'+18 ATQ',           tier:3, rarity:'rare' },
-  { ico:'🪄', name:'Sceptre des Âmes',   slot:'arme',      stats:{atk:22,hp:-20}, desc:'+22 ATQ −20 PV',    tier:3, rarity:'epic' },
-  { ico:'🛡', name:'Bouclier Enchanté',  slot:'bouclier',  stats:{def:16},        desc:'+16 DEF',           tier:3, rarity:'rare' },
-  { ico:'🛡', name:'Égide de Lumière',   slot:'bouclier',  stats:{def:20,hp:15},  desc:'+20 DEF +15 PV',    tier:3, rarity:'epic' },
-  { ico:'🪖', name:'Heaume de Fer Noir', slot:'heaume',    stats:{def:14,atk:3},  desc:'+14 DEF +3 ATQ',    tier:3, rarity:'rare' },
-  { ico:'🥋', name:'Plastron des Rois',  slot:'plastron',  stats:{def:18},        desc:'+18 DEF',           tier:3, rarity:'rare' },
-  { ico:'🥋', name:'Cuirasse Maudite',   slot:'plastron',  stats:{def:22,hp:-15}, desc:'+22 DEF −15 PV',    tier:3, rarity:'epic' },
-  { ico:'🧤', name:'Gants du Titan',     slot:'gants',     stats:{atk:10,def:5},  desc:'+10 ATQ +5 DEF',    tier:3, rarity:'epic' },
-  { ico:'👢', name:'Bottes des Ombres',  slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ', tier:3, rarity:'epic' },
-  { ico:'🪢', name:'Ceinture Abyssale',  slot:'ceinture',  stats:{hp:40,def:6},   desc:'+40 PV +6 DEF',     tier:3, rarity:'rare' },
-  { ico:'🦵', name:'Cuissardes Runiques',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ',    tier:3, rarity:'epic' },
-  { ico:'💎', name:'Rubis du Néant',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF',    tier:3, rarity:'epic' },
-  { ico:'💎', name:'Saphir Éternel',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF',    tier:3, rarity:'legendary' },
+  { ico:'⚔', name:'Épée de Sang', nameEn:'Blood Sword',        slot:'arme',      stats:{atk:18},        desc:'+18 ATQ', descEn:'+18 ATK',          tier:3, rarity:'rare' },
+  { ico:'🪄', name:'Sceptre des Âmes', nameEn:'Soul Sceptre',   slot:'arme',      stats:{atk:22,hp:-20}, desc:'+22 ATQ −20 PV', descEn:'+22 ATK −20 HP', tier:3, rarity:'epic' },
+  { ico:'🛡', name:'Bouclier Enchanté', nameEn:'Enchanted Shield',  slot:'bouclier',  stats:{def:16},        desc:'+16 DEF', descEn:'+16 DEF',          tier:3, rarity:'rare' },
+  { ico:'🛡', name:'Égide de Lumière', nameEn:'Aegis of Light',   slot:'bouclier',  stats:{def:20,hp:15},  desc:'+20 DEF +15 PV', descEn:'+20 DEF +15 HP', tier:3, rarity:'epic' },
+  { ico:'🪖', name:'Heaume de Fer Noir', nameEn:'Black Iron Helm', slot:'heaume',    stats:{def:14,atk:3},  desc:'+14 DEF +3 ATQ', descEn:'+14 DEF +3 ATK', tier:3, rarity:'rare' },
+  { ico:'🥋', name:'Plastron des Rois', nameEn:'King's Breastplate',  slot:'plastron',  stats:{def:18},        desc:'+18 DEF', descEn:'+18 DEF',          tier:3, rarity:'rare' },
+  { ico:'🥋', name:'Cuirasse Maudite', nameEn:'Cursed Cuirass',   slot:'plastron',  stats:{def:22,hp:-15}, desc:'+22 DEF −15 PV', descEn:'+22 DEF −15 HP', tier:3, rarity:'epic' },
+  { ico:'🧤', name:'Gants du Titan', nameEn:'Titan Gauntlets',     slot:'gants',     stats:{atk:10,def:5},  desc:'+10 ATQ +5 DEF', descEn:'+10 ATK +5 DEF', tier:3, rarity:'epic' },
+  { ico:'👢', name:'Bottes des Ombres', nameEn:'Shadow Boots',  slot:'bottes',    stats:{flee:0.3,atk:5},desc:'+30% fuite +5 ATQ', descEn:'+30% flee +5 ATK', tier:3, rarity:'epic' },
+  { ico:'🪢', name:'Ceinture Abyssale', nameEn:'Abyssal Belt',  slot:'ceinture',  stats:{hp:40,def:6},   desc:'+40 PV +6 DEF', descEn:'+40 HP +6 DEF',  tier:3, rarity:'rare' },
+  { ico:'🦵', name:'Cuissardes Runiques', nameEn:'Runic Cuisses',slot:'jambieres', stats:{def:12,atk:4},  desc:'+12 DEF +4 ATQ', descEn:'+12 DEF +4 ATK', tier:3, rarity:'epic' },
+  { ico:'💎', name:'Rubis du Néant', nameEn:'Ruby of the Void',     slot:'collier',   stats:{atk:14,def:8},  desc:'+14 ATQ +8 DEF', descEn:'+14 ATK +8 DEF', tier:3, rarity:'epic' },
+  { ico:'💎', name:'Saphir Éternel', nameEn:'Eternal Sapphire',     slot:'collier',   stats:{hp:60,def:10},  desc:'+60 PV +10 DEF', descEn:'+60 HP +10 DEF', tier:3, rarity:'legendary' },
   // ── Anneaux / Bagues ──────────────────────────────────────────────
-  { ico:'💍', name:'Anneau de Cuivre',   slot:'bague', stats:{atk:3},        desc:'+3 ATQ',           tier:1, rarity:'common' },
-  { ico:'💍', name:'Anneau Défensif',    slot:'bague', stats:{def:4},        desc:'+4 DEF',           tier:1, rarity:'common' },
-  { ico:'💍', name:'Anneau de Vigueur',  slot:'bague', stats:{hp:20},        desc:'+20 PV max',       tier:1, rarity:'common' },
-  { ico:'💎', name:'Anneau Enchanté',    slot:'bague', stats:{atk:5,def:3},  desc:'+5 ATQ +3 DEF',   tier:2, rarity:'uncommon' },
-  { ico:'💎', name:'Bague du Survivant', slot:'bague', stats:{hp:40,def:5},  desc:'+40 PV +5 DEF',   tier:2, rarity:'rare' },
-  { ico:'🔮', name:'Anneau de Puissance',slot:'bague', stats:{atk:10,hp:30}, desc:'+10 ATQ +30 PV',  tier:3, rarity:'epic' },
-  { ico:'⭐', name:'Anneau Légendaire',  slot:'bague', stats:{atk:12,def:12,hp:50}, desc:'+12 ATQ +12 DEF +50 PV', tier:3, rarity:'legendary' },
+  { ico:'💍', name:'Anneau de Cuivre', nameEn:'Copper Ring',   slot:'bague', stats:{atk:3},        desc:'+3 ATQ', descEn:'+3 ATK',          tier:1, rarity:'common' },
+  { ico:'💍', name:'Anneau Défensif', nameEn:'Defensive Ring',    slot:'bague', stats:{def:4},        desc:'+4 DEF', descEn:'+4 DEF',          tier:1, rarity:'common' },
+  { ico:'💍', name:'Anneau de Vigueur', nameEn:'Ring of Vigour',  slot:'bague', stats:{hp:20},        desc:'+20 PV max', descEn:'+20 max HP',  tier:1, rarity:'common' },
+  { ico:'💎', name:'Anneau Enchanté', nameEn:'Enchanted Ring',    slot:'bague', stats:{atk:5,def:3},  desc:'+5 ATQ +3 DEF', descEn:'+5 ATK +3 DEF', tier:2, rarity:'uncommon' },
+  { ico:'💎', name:'Bague du Survivant', nameEn:'Survivor's Ring', slot:'bague', stats:{hp:40,def:5},  desc:'+40 PV +5 DEF', descEn:'+40 HP +5 DEF', tier:2, rarity:'rare' },
+  { ico:'🔮', name:'Anneau de Puissance', nameEn:'Ring of Power',slot:'bague', stats:{atk:10,hp:30}, desc:'+10 ATQ +30 PV', descEn:'+10 ATK +30 HP', tier:3, rarity:'epic' },
+  { ico:'⭐', name:'Anneau Légendaire', nameEn:'Legendary Ring',  slot:'bague', stats:{atk:12,def:12,hp:50}, desc:'+12 ATQ +12 DEF +50 PV', descEn:'+12 ATK +12 DEF +50 HP', tier:3, rarity:'legendary' },
   // ── Légendaires rares (drop boss uniquement) ──────────────────────
-  { ico:'⚔', name:'Lame de l\'Aube',    slot:'arme',      stats:{atk:28},        desc:'+28 ATQ',           tier:3, rarity:'legendary' },
-  { ico:'🥋', name:'Armure des Cryptes', slot:'plastron',  stats:{def:30,atk:8},  desc:'+30 DEF +8 ATQ',    tier:3, rarity:'legendary' },
-  { ico:'💍', name:'Anneau du Chaos',    slot:'collier',   stats:{atk:18,def:12}, desc:'+18 ATQ +12 DEF',   tier:3, rarity:'mythic' },
+  { ico:'⚔', name:'Lame de l\'Aube', nameEn:'Blade of Dawn',    slot:'arme',      stats:{atk:28},        desc:'+28 ATQ', descEn:'+28 ATK',          tier:3, rarity:'legendary' },
+  { ico:'🥋', name:'Armure des Cryptes', nameEn:'Crypt Armour', slot:'plastron',  stats:{def:30,atk:8},  desc:'+30 DEF +8 ATQ', descEn:'+30 DEF +8 ATK', tier:3, rarity:'legendary' },
+  { ico:'💍', name:'Anneau du Chaos', nameEn:'Ring of Chaos',    slot:'collier',   stats:{atk:18,def:12}, desc:'+18 ATQ +12 DEF', descEn:'+18 ATK +12 DEF', tier:3, rarity:'mythic' },
   // ── Consommables ─────────────────────────────────────────────────
-  { ico:'🧪', name:'Potion de Force',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', rarity:'common', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
-  { ico:'💊', name:'Herbes Médicinales', combat:true, desc:'+25% PV', rarity:'common', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
-  { ico:'📜', name:'Parchemin de Soin',  desc:'+1 Potion', rarity:'common', effect:function(){ State.potions=(State.potions||0)+1; } },
+  { ico:'🧪', name:'Potion de Force', nameEn:'Strength Potion',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', descEn:'+6 ATK (this combat)', rarity:'common', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
+  { ico:'💊', name:'Herbes Médicinales', nameEn:'Medicinal Herbs', combat:true, desc:'+25% PV', descEn:'+25% HP', rarity:'common', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
+  { ico:'📜', name:'Parchemin de Soin', nameEn:'Healing Scroll',  desc:'+1 Potion', descEn:'+1 Potion', rarity:'common', effect:function(){ State.potions=(State.potions||0)+1; } },
 ];
 
 // Appliquer les stats d'un item équipé
@@ -5671,16 +5670,16 @@ var Rooms = {
       if (Math.random() < 0.1) pool = ITEMS.filter(function(it){ return !it.slot; });
       var item = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
       document.getElementById('loot-item-ico').textContent  = item.ico;
-      document.getElementById('loot-item-name').textContent = item.name;
+      document.getElementById('loot-item-name').textContent = CGE_LANG === 'en' && item.nameEn ? item.nameEn : item.name;
       var rar = item.rarity||'common';
       var rarLabel = (RARITY_LABELS||{})[rar]||rar;
       wrap.className = wrap.className.replace(/rarity-\w+/g,'').trim() + ' rarity-'+rar;
       if (item.equip) {
-        document.getElementById('loot-item-desc').innerHTML = item.desc + ' · Mis dans le sac<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
+        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc) + ' · Mis dans le sac<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = 'Récupérer →';
       } else {
-        document.getElementById('loot-item-desc').innerHTML = item.desc+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
+        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc)+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = 'Continuer →';
       }
@@ -5974,6 +5973,9 @@ var RunMods = (function(){
       var list = document.getElementById('runmod-list');
       if (!list) { if (onConfirm) onConfirm(); return; }
       list.innerHTML = '';
+      var _rmTitle = document.getElementById('runmod-title'); if (_rmTitle) _rmTitle.textContent = '⚠ ' + T('runmod.title');
+      var _rmSub = document.getElementById('runmod-subtitle'); if (_rmSub) _rmSub.textContent = T('runmod.sub');
+      var _rmBtn = document.getElementById('runmod-btn'); if (_rmBtn) _rmBtn.textContent = T('runmod.btn');
       picked.forEach(function(m){
         var d = document.createElement('div');
         d.className = 'runmod-card '+(m.bad?'bad':'good');
@@ -8122,36 +8124,36 @@ var RewardedAds = (function(){
 // ── ACHIEVEMENTS ─────────────────────────────────────────────────
 var ACHIEVEMENT_DEFS = [
   // Exploration
-  { id:'first_kill',   ico:'⚔', title:'Premier Sang',      desc:'Vaincre ton premier ennemi',                check:function(){ return (Meta.totalKills||0)>=1; } },
-  { id:'kills_25',     ico:'💀', title:'Chasseur',           desc:'Vaincre 25 ennemis',                        check:function(){ return (Meta.totalKills||0)>=25; } },
-  { id:'kills_100',    ico:'🩸', title:'Boucher',            desc:'Vaincre 100 ennemis',                       check:function(){ return (Meta.totalKills||0)>=100; } },
-  { id:'kills_500',    ico:'☠',  title:'Fléau des Cryptes', desc:'Vaincre 500 ennemis',                        check:function(){ return (Meta.totalKills||0)>=500; } },
+  { id:'first_kill',   ico:'⚔', title:'Premier Sang',      titleEn:'First Blood',     desc:'Vaincre ton premier ennemi',              descEn:'Defeat your first enemy',                check:function(){ return (Meta.totalKills||0)>=1; } },
+  { id:'kills_25',     ico:'💀', title:'Chasseur',           titleEn:'Hunter',          desc:'Vaincre 25 ennemis',                      descEn:'Defeat 25 enemies',                        check:function(){ return (Meta.totalKills||0)>=25; } },
+  { id:'kills_100',    ico:'🩸', title:'Boucher',            titleEn:'Butcher',         desc:'Vaincre 100 ennemis',                     descEn:'Defeat 100 enemies',                       check:function(){ return (Meta.totalKills||0)>=100; } },
+  { id:'kills_500',    ico:'☠',  title:'Fléau des Cryptes', titleEn:'Crypt Scourge',   desc:'Vaincre 500 ennemis',                      descEn:'Defeat 500 enemies',                        check:function(){ return (Meta.totalKills||0)>=500; } },
   // Runs
-  { id:'runs_1',       ico:'🏃', title:'Aventurier',        desc:'Compléter un run',                           check:function(){ return (Meta.totalRuns||0)>=1; } },
-  { id:'runs_10',      ico:'🔁', title:'Vétéran',           desc:'Compléter 10 runs',                          check:function(){ return (Meta.totalRuns||0)>=10; } },
-  { id:'runs_50',      ico:'🌀', title:'Éternel',           desc:'Compléter 50 runs',                          check:function(){ return (Meta.totalRuns||0)>=50; } },
+  { id:'runs_1',       ico:'🏃', title:'Aventurier',        titleEn:'Adventurer',      desc:'Compléter un run',                         descEn:'Complete one run',                           check:function(){ return (Meta.totalRuns||0)>=1; } },
+  { id:'runs_10',      ico:'🔁', title:'Vétéran',           titleEn:'Veteran',         desc:'Compléter 10 runs',                        descEn:'Complete 10 runs',                          check:function(){ return (Meta.totalRuns||0)>=10; } },
+  { id:'runs_50',      ico:'🌀', title:'Éternel',           titleEn:'Eternal',         desc:'Compléter 50 runs',                        descEn:'Complete 50 runs',                          check:function(){ return (Meta.totalRuns||0)>=50; } },
   // Zones
-  { id:'zone_grottes', ico:'🪨', title:'Spéléologue',       desc:'Nettoyer les Grottes des Ombres',            check:function(){ return !!(Meta.clearedZones||{})['grottes']; } },
-  { id:'zone_foret',   ico:'🌲', title:'Traqueur',          desc:'Nettoyer la Forêt des Âmes Perdues',         check:function(){ return !!(Meta.clearedZones||{})['foret']; } },
-  { id:'zone_ruines',  ico:'🏚', title:'Archéologue',       desc:'Nettoyer les Ruines d\'Astavar',             check:function(){ return !!(Meta.clearedZones||{})['ruines']; } },
-  { id:'zone_port',    ico:'⚓', title:'Marin des Abysses', desc:'Nettoyer le Port des Tempêtes',              check:function(){ return !!(Meta.clearedZones||{})['port']; } },
-  { id:'zone_marais',  ico:'🌿', title:'Marcheur des Brumes',desc:'Nettoyer les Marais de Vaelthar',           check:function(){ return !!(Meta.clearedZones||{})['marais']; } },
-  { id:'zone_pics',    ico:'🏔', title:'Conquérant',        desc:'Nettoyer les Pics du Néant',                 check:function(){ return !!(Meta.clearedZones||{})['pics']; } },
-  { id:'zone_volcan',  ico:'🌋', title:'Dompteur de Flammes',desc:'Nettoyer la Caldera d\'Aszgol',             check:function(){ return !!(Meta.clearedZones||{})['volcan']; } },
-  { id:'zone_cryptes', ico:'⚰', title:'Seigneur des Cryptes',desc:'Nettoyer les Cryptes Éternelles',          check:function(){ return !!(Meta.clearedZones||{})['cryptes']; } },
+  { id:'zone_grottes', ico:'🪨', title:'Spéléologue',       titleEn:'Spelunker',       desc:'Nettoyer les Grottes des Ombres',          descEn:'Clear the Shadow Caves',            check:function(){ return !!(Meta.clearedZones||{})['grottes']; } },
+  { id:'zone_foret',   ico:'🌲', title:'Traqueur',          titleEn:'Tracker',         desc:'Nettoyer la Forêt des Âmes Perdues',       descEn:'Clear the Forest of Lost Souls',         check:function(){ return !!(Meta.clearedZones||{})['foret']; } },
+  { id:'zone_ruines',  ico:'🏚', title:'Archéologue',       titleEn:'Archaeologist',   desc:'Nettoyer les Ruines d\'Astavar',           descEn:'Clear the Ruins of Astavar',             check:function(){ return !!(Meta.clearedZones||{})['ruines']; } },
+  { id:'zone_port',    ico:'⚓', title:'Marin des Abysses', titleEn:'Abyss Sailor',    desc:'Nettoyer le Port des Tempêtes',            descEn:'Clear Storm Harbour',              check:function(){ return !!(Meta.clearedZones||{})['port']; } },
+  { id:'zone_marais',  ico:'🌿', title:'Marcheur des Brumes',titleEn:'Mist Walker',    desc:'Nettoyer les Marais de Vaelthar',          descEn:'Clear the Vaelthar Marshes',           check:function(){ return !!(Meta.clearedZones||{})['marais']; } },
+  { id:'zone_pics',    ico:'🏔', title:'Conquérant',        titleEn:'Conqueror',       desc:'Nettoyer les Pics du Néant',               descEn:'Clear the Peaks of the Void',                 check:function(){ return !!(Meta.clearedZones||{})['pics']; } },
+  { id:'zone_volcan',  ico:'🌋', title:'Dompteur de Flammes',titleEn:'Flame Tamer',    desc:'Nettoyer la Caldera d\'Aszgol',           descEn:'Clear the Caldera of Aszgol',             check:function(){ return !!(Meta.clearedZones||{})['volcan']; } },
+  { id:'zone_cryptes', ico:'⚰', title:'Seigneur des Cryptes',titleEn:'Crypt Lord',     desc:'Nettoyer les Cryptes Éternelles',          descEn:'Clear the Eternal Crypts',          check:function(){ return !!(Meta.clearedZones||{})['cryptes']; } },
   // Progression
-  { id:'level_10',     ico:'✨', title:'Prometteur',        desc:'Atteindre le niveau 10',                     check:function(){ return (State.level||1)>=10; } },
-  { id:'level_30',     ico:'⚡', title:'Chevalier',         desc:'Atteindre le niveau 30',                     check:function(){ return (State.level||1)>=30; } },
-  { id:'level_60',     ico:'🔮', title:'Maître',            desc:'Atteindre le niveau 60',                     check:function(){ return (State.level||1)>=60; } },
-  { id:'level_100',    ico:'👑', title:'Légendaire',        desc:'Atteindre le niveau 100',                    check:function(){ return (State.level||1)>=100; } },
+  { id:'level_10',     ico:'✨', title:'Prometteur',        titleEn:'Promising',       desc:'Atteindre le niveau 10',                   descEn:'Reach level 10',                     check:function(){ return (State.level||1)>=10; } },
+  { id:'level_30',     ico:'⚡', title:'Chevalier',         titleEn:'Knight',          desc:'Atteindre le niveau 30',                   descEn:'Reach level 30',                     check:function(){ return (State.level||1)>=30; } },
+  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=60; } },
+  { id:'level_100',    ico:'👑', title:'Légendaire',        titleEn:'Legendary',       desc:'Atteindre le niveau 100',                  descEn:'Reach level 100',                    check:function(){ return (State.level||1)>=100; } },
   // Histoire
-  { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        desc:'Compléter l\'Acte I de l\'histoire',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
-  { id:'quest_act2',   ico:'📖', title:'Fils du Néant',     desc:'Compléter l\'Acte II',                       check:function(){ return !!(Meta.completedQuests||{})['seraphine_2']; } },
-  { id:'quest_act3',   ico:'📚', title:'La Vérité',         desc:'Compléter l\'Acte III',                      check:function(){ return !!(Meta.completedQuests||{})['seraphine_3']; } },
-  { id:'quest_final',  ico:'🏆', title:'L\'Éveillé Éternel',desc:'Compléter l\'histoire',                      check:function(){ return !!(Meta.completedQuests||{})['cryptes_final']; } },
+  { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        titleEn:'The Awakened',   desc:'Compléter l\'Acte I de l\'histoire',       descEn:'Complete Act I of the story',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
+  { id:'quest_act2',   ico:'📖', title:'Fils du Néant',     titleEn:'Son of the Void', desc:'Compléter l\'Acte II',                     descEn:'Complete Act II',                       check:function(){ return !!(Meta.completedQuests||{})['seraphine_2']; } },
+  { id:'quest_act3',   ico:'📚', title:'La Vérité',         titleEn:'The Truth',       desc:'Compléter l\'Acte III',                    descEn:'Complete Act III',                      check:function(){ return !!(Meta.completedQuests||{})['seraphine_3']; } },
+  { id:'quest_final',  ico:'🏆', title:'L\'Éveillé Éternel',titleEn:'The Eternal Awakened', desc:'Compléter l\'histoire',               descEn:'Complete the story',                      check:function(){ return !!(Meta.completedQuests||{})['cryptes_final']; } },
   // Secrets
-  { id:'rich',         ico:'🪙', title:'Négociant',         desc:'Accumuler 1000 pièces d\'or',                check:function(){ return (State.gold||0)>=1000; } },
-  { id:'no_potion',    ico:'💪', title:'Dur à Cuire',       desc:'Battre un boss sans utiliser de potion',     check:function(){ return !!(Meta.achievements||{})['no_potion']; } },
+  { id:'rich',         ico:'🪙', title:'Négociant',         titleEn:'Merchant',        desc:'Accumuler 1000 pièces d\'or',              descEn:'Accumulate 1000 gold coins',                check:function(){ return (State.gold||0)>=1000; } },
+  { id:'no_potion',    ico:'💪', title:'Dur à Cuire',       titleEn:'Tough as Nails',  desc:'Battre un boss sans utiliser de potion',   descEn:'Defeat a boss without using a potion',     check:function(){ return !!(Meta.achievements||{})['no_potion']; } },
 ];
 
 var Achievements = (function(){
@@ -8176,7 +8178,7 @@ var Achievements = (function(){
   function _toast(a) {
     var t = document.createElement('div');
     t.className = 'achievement-toast';
-    t.innerHTML = '<span class="at-ico">'+a.ico+'</span><div><div class="at-title">'+a.title+'</div><div class="at-desc">'+a.desc+'</div></div>';
+    t.innerHTML = '<span class="at-ico">'+a.ico+'</span><div><div class="at-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div><div class="at-desc">'+(CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc)+'</div></div>';
     document.body.appendChild(t);
     setTimeout(function(){ t.classList.add('show'); }, 50);
     setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 500); }, 3000);
@@ -8191,7 +8193,7 @@ var Achievements = (function(){
       var unlocked = !!done[a.id];
       html += '<div class="ach-row'+(unlocked?' ach-done':'')+'">'+
         '<span class="ach-ico">'+(unlocked?a.ico:'🔒')+'</span>'+
-        '<div class="ach-info"><div class="ach-title">'+a.title+'</div><div class="ach-desc">'+(unlocked?a.desc:'???')+'</div></div>'+
+        '<div class="ach-info"><div class="ach-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div><div class="ach-desc">'+(unlocked?(CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc):'???')+'</div></div>'+
         (unlocked?'<span class="ach-check">✓</span>':'')+'</div>';
     });
     CGEModal.show({ title: '🏆 Succès', text: '', html: html, okLabel: 'Fermer' });
@@ -8286,17 +8288,17 @@ var TownScreen = {
 var ZONE_DATA = {
   // hpMult / atkMult / defMult : multiplicateurs appliqués sur les stats de base des ennemis
   // goldMult : multiplicateur sur l'or
-  grottes: { hpMult:1,    atkMult:1,   defMult:1,   goldMult:1,    floors:4, minLevel:1,  label:'Grottes des Ombres',    labelEn:'Shadow Caves' },
+  grottes: { hpMult:1,    atkMult:1,   defMult:1,   goldMult:1,    floors:4, minLevel:1,  label:'Grottes des Ombres', labelEn:'Shadow Caves' },
   foret:   { hpMult:5,    atkMult:3,   defMult:2.5, goldMult:4,    floors:5, minLevel:5,  label:'Forêt des Âmes Perdues', labelEn:'Forest of Lost Souls' },
-  ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar',       labelEn:'Ruins of Astavar' },
-  port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes',       labelEn:'Storm Harbour' },
-  marais:  { hpMult:100,  atkMult:38,  defMult:30,  goldMult:90,   floors:5, minLevel:28, label:'Marais de Vaelthar',      labelEn:'Vaelthar Marshes' },
-  pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant',           labelEn:'Peaks of the Void' },
-  volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol',       labelEn:'Caldera of Aszgol' },
-  cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles',  labelEn:'The Eternal Crypts' },
-  chateau_maudit:   { hpMult:1200, atkMult:380, defMult:300, goldMult:1000, floors:7, minLevel:55, label:'Le Château Maudit',      labelEn:'The Cursed Castle' },
-  cite_oubliee:     { hpMult:2500, atkMult:750, defMult:600, goldMult:2200, floors:8, minLevel:65, label:'La Cité Oubliée',        labelEn:'The Forgotten City' },
-  gouffre_astral:   { hpMult:6000, atkMult:1800, defMult:1400, goldMult:5500, floors:8, minLevel:78, label:'Le Gouffre Astral',    labelEn:'The Astral Chasm' },
+  ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar', labelEn:'Ruins of Astavar' },
+  port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes', labelEn:'Storm Harbour' },
+  marais:  { hpMult:100,  atkMult:38,  defMult:30,  goldMult:90,   floors:5, minLevel:28, label:'Marais de Vaelthar', labelEn:'Vaelthar Marshes' },
+  pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant', labelEn:'Peaks of the Void' },
+  volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol', labelEn:'Caldera of Aszgol' },
+  cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles', labelEn:'The Eternal Crypts' },
+  chateau_maudit:   { hpMult:1200, atkMult:380, defMult:300, goldMult:1000, floors:7, minLevel:55, label:'Le Château Maudit', labelEn:'The Cursed Castle' },
+  cite_oubliee:     { hpMult:2500, atkMult:750, defMult:600, goldMult:2200, floors:8, minLevel:65, label:'La Cité Oubliée', labelEn:'The Forgotten City' },
+  gouffre_astral:   { hpMult:6000, atkMult:1800, defMult:1400, goldMult:5500, floors:8, minLevel:78, label:'Le Gouffre Astral', labelEn:'The Astral Chasm' },
   cryptes_profondes:{ hpMult:15000, atkMult:4500, defMult:3500, goldMult:14000, floors:10, minLevel:90, label:'Les Cryptes Profondes', labelEn:'The Deep Crypts' },
 };
 
