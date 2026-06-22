@@ -2543,6 +2543,7 @@ canvas#particles {
         <div class="chest-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
       </div>
       <div id="shop-items"></div>
+      <div id="shop-ad-wrap" style="padding:0 16px 16px"></div>
     </div>
 
     <!-- ── DUNGEON MAP ── -->
@@ -5031,13 +5032,16 @@ var Rooms = {
       Rooms._pendingItem = null;
       if (btn) btn.textContent = 'Continuer →';
     }
-    // Bouton pub rewarded (doubler l'or) — une fois par combat
+    // Boutons pub rewarded — une fois par combat
     var adWrap = document.getElementById('loot-ad-wrap');
     if (adWrap) {
       adWrap.innerHTML = '';
-      if (!State._adGoldUsed) {
-        adWrap.innerHTML = '<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleGold()">📺 Regarder une pub → Doubler l\'or gagné</button>';
-      }
+      var adBtns = [];
+      if (!State._adGoldUsed)
+        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleGold()">📺 Pub → ×2 Or gagné</button>');
+      if (!State._adChestUsed && e.boss)
+        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleChest()">📺 Pub → Coffre Bonus (or + objet)</button>');
+      adWrap.innerHTML = adBtns.join('');
     }
     Nav.go('loot-screen');
   },
@@ -5345,8 +5349,8 @@ var QUEST_DEFS = [
   // Bertrand — chap 1 : la rencontre
   { id:'bertrand_1', npc:'bertrand', act:1,
     title:'Méfiance',
-    desc:'Bertrand affirme t\'avoir vu sur la route de Thornwall il y a trois semaines — tu courais. Mais il n\'a pas l\'air prêt à tout dire. Prouve que tu sais survivre.\n→ Tue 5 créatures.',
-    check:function(){ return (Meta.totalKills||0)>=5; },
+    desc:'Bertrand affirme t\'avoir vu sur la route de Thornwall il y a trois semaines — tu courais. Mais il n\'a pas l\'air prêt à tout dire. Prouve que tu sais survivre.\n→ Tue 25 créatures.',
+    check:function(){ return (Meta.totalKills||0)>=25; },
     reward:{ gold:30 },
     rewardTxt:'30 🪙',
     claimText:'"Pas mal. Tu sais te battre."\nIl s\'assoit en face de toi et baisse la voix.\n"Je t\'ai vu il y a trois semaines. Sur la Route des Pierres. Tu courais vers la ville, sans arme, sans manteau. Tu regardais derrière toi comme si le diable te poursuivait."\n\n"Quand tu t\'es écroulé devant L\'Écu Brisé... on a pensé que tu étais mort."\n\n"Ce qui me trouble... c\'est que dans ta main serrée, tu tenais un parchemin. Marta l\'a gardé quelque part."\n\nNouvelle quête disponible : parle à Oswin.'
@@ -5356,8 +5360,8 @@ var QUEST_DEFS = [
   { id:'oswin_1', npc:'oswin', act:1,
     unlockAfter:'bertrand_1',
     title:'L\'Éveillé',
-    desc:'Oswin dit avoir une chanson sur toi — une prophétie ancienne qui parle d\'un étranger sans mémoire.\nPour savoir si c\'est bien toi : atteins l\'étage 3 d\'un donjon.',
-    check:function(){ return (Meta.bestFloor||0)>=3; },
+    desc:'Oswin dit avoir une chanson sur toi — une prophétie ancienne qui parle d\'un étranger sans mémoire.\nPour savoir si c\'est bien toi : atteins l\'étage 5 d\'un donjon et complète 3 runs.',
+    check:function(){ return (Meta.bestFloor||0)>=5 && (Meta.totalRuns||0)>=3; },
     reward:{ gold:60 },
     rewardTxt:'60 🪙',
     claimText:'"Tu es revenu. Bien."\nOswin pose sa luth et te regarde différemment — plus de sourire.\n"La chanson s\'appelle *La Ballade de l\'Éveillé*. Elle date de cent ans. Elle décrit quelqu\'un qui revient d\'entre les morts, sans nom, sans passé."\n\n"Elle décrit aussi les Cryptes Éternelles — les vraies, pas les vieilles caves que tu arpentes. Des Cryptes qui respirent. Qui se souviennent."\n\n"Il y a une femme ici qui en sait plus que moi. Séraphine. Elle t\'observe depuis ton arrivée."'
@@ -5367,8 +5371,8 @@ var QUEST_DEFS = [
   { id:'seraphine_1', npc:'seraphine', act:1,
     unlockAfter:'oswin_1',
     title:'Le Fragment d\'Âme',
-    desc:'Séraphine affirme détecter quelque chose d\'anormal dans ton aura — une signature magique qui ne devrait plus exister depuis cent ans.\nPour qu\'elle puisse l\'analyser : rapporte-lui un objet des profondeurs en nettoyant une zone entière.',
-    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=1; },
+    desc:'Séraphine affirme détecter quelque chose d\'anormal dans ton aura — une signature magique qui ne devrait plus exister depuis cent ans.\nPour qu\'elle puisse l\'analyser : nettoie 2 zones entières.',
+    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; },
     reward:{ gold:100 },
     rewardTxt:'100 🪙 + une vérité',
     claimText:'"Je m\'en doutais."\nSéraphine referme son grimoire et te fixe.\n"L\'aura que tu portes... elle appartient à quelqu\'un qui est mort il y a exactement cent ans. Quelqu\'un qui s\'appelait l\'Éveillé — comme dans la chanson d\'Oswin."\n\n"Ce n\'est pas une coïncidence. Tu portes un fragment de son âme. Peut-être tout son être, transféré dans un nouveau corps."\n\nElle hésite.\n"Si c\'est vrai... alors tu te rappelles peut-être des choses, sans savoir d\'où elles viennent. Des réflexes. Des peurs irrationnelles. Des visages que tu n\'as jamais vus."\n\n"Et si c\'est vrai... quelqu\'un d\'autre le sait aussi. Et cette personne ne veut pas que tu descendes dans les vraies Cryptes."'
@@ -5380,8 +5384,8 @@ var QUEST_DEFS = [
   { id:'bertrand_2', npc:'bertrand', act:2,
     unlockAfter:'seraphine_1',
     title:'La Mémoire des Pierres',
-    desc:'Bertrand a quelque chose à te montrer — le parchemin qu\'on a trouvé dans ta main à ton arrivée. Mais d\'abord il veut savoir si tu peux vraiment survivre aux profondeurs.\n→ Atteins l\'étage 6 d\'un donjon.',
-    check:function(){ return (Meta.bestFloor||0)>=6; },
+    desc:'Bertrand a quelque chose à te montrer — le parchemin qu\'on a trouvé dans ta main à ton arrivée. Mais d\'abord il veut savoir si tu peux vraiment survivre aux profondeurs.\n→ Atteins l\'étage 8 d\'un donjon et accomplis 8 expéditions.',
+    check:function(){ return (Meta.bestFloor||0)>=8 && (Meta.totalRuns||0)>=8; },
     reward:{ gold:150 },
     rewardTxt:'150 🪙 + le parchemin',
     claimText:'"Tu es allé au bout. Bien."\nBertrand sort un petit rouleau de parchemin froissé, jauni.\n"On l\'a trouvé dans ta main. On ne comprend pas l\'écriture — ce n\'est pas une langue connue."\n\nTu le déplie. Et quelque chose en toi... reconnaît les symboles. Pas consciemment. Mais tes yeux s\'arrêtent sur une phrase, et sans même réfléchir tu murmures :\n\n*"Le sceau tient encore. Pour combien de temps ?"*\n\n"Tu viens de lire ça ?", dit Bertrand, blême.\n\n"Je... je ne sais pas comment."'
@@ -5402,8 +5406,8 @@ var QUEST_DEFS = [
   { id:'seraphine_2', npc:'seraphine', act:2,
     unlockAfter:'oswin_2',
     title:'Ce Qui Est Enfermé',
-    desc:'Séraphine a trouvé quelque chose dans les archives secrètes de la Guilde des Mages — quelque chose sur les vraies Cryptes Éternelles.\nAccomplis 10 expéditions pour gagner sa confiance totale.',
-    check:function(){ return (Meta.totalRuns||0)>=10; },
+    desc:'Séraphine a trouvé quelque chose dans les archives secrètes de la Guilde des Mages — quelque chose sur les vraies Cryptes Éternelles.\nAccomplis 20 expéditions pour gagner sa confiance totale.',
+    check:function(){ return (Meta.totalRuns||0)>=20; },
     reward:{ gold:300 },
     rewardTxt:'300 🪙 + la vérité',
     claimText:'"Assieds-toi. Ce que je vais te dire ne quitte pas cette table."\n\nSéraphine te verse du vin.\n\n"Les Cryptes Éternelles ne sont pas un donjon. Ce sont les fondations d\'une PRISON. Construite il y a mille ans pour enfermer quelque chose que les gens appelaient le Dieu de la Mémoire."\n\n"Un être qui se nourrissait des souvenirs. Des identités. Il pouvait effacer une civilisation entière — pas en la tuant, mais en lui faisant oublier qu\'elle avait existé."\n\n"L\'Éveillé du siècle passé a renforcé le sceau au prix de sa propre existence. Il est devenu *une partie du verrou*."\n\n"Toi... tu es soit son successeur désigné. Soit la clé que quelqu\'un utilise pour l\'ouvrir."\n\nElle te regarde dans les yeux.\n\n"Et je commence à penser qu\'Oswin n\'est pas vraiment un barde."'
@@ -5415,8 +5419,8 @@ var QUEST_DEFS = [
   { id:'bertrand_3', npc:'bertrand', act:3,
     unlockAfter:'seraphine_2',
     title:'Le Sang des Gardiens',
-    desc:'Bertrand a quelque chose à avouer — sur sa famille et les Cryptes. Mais d\'abord il veut voir si tu peux t\'en sortir contre les créatures les plus redoutables.\n→ Tue 100 monstres.',
-    check:function(){ return (Meta.totalKills||0)>=100; },
+    desc:'Bertrand a quelque chose à avouer — sur sa famille et les Cryptes. Mais d\'abord il veut voir si tu peux t\'en sortir contre les créatures les plus redoutables.\n→ Tue 200 monstres.',
+    check:function(){ return (Meta.totalKills||0)>=200; },
     reward:{ gold:400 },
     rewardTxt:'400 🪙',
     claimText:'"Mon grand-père était gardien des Cryptes. Un des derniers."\nBertrand s\'essuie les mains sur son tablier, nerveux.\n"Il m\'a dit, avant de mourir : *si un étranger arrive sans mémoire, fuis. Ou aide-le. Les deux sont dangereux.*"\n\n"Je suis resté. J\'ai choisi de t\'aider."\n\n"Il m\'a dit aussi autre chose. Que le Dieu de la Mémoire a des *Voix* dans le monde — des agents qui servent depuis des siècles, qui ne vieillissent pas, qui préparent sa libération."\n\n"Ces Voix... elles se font passer pour des gens ordinaires. Des aubergistes. Des marchands. Des bardes."\n\nIl te regarde droit dans les yeux.\n\n"Fais attention à Oswin."'
@@ -5426,8 +5430,8 @@ var QUEST_DEFS = [
   { id:'oswin_3', npc:'oswin', act:3,
     unlockAfter:'bertrand_3',
     title:'La Voix du Dieu',
-    desc:'Oswin t\'a demandé de venir le voir. Mais quelque chose a changé dans son regard.\nAffronte-toi à toi-même : nettoie 3 zones différentes.',
-    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=3; },
+    desc:'Oswin t\'a demandé de venir le voir. Mais quelque chose a changé dans son regard.\nAffronte-toi à toi-même : nettoie 5 zones différentes et accomplis 30 expéditions.',
+    check:function(){ return Object.keys(Meta.clearedZones||{}).length>=5 && (Meta.totalRuns||0)>=30; },
     reward:{ gold:0 },
     rewardTxt:'Une révélation',
     claimText:'"Tu commences à comprendre."\nOswin ne joue plus la comédie. Sa voix a changé — plus profonde, presque distante.\n"Oui. Je suis une Voix. Je sers depuis cent quarante ans."\n\n"Mais écoute-moi avant de te mettre en colère."\n\n"Je ne suis pas ton ennemi. Je suis... las. Cent quarante ans à servir un dieu que je n\'ai jamais vu. Je voulais juste... que quelqu\'un descende dans les Cryptes et règle ça. Dans un sens ou dans l\'autre."\n\n"La vérité : tu peux renforcer le sceau, comme l\'Éveillé du passé. Ou tu peux libérer le Dieu de la Mémoire — et il nous effacera tous. Ou peut-être qu\'il sera différent maintenant. Peut-être qu\'une prison d\'un siècle l\'a changé."\n\n"Séraphine te dira quoi faire. Moi... je suis fatigué de choisir pour les autres."'
@@ -5437,8 +5441,8 @@ var QUEST_DEFS = [
   { id:'seraphine_3', npc:'seraphine', act:3,
     unlockAfter:'oswin_3',
     title:'Le Verrou ou la Clé',
-    desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 50 et nettoie 4 zones.',
-    check:function(){ return (State.level||1)>=50 && Object.keys(Meta.clearedZones||{}).length>=4; },
+    desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 60, nettoie 6 zones et accomplis 40 expéditions.',
+    check:function(){ return (State.level||1)>=60 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=40; },
     reward:{ gold:1000 },
     rewardTxt:'1000 🪙 + accès aux Cryptes',
     claimText:'"Tu es prêt."\nSéraphine sort un cristal noir de son manteau.\n"Ceci ouvre le dernier niveau des Cryptes. Là où l\'Éveillé a tout sacrifié."\n\n"Quand tu descendras, des souvenirs te reviendront. Pas les tiens — les siens. Les tiens sont peut-être les mêmes."\n\n"À un moment, tu auras le choix : poser le cristal sur l\'autel et renforcer le sceau, ou le briser et libérer ce qui est en dessous."\n\n"Je t\'ai tout dit ce que je sais. Le reste... c\'est à toi."\n\nElle pose sa main sur ton épaule.\n"Quelle que soit ta décision — je comprends."'
@@ -5449,8 +5453,8 @@ var QUEST_DEFS = [
   { id:'cryptes_final', npc:'bertrand', act:4,
     unlockAfter:'seraphine_3',
     title:'Les Cryptes Éternelles',
-    desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 30 expéditions.',
-    check:function(){ return (Meta.totalRuns||0)>=30; },
+    desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 50 expéditions et atteins le niveau 80.',
+    check:function(){ return (Meta.totalRuns||0)>=50 && (State.level||1)>=80; },
     reward:{ gold:2000, potions:10 },
     rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
     claimText:'"Tu es revenu."\nBertrand te regarde différemment. Avec quelque chose qui ressemble à du soulagement.\n"Je ne saurai jamais ce que tu as choisi là-en bas. Mais... le monde est toujours là. Donc tu as fait quelque chose de bien."\n\nIl lève son verre.\n\n"À l\'Éveillé. Quel que soit son vrai nom."'
@@ -6023,6 +6027,13 @@ Rooms.shopBuy = function(idx) {
   } else if (item.effect) {
     item.effect();
   }
+  // Remboursement si pub "achat gratuit" activée
+  if (State._adShopFreeNext) {
+    State._adShopFreeNext = false;
+    State.gold += cost;
+    CGEModal.alert('Achat Gratuit !', 'Cet achat est remboursé grâce à votre pub !');
+  }
+  State._lastShopCost = cost;
   Sfx.buy && Sfx.buy();
   var _sgv2 = document.getElementById('shop-gold-val'); if (_sgv2) _sgv2.textContent = State.gold;
   if (typeof HUD !== 'undefined') HUD.updateGold();
@@ -6030,9 +6041,14 @@ Rooms.shopBuy = function(idx) {
   if (cards[idx]) cards[idx].classList.add('sold');
   document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c){
     var base = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
-    var cost = Rooms._racePriceMod(base);
-    c.classList.toggle('cant-afford', (State.gold||0) < cost);
+    var cost2 = Rooms._racePriceMod(base);
+    c.classList.toggle('cant-afford', (State.gold||0) < cost2);
   });
+  // Bouton pub "rembourser cet achat" — une fois par run
+  var shopAd = document.getElementById('shop-ad-wrap');
+  if (shopAd && !State._adShopUsed) {
+    shopAd.innerHTML = '<button class="btn-rewarded-ad" onclick="RewardedAds.showFreeShopItem()">📺 Pub → Rembourser ce dernier achat</button>';
+  }
 };
 
 Rooms.shopLeave = function() {
@@ -6936,7 +6952,6 @@ var InnRoom = {
 var RewardedAds = (function(){
   // Placeholder — remplacer par Google AdSense Rewarded quand le compte est approuvé
   function _mockAd(callback) {
-    // Simule une pub de 5 secondes (à remplacer par le vrai SDK)
     CGEModal.show({ title: 'Publicité', text: 'Une pub va être diffusée (5 secondes). Confirmer pour simuler le visionnage.', okLabel: 'Voir la pub', cancelLabel: 'Annuler', onOk: function(){ setTimeout(callback, 500); } });
   }
   return {
@@ -6959,8 +6974,50 @@ var RewardedAds = (function(){
         var reviveHp = Math.floor((State.hpMax||30) * 0.3);
         State.hp = reviveHp;
         State.dead = false;
+        document.getElementById('defeat-overlay') && document.getElementById('defeat-overlay').classList.remove('show');
         Nav.go('dungeon-map');
         CGEModal.alert('Résurrection !', 'Vous revenez à la vie avec ' + reviveHp + ' PV !');
+        if (typeof HUD !== 'undefined') HUD.updateHP();
+      });
+    },
+    showDoubleChest: function() {
+      if (State._adChestUsed) return;
+      _mockAd(function(){
+        State._adChestUsed = true;
+        document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
+        // Double le gold actuel de la salle et force un item bonus
+        var bonusGold = Math.floor(20 + (State.floor||1) * 8);
+        State.gold = (State.gold||0) + bonusGold;
+        if (typeof HUD !== 'undefined') HUD.updateGold();
+        // Ajoute un item bonus dans l'inventaire (pool de l'étage actuel)
+        var floor = State.floor || 1;
+        var maxTier = floor <= 2 ? 1 : (floor <= 4 ? 2 : 3);
+        var pool = (typeof ITEMS !== 'undefined' ? ITEMS : []).filter(function(it){ return it.slot && (it.tier||1) <= maxTier; });
+        if (pool.length) {
+          var bonus = pool[Math.floor(Math.random()*pool.length)];
+          State.inventory = State.inventory || [];
+          if (State.inventory.length < 8) State.inventory.push(bonus);
+        }
+        CGEModal.alert('Coffre Doublé !', '×2 ! +' + bonusGold + ' 🪙 et un objet bonus ajouté à l\'inventaire !');
+      });
+    },
+    showFreeShopItem: function() {
+      if (State._adShopUsed) return;
+      _mockAd(function(){
+        State._adShopUsed = true;
+        document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
+        // Rembourse le dernier achat en boutique (coût sauvegardé dans State._lastShopCost)
+        var refund = State._lastShopCost || 0;
+        if (refund > 0) {
+          State.gold = (State.gold||0) + refund;
+          State._lastShopCost = 0;
+          if (typeof HUD !== 'undefined') HUD.updateGold();
+          var sv = document.getElementById('shop-gold-val'); if (sv) sv.textContent = State.gold;
+          CGEModal.alert('Achat Gratuit !', 'Le dernier objet acheté vous est remboursé ! +' + refund + ' 🪙');
+        } else {
+          CGEModal.alert('Prochain achat gratuit !', 'Le prochain objet acheté en boutique sera remboursé automatiquement.');
+          State._adShopFreeNext = true;
+        }
       });
     }
   };
@@ -7536,7 +7593,12 @@ var App = {
     State.fleeBonus = 0;
     State._adReviveUsed = false;
     State._adGoldUsed = false;
+    State._adReviveUsed = false;
+    State._adChestUsed = false;
+    State._adShopUsed = false;
+    State._adShopFreeNext = false;
     State._lastCombatGold = 0;
+    State._lastShopCost = 0;
     State.clearSave();
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, null);
     Nav.go('inn-room');
