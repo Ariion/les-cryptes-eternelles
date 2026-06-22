@@ -6721,6 +6721,38 @@ var DungeonMap = (function() {
       mc.addEventListener('click', onTap);
       mc.addEventListener('touchstart', onTap, { passive:false });
       initMap(floor, hp, hpMax);
+      // Passage hint visibility
+      var hint = document.getElementById('passage-hint');
+      if (hint) {
+        var showHint = State._currentZone === 'grottes' && Meta.completedQuests && Meta.completedQuests['seraphine_3'];
+        hint.style.opacity = showHint ? '1' : '0';
+      }
+    },
+    enterPassage: function() {
+      var ft = document.getElementById('floor-transition');
+      var ftLabel = document.getElementById('ft-label');
+      var ftNum = document.getElementById('ft-num');
+      var ftSub = document.getElementById('ft-sub');
+      var ftMem = document.getElementById('ft-memory');
+
+      ftLabel.textContent = 'PASSAGE OBSCUR';
+      ftNum.textContent = '⬡';
+      ftSub.textContent = 'Le mur du fond a toujours été là.';
+      ftMem.textContent = 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.';
+      ftMem.classList.add('show');
+      ft.classList.add('show');
+      ft.style.background = 'radial-gradient(ellipse at center, #1a0a2e 0%, #06030f 100%)';
+      ftNum.style.color = '#9060d0';
+
+      setTimeout(function(){
+        ft.classList.remove('show');
+        ft.style.background = '';
+        ftNum.style.color = '';
+        ftMem.classList.remove('show');
+        Meta.passageFound = true;
+        Meta.save();
+        Nav.go('world-map-2');
+      }, 5000);
     }
   };
 })();
