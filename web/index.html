@@ -5496,8 +5496,19 @@ var NPC_DATA = {
     name:'Oswin',
     dialogue: function() {
       var done = Meta.completedQuests||{};
-      if (!done['marta_debt'])  return '"*accorde sa luth sans te regarder*\nJe joue, tu écoutes. C\'est comme ça que ça marche."';
-      if (!done['bertrand_1'])  return '"*te regarde longuement*\nIl y a quelque chose dans tes yeux. Quelque chose que je reconnais sans savoir d\'où."\n\nIl replonge dans sa musique, pensif.';
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"*continue à jouer sans lever les yeux*\nUn Orc dans une taverne. Rien d\'inhabituel.\n\n*une note fausse*\n\nSi. Un peu."';
+        if (race === 'Elfe') return '"*s\'arrête de jouer*\nTu entends la musique différemment, n\'est-ce pas ?\nLes Elfes l\'entendent toujours différemment."';
+        if (race === 'Nain') return '"*joue plus fort*\nPour toi, ami Nain ! Les chansons des mines méritent d\'être honorées !"';
+        return '"*accorde sa luth sans te regarder*\nJe joue, tu écoutes. C\'est comme ça que ça marche."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"*te regarde par-dessus sa luth*\nBertrand t\'a parlé ? Bien.\nIl y a quelque chose en toi qui transcende la race, ami. Je ne sais pas encore quoi."';
+        if (race === 'Elfe') return '"Tu sais... la chanson dont je parle — elle était écrite en elfique.\nIl y a cent ans, quelqu\'un l\'a traduite. Elle parle de toi, je crois."';
+        if (race === 'Nain') return '"Bertrand t\'a orienté vers moi ? Il a du flair.\nJe connais une chanson naine. Très ancienne. Elle mentionne les Cryptes — et quelqu\'un comme toi."';
+        return '"*te regarde longuement*\nIl y a quelque chose dans tes yeux. Quelque chose que je reconnais sans savoir d\'où."\n\nIl replonge dans sa musique, pensif.';
+      }
       if (!done['oswin_1'])     return '"Tu viens de la part de Bertrand ? Bien."\n\nIl baisse sa luth.\n\n"J\'ai une chanson. Vieille de cent ans. Elle parle de quelqu\'un qui ressemble étrangement à toi."';
       if (!done['seraphine_1']) return '"Tu devrais aller voir Séraphine. Elle a l\'air bizarre, oui. Mais elle sait des choses sur les Cryptes que personne d\'autre ne sait."';
       if (!done['bertrand_2'])  return '"*joue doucement*\nLe parchemin que Bertrand garde... demande-le lui. Il est temps."';
@@ -5535,17 +5546,37 @@ var NPC_DATA = {
     name:'Séraphine',
     dialogue: function() {
       var done = Meta.completedQuests||{};
-      if (!done['marta_debt'])  return '"*lève à peine les yeux de son grimoire*\nTu es celui dont parle Oswin ? Intéressant. Reviens quand tu seras moins... vague."';
-      if (!done['bertrand_1'])  return '"Je sens quelque chose sur toi. Une aura ancienne. Mais je ne peux pas encore en parler.\nParle aux autres d\'abord."';
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"*sans lever les yeux*\nL\'aura d\'un Orc est toujours plus... brute.\n\nMais la tienne...\n\n*enfin, elle te regarde*\n\nInattendue."';
+        if (race === 'Elfe') return '"*se lève immédiatement*\nTu es Elfe. Et tu portes quelque chose d\'ancien.\n\nAssieds-toi. Je dois vérifier quelque chose."';
+        if (race === 'Nain') return '"*consulte son grimoire sans s\'arrêter*\nLes Nains ont une résonance particulière avec les pierres des Cryptes.\nC\'est probablement pourquoi tu es encore en vie."';
+        return '"*lève à peine les yeux de son grimoire*\nTu es celui dont parle Oswin ? Intéressant. Reviens quand tu seras moins... vague."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"Je sens quelque chose sur toi. Une aura ancienne — pas humaine, pas elfique.\n\nOrque ?\nOui. Mais altérée. Par quelque chose que tu n\'as pas encore compris."';
+        if (race === 'Elfe') return '"Cette aura — je l\'ai lue dans un vieux texte.\nIl parlait d\'un Elfe qui revenait.\n\nPas réincarné. Rappelé. C\'est différent."';
+        return '"Je sens quelque chose sur toi. Une aura ancienne. Mais je ne peux pas encore en parler.\nParle aux autres d\'abord."';
+      }
       if (!done['oswin_1'])     return '"Oswin t\'a-t-il parlé de la prophétie ? Non ? Va le voir."';
-      if (!done['seraphine_1']) return '"Bien. Oswin m\'a prévenue que tu viendrais."\n\n"L\'aura que tu dégages... elle n\'appartient pas à ce siècle. Je dois l\'analyser."\n\n"Rapporte-moi quelque chose des profondeurs — un fragment des Cryptes. Nettoie une zone entière."';
+      if (!done['seraphine_1']) {
+        var frag = race === 'Orc' ? 'un fragment des Cryptes — les Orcs ont un lien naturel avec les pierres profondes. Tu reconnaîtras ce que tu cherches.'
+          : race === 'Elfe' ? 'un fragment des Cryptes. Ton sang elfe te guidera vers lui — écoute ce que les pierres chantent.'
+          : race === 'Nain' ? 'un fragment des Cryptes. Creuse. Ton instinct nain te dira où chercher.'
+          : 'un fragment des Cryptes. Nettoie une zone entière.';
+        return '"Bien. Oswin m\'a prévenue que tu viendrais."\n\n"L\'aura que tu dégages... elle n\'appartient pas à ce siècle. Je dois l\'analyser."\n\n"Rapporte-moi '+frag+'"';
+      }
       if (!done['bertrand_2'])  return '"Bertrand détient quelque chose d\'important. Il est temps qu\'il te fasse confiance."';
       if (!done['oswin_2'])     return '"Oswin a parlé d\'un portrait dans les Ruines. Je pense savoir ce que c\'est. Va l\'aider à vérifier."';
       if (!done['seraphine_2']) return '"Ce que j\'ai découvert dans les archives... c\'est plus grave que ce que je pensais.\nReviens me voir quand Oswin t\'aura tout dit sur le livre."';
       if (!done['bertrand_3'])  return '"Il faut que Bertrand te parle de sa famille. C\'est important pour comprendre l\'histoire complète."';
       if (!done['oswin_3'])     return '"*voix grave*\nOswin est une Voix du Dieu. Tu le sais maintenant.\nMais laisse-lui le temps de se confesser lui-même."';
       if (!done['seraphine_3']) return '"Tu es prêt à entendre la suite ?"';
-      return '"Le cristal est dans tes mains maintenant. Le reste t\'appartient."\n\nElle te regarde avec quelque chose qui ressemble à de la fierté.\n\n"Quelle que soit ta décision — je comprends."';
+      var ending = race === 'Orc' ? 'Ta force a toujours été réelle. C\'est ta brutalité qui était un mensonge qu\'on t\'avait enseigné.'
+        : race === 'Elfe' ? 'Tu es revenu comme prévu. Mais tu as choisi différemment. C\'est ça qui change tout.'
+        : race === 'Nain' ? 'Les anciens de ta montagne avaient raison. Il fallait que ce soit quelqu\'un des profondeurs.'
+        : 'Tu n\'étais personne de particulier. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle.';
+      return '"Le cristal est dans tes mains maintenant. Le reste t\'appartient."\n\nElle te regarde avec quelque chose qui ressemble à de la fierté.\n\n"'+ending+'"';
     }
   },
 };
@@ -6950,7 +6981,61 @@ var TownScreen = {
     Rooms.showShop('town-screen', 'eglise');
   },
   goChateau: function() {
-    CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes devant toi. « Le Château reste fermé aux aventuriers pour l\'instant. Revenez quand vous aurez prouvé votre valeur. »', 'images/chateau-gardes.jpg');
+    var done = Meta.completedQuests||{};
+    var race = State.race||'Humain';
+    var act4 = !!done['cryptes_final'];
+    var act3 = !!done['seraphine_3'];
+    var act2 = !!done['seraphine_2'];
+
+    // Act IV — château ouvert à tous, mais épilogue racial
+    if (act4) {
+      var txt = race === 'Orc'
+        ? 'Les gardes s\'écartent lentement. L\'un d\'eux baisse les yeux.\n\n"Entrez, Seigneur des Cryptes."\n\nLa première fois qu\'un Orc franchit ces grilles depuis cent ans.'
+        : race === 'Elfe'
+        ? 'Les grilles s\'ouvrent sans un mot. Comme si elles t\'attendaient.\n\nUn garde chuchote à l\'autre : « C\'est l\'Elfe de la prophétie. »'
+        : race === 'Nain'
+        ? 'Le capitaine de garde te salue du poing sur la poitrine.\n\n"Le Seigneur des Cryptes. Les forges du Château sont à ta disposition."'
+        : 'Le garde te reconnaît et s\'incline.\n\n"Le Seigneur des Cryptes. Sa Grâce vous attendait."';
+      CGEModal.alert('Le Château', txt);
+      return;
+    }
+
+    // Act III — accès limité pour certaines races avec Séraphine's word
+    if (act3) {
+      if (race === 'Orc') {
+        CGEModal.alert('Accès Conditionnel', 'Un garde lève sa hallebarde.\n\n"On nous a prévenus. Séraphine a garanti ta conduite."\n\nIl hésite longuement.\n\n"Une visite. Sous escorte."');
+      } else if (race === 'Elfe') {
+        CGEModal.alert('Le Château', 'Les gardes reculent instinctivement.\n\n"Un Elfe... on disait que vous reviendriez."\n\nIls te laissent entrer, troublés.');
+      } else {
+        CGEModal.alert('Le Château', 'Le garde consulte une liste, hoche la tête.\n\n"Séraphine vous a recommandé. Entrez — le Conseiller vous reçoit."');
+      }
+      return;
+    }
+
+    // Act II — accès refusé avec message racial
+    if (act2) {
+      if (race === 'Orc') {
+        CGEModal.alert('Accès Refusé', 'Le garde fait un pas en arrière, main sur son épée.\n\n"Un Orc ne franchit pas ces grilles."\n\nIl ne te laisse pas finir.\n\n"Partez. Maintenant."');
+      } else if (race === 'Elfe') {
+        CGEModal.alert('Accès Refusé', 'Le garde t\'observe longuement avec méfiance.\n\n"Les Elfes ne sont pas les bienvenus au Château depuis... l\'incident."\n\nIl ne précise pas lequel.\n\n"Revenez avec une lettre du Conseiller."');
+      } else if (race === 'Nain') {
+        CGEModal.alert('Accès Refusé', '"Nain ou pas, les règles sont les règles."\n\nIl adoucit le ton.\n\n"Vous n\'êtes pas encore assez connus de Sa Grâce. Faites-vous remarquer et ça changera."');
+      } else {
+        CGEModal.alert('Accès Refusé', '"Vous progressez, aventurier. Mais il vous manque encore quelque chose."\n\nIl tape sa hallebarde sur les pavés.\n\n"Revenez quand Séraphine aura validé votre dossier."');
+      }
+      return;
+    }
+
+    // Early game — accès interdit, message racial dès le départ
+    if (race === 'Orc') {
+      CGEModal.alert('Accès Interdit', 'Le garde recule d\'un pas complet, la main sur son épée.\n\n"Un Orc. Ici."\n\nIl appelle du renfort du regard.\n\n"Éloignez-vous. Maintenant."');
+    } else if (race === 'Elfe') {
+      CGEModal.alert('Accès Interdit', 'Le garde te jauge de haut en bas.\n\n"Elfe. Demi-sang ou pur sang ?"\n\nIl n\'attend pas ta réponse.\n\n"Peu importe. Le Château est fermé aux... non-résidents."');
+    } else if (race === 'Nain') {
+      CGEModal.alert('Accès Interdit', 'Le garde hausse les épaules.\n\n"Désolé, ami. Règles du Conseil. Pas d\'aventuriers, quelle que soit la taille."\n\nIl ajoute avec un demi-sourire :\n\n"Mauvaise blague. Revenez plus tard."');
+    } else {
+      CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes.\n\n"Le Château reste fermé aux aventuriers. Revenez quand vous aurez prouvé votre valeur."');
+    }
   },
 };
 
