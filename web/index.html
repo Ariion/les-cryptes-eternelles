@@ -2041,6 +2041,20 @@ canvas#particles {
 .hotspot.cleared .hs-ring::after { animation:none; }
 .hotspot.cleared .hs-lbl { color:rgba(180,120,120,0.5); border-color:rgba(120,80,80,0.3); }
 .hotspot.cleared .hs-lbl::after { content:' ✓'; }
+/* Région 2 */
+#world-map-2 { background:radial-gradient(ellipse at 50% 30%, #0d0520 0%, #06030f 60%, #000 100%); position:relative; }
+#wm2-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; flex-shrink:0; }
+#wm2-back { font-size:20px; color:#9060d0; cursor:pointer; padding:4px 8px; }
+#wm2-title { font-family:'Cinzel Decorative',serif; font-size:14px; color:#9060d0; letter-spacing:2px; }
+#wm2-sub { text-align:center; font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(144,96,208,0.5); margin-bottom:8px; }
+#hs2-chateau  { top:20%; left:30%; }
+#hs2-cite     { top:40%; left:60%; }
+#hs2-gouffre  { top:60%; left:25%; }
+#hs2-cryptes-deep { top:75%; left:55%; }
+.hs-lbl.extreme { border-color:rgba(144,96,208,0.6); color:#9060d0; }
+/* Passage node glow */
+.passage-hint { position:absolute; top:8px; left:8px; font-size:10px; font-family:'Crimson Text',serif; color:rgba(144,96,208,0); animation:passage-pulse 3s ease-in-out infinite; pointer-events:none; }
+@keyframes passage-pulse { 0%,100%{color:rgba(144,96,208,0)} 50%{color:rgba(144,96,208,0.4)} }
 /* ══════════════════════════════════════════════════════════════════
    ÉCRAN ÉQUIPEMENT / INVENTAIRE
    ══════════════════════════════════════════════════════════════════ */
@@ -2571,6 +2585,7 @@ canvas#particles {
       <div id="dm-canvas-wrap">
         <canvas id="map-canvas"></canvas>
       </div>
+      <div id="passage-hint" class="passage-hint">Une fissure dans la pierre...</div>
       <div id="dm-footer">
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
@@ -3058,6 +3073,35 @@ canvas#particles {
       <div class="hotspot" id="hs-reg-volcan" onclick="WorldMap.enter('volcan')">
         <div class="hs-ring"></div>
         <div class="hs-lbl extreme">🌋 Volcan · Extrême</div>
+      </div>
+    </div>
+
+    <!-- ── RÉGION 2 : LES TERRES MAUDITES ── -->
+    <div id="world-map-2" class="screen has-game-header">
+      <div id="wm2-header">
+        <div id="wm2-back" onclick="Nav.go('world-map')">←</div>
+        <div id="wm2-title">Les Terres Maudites</div>
+      </div>
+      <div id="wm2-sub">Au-delà du passage — coupé du monde</div>
+      <!-- Château Maudit -->
+      <div class="hotspot" id="hs2-chateau" onclick="WorldMap.enter('chateau_maudit')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">🏰 Château Maudit · Légendaire</div>
+      </div>
+      <!-- Cité Oubliée -->
+      <div class="hotspot" id="hs2-cite" onclick="WorldMap.enter('cite_oubliee')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">🌑 Cité Oubliée · Légendaire</div>
+      </div>
+      <!-- Gouffre Astral -->
+      <div class="hotspot" id="hs2-gouffre" onclick="WorldMap.enter('gouffre_astral')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">🌌 Gouffre Astral · Mythique</div>
+      </div>
+      <!-- Cryptes Profondes -->
+      <div class="hotspot" id="hs2-cryptes-deep" onclick="WorldMap.enter('cryptes_profondes')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">⚰ Cryptes Profondes · Final</div>
       </div>
     </div>
 
@@ -4053,6 +4097,7 @@ var Nav = {
       else if (id==='dungeon-map') Music.play('dungeon');
       else if (id==='inn-room') Music.play('menu');
       else if (id==='world-map') { Music.play('dungeon'); if (typeof WorldMap !== 'undefined') WorldMap.updateHotspots(); }
+      else if (id==='world-map-2') { Music.play('dungeon'); }
       else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen'||id==='story-intro') Music.stop();
       else if (id==='gameover-screen') Music.stop();
     }
@@ -4247,6 +4292,30 @@ var ENEMIES = [
   { name:'Wyrm de Cendre',       sprite:'🐉', hp:260, atk:48, def:20, gold:100,xp:125,floor:4, zones:['volcan'] },
   { name:'Cultiste de la Flamme',sprite:'🧎', hp:210, atk:52, def:12, gold:105,xp:130,floor:4, zones:['volcan'] },
   { name:'Titan du Volcan',      sprite:'🌋', hp:650, atk:70, def:30, gold:500,xp:560,floor:6, boss:true, zones:['volcan'] },
+  // ── CHÂTEAU MAUDIT (niveau 55-65) ─────────────────────────────
+  { name:'Chevalier Maudit',    sprite:'⚔',  hp:300, atk:75, def:35, gold:130,xp:160,floor:1, zones:['chateau_maudit'] },
+  { name:'Noble Corrompu',      sprite:'🎩', hp:280, atk:80, def:30, gold:140,xp:175,floor:2, zones:['chateau_maudit'] },
+  { name:'Majordome Démoniaque',sprite:'🕯', hp:320, atk:72, def:40, gold:135,xp:168,floor:2, zones:['chateau_maudit'] },
+  { name:'Armure Animée',       sprite:'🛡', hp:380, atk:68, def:55, gold:145,xp:180,floor:3, zones:['chateau_maudit'] },
+  { name:'Fantôme du Roi',      sprite:'👑', hp:340, atk:85, def:28, gold:150,xp:190,floor:4, zones:['chateau_maudit'] },
+  { name:'Reine de Cendres',    sprite:'🩸', hp:1200,atk:110,def:60, gold:900,xp:1000,floor:7, boss:true, zones:['chateau_maudit'] },
+  // ── CITÉ OUBLIÉE (niveau 65-78) ──────────────────────────────
+  { name:'Citoyen Pétrifié',   sprite:'🗿', hp:500, atk:95, def:50, gold:180,xp:220,floor:1, zones:['cite_oubliee'] },
+  { name:'Juge Ancien',         sprite:'⚖', hp:480, atk:100,def:45, gold:190,xp:235,floor:2, zones:['cite_oubliee'] },
+  { name:'Sentinelle de Marbre',sprite:'🏛', hp:550, atk:90, def:65, gold:185,xp:228,floor:3, zones:['cite_oubliee'] },
+  { name:'Archiviste Corrompu', sprite:'📜', hp:520, atk:105,def:40, gold:195,xp:242,floor:4, zones:['cite_oubliee'] },
+  { name:'Architecte du Vide',  sprite:'🌑', hp:2000,atk:140,def:80, gold:1800,xp:2000,floor:8, boss:true, zones:['cite_oubliee'] },
+  // ── GOUFFRE ASTRAL (niveau 78-90) ────────────────────────────
+  { name:'Écho de Guerrier',    sprite:'👤', hp:800, atk:130,def:60, gold:280,xp:340,floor:1, zones:['gouffre_astral'] },
+  { name:'Larme de Dieu',       sprite:'💧', hp:750, atk:140,def:50, gold:290,xp:355,floor:2, zones:['gouffre_astral'] },
+  { name:'Absence Incarnée',    sprite:'🌀', hp:850, atk:135,def:70, gold:285,xp:348,floor:4, zones:['gouffre_astral'] },
+  { name:'Phage Mémoriel',      sprite:'🧠', hp:3500,atk:200,def:120,gold:3000,xp:3500,floor:8, boss:true, zones:['gouffre_astral'] },
+  // ── CRYPTES PROFONDES (niveau 90-100) ────────────────────────
+  { name:'Gardien du Sceau',    sprite:'🔮', hp:1500,atk:200,def:120,gold:500,xp:600,floor:1, zones:['cryptes_profondes'] },
+  { name:'Ombre Primordiale',   sprite:'⬛', hp:1600,atk:220,def:100,gold:520,xp:640,floor:3, zones:['cryptes_profondes'] },
+  { name:'Éveillé Perdu',       sprite:'👁', hp:1800,atk:210,def:130,gold:540,xp:670,floor:5, zones:['cryptes_profondes'] },
+  { name:'Fragment de Mémoire', sprite:'💎', hp:2000,atk:230,def:140,gold:560,xp:700,floor:7, zones:['cryptes_profondes'] },
+  { name:'Le Dieu de la Mémoire',sprite:'☯', hp:10000,atk:350,def:200,gold:9999,xp:9999,floor:10, boss:true, zones:['cryptes_profondes'] },
 ];
 
 function getEnemiesForFloor(floor) {
@@ -6263,6 +6332,10 @@ var DungeonMap = (function() {
     });
     // Débloque les voisins du nœud de départ
     unlockChildren(0);
+    // Passage secret dans les Grottes
+    if (State._currentZone === 'grottes' && Meta.completedQuests && Meta.completedQuests['seraphine_3']) {
+      nodes.push({ id:99, row:0, col:0, type:'passage', state:'available', x:28, y:28 });
+    }
     // Décors aléatoires
     DungeonMap._decors = buildDecors();
     updateFloorUI(floor, hp, hpMax);
@@ -6305,6 +6378,7 @@ var DungeonMap = (function() {
     var padT = 32, padB = 28, padL = 28, padR = 28;
     var rowH = (H - padT - padB) / (rows - 1);
     nodes.forEach(function(n) {
+      if (n.id === 99) { n.x = 28; n.y = 28; return; }
       var unitX = n.col / 2.5; // -1..+1
       n.x = W/2 + unitX * (W/2 - padL - 8);
       n.y = H - padB - n.row * rowH;
@@ -6388,6 +6462,54 @@ var DungeonMap = (function() {
     var flicker = Math.sin(torchT * 0.07 + n.id) * 0.06;
 
     mctx.save();
+
+    // Passage secret
+    if (n.type === 'passage') {
+      if (n.state === 'done') {
+        // Portail sombre
+        mctx.beginPath(); mctx.arc(x,y,r+6,0,Math.PI*2);
+        mctx.fillStyle='rgba(10,0,30,0.9)'; mctx.fill();
+        mctx.strokeStyle='rgba(144,96,208,0.5)'; mctx.lineWidth=2; mctx.stroke();
+        mctx.fillStyle='rgba(80,40,160,0.7)';
+        mctx.font='bold '+(r*1.2)+'px serif';
+        mctx.textAlign='center'; mctx.textBaseline='middle';
+        mctx.fillText('⬡', x, y+1);
+      } else {
+        // Lueur violette pulsante
+        var pGlow = r + 10 + Math.sin(torchT * 0.05) * 6;
+        var pGrad = mctx.createRadialGradient(x,y,0,x,y,pGlow);
+        pGrad.addColorStop(0,'rgba(144,96,208,0.35)');
+        pGrad.addColorStop(1,'rgba(144,96,208,0)');
+        mctx.beginPath(); mctx.arc(x,y,pGlow,0,Math.PI*2);
+        mctx.fillStyle=pGrad; mctx.fill();
+
+        mctx.beginPath(); mctx.arc(x,y,r,0,Math.PI*2);
+        var pStone = mctx.createRadialGradient(x-r*0.3,y-r*0.3,0,x,y,r);
+        pStone.addColorStop(0,'#1a0a2e');
+        pStone.addColorStop(1,'#06030f');
+        mctx.fillStyle=pStone; mctx.fill();
+        mctx.strokeStyle='rgba(144,96,208,0.8)'; mctx.lineWidth=2; mctx.stroke();
+
+        // Fissure (lignes canvas)
+        mctx.strokeStyle='rgba(180,120,255,0.9)'; mctx.lineWidth=1.2;
+        mctx.beginPath(); mctx.moveTo(x-4,y-5); mctx.lineTo(x+1,y); mctx.lineTo(x-2,y+5); mctx.stroke();
+        mctx.beginPath(); mctx.moveTo(x+1,y); mctx.lineTo(x+4,y+2); mctx.stroke();
+
+        // Particules violettes
+        for (var pi=0; pi<4; pi++) {
+          var pAngle = (torchT*0.04 + pi * Math.PI/2);
+          var pr = r + 4 + Math.sin(torchT*0.06+pi)*3;
+          var px2 = x + Math.cos(pAngle)*pr;
+          var py2 = y + Math.sin(pAngle)*pr;
+          mctx.beginPath(); mctx.arc(px2,py2,1.2,0,Math.PI*2);
+          mctx.fillStyle='rgba(180,120,255,'+(0.4+Math.sin(torchT*0.08+pi)*0.3)+')';
+          mctx.fill();
+        }
+      }
+      mctx.restore();
+      return;
+    }
+
 
     if (n.state === 'done') {
       // Nœud visité — teinte or foncé
@@ -6529,6 +6651,12 @@ var DungeonMap = (function() {
       if (dx*dx+dy*dy < r*r) hit = n;
     });
     if (!hit) return;
+
+    if (hit.type === 'passage') {
+      hit.state = 'done';
+      DungeonMap.enterPassage();
+      return;
+    }
 
     document.getElementById('dm-node-info').textContent = 'En route...';
     hit.state = 'done';
@@ -7311,6 +7439,10 @@ var ZONE_DATA = {
   pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant' },
   volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol' },
   cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles' },
+  chateau_maudit:   { hpMult:1200, atkMult:380, defMult:300, goldMult:1000, floors:7, minLevel:55, label:'Le Château Maudit' },
+  cite_oubliee:     { hpMult:2500, atkMult:750, defMult:600, goldMult:2200, floors:8, minLevel:65, label:'La Cité Oubliée' },
+  gouffre_astral:   { hpMult:6000, atkMult:1800, defMult:1400, goldMult:5500, floors:8, minLevel:78, label:'Le Gouffre Astral' },
+  cryptes_profondes:{ hpMult:15000, atkMult:4500, defMult:3500, goldMult:14000, floors:10, minLevel:90, label:'Les Cryptes Profondes' },
 };
 
 var WorldMap = {
@@ -7385,7 +7517,7 @@ var WorldMap = {
 var HUD = (function(){
   var SHOWN_SCREENS = {
     'dungeon-map':1,'combat-screen':1,'shop-screen':1,
-    'inn-room':1,'town-screen':1,'world-map':1,
+    'inn-room':1,'town-screen':1,'world-map':1,'world-map-2':1,
     'taverne-screen':1,'equip-screen':1,'chest-screen':1,
     'hero-screen':1,'rest-screen':1,'loot-screen':1
   };
