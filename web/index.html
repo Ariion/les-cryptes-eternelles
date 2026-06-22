@@ -7509,15 +7509,37 @@ var WorldMap = {
     var zone = ZONE_DATA[zoneId];
     if (!zone) return;
     var lvl = State.level||1;
-    var warnings = [];
+    var done = Meta.completedQuests||{};
+
+    // Zones nettoyées — bloquées définitivement, sauf exception Grottes
     if (Meta.clearedZones[zoneId]) {
-      var done = Meta.completedQuests||{};
-      if (zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && !Meta.passageFound) {
-        warnings.push('🌀 Tu ressens quelque chose d\'étrange en approchant de l\'entrée.\n\n"Ce n\'est plus tout à fait le même endroit qu\'avant..."');
+      var isGrottesReturn = zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && !Meta.passageFound;
+      if (isGrottesReturn) {
+        // Cas unique : retour dans les Grottes pour trouver le passage
+        CGEModal.show({
+          title: 'Quelque chose a changé',
+          text: 'Tu t\'approches de l\'entrée des Grottes.\n\nLe silence est différent. Pas le silence du vide — le silence de quelque chose qui attend.\n\nUne fissure dans la pierre que tu n\'avais jamais remarquée...',
+          okLabel: 'Entrer',
+          cancelLabel: 'Partir',
+          onOk: function() {
+            State._zoneMod = { hpMult:1, atkMult:1, defMult:1, goldMult:1, enemyMod:1, goldMod:1 };
+            State._currentZone = zoneId;
+            State.floor = 1;
+            State._runGoldBonus = 1;
+            Nav.go('dungeon-map');
+            setTimeout(function(){ DungeonMap.init(1, State.hp, State.hpMax); }, 350);
+          }
+        });
       } else {
-        warnings.push('⚰ Ce donjon a déjà été nettoyé. Les monstres sont plus forts au retour !');
+        CGEModal.alert(
+          (ZONE_DATA[zoneId]||{}).label || 'Donjon',
+          'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.'
+        );
       }
+      return;
     }
+
+    var warnings = [];
     if (!Meta.isZoneUnlocked(zoneId)) warnings.push('⚠ Zone non recommandée pour ton niveau de progression.');
     if (lvl < zone.minLevel) warnings.push('💀 Niveau conseillé : ' + zone.minLevel + ' (tu es niveau ' + lvl + ').');
     function doEnter() {
