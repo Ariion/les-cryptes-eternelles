@@ -5577,9 +5577,20 @@ var QUEST_DEFS = [
   },
 
   // ═══ ACTE IV — L'ÉVEILLÉ ════════════════════════════════════════
-  // (débloqué après seraphine_3, joué dans les Cryptes via fragments de mémoire)
-  { id:'cryptes_final', npc:'bertrand', act:4,
+  // Quête spéciale : retourner dans les Grottes pour trouver le passage
+  { id:'retour_grottes', npc:'seraphine', act:4,
     unlockAfter:'seraphine_3',
+    title:'Le Début de Tout',
+    desc:'Séraphine est certaine : il y a quelque chose dans les Grottes des Ombres que tu n\'as pas vu.\nRetournes-y. Cherche ce qui ne devrait pas être là.\n→ Entre dans les Grottes des Ombres.',
+    check:function(){ return !!(Meta.passageFound); },
+    reward:{ gold:0 },
+    rewardTxt:'Le passage',
+    claimText:'"Tu l\'as trouvé."\nSéraphine ferme les yeux un instant.\n"J\'ai cherché pendant vingt ans ce que tu as trouvé en quelques minutes. Peut-être que certaines portes ne s\'ouvrent que pour les bonnes personnes."\n\nElle te regarde.\n\n"Qu\'est-ce qu\'il y a de l\'autre côté ?"'
+  },
+
+  // Cryptes finales (débloqué après retour_grottes)
+  { id:'cryptes_final', npc:'bertrand', act:4,
+    unlockAfter:'retour_grottes',
     title:'Les Cryptes Éternelles',
     desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 50 expéditions et atteins le niveau 80.',
     check:function(){ return (Meta.totalRuns||0)>=50 && (State.level||1)>=80; },
@@ -5639,6 +5650,8 @@ var NPC_DATA = {
       if (!done['bertrand_3']) return '"Mon grand-père disait que les vrais ennemis sourient le plus."';
       if (!done['oswin_3'])    return '"Fais attention à Oswin. Ce n\'est pas ce qu\'il prétend être."';
       if (!done['seraphine_3'])return '"Séraphine peut t\'ouvrir le chemin. Va lui parler."';
+      if (!done['retour_grottes']) return '"Séraphine dit qu\'il faut retourner là où tu as commencé."\n\nIl baisse la voix.\n\n"Les Grottes des Ombres. Je sais, tu les connais par cœur. Mais... cherche ce que tu n\'as pas encore cherché."';
+      if (!done['cryptes_final']) return '"Tu l\'as trouvé ? Le passage ?"\n\nIl se lève.\n\n"Alors va. Ce que tu feras là-bas... ça nous concerne tous."';
       return '"Tu as accompli ce que personne n\'osait faire, ami. Je lèverai mon verre à ta santé pour le reste de mes jours."';
     }
   },
@@ -5666,6 +5679,10 @@ var NPC_DATA = {
       if (!done['seraphine_2']) return '"Ce que j\'ai à te dire peut attendre que Séraphine t\'ait tout expliqué."';
       if (!done['bertrand_3'])  return '"Bertrand sait plus qu\'il ne dit. Sa famille est liée à tout ça."';
       if (!done['oswin_3'])     return '"*te regarde dans les yeux sans sourire*\nIl est temps que je sois honnête avec toi."';
+      if (!done['retour_grottes']) {
+        return '"*pose sa luth*\nTu veux savoir où aller maintenant ?"\n\n"Les Grottes. Là où tout a commencé pour toi. Pour nous tous, en réalité."\n\nIl hésite.\n\n"Cherche ce que tu n\'aurais pas pu voir avant. Quelque chose que la lumière révèle seulement quand on sait regarder."';
+      }
+      if (!done['cryptes_final']) return '"*hoche la tête*\nTu l\'as trouvé. Bien.\n\nJe joue une dernière chanson ce soir — pour toi. Pour ce que tu vas faire."';
       return '"*soupir*\nJe suis fatigué, ami. Cent quarante ans de mensonges, c\'est long.\nJe joue juste de la musique maintenant. Vraiment."';
     }
   },
@@ -5722,6 +5739,8 @@ var NPC_DATA = {
       if (!done['bertrand_3'])  return '"Il faut que Bertrand te parle de sa famille. C\'est important pour comprendre l\'histoire complète."';
       if (!done['oswin_3'])     return '"*voix grave*\nOswin est une Voix du Dieu. Tu le sais maintenant.\nMais laisse-lui le temps de se confesser lui-même."';
       if (!done['seraphine_3']) return '"Tu es prêt à entendre la suite ?"';
+      if (!done['retour_grottes']) return '"Je sens que la réponse n\'est pas ici."\n\nElle ferme les yeux, concentrée.\n\n"Les Grottes. Là où tu as commencé. Il y a quelque chose que tu n\'as pas vu — quelque chose qui n\'existait pas encore quand tu y es allé pour la première fois. Retournes-y. Cherche dans les recoins que tu n\'as jamais explorés."';
+      if (!done['cryptes_final']) return '"Tu l\'as trouvé."\n\nElle souffle lentement.\n\n"Va. Ne t\'arrête pas. Ce qui t\'attend là-bas... c\'est pour ça que tu t\'es réveillé ici il y a tout ce temps."';
       var ending = race === 'Orc' ? 'Ta force a toujours été réelle. C\'est ta brutalité qui était un mensonge qu\'on t\'avait enseigné.'
         : race === 'Elfe' ? 'Tu es revenu comme prévu. Mais tu as choisi différemment. C\'est ça qui change tout.'
         : race === 'Nain' ? 'Les anciens de ta montagne avaient raison. Il fallait que ce soit quelqu\'un des profondeurs.'
@@ -5822,6 +5841,14 @@ var Quests = (function(){
       if (!Meta.completedQuests) Meta.completedQuests = {};
       Meta.completedQuests[_currentQuest.id] = true;
       if (Meta.activeQuests) delete Meta.activeQuests[_currentNpc];
+      // Auto-activer la quête suivante si elle est chaînée
+      var claimedId = _currentQuest.id;
+      QUEST_DEFS.forEach(function(q) {
+        if (q.unlockAfter === claimedId && isQuestUnlocked(q)) {
+          if (!Meta.activeQuests) Meta.activeQuests = {};
+          if (!Meta.completedQuests[q.id]) Meta.activeQuests[q.npc] = q.id;
+        }
+      });
       Meta.save(); State.saveRun();
       document.getElementById('npc-btn-claim').style.display = 'none';
       document.getElementById('npc-quest-info').style.display = 'none';
@@ -7483,7 +7510,14 @@ var WorldMap = {
     if (!zone) return;
     var lvl = State.level||1;
     var warnings = [];
-    if (Meta.clearedZones[zoneId]) warnings.push('⚰ Ce donjon a déjà été nettoyé. Les monstres sont plus forts au retour !');
+    if (Meta.clearedZones[zoneId]) {
+      var done = Meta.completedQuests||{};
+      if (zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && !Meta.passageFound) {
+        warnings.push('🌀 Tu ressens quelque chose d\'étrange en approchant de l\'entrée.\n\n"Ce n\'est plus tout à fait le même endroit qu\'avant..."');
+      } else {
+        warnings.push('⚰ Ce donjon a déjà été nettoyé. Les monstres sont plus forts au retour !');
+      }
+    }
     if (!Meta.isZoneUnlocked(zoneId)) warnings.push('⚠ Zone non recommandée pour ton niveau de progression.');
     if (lvl < zone.minLevel) warnings.push('💀 Niveau conseillé : ' + zone.minLevel + ' (tu es niveau ' + lvl + ').');
     function doEnter() {
