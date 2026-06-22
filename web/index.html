@@ -5530,7 +5530,7 @@ var QUEST_DEFS = [
     title:'Le Fragment d\'Âme',
     desc:'Séraphine affirme détecter quelque chose d\'anormal dans ton aura — une signature magique qui ne devrait plus exister depuis cent ans.\nPour qu\'elle puisse l\'analyser : nettoie 2 zones entières.',
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; },
-    reward:{ gold:100 },
+    reward:{ gold:100 }, alignReward:+1,
     rewardTxt:'100 🪙 + une vérité',
     claimText:'"Je m\'en doutais."\nSéraphine referme son grimoire et te fixe.\n"L\'aura que tu portes... elle appartient à quelqu\'un qui est mort il y a exactement cent ans. Quelqu\'un qui s\'appelait l\'Éveillé — comme dans la chanson d\'Oswin."\n\n"Ce n\'est pas une coïncidence. Tu portes un fragment de son âme. Peut-être tout son être, transféré dans un nouveau corps."\n\nElle hésite.\n"Si c\'est vrai... alors tu te rappelles peut-être des choses, sans savoir d\'où elles viennent. Des réflexes. Des peurs irrationnelles. Des visages que tu n\'as jamais vus."\n\n"Et si c\'est vrai... quelqu\'un d\'autre le sait aussi. Et cette personne ne veut pas que tu descendes dans les vraies Cryptes."'
   },
@@ -5578,7 +5578,7 @@ var QUEST_DEFS = [
     title:'Le Sang des Gardiens',
     desc:'Bertrand a quelque chose à avouer — sur sa famille et les Cryptes. Mais d\'abord il veut voir si tu peux t\'en sortir contre les créatures les plus redoutables.\n→ Tue 200 monstres.',
     check:function(){ return (Meta.totalKills||0)>=200; },
-    reward:{ gold:400 },
+    reward:{ gold:400 }, alignReward:+1,
     rewardTxt:'400 🪙',
     claimText:'"Mon grand-père était gardien des Cryptes. Un des derniers."\nBertrand s\'essuie les mains sur son tablier, nerveux.\n"Il m\'a dit, avant de mourir : *si un étranger arrive sans mémoire, fuis. Ou aide-le. Les deux sont dangereux.*"\n\n"Je suis resté. J\'ai choisi de t\'aider."\n\n"Il m\'a dit aussi autre chose. Que le Dieu de la Mémoire a des *Voix* dans le monde — des agents qui servent depuis des siècles, qui ne vieillissent pas, qui préparent sa libération."\n\n"Ces Voix... elles se font passer pour des gens ordinaires. Des aubergistes. Des marchands. Des bardes."\n\nIl te regarde droit dans les yeux.\n\n"Fais attention à Oswin."'
   },
@@ -5589,7 +5589,7 @@ var QUEST_DEFS = [
     title:'La Voix du Dieu',
     desc:'Oswin t\'a demandé de venir le voir. Mais quelque chose a changé dans son regard.\nAffronte-toi à toi-même : nettoie 5 zones différentes et accomplis 30 expéditions.',
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=5 && (Meta.totalRuns||0)>=30; },
-    reward:{ gold:0 },
+    reward:{ gold:0 }, alignReward:-1,
     rewardTxt:'Une révélation',
     claimText:'"Tu commences à comprendre."\nOswin ne joue plus la comédie. Sa voix a changé — plus profonde, presque distante.\n"Oui. Je suis une Voix. Je sers depuis cent quarante ans."\n\n"Mais écoute-moi avant de te mettre en colère."\n\n"Je ne suis pas ton ennemi. Je suis... las. Cent quarante ans à servir un dieu que je n\'ai jamais vu. Je voulais juste... que quelqu\'un descende dans les Cryptes et règle ça. Dans un sens ou dans l\'autre."\n\n"La vérité : tu peux renforcer le sceau, comme l\'Éveillé du passé. Ou tu peux libérer le Dieu de la Mémoire — et il nous effacera tous. Ou peut-être qu\'il sera différent maintenant. Peut-être qu\'une prison d\'un siècle l\'a changé."\n\n"Séraphine te dira quoi faire. Moi... je suis fatigué de choisir pour les autres."'
   },
@@ -5600,7 +5600,7 @@ var QUEST_DEFS = [
     title:'Le Verrou ou la Clé',
     desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 60, nettoie 6 zones et accomplis 40 expéditions.',
     check:function(){ return (State.level||1)>=60 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=40; },
-    reward:{ gold:1000 },
+    reward:{ gold:1000 }, alignReward:+1,
     rewardTxt:'1000 🪙 + accès aux Cryptes',
     claimText: function() {
       var ch = State._introChoices || {};
@@ -5764,21 +5764,41 @@ var QUEST_DEFS = [
     claimText: function() {
       var ch = State._introChoices || {};
       var race = State.race || 'Humain';
-      // Ligne personnalisée selon le trait de l'intro
-      var traitLine = ch.trait === 'void'
-        ? '"Tu es revenu. Je ne saurais pas dire ce que tu ressens — peut-être toi non plus. Mais tu es là."'
-        : ch.trait === 'cold'
-        ? '"Tu es revenu. Avec encore ce froid dans les yeux. Mais différent — plus posé. Comme si tu avais enfin compris d\'où il venait."'
-        : '"Tu es revenu. Tu as l\'air... en paix. Pour la première fois depuis ton arrivée."';
-      // Ligne selon la race
-      var raceLine = race === 'Orc'
-        ? '"Peu importe ce qu\'on raconte sur les Orcs. Toi, tu as tenu là où d\'autres ont fui."'
+      var align = Meta.computeAlign();
+
+      // ── FIN : LE GARDIEN (align >= 2) ──────────────────────────────
+      if (align >= 2) {
+        var gardienRace = race === 'Orc'
+          ? '"Un Orc qui choisit de protéger. Ça, personne ne l\'avait prédit."'
+          : race === 'Elfe'
+          ? '"La prophétie disait qu\'un Elfe reviendrait. Elle ne disait pas qu\'il choisirait de rester."'
+          : race === 'Nain'
+          ? '"Les anciens de ta montagne auraient été fiers. Quelqu\'un des profondeurs — pour garder ce que les autres oublient."'
+          : '"Tu n\'avais rien quand tu es arrivé. Et tu as quand même choisi de tout donner."';
+        return '— Le Dieu de la Mémoire lève les yeux sur toi. Sa voix est calme, presque douce.\n\n"Tu n\'as pas changé. Tu t\'es juste souvenu."\n\nIl se tait un instant.\n\n"L\'Éveillé du siècle passé a fait le même choix. Dans la même pièce. Avec les mêmes mains qui tremblaient."\n\n"Pose le cristal sur l\'autel. Le sceau tiendra cent ans de plus. Et quelqu\'un d\'autre viendra après toi — comme tu es venu après lui."\n\nBertrand lève son verre, seul dans la taverne.\n\n'+gardienRace+'\n\n"À l\'Éveillé. Le Gardien."';
+      }
+
+      // ── FIN : LE VIDE (align <= -2) ────────────────────────────────
+      if (align <= -2) {
+        var videRace = race === 'Orc'
+          ? '"On dit que les Orcs ne ressentent rien. Je savais que c\'était faux. Mais toi... tu l\'as peut-être cru."'
+          : race === 'Elfe'
+          ? '"Les Elfes vivent si longtemps qu\'ils finissent par oublier pourquoi. Je comprends."'
+          : race === 'Nain'
+          ? '"Les profondeurs t\'ont pris quelque chose. Avant même que tu arrives ici."'
+          : '"Tu n\'es pas venu chercher des réponses. Tu le sais maintenant."';
+        return '— Le Dieu de la Mémoire te regarde longuement. Pas avec colère. Avec quelque chose qui ressemble à de la reconnaissance.\n\n"Tu n\'es pas revenu pour des réponses."\n\nIl se lève lentement.\n\n"Tu es revenu pour finir ce que tu avais commencé. Mourir vraiment."\n\n"L\'Éveillé du siècle passé avait la même chose dans les yeux, à la fin. Ce vide."\n\n"Brise le cristal. Laisse le sceau s\'effondrer. Ça n\'a plus d\'importance pour toi — et peut-être que c\'est la seule honnêteté qui reste."\n\nBertrand fixe son verre vide sans rien dire.\n\n'+videRace+'\n\n"Il est parti. Comme il était venu."';
+      }
+
+      // ── FIN : LE LIBÉRATEUR (align entre -1 et +1) ─────────────────
+      var libRace = race === 'Orc'
+        ? '"Un Orc qui libère ce que les humains avaient emprisonné. Je ne sais pas si c\'est de la sagesse ou de la folie."'
         : race === 'Elfe'
-        ? '"La prophétie parlait d\'un Elfe qui revenait. Elle ne précisait pas comment il repartirait. Peut-être parce que ça dépendait de toi."'
+        ? '"Tu as entendu quelque chose dans le silence des Cryptes. Quelque chose que les autres n\'entendaient pas."'
         : race === 'Nain'
-        ? '"Les anciens de ta montagne avaient raison — il fallait quelqu\'un des profondeurs. Quelqu\'un qui ne craint pas la pierre."'
-        : '"Tu n\'étais rien de particulier quand tu es arrivé. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle."';
-      return traitLine+'\n\nIl lève son verre.\n\n'+raceLine+'\n\n"À l\'Éveillé. Quel que soit son vrai nom."';
+        ? '"Les profondeurs t\'ont parlé. Et tu as écouté — pas par obéissance. Par curiosité."'
+        : '"Tu n\'es venu ni pour protéger ni pour détruire. Tu es venu parce que tu voulais savoir."';
+      return '— Le Dieu de la Mémoire incline légèrement la tête.\n\n"Tu n\'es pas venu pour protéger. Tu es venu pour ouvrir."\n\nIl sourit — pas comme un dieu. Comme quelqu\'un qui attendait depuis longtemps.\n\n"J\'ai passé cent ans dans cette prison. J\'ai eu le temps de réfléchir à ce que j\'avais fait."\n\n"Peut-être que je suis différent maintenant. Peut-être pas. Mais toi... tu as choisi de ne pas décider à ma place."\n\n"Brise le cristal. Et on verra ensemble ce qui arrive."\n\nBertrand lève son verre lentement.\n\n'+libRace+'\n\n"À l\'Éveillé. Celui qui a choisi l\'inconnu."';
     }
   },
 ];
@@ -6030,6 +6050,9 @@ var Quests = (function(){
       if (r._deduct) { State.gold = Math.max(0, (State.gold||0)-r._deduct); if(typeof HUD!=='undefined') HUD.updateGold(); }
       if (r.potions) { State.potions=(State.potions||0)+r.potions; }
       if (_currentQuest.rankReward) { Meta.rank = (Meta.rank||0) + _currentQuest.rankReward; }
+      // Alignement : payer Marta vite (< 5 runs) = Gardien ; quêtes de classe = Libérateur
+      if (_currentQuest.id === 'marta_debt' && (Meta.totalRuns||0) <= 4) Meta.nudgeAlign(+1);
+      if (_currentQuest.alignReward) Meta.nudgeAlign(_currentQuest.alignReward);
       if (!Meta.completedQuests) Meta.completedQuests = {};
       Meta.completedQuests[_currentQuest.id] = true;
       if (Meta.activeQuests) delete Meta.activeQuests[_currentNpc];
@@ -6094,6 +6117,7 @@ var Meta = {
   clues: {},
   rank: 0,
   passageFound: false,
+  _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
 
@@ -6113,6 +6137,7 @@ var Meta = {
       Meta.clues           = d.clues||{};
       Meta.rank            = d.rank||0;
       Meta.passageFound    = d.passageFound||false;
+      Meta._align          = d._align||0;
       Meta.chest           = d.chest||[];
       Meta.achievements    = d.achievements||{};
     } catch(e){}
@@ -6132,11 +6157,39 @@ var Meta = {
       clues:          Meta.clues,
       rank:           Meta.rank,
       passageFound:   Meta.passageFound,
+      _align:         Meta._align,
       chest:          Meta.chest,
       achievements:   Meta.achievements,
     };
     localStorage.setItem('cge_meta', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
+  },
+
+  nudgeAlign: function(delta) {
+    Meta._align = Math.max(-5, Math.min(5, (Meta._align||0) + delta));
+  },
+
+  computeAlign: function() {
+    // Recalcule l'alignement à partir de l'état global — appelé à la fin
+    var a = Meta._align || 0;
+    var done = Meta.completedQuests || {};
+    var ch = State._introChoices || {};
+    // Trait d'intro
+    if (ch.trait === 'void') a -= 1;
+    // Rang social élevé → Gardien
+    if ((Meta.rank||0) >= 3) a += 1;
+    // Toutes les quêtes principales complétées → Gardien
+    var mainQuests = ['marta_debt','bertrand_1','oswin_1','seraphine_1','bertrand_2','oswin_2','seraphine_2','bertrand_3','oswin_3','seraphine_3'];
+    var doneCount = mainQuests.filter(function(id){ return done[id]; }).length;
+    if (doneCount >= 9) a += 1;
+    else if (doneCount <= 4) a -= 1;
+    // Beaucoup de zones nettoyées → Libérateur (explorateur)
+    var zones = Object.keys(Meta.clearedZones||{}).length;
+    if (zones >= 8) a += 1;
+    // Classe offensive → léger penchant Libérateur
+    var cls = State.cls || '';
+    if (cls === 'assassin' || cls === 'barbare') a -= 0;  // neutre
+    return Math.max(-5, Math.min(5, a));
   },
 
   clearZone: function(zoneId) {
