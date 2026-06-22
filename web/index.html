@@ -4125,6 +4125,308 @@ var StoryIntro = (function(){
   };
 })();
 
+// ── LANGUAGE SYSTEM ───────────────────────────────────────────────
+var CGE_LANG = localStorage.getItem('cge_lang') || 'fr';
+
+var STRINGS = {
+  fr: {
+    // Main menu
+    'menu.play': 'Jouer',
+    'menu.achievements': '🏆 Succès',
+    'menu.settings': '⚙ Paramètres',
+    'menu.signin': 'Se connecter avec Google',
+    // Settings
+    'settings.title': 'Paramètres',
+    'settings.music': 'Musique',
+    'settings.music.sub': 'Ambiance menu, donjon et combat',
+    'settings.sfx': 'Effets sonores',
+    'settings.sfx.sub': 'Sons de combat et d\'interface',
+    'settings.vibration': 'Vibrations',
+    'settings.vibration.sub': 'Retour haptique sur mobile',
+    'settings.particles': 'Particules',
+    'settings.particles.sub': 'Braises en arrière-plan',
+    'settings.language': 'Langue / Language',
+    'settings.language.sub': 'Français · English',
+    'settings.reset': '⚠ Réinitialiser la progression',
+    // Profiles
+    'profiles.title': 'Mes Aventuriers',
+    'profiles.subtitle': 'Choisis ton héros ou crée-en un nouveau',
+    'profiles.new': '＋ Créer un aventurier',
+    'profiles.import': '↓ Importer un code de sauvegarde',
+    // HUD
+    'hud.floor': 'Étage',
+    'hud.potions': 'Potions',
+    // Combat
+    'combat.attack': 'Attaquer',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Fuir',
+    'combat.victory': 'Victoire !',
+    'combat.defeat': 'Défaite',
+    // Town
+    'town.title': 'Thornwall',
+    'town.inn': '🛏 Chambre',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armurerie',
+    'town.couturier': '🧵 Couturier',
+    'town.bijoutier': '💍 Bijoutier',
+    'town.temple': '⛪ Église · Boutique',
+    'town.guild': 'Guilde',
+    'town.adventure': '⚔ Partir à l\'aventure',
+    'town.chateau': '🏰 Château',
+    'town.taverne': '🍺 Taverne',
+    // Inn
+    'inn.window': 'Partir à l\'aventure',
+    'inn.equip': 'Équipement',
+    'inn.chest': 'Coffre',
+    'inn.rest': 'Repos (15 🪙)',
+    'inn.town': 'Aller en ville',
+    // World map
+    'wm.title': 'La Région',
+    'wm.back': 'Retour',
+    // Travel
+    'travel.title': 'Carte du Monde',
+    'travel.camp': 'Campement',
+    'travel.camp.desc': 'Allume un feu et récupère 35% de tes PV',
+    'travel.free': 'Gratuit',
+    // Zones
+    'zone.grottes': 'Grottes des Ombres',
+    'zone.foret': 'Forêt des Âmes Perdues',
+    'zone.ruines': 'Ruines d\'Astavar',
+    'zone.port': 'Port des Tempêtes',
+    'zone.marais': 'Marais de Vaelthar',
+    'zone.pics': 'Pics du Néant',
+    'zone.volcan': 'Caldera d\'Aszgol',
+    'zone.cryptes': 'Les Cryptes Éternelles',
+    'zone.chateau_maudit': 'Le Château Maudit',
+    'zone.cite_oubliee': 'La Cité Oubliée',
+    'zone.gouffre_astral': 'Le Gouffre Astral',
+    'zone.cryptes_profondes': 'Les Cryptes Profondes',
+    // Hero screen
+    'hero.level': 'Niveau',
+    'hero.class': 'Classe',
+    'hero.race': 'Race',
+    'hero.rank': 'Rang Social',
+    'hero.stats': 'Statistiques',
+    'hero.equip': 'Équipement',
+    // Ranks
+    'rank.0': 'Inconnu',
+    'rank.1': 'Connu',
+    'rank.2': 'Respecté',
+    'rank.3': 'Honoré',
+    'rank.4': 'Légendaire',
+    // Shop
+    'shop.buy': 'Acheter',
+    'shop.sell': 'Vendre',
+    'shop.close': 'Fermer',
+    // Classes
+    'class.guerrier': 'Guerrier',
+    'class.mage': 'Mage',
+    'class.chasseur': 'Chasseur',
+    'class.assassin': 'Assassin',
+    'class.pretre': 'Prêtre',
+    'class.barbare': 'Barbare',
+    // Races
+    'race.humain': 'Humain',
+    'race.elfe': 'Elfe',
+    'race.nain': 'Nain',
+    'race.orc': 'Orc',
+    // Taverne
+    'taverne.title': 'La Lyonnesse',
+    // NPC names
+    'npc.bertrand': 'Bertrand',
+    'npc.oswin': 'Oswin',
+    'npc.seraphine': 'Séraphine',
+    'npc.marta': 'Marta',
+    'npc.aldric': 'Capitaine Aldric',
+    'npc.elise': 'Sœur Élise',
+    // Quest UI
+    'quest.accept': 'Accepter la quête',
+    'quest.claim': 'Réclamer la récompense',
+    'quest.close': 'Fermer',
+    'quest.inprogress': 'En cours : ',
+    'quest.reward': 'Récompense : ',
+    // Gameover
+    'go.victory': 'VICTOIRE !',
+    'go.floor': 'Étage atteint',
+    'go.gold': 'Or récupéré',
+    'go.kills': 'Ennemis vaincus',
+    'go.continue': 'Continuer l\'aventure',
+    // Achievements screen
+    'ach.title': 'Succès',
+    'ach.close': 'Fermer',
+    // Dungeon map
+    'dm.camp': '🗺 Voyager',
+    'dm.quests': '📜 Quêtes',
+    'dm.carnet': '🔍 Enquête',
+    // Misc
+    'misc.close': 'Fermer',
+    'misc.ok': 'OK',
+    'misc.cancel': 'Annuler',
+    'misc.loading': 'Chargement...',
+    'misc.wind': 'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.',
+  },
+  en: {
+    // Main menu
+    'menu.play': 'Play',
+    'menu.achievements': '🏆 Achievements',
+    'menu.settings': '⚙ Settings',
+    'menu.signin': 'Sign in with Google',
+    // Settings
+    'settings.title': 'Settings',
+    'settings.music': 'Music',
+    'settings.music.sub': 'Menu, dungeon and combat ambience',
+    'settings.sfx': 'Sound Effects',
+    'settings.sfx.sub': 'Combat and interface sounds',
+    'settings.vibration': 'Vibrations',
+    'settings.vibration.sub': 'Haptic feedback on mobile',
+    'settings.particles': 'Particles',
+    'settings.particles.sub': 'Embers in the background',
+    'settings.language': 'Language / Langue',
+    'settings.language.sub': 'English · Français',
+    'settings.reset': '⚠ Reset progress',
+    // Profiles
+    'profiles.title': 'My Adventurers',
+    'profiles.subtitle': 'Choose your hero or create a new one',
+    'profiles.new': '＋ Create an adventurer',
+    'profiles.import': '↓ Import a save code',
+    // HUD
+    'hud.floor': 'Floor',
+    'hud.potions': 'Potions',
+    // Combat
+    'combat.attack': 'Attack',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Flee',
+    'combat.victory': 'Victory!',
+    'combat.defeat': 'Defeat',
+    // Town
+    'town.title': 'Thornwall',
+    'town.inn': '🛏 Inn',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armoury',
+    'town.couturier': '🧵 Tailor',
+    'town.bijoutier': '💍 Jeweller',
+    'town.temple': '⛪ Church · Shop',
+    'town.guild': 'Guild',
+    'town.adventure': '⚔ Go adventuring',
+    'town.chateau': '🏰 Castle',
+    'town.taverne': '🍺 Tavern',
+    // Inn
+    'inn.window': 'Go adventuring',
+    'inn.equip': 'Equipment',
+    'inn.chest': 'Chest',
+    'inn.rest': 'Rest (15 🪙)',
+    'inn.town': 'Go to town',
+    // World map
+    'wm.title': 'The Region',
+    'wm.back': 'Back',
+    // Travel
+    'travel.title': 'World Map',
+    'travel.camp': 'Camp',
+    'travel.camp.desc': 'Light a fire and recover 35% HP',
+    'travel.free': 'Free',
+    // Zones
+    'zone.grottes': 'Shadow Caves',
+    'zone.foret': 'Forest of Lost Souls',
+    'zone.ruines': 'Ruins of Astavar',
+    'zone.port': 'Storm Harbour',
+    'zone.marais': 'Vaelthar Marshes',
+    'zone.pics': 'Peaks of the Void',
+    'zone.volcan': 'Caldera of Aszgol',
+    'zone.cryptes': 'The Eternal Crypts',
+    'zone.chateau_maudit': 'The Cursed Castle',
+    'zone.cite_oubliee': 'The Forgotten City',
+    'zone.gouffre_astral': 'The Astral Chasm',
+    'zone.cryptes_profondes': 'The Deep Crypts',
+    // Hero screen
+    'hero.level': 'Level',
+    'hero.class': 'Class',
+    'hero.race': 'Race',
+    'hero.rank': 'Social Rank',
+    'hero.stats': 'Stats',
+    'hero.equip': 'Equipment',
+    // Ranks
+    'rank.0': 'Unknown',
+    'rank.1': 'Known',
+    'rank.2': 'Respected',
+    'rank.3': 'Honoured',
+    'rank.4': 'Legendary',
+    // Shop
+    'shop.buy': 'Buy',
+    'shop.sell': 'Sell',
+    'shop.close': 'Close',
+    // Classes
+    'class.guerrier': 'Warrior',
+    'class.mage': 'Mage',
+    'class.chasseur': 'Hunter',
+    'class.assassin': 'Assassin',
+    'class.pretre': 'Priest',
+    'class.barbare': 'Barbarian',
+    // Races
+    'race.humain': 'Human',
+    'race.elfe': 'Elf',
+    'race.nain': 'Dwarf',
+    'race.orc': 'Orc',
+    // Taverne
+    'taverne.title': 'The Lyonnesse',
+    // NPC names
+    'npc.bertrand': 'Bertrand',
+    'npc.oswin': 'Oswin',
+    'npc.seraphine': 'Séraphine',
+    'npc.marta': 'Marta',
+    'npc.aldric': 'Captain Aldric',
+    'npc.elise': 'Sister Elise',
+    // Quest UI
+    'quest.accept': 'Accept quest',
+    'quest.claim': 'Claim reward',
+    'quest.close': 'Close',
+    'quest.inprogress': 'In progress: ',
+    'quest.reward': 'Reward: ',
+    // Gameover
+    'go.victory': 'VICTORY!',
+    'go.floor': 'Floor reached',
+    'go.gold': 'Gold collected',
+    'go.kills': 'Enemies slain',
+    'go.continue': 'Continue the adventure',
+    // Achievements screen
+    'ach.title': 'Achievements',
+    'ach.close': 'Close',
+    // Dungeon map
+    'dm.camp': '🗺 Travel',
+    'dm.quests': '📜 Quests',
+    'dm.carnet': '🔍 Journal',
+    // Misc
+    'misc.close': 'Close',
+    'misc.ok': 'OK',
+    'misc.cancel': 'Cancel',
+    'misc.loading': 'Loading...',
+    'misc.wind': 'Everything here has been cleared.\n\nNothing remains but the sound of the wind.',
+  }
+};
+
+var LangSystem = {
+  t: function(key) {
+    var s = STRINGS[CGE_LANG] || STRINGS['fr'];
+    return s[key] || STRINGS['fr'][key] || key;
+  },
+  set: function(lang) {
+    CGE_LANG = lang;
+    localStorage.setItem('cge_lang', lang);
+    LangSystem.applyAll();
+    Nav.go('main-menu');
+  },
+  applyAll: function() {
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      el.textContent = LangSystem.t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      el.placeholder = LangSystem.t(el.getAttribute('data-i18n-placeholder'));
+    });
+  }
+};
+
+function T(key) { return LangSystem.t(key); }
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -4168,6 +4470,7 @@ var Nav = {
         next.style.opacity = '1';
         setTimeout(function(){ next.style.transition=''; }, 250);
       });});
+      if (typeof LangSystem !== 'undefined') LangSystem.applyAll();
       if (id === 'taverne-screen' && typeof Quests !== 'undefined') Quests.refreshBadges();
       if (id === 'dungeon-map') {
         var dmEl = document.getElementById('dungeon-map');
@@ -6002,7 +6305,7 @@ var Quests = (function(){
       // Portrait : juste le nom, plus d'icône emoji
       var portIco = document.getElementById('npc-portrait-ico');
       if (portIco) portIco.textContent = '';
-      document.getElementById('npc-portrait-name').textContent = nd.name;
+      document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
@@ -7405,7 +7708,14 @@ function goToMenu() {
   var metaEl = document.getElementById('menu-stats');
   if (metaEl) metaEl.textContent = Meta.totalRuns > 0
     ? 'Runs : '+Meta.totalRuns+'  ·  Meilleur étage : '+Meta.bestFloor : '';
-  Nav.go('main-menu');
+  var savedLang = localStorage.getItem('cge_lang');
+  if (!savedLang) {
+    Nav.go('lang-screen');
+  } else {
+    CGE_LANG = savedLang;
+    LangSystem.applyAll();
+    Nav.go('main-menu');
+  }
   buildCharSelect();
 }
 
@@ -7819,8 +8129,8 @@ var WorldMap = {
         });
       } else {
         CGEModal.alert(
-          (ZONE_DATA[zoneId]||{}).label || 'Donjon',
-          'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.'
+          T('zone.' + zoneId) || (ZONE_DATA[zoneId]||{}).label || 'Donjon',
+          T('misc.wind')
         );
       }
       return;
