@@ -2308,6 +2308,16 @@ canvas#particles {
       <div id="tap-hint">Toucher pour entrer</div>
     </div>
 
+    <!-- ── LANGUAGE SELECTION ── -->
+    <div id="lang-screen" class="screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0608;gap:32px">
+      <div style="font-family:'Cinzel',serif;font-size:28px;color:#C9A550;letter-spacing:4px;text-align:center">LES CRYPTES ÉTERNELLES</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.5);letter-spacing:2px">Choose your language / Choisissez votre langue</div>
+      <div style="display:flex;gap:24px;margin-top:16px">
+        <button onclick="LangSystem.set('fr')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇫🇷 Français</button>
+        <button onclick="LangSystem.set('en')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇬🇧 English</button>
+      </div>
+    </div>
+
     <!-- ── MAIN MENU ── -->
     <div id="main-menu" class="screen">
       <div id="menu-bg"></div>
@@ -2336,9 +2346,9 @@ canvas#particles {
         </div>
       </div>
       <div id="menu-btns">
-        <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span>Jouer</button>
-        <button id="btn-menu-achievements" onclick="Achievements.showAll()">🏆 Succès</button>
-        <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
+        <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span><span data-i18n="menu.play">Jouer</span></button>
+        <button id="btn-menu-achievements" onclick="Achievements.showAll()"><span data-i18n="menu.achievements">🏆 Succès</span></button>
+        <button id="btn-menu-settings" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
     </div>
@@ -2349,14 +2359,14 @@ canvas#particles {
       <div id="prof-header">
         <div id="prof-back" onclick="Nav.go('main-menu')">←</div>
         <div id="prof-title-wrap">
-          <div id="prof-title">Mes Aventuriers</div>
-          <div id="prof-subtitle">Choisis ton héros ou crée-en un nouveau</div>
+          <div id="prof-title" data-i18n="profiles.title">Mes Aventuriers</div>
+          <div id="prof-subtitle" data-i18n="profiles.subtitle">Choisis ton héros ou crée-en un nouveau</div>
         </div>
       </div>
       <div id="prof-list"></div>
       <div id="prof-footer">
-        <button id="btn-new-hero" onclick="ProfilesScreen.createNew()">＋ Créer un aventurier</button>
-        <button id="btn-import-save" onclick="ProfilesScreen.openImport()">↓ Importer un code de sauvegarde</button>
+        <button id="btn-new-hero" onclick="ProfilesScreen.createNew()"><span data-i18n="profiles.new">＋ Créer un aventurier</span></button>
+        <button id="btn-import-save" onclick="ProfilesScreen.openImport()"><span data-i18n="profiles.import">↓ Importer un code de sauvegarde</span></button>
       </div>
       <!-- Modal code -->
       <div id="code-modal">
@@ -2620,7 +2630,7 @@ canvas#particles {
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
-      <button id="dm-camp-btn" onclick="Nav.go('world-map')">🗺 Voyager</button>
+      <button id="dm-camp-btn" onclick="Nav.go('world-map')"><span data-i18n="dm.camp">🗺 Voyager</span></button>
       <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C9A550" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v1H7V6a2 2 0 0 1 2-2z"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7v2a4 4 0 0 0 8 0V7"/><circle cx="12" cy="14" r="1.5" fill="#C9A550" stroke="none"/></svg></button>
       <!-- Bag overlay -->
       <div id="bag-overlay">
@@ -2807,38 +2817,48 @@ canvas#particles {
     <div id="settings-screen" class="screen">
       <div id="st-header">
         <div id="st-back" onclick="Nav.go('main-menu')">←</div>
-        <div id="st-title">Paramètres</div>
+        <div id="st-title" data-i18n="settings.title">Paramètres</div>
       </div>
       <div id="st-body">
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Musique</div>
-            <div class="st-row-sub">Ambiance menu, donjon et combat</div>
+            <div class="st-row-label" data-i18n="settings.music">Musique</div>
+            <div class="st-row-sub" data-i18n="settings.music.sub">Ambiance menu, donjon et combat</div>
           </div>
           <button class="st-toggle on" id="st-mus-toggle" onclick="Music.toggleMusic()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Effets sonores</div>
-            <div class="st-row-sub">Sons de combat et d'interface</div>
+            <div class="st-row-label" data-i18n="settings.sfx">Effets sonores</div>
+            <div class="st-row-sub" data-i18n="settings.sfx.sub">Sons de combat et d'interface</div>
           </div>
           <button class="st-toggle on" id="st-sfx-toggle" onclick="Sfx.toggleSfx()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Vibrations</div>
-            <div class="st-row-sub">Retour haptique sur mobile</div>
+            <div class="st-row-label" data-i18n="settings.vibration">Vibrations</div>
+            <div class="st-row-sub" data-i18n="settings.vibration.sub">Retour haptique sur mobile</div>
           </div>
           <button class="st-toggle on" id="st-vib-toggle" onclick="Sfx.toggleVib()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Particules</div>
-            <div class="st-row-sub">Braises en arrière-plan</div>
+            <div class="st-row-label" data-i18n="settings.particles">Particules</div>
+            <div class="st-row-sub" data-i18n="settings.particles.sub">Braises en arrière-plan</div>
           </div>
           <button class="st-toggle on" id="st-par-toggle" onclick="Sfx.toggleParticles()"></button>
         </div>
-        <button class="st-reset-btn" onclick="Sfx.confirmReset()">⚠ Réinitialiser la progression</button>
+        <div class="st-row">
+          <div class="st-row-info">
+            <div class="st-row-label" data-i18n="settings.language">Langue / Language</div>
+            <div class="st-row-sub" data-i18n="settings.language.sub">Français · English</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="LangSystem.set('fr')" id="lang-btn-fr" style="padding:6px 14px;border-radius:4px;border:1px solid #C9A550;background:rgba(201,165,80,0.15);color:#C9A550;cursor:pointer;font-size:13px">🇫🇷 FR</button>
+            <button onclick="LangSystem.set('en')" id="lang-btn-en" style="padding:6px 14px;border-radius:4px;border:1px solid #C9A550;background:rgba(201,165,80,0.15);color:#C9A550;cursor:pointer;font-size:13px">🇬🇧 EN</button>
+          </div>
+        </div>
+        <button class="st-reset-btn" onclick="Sfx.confirmReset()" data-i18n="settings.reset">⚠ Réinitialiser la progression</button>
         <div class="st-version">AARDESIGN · LES CRYPTES ÉTERNELLES · V1.2</div>
       </div>
     </div>
@@ -2847,7 +2867,7 @@ canvas#particles {
     <div id="travel-screen" class="screen">
       <div id="tv-header">
         <div id="tv-back" onclick="Nav.go('dungeon-map')">←</div>
-        <div id="tv-title">Carte du Monde</div>
+        <div id="tv-title" data-i18n="travel.title">Carte du Monde</div>
         <div id="tv-sub">Étage <span id="tv-floor-num">I</span></div>
       </div>
       <div id="tv-body">
@@ -2857,10 +2877,10 @@ canvas#particles {
         <div class="tv-card" onclick="Travel.goCamp()">
           <div class="tv-card-ico">🔥</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">Campement</div>
-            <div class="tv-card-desc">Allume un feu et récupère 35% de tes PV</div>
+            <div class="tv-card-name" data-i18n="travel.camp">Campement</div>
+            <div class="tv-card-desc" data-i18n="travel.camp.desc">Allume un feu et récupère 35% de tes PV</div>
           </div>
-          <div class="tv-card-badge safe">Gratuit</div>
+          <div class="tv-card-badge safe" data-i18n="travel.free">Gratuit</div>
         </div>
 
         <div class="tv-section-lbl">Commerce</div>
@@ -2920,27 +2940,27 @@ canvas#particles {
       <!-- hotspot fenêtre → région -->
       <div class="hotspot" id="hs-inn-window" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Partir à l'aventure</div>
+        <div class="hs-lbl safe" data-i18n="inn.window">Partir à l'aventure</div>
       </div>
       <!-- hotspot armoire → Équipement -->
       <div class="hotspot" id="hs-inn-armoire" onclick="EquipScreen.open('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Équipement</div>
+        <div class="hs-lbl" data-i18n="inn.equip">Équipement</div>
       </div>
       <!-- hotspot coffre → Coffre stockage -->
       <div class="hotspot" id="hs-inn-chest" onclick="ChestScreen.open()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Coffre</div>
+        <div class="hs-lbl" data-i18n="inn.chest">Coffre</div>
       </div>
       <!-- hotspot lit → repos -->
       <div class="hotspot" id="hs-inn-bed" onclick="InnRoom.rest()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Repos (15 🪙)</div>
+        <div class="hs-lbl safe" data-i18n="inn.rest">Repos (15 🪙)</div>
       </div>
       <!-- bas écran → aller en ville -->
       <div class="hotspot" id="hs-inn-town" onclick="Nav.go('town-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Aller en ville</div>
+        <div class="hs-lbl" data-i18n="inn.town">Aller en ville</div>
       </div>
       <!-- bannière status -->
       <div id="inn-status-banner"></div>
@@ -2950,7 +2970,7 @@ canvas#particles {
     <div id="taverne-screen" class="screen has-game-header">
       <div id="taverne-header">
         <div id="taverne-back" onclick="Nav.go('town-screen')">←</div>
-        <div id="taverne-title">La Lyonnesse</div>
+        <div id="taverne-title" data-i18n="taverne.title">La Lyonnesse</div>
       </div>
       <!-- Décoration intérieure -->
       <div class="tav-deco tav-fire">🔥</div>
@@ -2994,9 +3014,9 @@ canvas#particles {
           <div id="npc-quest-reward"></div>
         </div>
         <div id="npc-btns">
-          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none">Accepter la quête</button>
-          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none">Réclamer la récompense</button>
-          <button onclick="Quests.close()">Fermer</button>
+          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
+          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
+          <button onclick="Quests.close()" data-i18n="quest.close">Fermer</button>
         </div>
       </div>
     </div>
@@ -3010,52 +3030,52 @@ canvas#particles {
       <!-- hotspot chambre (haut gauche) -->
       <div class="hotspot" id="hs-town-inn" onclick="Nav.go('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">🛏 Chambre</div>
+        <div class="hs-lbl safe" data-i18n="town.inn">🛏 Chambre</div>
       </div>
       <!-- hotspot forge (bas gauche) - armes -->
       <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">⚒ Forge</div>
+        <div class="hs-lbl" data-i18n="town.forge">⚒ Forge</div>
       </div>
       <!-- hotspot armurerie (bas droite) -->
       <div class="hotspot" id="hs-town-armurerie" onclick="TownScreen.goShop('armurerie')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🛡 Armurerie</div>
+        <div class="hs-lbl" data-i18n="town.armurerie">🛡 Armurerie</div>
       </div>
       <!-- hotspot couturier (droite) -->
       <div class="hotspot" id="hs-town-couturier" onclick="TownScreen.goShop('couturier')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🧵 Couturier</div>
+        <div class="hs-lbl" data-i18n="town.couturier">🧵 Couturier</div>
       </div>
       <!-- hotspot bijoutier (droite haute) -->
       <div class="hotspot" id="hs-town-bijoutier" onclick="TownScreen.goShop('bijoutier')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">💍 Bijoutier</div>
+        <div class="hs-lbl" data-i18n="town.bijoutier">💍 Bijoutier</div>
       </div>
       <!-- hotspot église (centre droit) -->
       <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">⛪ Église · Boutique</div>
+        <div class="hs-lbl" data-i18n="town.temple">⛪ Église · Boutique</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
       <div class="hotspot" id="hs-town-guild" onclick="State._heroFrom='town-screen';Meta.buildScreen();Nav.go('hero-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Guilde</div>
+        <div class="hs-lbl" data-i18n="town.guild">Guilde</div>
       </div>
       <!-- hotspot aventure (bas gauche - pont) -->
       <div class="hotspot" id="hs-town-adventure" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">⚔ Partir à l'aventure</div>
+        <div class="hs-lbl extreme" data-i18n="town.adventure">⚔ Partir à l'aventure</div>
       </div>
       <!-- hotspot château (haut centre) -->
       <div class="hotspot" id="hs-town-chateau" onclick="TownScreen.goChateau()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🏰 Château</div>
+        <div class="hs-lbl" data-i18n="town.chateau">🏰 Château</div>
       </div>
       <!-- hotspot taverne -->
       <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🍺 Taverne</div>
+        <div class="hs-lbl" data-i18n="town.taverne">🍺 Taverne</div>
       </div>
     </div>
 
@@ -3063,7 +3083,7 @@ canvas#particles {
     <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
         <div id="wm-back" onclick="Nav.go('inn-room')">←</div>
-        <div id="wm-title">La Région</div>
+        <div id="wm-title" data-i18n="wm.title">La Région</div>
       </div>
       <!-- cave / cryptes (montagne haut centre) -->
       <div class="hotspot" id="hs-reg-cave" onclick="WorldMap.enter('cryptes')">
