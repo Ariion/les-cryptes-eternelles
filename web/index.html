@@ -1321,7 +1321,9 @@ canvas#particles {
 #floor-transition.show { opacity:1; pointer-events:all; }
 #ft-label { font-family:'Cinzel',serif; font-size:11px; letter-spacing:6px; color:rgba(201,165,80,0.5); text-transform:uppercase; }
 #ft-num { font-family:'Cinzel Decorative',serif; font-size:52px; font-weight:700; color:#C9A550; text-shadow:0 0 60px rgba(201,165,80,0.5); line-height:1; }
-#ft-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(201,165,80,0.4); }
+#ft-sub { font-family:'Cinzel',serif; font-size:11px; letter-spacing:3px; color:rgba(201,165,80,0.6); text-transform:uppercase; margin-top:4px; }
+#ft-memory { font-family:'Crimson Text',serif; font-style:italic; font-size:14px; color:rgba(237,232,223,0.75); line-height:1.6; margin:18px 24px 0; white-space:pre-line; text-align:center; max-height:0; overflow:hidden; opacity:0; transition:max-height 0.6s ease, opacity 0.6s ease; }
+#ft-memory.show { max-height:300px; opacity:1; }
 
 /* ── STATUTS de combat ───────────────────────────────────────── */
 #cb-status-row {
@@ -3043,6 +3045,7 @@ canvas#particles {
         <div class="eq-stat-pill"><div class="eq-stat-pill-ico">⚔</div><div class="eq-stat-pill-val" id="eqs-atk">0</div><div class="eq-stat-pill-lbl">ATQ</div></div>
         <div class="eq-stat-pill"><div class="eq-stat-pill-ico">🛡</div><div class="eq-stat-pill-val" id="eqs-def">0</div><div class="eq-stat-pill-lbl">DEF</div></div>
         <div class="eq-stat-pill"><div class="eq-stat-pill-ico">❤</div><div class="eq-stat-pill-val" id="eqs-hp">0/0</div><div class="eq-stat-pill-lbl">PV</div></div>
+        <div class="eq-stat-pill" id="eqs-mana-pill" style="display:none"><div class="eq-stat-pill-ico">💧</div><div class="eq-stat-pill-val" id="eqs-mana">0/0</div><div class="eq-stat-pill-lbl">MANA</div></div>
         <div class="eq-stat-pill"><div class="eq-stat-pill-ico">✨</div><div class="eq-stat-pill-val" id="eqs-lvl">1</div><div class="eq-stat-pill-lbl">NIV.</div></div>
       </div>
       <div id="eq-body">
@@ -3104,6 +3107,7 @@ canvas#particles {
       <div id="ft-label">Étage</div>
       <div id="ft-num">II</div>
       <div id="ft-sub">Les ténèbres s'épaississent...</div>
+      <div id="ft-memory"></div>
     </div>
 
   </div><!-- /phone-screen -->
@@ -5445,7 +5449,15 @@ var QUEST_DEFS = [
     check:function(){ return (State.level||1)>=60 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=40; },
     reward:{ gold:1000 },
     rewardTxt:'1000 🪙 + accès aux Cryptes',
-    claimText:'"Tu es prêt."\nSéraphine sort un cristal noir de son manteau.\n"Ceci ouvre le dernier niveau des Cryptes. Là où l\'Éveillé a tout sacrifié."\n\n"Quand tu descendras, des souvenirs te reviendront. Pas les tiens — les siens. Les tiens sont peut-être les mêmes."\n\n"À un moment, tu auras le choix : poser le cristal sur l\'autel et renforcer le sceau, ou le briser et libérer ce qui est en dessous."\n\n"Je t\'ai tout dit ce que je sais. Le reste... c\'est à toi."\n\nElle pose sa main sur ton épaule.\n"Quelle que soit ta décision — je comprends."'
+    claimText: function() {
+      var ch = State._introChoices || {};
+      var closing = ch.trait === 'void'
+        ? '"Toi qui ne ressens rien... peut-être que c\'est une force. Pas une faiblesse."'
+        : ch.trait === 'cold'
+        ? '"Toi qui portes le froid en toi... les Cryptes ne te feront pas peur. Elles t\'appartiennent presque déjà."'
+        : '"Toi qui as souffert dès le premier instant... tu sais déjà quel prix ça coûte de tenir."';
+      return '"Tu es prêt."\nSéraphine sort un cristal noir de son manteau.\n"Ceci ouvre le dernier niveau des Cryptes. Là où l\'Éveillé a tout sacrifié."\n\n"Quand tu descendras, des souvenirs te reviendront. Pas les tiens — les siens. Les tiens sont peut-être les mêmes."\n\n"À un moment, tu auras le choix : poser le cristal sur l\'autel et renforcer le sceau, ou le briser et libérer ce qui est en dessous."\n\n"Je t\'ai tout dit ce que je sais. Le reste... c\'est à toi."\n\nElle pose sa main sur ton épaule.\n'+closing;
+    }
   },
 
   // ═══ ACTE IV — L'ÉVEILLÉ ════════════════════════════════════════
@@ -5457,7 +5469,25 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalRuns||0)>=50 && (State.level||1)>=80; },
     reward:{ gold:2000, potions:10 },
     rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
-    claimText:'"Tu es revenu."\nBertrand te regarde différemment. Avec quelque chose qui ressemble à du soulagement.\n"Je ne saurai jamais ce que tu as choisi là-en bas. Mais... le monde est toujours là. Donc tu as fait quelque chose de bien."\n\nIl lève son verre.\n\n"À l\'Éveillé. Quel que soit son vrai nom."'
+    claimText: function() {
+      var ch = State._introChoices || {};
+      var race = State.race || 'Humain';
+      // Ligne personnalisée selon le trait de l'intro
+      var traitLine = ch.trait === 'void'
+        ? '"Tu es revenu. Je ne saurais pas dire ce que tu ressens — peut-être toi non plus. Mais tu es là."'
+        : ch.trait === 'cold'
+        ? '"Tu es revenu. Avec encore ce froid dans les yeux. Mais différent — plus posé. Comme si tu avais enfin compris d\'où il venait."'
+        : '"Tu es revenu. Tu as l\'air... en paix. Pour la première fois depuis ton arrivée."';
+      // Ligne selon la race
+      var raceLine = race === 'Orc'
+        ? '"Peu importe ce qu\'on raconte sur les Orcs. Toi, tu as tenu là où d\'autres ont fui."'
+        : race === 'Elfe'
+        ? '"La prophétie parlait d\'un Elfe qui revenait. Elle ne précisait pas comment il repartirait. Peut-être parce que ça dépendait de toi."'
+        : race === 'Nain'
+        ? '"Les anciens de ta montagne avaient raison — il fallait quelqu\'un des profondeurs. Quelqu\'un qui ne craint pas la pierre."'
+        : '"Tu n\'étais rien de particulier quand tu es arrivé. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle."';
+      return traitLine+'\n\nIl lève son verre.\n\n'+raceLine+'\n\n"À l\'Éveillé. Quel que soit son vrai nom."';
+    }
   },
 ];
 
@@ -5619,7 +5649,8 @@ var Quests = (function(){
       if (active) {
         var def = QUEST_DEFS.find(function(q){ return q.id===active; });
         if (def && def.check && def.check()) {
-          document.getElementById('npc-speech').textContent = def.claimText || 'Tu as accompli ce que je t\'avais demandé.';
+          var claimTxt = typeof def.claimText === 'function' ? def.claimText() : (def.claimText || 'Tu as accompli ce que je t\'avais demandé.');
+          document.getElementById('npc-speech').textContent = claimTxt;
           document.getElementById('npc-quest-title').textContent  = '✅ ' + def.title;
           document.getElementById('npc-quest-desc').textContent   = def.desc;
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
@@ -6067,18 +6098,56 @@ var FLOOR_QUOTES = [
   'Tu touches le fond de l\'abîsse...',
 ];
 
+// Fragments de mémoire — révélés dans les Cryptes après seraphine_3
+// Chaque fragment est un souvenir de l'Éveillé du siècle passé
+var MEMORY_FRAGMENTS = [
+  { id:'mem_01', title:'Fragment I — L\'Arrivée',
+    text:'Un homme marche seul sur une route de nuit. Il tient un parchemin. Il se retourne — quelque chose le suit depuis des semaines. Il ne sait pas encore ce que c\'est.\n\nIl sait juste que tant qu\'il marche vers les Cryptes, ça ne s\'approche pas.' },
+  { id:'mem_02', title:'Fragment II — La Taverne',
+    text:'Une femme derrière un comptoir. Elle lui sert à boire sans poser de questions. Il paie. Il part.\n\nTrois ans plus tard, quand tout est terminé, il revient pour régler sa dette.\n\nLa taverne n\'existait plus.' },
+  { id:'mem_03', title:'Fragment III — Le Barde',
+    text:'Il savait depuis le début. Le barde jouait trop bien, souriait trop peu quand personne ne regardait.\n\nMais il avait besoin de lui. Et le barde avait besoin d\'une fin.\n\nCertains mensonges sont plus utiles que certaines vérités.' },
+  { id:'mem_04', title:'Fragment IV — La Sorcière',
+    text:'"Tu ne reviendras pas," lui dit-elle.\n\nIl répondit : "Je sais."\n\n"Alors pourquoi ?"\n\nIl n\'avait pas de réponse. Pas une qu\'il puisse formuler. Certaines décisions existent avant les mots.' },
+  { id:'mem_05', title:'Fragment V — Le Sceau',
+    text:'Les runes brillaient d\'une lumière qui n\'éclairait pas. Il posa les mains sur la pierre.\n\nDe l\'autre côté, quelque chose bougea. Quelque chose d\'immense et de patient.\n\n"Je t\'attendais," dit la voix.\n\n"Je sais," dit-il. "C\'est pour ça que je suis venu moi-même."' },
+  { id:'mem_06', title:'Fragment VI — Le Prix',
+    text:'Ce qu\'il a sacrifié n\'était pas sa vie. La mort, ça finit.\n\nCe qu\'il a sacrifié, c\'est tout le reste. Les souvenirs. Le nom. La continuité d\'exister tel qu\'il était.\n\nIl est devenu une partie du verrou.\n\nEt quelque part, cent ans plus tard, quelqu\'un se réveille sans se souvenir de rien.' },
+  { id:'mem_07', title:'Fragment VII — Le Retour',
+    text:'La pierre se souvient de lui. Les Cryptes se souviennent de lui.\n\nTout le monde a oublié.\n\nSauf peut-être... une chanson. Vieille de cent ans. Que personne ne se rappelle avoir composée.' },
+  { id:'mem_08', title:'Fragment VIII — Le Choix',
+    text:'Il aurait pu briser le sceau. Libérer le Dieu de la Mémoire — cet être qui efface les identités, qui dévore les civilisations en leur faisant oublier qu\'elles ont existé.\n\nMais peut-être qu\'une prison d\'un siècle l\'avait changé. Peut-être qu\'il souffrait, là-dedans.\n\nIl ne le saura jamais. Il a choisi le verrou.\n\nToi... tu dois encore choisir.' },
+];
+
 function advanceFloor() {
   State.floor = (State.floor||1) + 1;
   var labels = ['I','II','III','IV','V','VI'];
   var ft = document.getElementById('floor-transition');
   document.getElementById('ft-num').textContent = labels[State.floor-1]||String(State.floor);
-  document.getElementById('ft-sub').textContent = FLOOR_QUOTES[Math.min(State.floor-1, FLOOR_QUOTES.length-1)];
+
+  // Fragments de mémoire dans les Cryptes après acte III
+  var done = Meta.completedQuests||{};
+  var memIdx = (Meta.totalRuns||0) % MEMORY_FRAGMENTS.length;
+  var mem = done['seraphine_3'] ? MEMORY_FRAGMENTS[memIdx] : null;
+  var ftSub = document.getElementById('ft-sub');
+  var ftMem = document.getElementById('ft-memory');
+
+  if (mem && ftMem) {
+    ftSub.textContent = mem.title;
+    ftMem.textContent = mem.text;
+    ftMem.classList.add('show');
+  } else {
+    ftSub.textContent = FLOOR_QUOTES[Math.min(State.floor-1, FLOOR_QUOTES.length-1)];
+    if (ftMem) { ftMem.textContent = ''; ftMem.classList.remove('show'); }
+  }
+
   ft.classList.add('show');
+  var delay = mem ? 4500 : 2200;
   setTimeout(function(){
     ft.classList.remove('show');
     Nav.go('dungeon-map');
     setTimeout(function(){ DungeonMap.init(State.floor, State.hp, State.hpMax); }, 80);
-  }, 2200);
+  }, delay);
 }
 
 function updateMapHpBar() {
@@ -6545,6 +6614,10 @@ var EquipScreen = (function() {
     if (defEl) defEl.textContent = State.def || 0;
     if (hpEl)  hpEl.textContent  = (State.hp||0)+'/'+( State.hpMax||0);
     if (lvlEl) lvlEl.textContent = State.level || 1;
+    var manaEl = document.getElementById('eqs-mana');
+    var manaPill = document.getElementById('eqs-mana-pill');
+    if (manaPill) manaPill.style.display = (State.manaMax||0) > 0 ? '' : 'none';
+    if (manaEl) manaEl.textContent = (State.mana||0)+'/'+( State.manaMax||0);
 
     // Inventory
     _refreshInventory();
