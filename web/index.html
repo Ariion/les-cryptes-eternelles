@@ -1064,6 +1064,20 @@ canvas#particles {
 
 .btn-rewarded-ad { background:linear-gradient(135deg,#1a1a2e,#16213e); border:2px solid #C9A550; color:#C9A550; border-radius:8px; padding:10px 18px; font-size:14px; cursor:pointer; margin-top:8px; width:100%; text-align:center; }
 .btn-rewarded-ad:hover { background:#C9A550; color:#000; }
+/* ── ACHIEVEMENTS ── */
+.achievement-toast { position:fixed; bottom:-80px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1a1208,#2a1f0a); border:1px solid #C9A550; border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; min-width:240px; max-width:320px; z-index:9999; transition:bottom 0.4s cubic-bezier(.34,1.56,.64,1); box-shadow:0 8px 32px rgba(0,0,0,0.6); }
+.achievement-toast.show { bottom:24px; }
+.at-ico { font-size:28px; flex-shrink:0; }
+.at-title { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#C9A550; letter-spacing:1px; }
+.at-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.7); margin-top:2px; }
+.ach-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(201,165,80,0.08); }
+.ach-row.ach-done .ach-title { color:#C9A550; }
+.ach-row:not(.ach-done) { opacity:0.4; }
+.ach-ico { font-size:22px; flex-shrink:0; width:28px; text-align:center; }
+.ach-info { flex:1; }
+.ach-title { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:rgba(237,232,223,0.5); }
+.ach-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.45); margin-top:1px; }
+.ach-check { color:#C9A550; font-size:16px; flex-shrink:0; }
 
 /* ── REST ROOM ───────────────────────────────────────────────── */
 #rest-screen {
@@ -1909,6 +1923,8 @@ canvas#particles {
 #hs-reg-port    { top:42%; left:64%; }
 #hs-reg-town    { top:68%; left:16%; }
 #hs-reg-peaks   { top:68%; left:62%; }
+#hs-reg-marais  { top:55%; left:48%; }
+#hs-reg-volcan  { top:22%; left:68%; }
 #hs-town-taverne { top:58%; left:64%; }
 /* badges danger */
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
@@ -2277,6 +2293,7 @@ canvas#particles {
       </div>
       <div id="menu-btns">
         <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span>Jouer</button>
+        <button id="btn-menu-achievements" onclick="Achievements.showAll()">🏆 Succès</button>
         <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
@@ -3027,10 +3044,20 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl safe">🏘 Thornwall</div>
       </div>
-      <!-- grottes (bas droite, ruines) -->
+      <!-- grottes (bas droite) -->
       <div class="hotspot" id="hs-reg-peaks" onclick="WorldMap.enter('grottes')">
         <div class="hs-ring"></div>
         <div class="hs-lbl">🪨 Grottes · Facile</div>
+      </div>
+      <!-- marais (centre) -->
+      <div class="hotspot" id="hs-reg-marais" onclick="WorldMap.enter('marais')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl danger">🌿 Marais · Dur</div>
+      </div>
+      <!-- volcan (haut droite) -->
+      <div class="hotspot" id="hs-reg-volcan" onclick="WorldMap.enter('volcan')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">🌋 Volcan · Extrême</div>
       </div>
     </div>
 
@@ -3272,7 +3299,7 @@ var Sfx = (function(){
         ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus','cge_profiles','cge_active'].forEach(function(k){ localStorage.removeItem(k); });
         Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
         Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
-        Meta.clearedZones={}; Meta.chest=[];
+        Meta.clearedZones={}; Meta.chest=[]; Meta.achievements={};
         State.hp=0; State.hpMax=0; State.name='Aventurier';
         Nav.go('main-menu');
         CGEModal.alert('Réinitialisation', 'Tout a été réinitialisé. Bonne aventure !');
@@ -4203,6 +4230,23 @@ var ENEMIES = [
   { name:'Liche Ancienne',       sprite:'🧙', hp:280, atk:52, def:18, gold:120,xp:150,floor:4, zones:['cryptes'] },
   { name:'Seigneur des Cryptes', sprite:'☠',  hp:400, atk:65, def:28, gold:500,xp:500,floor:6, boss:true, zones:['cryptes'] },
   { name:'Gardien Éternel',      sprite:'⚰',  hp:350, atk:60, def:25, gold:450,xp:460,floor:5, boss:true, zones:['cryptes'] },
+  // ── MARAIS DE VAELTHAR (niveau 28-35) ────────────────────────────
+  { name:'Crapaud Venimeux',     sprite:'🐸', hp:130, atk:28, def:8,  gold:45, xp:55, floor:1, zones:['marais'], poison:true },
+  { name:'Sangsue Géante',       sprite:'🐛', hp:120, atk:30, def:6,  gold:48, xp:60, floor:1, zones:['marais'] },
+  { name:'Rôdeur des Brumes',    sprite:'👤', hp:145, atk:34, def:10, gold:55, xp:68, floor:2, zones:['marais'] },
+  { name:'Crocodile Maudit',     sprite:'🐊', hp:170, atk:32, def:14, gold:58, xp:72, floor:2, zones:['marais'] },
+  { name:'Sorcière des Marais',  sprite:'🧙', hp:155, atk:38, def:8,  gold:65, xp:80, floor:3, zones:['marais'], poison:true },
+  { name:'Noyé Éternel',        sprite:'🌊', hp:165, atk:36, def:12, gold:62, xp:78, floor:3, zones:['marais'] },
+  { name:'Serpent de Boue',      sprite:'🐍', hp:180, atk:35, def:10, gold:70, xp:88, floor:4, zones:['marais'], poison:true },
+  { name:'Dame des Eaux Noires', sprite:'🧜', hp:500, atk:50, def:20, gold:380,xp:420,floor:5, boss:true, zones:['marais'] },
+  // ── CALDERA D'ASZGOL (niveau 42-50) ──────────────────────────────
+  { name:'Salamandre de Lave',   sprite:'🦎', hp:195, atk:42, def:16, gold:80, xp:100,floor:1, zones:['volcan'] },
+  { name:'Golem de Pierre Fondue',sprite:'🪨',hp:220, atk:38, def:24, gold:85, xp:105,floor:2, zones:['volcan'] },
+  { name:'Démon Igné',           sprite:'🔥', hp:200, atk:46, def:14, gold:90, xp:112,floor:2, zones:['volcan'] },
+  { name:'Phénix Maudit',        sprite:'🦅', hp:240, atk:44, def:18, gold:95, xp:120,floor:3, zones:['volcan'] },
+  { name:'Wyrm de Cendre',       sprite:'🐉', hp:260, atk:48, def:20, gold:100,xp:125,floor:4, zones:['volcan'] },
+  { name:'Cultiste de la Flamme',sprite:'🧎', hp:210, atk:52, def:12, gold:105,xp:130,floor:4, zones:['volcan'] },
+  { name:'Titan du Volcan',      sprite:'🌋', hp:650, atk:70, def:30, gold:500,xp:560,floor:6, boss:true, zones:['volcan'] },
 ];
 
 function getEnemiesForFloor(floor) {
@@ -4474,6 +4518,7 @@ var Combat = (function(){
       if (typeof HUD !== 'undefined') HUD.updateGold();
       State.kills = (State.kills||0) + 1;
       gainXP(enemy.xp||10);
+      if (typeof Achievements !== 'undefined') Achievements.check('kill');
       if (Meta.bonuses.regenMeta) {
         State.hp = Math.min(State.hpMax, State.hp + Meta.bonuses.regenMeta);
       }
@@ -4496,6 +4541,7 @@ var Combat = (function(){
             Meta.totalRuns  += 1;
             Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
             Meta.save();
+            if (typeof Achievements !== 'undefined') Achievements.check('zone');
             // Réinitialiser le floor pour le prochain donjon
             State._currentZone = null;
             State.floor = 1;
@@ -5223,6 +5269,7 @@ function gainXP(amount) {
     State.xp -= threshold;
     State.level++;
     triggerLevelUp();
+    if (typeof Achievements !== 'undefined') Achievements.check('level');
   }
 }
 
@@ -5772,7 +5819,8 @@ var Meta = {
       Meta.clearedZones    = d.clearedZones||{};
       Meta.activeQuests    = d.activeQuests||{};
       Meta.completedQuests = d.completedQuests||{};
-      Meta.chest       = d.chest||[];
+      Meta.chest           = d.chest||[];
+      Meta.achievements    = d.achievements||{};
     } catch(e){}
   },
 
@@ -5788,6 +5836,7 @@ var Meta = {
       activeQuests:   Meta.activeQuests,
       completedQuests:Meta.completedQuests,
       chest:          Meta.chest,
+      achievements:   Meta.achievements,
     };
     localStorage.setItem('cge_meta', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
@@ -7096,6 +7145,87 @@ var RewardedAds = (function(){
   };
 })();
 
+// ── ACHIEVEMENTS ─────────────────────────────────────────────────
+var ACHIEVEMENT_DEFS = [
+  // Exploration
+  { id:'first_kill',   ico:'⚔', title:'Premier Sang',      desc:'Vaincre ton premier ennemi',                check:function(){ return (Meta.totalKills||0)>=1; } },
+  { id:'kills_25',     ico:'💀', title:'Chasseur',           desc:'Vaincre 25 ennemis',                        check:function(){ return (Meta.totalKills||0)>=25; } },
+  { id:'kills_100',    ico:'🩸', title:'Boucher',            desc:'Vaincre 100 ennemis',                       check:function(){ return (Meta.totalKills||0)>=100; } },
+  { id:'kills_500',    ico:'☠',  title:'Fléau des Cryptes', desc:'Vaincre 500 ennemis',                        check:function(){ return (Meta.totalKills||0)>=500; } },
+  // Runs
+  { id:'runs_1',       ico:'🏃', title:'Aventurier',        desc:'Compléter un run',                           check:function(){ return (Meta.totalRuns||0)>=1; } },
+  { id:'runs_10',      ico:'🔁', title:'Vétéran',           desc:'Compléter 10 runs',                          check:function(){ return (Meta.totalRuns||0)>=10; } },
+  { id:'runs_50',      ico:'🌀', title:'Éternel',           desc:'Compléter 50 runs',                          check:function(){ return (Meta.totalRuns||0)>=50; } },
+  // Zones
+  { id:'zone_grottes', ico:'🪨', title:'Spéléologue',       desc:'Nettoyer les Grottes des Ombres',            check:function(){ return !!(Meta.clearedZones||{})['grottes']; } },
+  { id:'zone_foret',   ico:'🌲', title:'Traqueur',          desc:'Nettoyer la Forêt des Âmes Perdues',         check:function(){ return !!(Meta.clearedZones||{})['foret']; } },
+  { id:'zone_ruines',  ico:'🏚', title:'Archéologue',       desc:'Nettoyer les Ruines d\'Astavar',             check:function(){ return !!(Meta.clearedZones||{})['ruines']; } },
+  { id:'zone_port',    ico:'⚓', title:'Marin des Abysses', desc:'Nettoyer le Port des Tempêtes',              check:function(){ return !!(Meta.clearedZones||{})['port']; } },
+  { id:'zone_marais',  ico:'🌿', title:'Marcheur des Brumes',desc:'Nettoyer les Marais de Vaelthar',           check:function(){ return !!(Meta.clearedZones||{})['marais']; } },
+  { id:'zone_pics',    ico:'🏔', title:'Conquérant',        desc:'Nettoyer les Pics du Néant',                 check:function(){ return !!(Meta.clearedZones||{})['pics']; } },
+  { id:'zone_volcan',  ico:'🌋', title:'Dompteur de Flammes',desc:'Nettoyer la Caldera d\'Aszgol',             check:function(){ return !!(Meta.clearedZones||{})['volcan']; } },
+  { id:'zone_cryptes', ico:'⚰', title:'Seigneur des Cryptes',desc:'Nettoyer les Cryptes Éternelles',          check:function(){ return !!(Meta.clearedZones||{})['cryptes']; } },
+  // Progression
+  { id:'level_10',     ico:'✨', title:'Prometteur',        desc:'Atteindre le niveau 10',                     check:function(){ return (State.level||1)>=10; } },
+  { id:'level_30',     ico:'⚡', title:'Chevalier',         desc:'Atteindre le niveau 30',                     check:function(){ return (State.level||1)>=30; } },
+  { id:'level_60',     ico:'🔮', title:'Maître',            desc:'Atteindre le niveau 60',                     check:function(){ return (State.level||1)>=60; } },
+  { id:'level_100',    ico:'👑', title:'Légendaire',        desc:'Atteindre le niveau 100',                    check:function(){ return (State.level||1)>=100; } },
+  // Histoire
+  { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        desc:'Compléter l\'Acte I de l\'histoire',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
+  { id:'quest_act2',   ico:'📖', title:'Fils du Néant',     desc:'Compléter l\'Acte II',                       check:function(){ return !!(Meta.completedQuests||{})['seraphine_2']; } },
+  { id:'quest_act3',   ico:'📚', title:'La Vérité',         desc:'Compléter l\'Acte III',                      check:function(){ return !!(Meta.completedQuests||{})['seraphine_3']; } },
+  { id:'quest_final',  ico:'🏆', title:'L\'Éveillé Éternel',desc:'Compléter l\'histoire',                      check:function(){ return !!(Meta.completedQuests||{})['cryptes_final']; } },
+  // Secrets
+  { id:'rich',         ico:'🪙', title:'Négociant',         desc:'Accumuler 1000 pièces d\'or',                check:function(){ return (State.gold||0)>=1000; } },
+  { id:'no_potion',    ico:'💪', title:'Dur à Cuire',       desc:'Battre un boss sans utiliser de potion',     check:function(){ return !!(Meta.achievements||{})['no_potion']; } },
+];
+
+var Achievements = (function(){
+  function _unlocked() { return Meta.achievements || {}; }
+
+  function check(hint) {
+    var done = _unlocked();
+    var newOnes = [];
+    ACHIEVEMENT_DEFS.forEach(function(a) {
+      if (done[a.id]) return;
+      try { if (a.check()) { done[a.id] = Date.now(); newOnes.push(a); } } catch(e) {}
+    });
+    if (newOnes.length) {
+      Meta.achievements = done;
+      Meta.save();
+      newOnes.forEach(function(a, i) {
+        setTimeout(function(){ _toast(a); }, i * 2200);
+      });
+    }
+  }
+
+  function _toast(a) {
+    var t = document.createElement('div');
+    t.className = 'achievement-toast';
+    t.innerHTML = '<span class="at-ico">'+a.ico+'</span><div><div class="at-title">'+a.title+'</div><div class="at-desc">'+a.desc+'</div></div>';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('show'); }, 50);
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 500); }, 3000);
+  }
+
+  function showAll() {
+    var done = _unlocked();
+    var total = ACHIEVEMENT_DEFS.length;
+    var count = Object.keys(done).length;
+    var html = '<div style="text-align:center;font-family:Cinzel,serif;font-size:11px;color:rgba(201,165,80,0.5);letter-spacing:2px;margin-bottom:12px">'+count+' / '+total+' DÉBLOQUÉS</div>';
+    ACHIEVEMENT_DEFS.forEach(function(a) {
+      var unlocked = !!done[a.id];
+      html += '<div class="ach-row'+(unlocked?' ach-done':'')+'">'+
+        '<span class="ach-ico">'+(unlocked?a.ico:'🔒')+'</span>'+
+        '<div class="ach-info"><div class="ach-title">'+a.title+'</div><div class="ach-desc">'+(unlocked?a.desc:'???')+'</div></div>'+
+        (unlocked?'<span class="ach-check">✓</span>':'')+'</div>';
+    });
+    CGEModal.show({ title: '🏆 Succès', text: '', html: html, okLabel: 'Fermer' });
+  }
+
+  return { check: check, showAll: showAll };
+})();
+
 // ── TOWN SCREEN ───────────────────────────────────────────────────
 var TownScreen = {
   goInn: function() {
@@ -7177,7 +7307,9 @@ var ZONE_DATA = {
   foret:   { hpMult:5,    atkMult:3,   defMult:2.5, goldMult:4,    floors:5, minLevel:5,  label:'Forêt des Âmes Perdues' },
   ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar' },
   port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes' },
+  marais:  { hpMult:100,  atkMult:38,  defMult:30,  goldMult:90,   floors:5, minLevel:28, label:'Marais de Vaelthar' },
   pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant' },
+  volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol' },
   cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles' },
 };
 
@@ -7235,7 +7367,8 @@ var WorldMap = {
     // Actually use the hotspot IDs from HTML
     var hsMap = {
       grottes:'hs-reg-peaks', foret:'hs-reg-forest', ruines:'hs-reg-ruins',
-      port:'hs-reg-port', pics:'hs-reg-cave', cryptes:'hs-reg-cave'
+      port:'hs-reg-port', marais:'hs-reg-marais', pics:'hs-reg-cave',
+      volcan:'hs-reg-volcan', cryptes:'hs-reg-cave'
     };
     Object.keys(ZONE_DATA).forEach(function(id) {
       var el = document.getElementById(hsMap[id]);
@@ -7531,7 +7664,8 @@ var CGEModal = (function() {
     var cancelBtn = document.getElementById('cge-modal-cancel');
 
     titleEl.textContent = opts.title || '';
-    textEl.textContent  = opts.text  || '';
+    if (opts.html) { textEl.innerHTML = opts.html; }
+    else { textEl.textContent = opts.text || ''; }
 
     if (opts.img) {
       imgEl.src = opts.img;
