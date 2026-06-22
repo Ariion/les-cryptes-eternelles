@@ -1,4 +1,7 @@
 node_modules/
 android/
 .DS_Store
+.godot/
+build/*.apk
+build/*.ipa
 .claude/

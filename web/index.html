@@ -1217,6 +1217,27 @@ canvas#particles {
   color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
   border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
 }
+/* Carnet d'Enquête modal */
+#gh-carnet-modal {
+  display: none; position: absolute; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.75); align-items: center; justify-content: center;
+}
+#gh-carnet-modal.show { display: flex; }
+#gh-carnet-content {
+  background: #0e0a05; border: 1px solid rgba(201,165,80,0.3);
+  border-radius: 12px; padding: 20px; width: 80%; max-height: 70%;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+}
+#gh-carnet-title { font-family: 'Cinzel Decorative', serif; color: #C9A550; font-size: 15px; text-align: center; }
+#gh-carnet-list  { font-family: 'Crimson Text', serif; font-size: 14px; color: #EDE8DF; display: flex; flex-direction: column; gap: 10px; }
+.carnet-clue { border-left: 2px solid rgba(201,165,80,0.4); padding-left: 8px; }
+.carnet-unknown { color: rgba(237,232,223,0.35); font-style: italic; }
+.carnet-deduction { border: 1px solid rgba(201,165,80,0.5); border-radius: 6px; padding: 8px; background: rgba(201,165,80,0.07); }
+#gh-carnet-close {
+  margin-top: 8px; background: transparent; border: 1px solid rgba(201,165,80,0.3);
+  color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
+  border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
+}
 /* XP bar row in game header */
 #gh-row3 { display: flex; align-items: center; gap: 8px; }
 #gh-xp-bar-outer { flex:1; height:4px; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden; }
@@ -2231,6 +2252,7 @@ canvas#particles {
         <div id="gh-btns">
           <button id="gh-btn-menu"   onclick="Nav.go('main-menu')">⌂ Menu</button>
           <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes</button>
+          <button id="gh-btn-carnet" onclick="CarnetEnquete.open()">🔍 Enquête</button>
         </div>
       </div>
       <div id="gh-row2">
@@ -2257,6 +2279,14 @@ canvas#particles {
         <button id="gh-quest-close" onclick="document.getElementById('gh-quest-modal').classList.remove('show')">Fermer</button>
       </div>
     </div>
+    <!-- Modal Carnet d'Enquête -->
+    <div id="gh-carnet-modal">
+      <div id="gh-carnet-content">
+        <div id="gh-carnet-title">🔍 Carnet d'Enquête</div>
+        <div id="gh-carnet-list"></div>
+        <button id="gh-carnet-close" onclick="document.getElementById('gh-carnet-modal').classList.remove('show')">Fermer</button>
+      </div>
+    </div>
     <canvas id="particles"></canvas>
 
     <!-- ── SPLASH ── -->
@@ -2276,6 +2306,16 @@ canvas#particles {
         <div id="t-sub">Descends si tu l'oses...</div>
       </div>
       <div id="tap-hint">Toucher pour entrer</div>
+    </div>
+
+    <!-- ── LANGUAGE SELECTION ── -->
+    <div id="lang-screen" class="screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0608;gap:32px">
+      <div style="font-family:'Cinzel',serif;font-size:28px;color:#C9A550;letter-spacing:4px;text-align:center">LES CRYPTES ÉTERNELLES</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.5);letter-spacing:2px">Choose your language / Choisissez votre langue</div>
+      <div style="display:flex;gap:24px;margin-top:16px">
+        <button onclick="LangSystem.set('fr')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇫🇷 Français</button>
+        <button onclick="LangSystem.set('en')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇬🇧 English</button>
+      </div>
     </div>
 
     <!-- ── MAIN MENU ── -->
@@ -2306,9 +2346,9 @@ canvas#particles {
         </div>
       </div>
       <div id="menu-btns">
-        <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span>Jouer</button>
-        <button id="btn-menu-achievements" onclick="Achievements.showAll()">🏆 Succès</button>
-        <button id="btn-menu-settings" onclick="App.showSettings()">⚙ Paramètres</button>
+        <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span><span data-i18n="menu.play">Jouer</span></button>
+        <button id="btn-menu-achievements" onclick="Achievements.showAll()"><span data-i18n="menu.achievements">🏆 Succès</span></button>
+        <button id="btn-menu-settings" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
     </div>
@@ -2319,14 +2359,14 @@ canvas#particles {
       <div id="prof-header">
         <div id="prof-back" onclick="Nav.go('main-menu')">←</div>
         <div id="prof-title-wrap">
-          <div id="prof-title">Mes Aventuriers</div>
-          <div id="prof-subtitle">Choisis ton héros ou crée-en un nouveau</div>
+          <div id="prof-title" data-i18n="profiles.title">Mes Aventuriers</div>
+          <div id="prof-subtitle" data-i18n="profiles.subtitle">Choisis ton héros ou crée-en un nouveau</div>
         </div>
       </div>
       <div id="prof-list"></div>
       <div id="prof-footer">
-        <button id="btn-new-hero" onclick="ProfilesScreen.createNew()">＋ Créer un aventurier</button>
-        <button id="btn-import-save" onclick="ProfilesScreen.openImport()">↓ Importer un code de sauvegarde</button>
+        <button id="btn-new-hero" onclick="ProfilesScreen.createNew()"><span data-i18n="profiles.new">＋ Créer un aventurier</span></button>
+        <button id="btn-import-save" onclick="ProfilesScreen.openImport()"><span data-i18n="profiles.import">↓ Importer un code de sauvegarde</span></button>
       </div>
       <!-- Modal code -->
       <div id="code-modal">
@@ -2590,7 +2630,7 @@ canvas#particles {
         <div id="dm-node-info">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
-      <button id="dm-camp-btn" onclick="Nav.go('world-map')">🗺 Voyager</button>
+      <button id="dm-camp-btn" onclick="Nav.go('world-map')"><span data-i18n="dm.camp">🗺 Voyager</span></button>
       <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C9A550" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v1H7V6a2 2 0 0 1 2-2z"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7v2a4 4 0 0 0 8 0V7"/><circle cx="12" cy="14" r="1.5" fill="#C9A550" stroke="none"/></svg></button>
       <!-- Bag overlay -->
       <div id="bag-overlay">
@@ -2642,6 +2682,7 @@ canvas#particles {
       </div>
       <!-- Scrollable body -->
       <div id="eq-body">
+        <div id="hs-rank-row" style="font-family:'Crimson Text',serif;font-size:13px;color:#C9A550;text-align:center;padding:6px 0 2px;letter-spacing:1px;">Rang Social : <span id="hs-rank-val">Inconnu</span></div>
         <div class="eq-section-lbl">Armement</div>
         <div class="eq-slot-row" id="eq-row-arme"      onclick="EquipScreen.tapSlot('arme')">
           <div class="eq-slot-ico" id="eq-ico-arme">⚔</div>
@@ -2776,38 +2817,48 @@ canvas#particles {
     <div id="settings-screen" class="screen">
       <div id="st-header">
         <div id="st-back" onclick="Nav.go('main-menu')">←</div>
-        <div id="st-title">Paramètres</div>
+        <div id="st-title" data-i18n="settings.title">Paramètres</div>
       </div>
       <div id="st-body">
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Musique</div>
-            <div class="st-row-sub">Ambiance menu, donjon et combat</div>
+            <div class="st-row-label" data-i18n="settings.music">Musique</div>
+            <div class="st-row-sub" data-i18n="settings.music.sub">Ambiance menu, donjon et combat</div>
           </div>
           <button class="st-toggle on" id="st-mus-toggle" onclick="Music.toggleMusic()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Effets sonores</div>
-            <div class="st-row-sub">Sons de combat et d'interface</div>
+            <div class="st-row-label" data-i18n="settings.sfx">Effets sonores</div>
+            <div class="st-row-sub" data-i18n="settings.sfx.sub">Sons de combat et d'interface</div>
           </div>
           <button class="st-toggle on" id="st-sfx-toggle" onclick="Sfx.toggleSfx()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Vibrations</div>
-            <div class="st-row-sub">Retour haptique sur mobile</div>
+            <div class="st-row-label" data-i18n="settings.vibration">Vibrations</div>
+            <div class="st-row-sub" data-i18n="settings.vibration.sub">Retour haptique sur mobile</div>
           </div>
           <button class="st-toggle on" id="st-vib-toggle" onclick="Sfx.toggleVib()"></button>
         </div>
         <div class="st-row">
           <div class="st-row-info">
-            <div class="st-row-label">Particules</div>
-            <div class="st-row-sub">Braises en arrière-plan</div>
+            <div class="st-row-label" data-i18n="settings.particles">Particules</div>
+            <div class="st-row-sub" data-i18n="settings.particles.sub">Braises en arrière-plan</div>
           </div>
           <button class="st-toggle on" id="st-par-toggle" onclick="Sfx.toggleParticles()"></button>
         </div>
-        <button class="st-reset-btn" onclick="Sfx.confirmReset()">⚠ Réinitialiser la progression</button>
+        <div class="st-row">
+          <div class="st-row-info">
+            <div class="st-row-label" data-i18n="settings.language">Langue / Language</div>
+            <div class="st-row-sub" data-i18n="settings.language.sub">Français · English</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="LangSystem.set('fr')" id="lang-btn-fr" style="padding:6px 14px;border-radius:4px;border:1px solid #C9A550;background:rgba(201,165,80,0.15);color:#C9A550;cursor:pointer;font-size:13px">🇫🇷 FR</button>
+            <button onclick="LangSystem.set('en')" id="lang-btn-en" style="padding:6px 14px;border-radius:4px;border:1px solid #C9A550;background:rgba(201,165,80,0.15);color:#C9A550;cursor:pointer;font-size:13px">🇬🇧 EN</button>
+          </div>
+        </div>
+        <button class="st-reset-btn" onclick="Sfx.confirmReset()" data-i18n="settings.reset">⚠ Réinitialiser la progression</button>
         <div class="st-version">AARDESIGN · LES CRYPTES ÉTERNELLES · V1.2</div>
       </div>
     </div>
@@ -2816,7 +2867,7 @@ canvas#particles {
     <div id="travel-screen" class="screen">
       <div id="tv-header">
         <div id="tv-back" onclick="Nav.go('dungeon-map')">←</div>
-        <div id="tv-title">Carte du Monde</div>
+        <div id="tv-title" data-i18n="travel.title">Carte du Monde</div>
         <div id="tv-sub">Étage <span id="tv-floor-num">I</span></div>
       </div>
       <div id="tv-body">
@@ -2826,10 +2877,10 @@ canvas#particles {
         <div class="tv-card" onclick="Travel.goCamp()">
           <div class="tv-card-ico">🔥</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">Campement</div>
-            <div class="tv-card-desc">Allume un feu et récupère 35% de tes PV</div>
+            <div class="tv-card-name" data-i18n="travel.camp">Campement</div>
+            <div class="tv-card-desc" data-i18n="travel.camp.desc">Allume un feu et récupère 35% de tes PV</div>
           </div>
-          <div class="tv-card-badge safe">Gratuit</div>
+          <div class="tv-card-badge safe" data-i18n="travel.free">Gratuit</div>
         </div>
 
         <div class="tv-section-lbl">Commerce</div>
@@ -2889,27 +2940,27 @@ canvas#particles {
       <!-- hotspot fenêtre → région -->
       <div class="hotspot" id="hs-inn-window" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Partir à l'aventure</div>
+        <div class="hs-lbl safe" data-i18n="inn.window">Partir à l'aventure</div>
       </div>
       <!-- hotspot armoire → Équipement -->
       <div class="hotspot" id="hs-inn-armoire" onclick="EquipScreen.open('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Équipement</div>
+        <div class="hs-lbl" data-i18n="inn.equip">Équipement</div>
       </div>
       <!-- hotspot coffre → Coffre stockage -->
       <div class="hotspot" id="hs-inn-chest" onclick="ChestScreen.open()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Coffre</div>
+        <div class="hs-lbl" data-i18n="inn.chest">Coffre</div>
       </div>
       <!-- hotspot lit → repos -->
       <div class="hotspot" id="hs-inn-bed" onclick="InnRoom.rest()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Repos (15 🪙)</div>
+        <div class="hs-lbl safe" data-i18n="inn.rest">Repos (15 🪙)</div>
       </div>
       <!-- bas écran → aller en ville -->
       <div class="hotspot" id="hs-inn-town" onclick="Nav.go('town-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Aller en ville</div>
+        <div class="hs-lbl" data-i18n="inn.town">Aller en ville</div>
       </div>
       <!-- bannière status -->
       <div id="inn-status-banner"></div>
@@ -2919,7 +2970,7 @@ canvas#particles {
     <div id="taverne-screen" class="screen has-game-header">
       <div id="taverne-header">
         <div id="taverne-back" onclick="Nav.go('town-screen')">←</div>
-        <div id="taverne-title">La Lyonnesse</div>
+        <div id="taverne-title" data-i18n="taverne.title">La Lyonnesse</div>
       </div>
       <!-- Décoration intérieure -->
       <div class="tav-deco tav-fire">🔥</div>
@@ -2963,9 +3014,9 @@ canvas#particles {
           <div id="npc-quest-reward"></div>
         </div>
         <div id="npc-btns">
-          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none">Accepter la quête</button>
-          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none">Réclamer la récompense</button>
-          <button onclick="Quests.close()">Fermer</button>
+          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
+          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
+          <button onclick="Quests.close()" data-i18n="quest.close">Fermer</button>
         </div>
       </div>
     </div>
@@ -2979,52 +3030,52 @@ canvas#particles {
       <!-- hotspot chambre (haut gauche) -->
       <div class="hotspot" id="hs-town-inn" onclick="Nav.go('inn-room')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl safe">🛏 Chambre</div>
+        <div class="hs-lbl safe" data-i18n="town.inn">🛏 Chambre</div>
       </div>
       <!-- hotspot forge (bas gauche) - armes -->
       <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">⚒ Forge</div>
+        <div class="hs-lbl" data-i18n="town.forge">⚒ Forge</div>
       </div>
       <!-- hotspot armurerie (bas droite) -->
       <div class="hotspot" id="hs-town-armurerie" onclick="TownScreen.goShop('armurerie')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🛡 Armurerie</div>
+        <div class="hs-lbl" data-i18n="town.armurerie">🛡 Armurerie</div>
       </div>
       <!-- hotspot couturier (droite) -->
       <div class="hotspot" id="hs-town-couturier" onclick="TownScreen.goShop('couturier')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🧵 Couturier</div>
+        <div class="hs-lbl" data-i18n="town.couturier">🧵 Couturier</div>
       </div>
       <!-- hotspot bijoutier (droite haute) -->
       <div class="hotspot" id="hs-town-bijoutier" onclick="TownScreen.goShop('bijoutier')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">💍 Bijoutier</div>
+        <div class="hs-lbl" data-i18n="town.bijoutier">💍 Bijoutier</div>
       </div>
       <!-- hotspot église (centre droit) -->
       <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">⛪ Église · Boutique</div>
+        <div class="hs-lbl" data-i18n="town.temple">⛪ Église · Boutique</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
       <div class="hotspot" id="hs-town-guild" onclick="State._heroFrom='town-screen';Meta.buildScreen();Nav.go('hero-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">Guilde</div>
+        <div class="hs-lbl" data-i18n="town.guild">Guilde</div>
       </div>
       <!-- hotspot aventure (bas gauche - pont) -->
       <div class="hotspot" id="hs-town-adventure" onclick="Nav.go('world-map')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">⚔ Partir à l'aventure</div>
+        <div class="hs-lbl extreme" data-i18n="town.adventure">⚔ Partir à l'aventure</div>
       </div>
       <!-- hotspot château (haut centre) -->
       <div class="hotspot" id="hs-town-chateau" onclick="TownScreen.goChateau()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🏰 Château</div>
+        <div class="hs-lbl" data-i18n="town.chateau">🏰 Château</div>
       </div>
       <!-- hotspot taverne -->
       <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🍺 Taverne</div>
+        <div class="hs-lbl" data-i18n="town.taverne">🍺 Taverne</div>
       </div>
     </div>
 
@@ -3032,7 +3083,7 @@ canvas#particles {
     <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
         <div id="wm-back" onclick="Nav.go('inn-room')">←</div>
-        <div id="wm-title">La Région</div>
+        <div id="wm-title" data-i18n="wm.title">La Région</div>
       </div>
       <!-- cave / cryptes (montagne haut centre) -->
       <div class="hotspot" id="hs-reg-cave" onclick="WorldMap.enter('cryptes')">
@@ -4074,6 +4125,492 @@ var StoryIntro = (function(){
   };
 })();
 
+// ── LANGUAGE SYSTEM ───────────────────────────────────────────────
+var CGE_LANG = localStorage.getItem('cge_lang') || 'fr';
+
+var STRINGS = {
+  fr: {
+    // Main menu
+    'menu.play': 'Jouer',
+    'menu.achievements': '🏆 Succès',
+    'menu.settings': '⚙ Paramètres',
+    'menu.signin': 'Se connecter avec Google',
+    // Settings
+    'settings.title': 'Paramètres',
+    'settings.music': 'Musique',
+    'settings.music.sub': 'Ambiance menu, donjon et combat',
+    'settings.sfx': 'Effets sonores',
+    'settings.sfx.sub': 'Sons de combat et d\'interface',
+    'settings.vibration': 'Vibrations',
+    'settings.vibration.sub': 'Retour haptique sur mobile',
+    'settings.particles': 'Particules',
+    'settings.particles.sub': 'Braises en arrière-plan',
+    'settings.language': 'Langue / Language',
+    'settings.language.sub': 'Français · English',
+    'settings.reset': '⚠ Réinitialiser la progression',
+    // Profiles
+    'profiles.title': 'Mes Aventuriers',
+    'profiles.subtitle': 'Choisis ton héros ou crée-en un nouveau',
+    'profiles.new': '＋ Créer un aventurier',
+    'profiles.import': '↓ Importer un code de sauvegarde',
+    // HUD
+    'hud.floor': 'Étage',
+    'hud.potions': 'Potions',
+    // Combat
+    'combat.attack': 'Attaquer',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Fuir',
+    'combat.victory': 'Victoire !',
+    'combat.defeat': 'Défaite',
+    // Town
+    'town.title': 'Thornwall',
+    'town.inn': '🛏 Chambre',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armurerie',
+    'town.couturier': '🧵 Couturier',
+    'town.bijoutier': '💍 Bijoutier',
+    'town.temple': '⛪ Église · Boutique',
+    'town.guild': 'Guilde',
+    'town.adventure': '⚔ Partir à l\'aventure',
+    'town.chateau': '🏰 Château',
+    'town.taverne': '🍺 Taverne',
+    // Inn
+    'inn.window': 'Partir à l\'aventure',
+    'inn.equip': 'Équipement',
+    'inn.chest': 'Coffre',
+    'inn.rest': 'Repos (15 🪙)',
+    'inn.town': 'Aller en ville',
+    // World map
+    'wm.title': 'La Région',
+    'wm.back': 'Retour',
+    // Travel
+    'travel.title': 'Carte du Monde',
+    'travel.camp': 'Campement',
+    'travel.camp.desc': 'Allume un feu et récupère 35% de tes PV',
+    'travel.free': 'Gratuit',
+    // Zones
+    'zone.grottes': 'Grottes des Ombres',
+    'zone.foret': 'Forêt des Âmes Perdues',
+    'zone.ruines': 'Ruines d\'Astavar',
+    'zone.port': 'Port des Tempêtes',
+    'zone.marais': 'Marais de Vaelthar',
+    'zone.pics': 'Pics du Néant',
+    'zone.volcan': 'Caldera d\'Aszgol',
+    'zone.cryptes': 'Les Cryptes Éternelles',
+    'zone.chateau_maudit': 'Le Château Maudit',
+    'zone.cite_oubliee': 'La Cité Oubliée',
+    'zone.gouffre_astral': 'Le Gouffre Astral',
+    'zone.cryptes_profondes': 'Les Cryptes Profondes',
+    // Hero screen
+    'hero.level': 'Niveau',
+    'hero.class': 'Classe',
+    'hero.race': 'Race',
+    'hero.rank': 'Rang Social',
+    'hero.stats': 'Statistiques',
+    'hero.equip': 'Équipement',
+    // Ranks
+    'rank.0': 'Inconnu',
+    'rank.1': 'Connu',
+    'rank.2': 'Respecté',
+    'rank.3': 'Honoré',
+    'rank.4': 'Légendaire',
+    // Shop
+    'shop.buy': 'Acheter',
+    'shop.sell': 'Vendre',
+    'shop.close': 'Fermer',
+    // Classes
+    'class.guerrier': 'Guerrier',
+    'class.mage': 'Mage',
+    'class.chasseur': 'Chasseur',
+    'class.assassin': 'Assassin',
+    'class.pretre': 'Prêtre',
+    'class.barbare': 'Barbare',
+    // Races
+    'race.humain': 'Humain',
+    'race.elfe': 'Elfe',
+    'race.nain': 'Nain',
+    'race.orc': 'Orc',
+    // Taverne
+    'taverne.title': 'La Lyonnesse',
+    // NPC names
+    'npc.bertrand': 'Bertrand',
+    'npc.oswin': 'Oswin',
+    'npc.seraphine': 'Séraphine',
+    'npc.marta': 'Marta',
+    'npc.aldric': 'Capitaine Aldric',
+    'npc.elise': 'Sœur Élise',
+    // Quest UI
+    'quest.accept': 'Accepter la quête',
+    'quest.claim': 'Réclamer la récompense',
+    'quest.close': 'Fermer',
+    'quest.inprogress': 'En cours : ',
+    'quest.reward': 'Récompense : ',
+    // Gameover
+    'go.victory': 'VICTOIRE !',
+    'go.floor': 'Étage atteint',
+    'go.gold': 'Or récupéré',
+    'go.kills': 'Ennemis vaincus',
+    'go.continue': 'Continuer l\'aventure',
+    // Achievements screen
+    'ach.title': 'Succès',
+    'ach.close': 'Fermer',
+    // Dungeon map
+    'dm.camp': '🗺 Voyager',
+    'dm.quests': '📜 Quêtes',
+    'dm.carnet': '🔍 Enquête',
+    // Misc
+    'misc.close': 'Fermer',
+    'misc.ok': 'OK',
+    'misc.cancel': 'Annuler',
+    'misc.loading': 'Chargement...',
+    'misc.wind': 'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.',
+    // Combat
+    'combat.attack': 'Attaquer',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Fuir',
+    'combat.floor': 'Étage',
+    'combat.enemy_turn': 'Tour de l\'ennemi…',
+    // Gameover
+    'go.defeated': 'DÉFAITE',
+    'go.victory': 'VICTOIRE !',
+    'go.floor': 'Étage atteint',
+    'go.gold': 'Or récupéré',
+    'go.kills': 'Ennemis vaincus',
+    'go.continue': 'Continuer l\'aventure',
+    'go.menu': 'Menu principal',
+    // Dungeon map nodes
+    'dm.floor': 'Étage',
+    'dm.boss': 'Boss',
+    'dm.shop': 'Marchand',
+    'dm.campfire': 'Camp',
+    'dm.mystery': 'Mystère',
+    'dm.chest': 'Coffre',
+    'dm.passage': 'Passage secret',
+    'dm.enter': 'Entrer',
+    'dm.hint': 'Touche un nœud accessible pour avancer',
+    'dm.nodeinfo': 'Choisis ton chemin…',
+    // Character creation
+    'create.title': 'Créer un aventurier',
+    'create.name': 'Nom',
+    'create.class': 'Classe',
+    'create.race': 'Race',
+    'create.confirm': 'Commencer l\'aventure',
+    'create.name.placeholder': 'Ton nom…',
+    // Hero screen
+    'hero.back': 'Retour',
+    'hero.title': 'Aventurier',
+    'hero.bonuses': 'Bonus permanents',
+    'hero.upgrade': 'Améliorer',
+    'hero.xp': 'Expérience',
+    'hero.atk': 'Attaque',
+    'hero.def': 'Défense',
+    'hero.hp': 'PV',
+    // Shop
+    'shop.title': 'Boutique',
+    'shop.tab.buy': 'Acheter',
+    'shop.tab.sell': 'Vendre',
+    'shop.empty': 'Stock épuisé',
+    'shop.cantafford': 'Pas assez d\'or',
+    'shop.close': 'Fermer',
+    // Chest
+    'chest.title': 'Coffre',
+    'chest.empty': 'Le coffre est vide',
+    'chest.store': 'Stocker',
+    'chest.retrieve': 'Récupérer',
+    // Inn
+    'inn.rest.title': 'Se reposer',
+    'inn.rest.confirm': 'Se reposer',
+    'inn.rest.full': 'Tu es déjà à pleine santé.',
+    // Carnet
+    'carnet.title': 'Carnet d\'Enquête',
+    'carnet.clue1.name': 'Médaillon Brisé',
+    'carnet.clue1.loc': 'Forêt des Âmes Perdues',
+    'carnet.clue1.text': '"La vérité git là où tout commence."',
+    'carnet.clue2.name': 'Carte Fragmentée',
+    'carnet.clue2.loc': 'Ruines d\'Astavar',
+    'carnet.clue2.text': 'Un cercle tracé à la main… autour d\'un symbole de grotte.',
+    'carnet.clue3.name': 'Journal du Marin',
+    'carnet.clue3.loc': 'Port des Tempêtes',
+    'carnet.clue3.text': '"J\'ai vu la lumière venir des Grottes, au nord."',
+    'carnet.unknown': '??? — Indice non découvert',
+    'carnet.deduction': 'Ces trois indices convergent vers un même endroit : les Grottes des Ombres. Un passage doit exister dans les profondeurs.',
+    // Memory fragments
+    'mem.title': 'Fragment de Mémoire',
+    // Run modifiers
+    'runmod.title': 'Présages du Destin',
+    'runmod.sub': 'Les forces occultes ont façonné cette expédition…',
+    'runmod.btn': 'Partir à l\'aventure →',
+    // Intro traits
+    'intro.trait.void': 'Le Vide',
+    'intro.trait.cold': 'Le Froid',
+    'intro.trait.pain': 'La Douleur',
+    // World map region 2
+    'wm2.title': 'Les Terres Maudites',
+    // Rewarded ads
+    'ad.double_gold': '×2 Or',
+    'ad.revive': 'Revivre',
+    'ad.double_chest': '×2 Coffre',
+    'ad.free_item': 'Objet gratuit',
+    // Achievements screen
+    'ach.title': 'Succès',
+    'ach.close': 'Fermer',
+    'ach.unlocked': 'Débloqué',
+    'ach.locked': 'Verrouillé',
+  },
+  en: {
+    // Main menu
+    'menu.play': 'Play',
+    'menu.achievements': '🏆 Achievements',
+    'menu.settings': '⚙ Settings',
+    'menu.signin': 'Sign in with Google',
+    // Settings
+    'settings.title': 'Settings',
+    'settings.music': 'Music',
+    'settings.music.sub': 'Menu, dungeon and combat ambience',
+    'settings.sfx': 'Sound Effects',
+    'settings.sfx.sub': 'Combat and interface sounds',
+    'settings.vibration': 'Vibrations',
+    'settings.vibration.sub': 'Haptic feedback on mobile',
+    'settings.particles': 'Particles',
+    'settings.particles.sub': 'Embers in the background',
+    'settings.language': 'Language / Langue',
+    'settings.language.sub': 'English · Français',
+    'settings.reset': '⚠ Reset progress',
+    // Profiles
+    'profiles.title': 'My Adventurers',
+    'profiles.subtitle': 'Choose your hero or create a new one',
+    'profiles.new': '＋ Create an adventurer',
+    'profiles.import': '↓ Import a save code',
+    // HUD
+    'hud.floor': 'Floor',
+    'hud.potions': 'Potions',
+    // Combat
+    'combat.attack': 'Attack',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Flee',
+    'combat.victory': 'Victory!',
+    'combat.defeat': 'Defeat',
+    // Town
+    'town.title': 'Thornwall',
+    'town.inn': '🛏 Inn',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armoury',
+    'town.couturier': '🧵 Tailor',
+    'town.bijoutier': '💍 Jeweller',
+    'town.temple': '⛪ Church · Shop',
+    'town.guild': 'Guild',
+    'town.adventure': '⚔ Go adventuring',
+    'town.chateau': '🏰 Castle',
+    'town.taverne': '🍺 Tavern',
+    // Inn
+    'inn.window': 'Go adventuring',
+    'inn.equip': 'Equipment',
+    'inn.chest': 'Chest',
+    'inn.rest': 'Rest (15 🪙)',
+    'inn.town': 'Go to town',
+    // World map
+    'wm.title': 'The Region',
+    'wm.back': 'Back',
+    // Travel
+    'travel.title': 'World Map',
+    'travel.camp': 'Camp',
+    'travel.camp.desc': 'Light a fire and recover 35% HP',
+    'travel.free': 'Free',
+    // Zones
+    'zone.grottes': 'Shadow Caves',
+    'zone.foret': 'Forest of Lost Souls',
+    'zone.ruines': 'Ruins of Astavar',
+    'zone.port': 'Storm Harbour',
+    'zone.marais': 'Vaelthar Marshes',
+    'zone.pics': 'Peaks of the Void',
+    'zone.volcan': 'Caldera of Aszgol',
+    'zone.cryptes': 'The Eternal Crypts',
+    'zone.chateau_maudit': 'The Cursed Castle',
+    'zone.cite_oubliee': 'The Forgotten City',
+    'zone.gouffre_astral': 'The Astral Chasm',
+    'zone.cryptes_profondes': 'The Deep Crypts',
+    // Hero screen
+    'hero.level': 'Level',
+    'hero.class': 'Class',
+    'hero.race': 'Race',
+    'hero.rank': 'Social Rank',
+    'hero.stats': 'Stats',
+    'hero.equip': 'Equipment',
+    // Ranks
+    'rank.0': 'Unknown',
+    'rank.1': 'Known',
+    'rank.2': 'Respected',
+    'rank.3': 'Honoured',
+    'rank.4': 'Legendary',
+    // Shop
+    'shop.buy': 'Buy',
+    'shop.sell': 'Sell',
+    'shop.close': 'Close',
+    // Classes
+    'class.guerrier': 'Warrior',
+    'class.mage': 'Mage',
+    'class.chasseur': 'Hunter',
+    'class.assassin': 'Assassin',
+    'class.pretre': 'Priest',
+    'class.barbare': 'Barbarian',
+    // Races
+    'race.humain': 'Human',
+    'race.elfe': 'Elf',
+    'race.nain': 'Dwarf',
+    'race.orc': 'Orc',
+    // Taverne
+    'taverne.title': 'The Lyonnesse',
+    // NPC names
+    'npc.bertrand': 'Bertrand',
+    'npc.oswin': 'Oswin',
+    'npc.seraphine': 'Séraphine',
+    'npc.marta': 'Marta',
+    'npc.aldric': 'Captain Aldric',
+    'npc.elise': 'Sister Elise',
+    // Quest UI
+    'quest.accept': 'Accept quest',
+    'quest.claim': 'Claim reward',
+    'quest.close': 'Close',
+    'quest.inprogress': 'In progress: ',
+    'quest.reward': 'Reward: ',
+    // Gameover
+    'go.victory': 'VICTORY!',
+    'go.floor': 'Floor reached',
+    'go.gold': 'Gold collected',
+    'go.kills': 'Enemies slain',
+    'go.continue': 'Continue the adventure',
+    // Achievements screen
+    'ach.title': 'Achievements',
+    'ach.close': 'Close',
+    // Dungeon map
+    'dm.camp': '🗺 Travel',
+    'dm.quests': '📜 Quests',
+    'dm.carnet': '🔍 Journal',
+    // Misc
+    'misc.close': 'Close',
+    'misc.ok': 'OK',
+    'misc.cancel': 'Cancel',
+    'misc.loading': 'Loading...',
+    'misc.wind': 'Everything here has been cleared.\n\nNothing remains but the sound of the wind.',
+    // Combat
+    'combat.attack': 'Attack',
+    'combat.potion': 'Potion',
+    'combat.flee': 'Flee',
+    'combat.floor': 'Floor',
+    'combat.enemy_turn': 'Enemy turn…',
+    // Gameover
+    'go.defeated': 'DEFEAT',
+    'go.victory': 'VICTORY!',
+    'go.floor': 'Floor reached',
+    'go.gold': 'Gold collected',
+    'go.kills': 'Enemies slain',
+    'go.continue': 'Continue the adventure',
+    'go.menu': 'Main menu',
+    // Dungeon map nodes
+    'dm.floor': 'Floor',
+    'dm.boss': 'Boss',
+    'dm.shop': 'Merchant',
+    'dm.campfire': 'Camp',
+    'dm.mystery': 'Mystery',
+    'dm.chest': 'Chest',
+    'dm.passage': 'Secret passage',
+    'dm.enter': 'Enter',
+    'dm.hint': 'Tap an available node to advance',
+    'dm.nodeinfo': 'Choose your path…',
+    // Character creation
+    'create.title': 'Create an adventurer',
+    'create.name': 'Name',
+    'create.class': 'Class',
+    'create.race': 'Race',
+    'create.confirm': 'Begin the adventure',
+    'create.name.placeholder': 'Your name…',
+    // Hero screen
+    'hero.back': 'Back',
+    'hero.title': 'Adventurer',
+    'hero.bonuses': 'Permanent bonuses',
+    'hero.upgrade': 'Upgrade',
+    'hero.xp': 'Experience',
+    'hero.atk': 'Attack',
+    'hero.def': 'Defence',
+    'hero.hp': 'HP',
+    // Shop
+    'shop.title': 'Shop',
+    'shop.tab.buy': 'Buy',
+    'shop.tab.sell': 'Sell',
+    'shop.empty': 'Out of stock',
+    'shop.cantafford': 'Not enough gold',
+    'shop.close': 'Close',
+    // Chest
+    'chest.title': 'Chest',
+    'chest.empty': 'The chest is empty',
+    'chest.store': 'Store',
+    'chest.retrieve': 'Retrieve',
+    // Inn
+    'inn.rest.title': 'Rest',
+    'inn.rest.confirm': 'Rest',
+    'inn.rest.full': 'You are already at full health.',
+    // Carnet
+    'carnet.title': 'Investigation Journal',
+    'carnet.clue1.name': 'Broken Medallion',
+    'carnet.clue1.loc': 'Forest of Lost Souls',
+    'carnet.clue1.text': '"The truth lies where all things begin."',
+    'carnet.clue2.name': 'Fragmented Map',
+    'carnet.clue2.loc': 'Ruins of Astavar',
+    'carnet.clue2.text': 'A hand-drawn circle… around a cave symbol.',
+    'carnet.clue3.name': 'Sailor\'s Journal',
+    'carnet.clue3.loc': 'Storm Harbour',
+    'carnet.clue3.text': '"I saw light coming from the Caves, to the north."',
+    'carnet.unknown': '??? — Clue not yet found',
+    'carnet.deduction': 'These three clues point to one place: the Shadow Caves. A passage must exist somewhere in the depths.',
+    // Memory fragments
+    'mem.title': 'Memory Fragment',
+    // Run modifiers
+    'runmod.title': 'Omens of Fate',
+    'runmod.sub': 'Occult forces have shaped this expedition…',
+    'runmod.btn': 'Begin the adventure →',
+    // Intro traits
+    'intro.trait.void': 'The Void',
+    'intro.trait.cold': 'The Cold',
+    'intro.trait.pain': 'The Pain',
+    // World map region 2
+    'wm2.title': 'The Cursed Lands',
+    // Rewarded ads
+    'ad.double_gold': '×2 Gold',
+    'ad.revive': 'Revive',
+    'ad.double_chest': '×2 Chest',
+    'ad.free_item': 'Free Item',
+    // Achievements screen
+    'ach.title': 'Achievements',
+    'ach.close': 'Close',
+    'ach.unlocked': 'Unlocked',
+    'ach.locked': 'Locked',
+  }
+};
+
+var LangSystem = {
+  t: function(key) {
+    var s = STRINGS[CGE_LANG] || STRINGS['fr'];
+    return s[key] || STRINGS['fr'][key] || key;
+  },
+  set: function(lang) {
+    CGE_LANG = lang;
+    localStorage.setItem('cge_lang', lang);
+    LangSystem.applyAll();
+    Nav.go('main-menu');
+  },
+  applyAll: function() {
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      el.textContent = LangSystem.t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      el.placeholder = LangSystem.t(el.getAttribute('data-i18n-placeholder'));
+    });
+  }
+};
+
+function T(key) { return LangSystem.t(key); }
+
 // ── NAVIGATION ────────────────────────────────────────────────────
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
@@ -4117,6 +4654,7 @@ var Nav = {
         next.style.opacity = '1';
         setTimeout(function(){ next.style.transition=''; }, 250);
       });});
+      if (typeof LangSystem !== 'undefined') LangSystem.applyAll();
       if (id === 'taverne-screen' && typeof Quests !== 'undefined') Quests.refreshBadges();
       if (id === 'dungeon-map') {
         var dmEl = document.getElementById('dungeon-map');
@@ -4604,6 +5142,12 @@ var Combat = (function(){
           var isLastFloor = (State.floor||1) >= maxFloor;
           if (isLastFloor) {
             // Donjon terminé → marquer nettoyé, stats meta, mais le perso GARDE tout
+            // Clue drops on zone boss kill
+            var _clueZone = State._currentZone;
+            if (_clueZone === 'foret')  { Meta.clues.medallion = true; }
+            if (_clueZone === 'ruines') { Meta.clues.carte = true; }
+            if (_clueZone === 'port')   { Meta.clues.journal_marin = true; }
+            if (Meta.clues.medallion && Meta.clues.carte && Meta.clues.journal_marin) { Meta.passageFound = true; }
             if (State._currentZone) Meta.clearZone(State._currentZone);
             // Mise à jour stats sans vider l'or (le perso continue sa progression)
             Meta.totalKills += State.kills||0;
@@ -4620,7 +5164,8 @@ var Combat = (function(){
             document.getElementById('go-skull').textContent = '🏆';
             document.getElementById('go-title').textContent = 'VICTOIRE !';
             document.getElementById('go-title').style.color = '#C9A550';
-            document.getElementById('go-quote').textContent = '"' + (zd ? zd.label : 'Le donjon') + ' est vaincu !"';
+            var zdLabel = zd ? (CGE_LANG === 'en' && zd.labelEn ? zd.labelEn : zd.label) : (CGE_LANG === 'en' ? 'The dungeon' : 'Le donjon');
+            document.getElementById('go-quote').textContent = '"' + zdLabel + (CGE_LANG === 'en' ? ' has been conquered!"' : ' est vaincu !"');
             document.getElementById('go-floor').textContent = maxFloor;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
@@ -5458,8 +6003,9 @@ var QUEST_DEFS = [
 
   // Marta (auto-déclenchée à la première arrivée)
   { id:'marta_debt', npc:'marta', act:1,
-    title:'La Dette',
+    title:'La Dette', titleEn:'The Debt',
     desc:'Marta t\'a soigné trois jours. Tu lui dois 50 pièces d\'or.\nRends-lui ce que tu lui dois.',
+    descEn:'Marta nursed you for three days. You owe her 50 gold.\nRepay what you owe.',
     check:function(){ return (State.gold||0)>=50; },
     reward:{ gold:0, _deduct:50 },
     rewardTxt:'Ta liberté — et peut-être une piste.',
@@ -5468,8 +6014,9 @@ var QUEST_DEFS = [
 
   // Bertrand — chap 1 : la rencontre
   { id:'bertrand_1', npc:'bertrand', act:1,
-    title:'Méfiance',
+    title:'Méfiance', titleEn:'Mistrust',
     desc:'Bertrand affirme t\'avoir vu sur la route de Thornwall il y a trois semaines — tu courais. Mais il n\'a pas l\'air prêt à tout dire. Prouve que tu sais survivre.\n→ Tue 25 créatures.',
+    descEn:'Bertrand claims to have seen you on the road to Thornwall three weeks ago — you were running. But he\'s not ready to talk. Prove you can survive.\n→ Kill 25 creatures.',
     check:function(){ return (Meta.totalKills||0)>=25; },
     reward:{ gold:30 },
     rewardTxt:'30 🪙',
@@ -5479,8 +6026,9 @@ var QUEST_DEFS = [
   // Oswin — chap 1 : la prophétie
   { id:'oswin_1', npc:'oswin', act:1,
     unlockAfter:'bertrand_1',
-    title:'L\'Éveillé',
+    title:'L\'Éveillé', titleEn:'The Awakened',
     desc:'Oswin dit avoir une chanson sur toi — une prophétie ancienne qui parle d\'un étranger sans mémoire.\nPour savoir si c\'est bien toi : atteins l\'étage 5 d\'un donjon et complète 3 runs.',
+    descEn:'Oswin claims to have a song about you — an ancient prophecy of a stranger with no memory.\nTo know if it\'s really you: reach floor 5 and complete 3 runs.',
     check:function(){ return (Meta.bestFloor||0)>=5 && (Meta.totalRuns||0)>=3; },
     reward:{ gold:60 },
     rewardTxt:'60 🪙',
@@ -5490,10 +6038,11 @@ var QUEST_DEFS = [
   // Séraphine — chap 1 : l'aura
   { id:'seraphine_1', npc:'seraphine', act:1,
     unlockAfter:'oswin_1',
-    title:'Le Fragment d\'Âme',
+    title:'Le Fragment d\'Âme', titleEn:'The Soul Fragment',
     desc:'Séraphine affirme détecter quelque chose d\'anormal dans ton aura — une signature magique qui ne devrait plus exister depuis cent ans.\nPour qu\'elle puisse l\'analyser : nettoie 2 zones entières.',
+    descEn:'Séraphine claims to detect something abnormal in your aura — a magical signature that should not exist anymore.\nFor her to analyse it: clear 2 full zones.',
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; },
-    reward:{ gold:100 },
+    reward:{ gold:100 }, alignReward:+1,
     rewardTxt:'100 🪙 + une vérité',
     claimText:'"Je m\'en doutais."\nSéraphine referme son grimoire et te fixe.\n"L\'aura que tu portes... elle appartient à quelqu\'un qui est mort il y a exactement cent ans. Quelqu\'un qui s\'appelait l\'Éveillé — comme dans la chanson d\'Oswin."\n\n"Ce n\'est pas une coïncidence. Tu portes un fragment de son âme. Peut-être tout son être, transféré dans un nouveau corps."\n\nElle hésite.\n"Si c\'est vrai... alors tu te rappelles peut-être des choses, sans savoir d\'où elles viennent. Des réflexes. Des peurs irrationnelles. Des visages que tu n\'as jamais vus."\n\n"Et si c\'est vrai... quelqu\'un d\'autre le sait aussi. Et cette personne ne veut pas que tu descendes dans les vraies Cryptes."'
   },
@@ -5503,8 +6052,9 @@ var QUEST_DEFS = [
   // Bertrand — chap 2 : le passé qui revient
   { id:'bertrand_2', npc:'bertrand', act:2,
     unlockAfter:'seraphine_1',
-    title:'La Mémoire des Pierres',
+    title:'La Mémoire des Pierres', titleEn:'The Memory of Stones',
     desc:'Bertrand a quelque chose à te montrer — le parchemin qu\'on a trouvé dans ta main à ton arrivée. Mais d\'abord il veut savoir si tu peux vraiment survivre aux profondeurs.\n→ Atteins l\'étage 8 d\'un donjon et accomplis 8 expéditions.',
+    descEn:'Bertrand has something to show you — the parchment found in your hand when you arrived. But first he wants to know you can truly survive the depths.\n→ Reach floor 8 and complete 8 expeditions.',
     check:function(){ return (Meta.bestFloor||0)>=8 && (Meta.totalRuns||0)>=8; },
     reward:{ gold:150 },
     rewardTxt:'150 🪙 + le parchemin',
@@ -5514,8 +6064,9 @@ var QUEST_DEFS = [
   // Oswin — chap 2 : le livre
   { id:'oswin_2', npc:'oswin', act:2,
     unlockAfter:'bertrand_2',
-    title:'La Ballade des Ruines',
+    title:'La Ballade des Ruines', titleEn:'The Ballad of the Ruins',
     desc:'Oswin a retrouvé des archives dans les Ruines de l\'Ancien Monde — il prétend y avoir vu un portrait qui te ressemble.\nNettoie les Ruines pour confirmer.',
+    descEn:'Oswin found archives in the Ruins of the Old World — he claims to have seen a portrait that looks like you.\nClear the Ruins to confirm.',
     check:function(){ return !!(Meta.clearedZones||{})['ruines']; },
     reward:{ gold:200 },
     rewardTxt:'200 🪙 + une révélation',
@@ -5525,8 +6076,9 @@ var QUEST_DEFS = [
   // Séraphine — chap 2 : la prison
   { id:'seraphine_2', npc:'seraphine', act:2,
     unlockAfter:'oswin_2',
-    title:'Ce Qui Est Enfermé',
+    title:'Ce Qui Est Enfermé', titleEn:'What Lies Imprisoned',
     desc:'Séraphine a trouvé quelque chose dans les archives secrètes de la Guilde des Mages — quelque chose sur les vraies Cryptes Éternelles.\nAccomplis 20 expéditions pour gagner sa confiance totale.',
+    descEn:'Séraphine found something in the secret archives of the Mage Guild — something about the true Eternal Crypts.\nComplete 20 expeditions to earn her full trust.',
     check:function(){ return (Meta.totalRuns||0)>=20; },
     reward:{ gold:300 },
     rewardTxt:'300 🪙 + la vérité',
@@ -5538,10 +6090,11 @@ var QUEST_DEFS = [
   // Bertrand — chap 3 : l'héritage
   { id:'bertrand_3', npc:'bertrand', act:3,
     unlockAfter:'seraphine_2',
-    title:'Le Sang des Gardiens',
+    title:'Le Sang des Gardiens', titleEn:'Blood of the Wardens',
     desc:'Bertrand a quelque chose à avouer — sur sa famille et les Cryptes. Mais d\'abord il veut voir si tu peux t\'en sortir contre les créatures les plus redoutables.\n→ Tue 200 monstres.',
+    descEn:'Bertrand has a confession — about his family and the Crypts. But first he wants to see if you can handle the most fearsome creatures.\n→ Kill 200 monsters.',
     check:function(){ return (Meta.totalKills||0)>=200; },
-    reward:{ gold:400 },
+    reward:{ gold:400 }, alignReward:+1,
     rewardTxt:'400 🪙',
     claimText:'"Mon grand-père était gardien des Cryptes. Un des derniers."\nBertrand s\'essuie les mains sur son tablier, nerveux.\n"Il m\'a dit, avant de mourir : *si un étranger arrive sans mémoire, fuis. Ou aide-le. Les deux sont dangereux.*"\n\n"Je suis resté. J\'ai choisi de t\'aider."\n\n"Il m\'a dit aussi autre chose. Que le Dieu de la Mémoire a des *Voix* dans le monde — des agents qui servent depuis des siècles, qui ne vieillissent pas, qui préparent sa libération."\n\n"Ces Voix... elles se font passer pour des gens ordinaires. Des aubergistes. Des marchands. Des bardes."\n\nIl te regarde droit dans les yeux.\n\n"Fais attention à Oswin."'
   },
@@ -5549,10 +6102,11 @@ var QUEST_DEFS = [
   // Oswin — chap 3 : le masque
   { id:'oswin_3', npc:'oswin', act:3,
     unlockAfter:'bertrand_3',
-    title:'La Voix du Dieu',
+    title:'La Voix du Dieu', titleEn:'The Voice of the God',
     desc:'Oswin t\'a demandé de venir le voir. Mais quelque chose a changé dans son regard.\nAffronte-toi à toi-même : nettoie 5 zones différentes et accomplis 30 expéditions.',
+    descEn:'Oswin has asked you to come see him. But something has changed in his gaze.\nConfront yourself: clear 5 different zones and complete 30 expeditions.',
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=5 && (Meta.totalRuns||0)>=30; },
-    reward:{ gold:0 },
+    reward:{ gold:0 }, alignReward:-1,
     rewardTxt:'Une révélation',
     claimText:'"Tu commences à comprendre."\nOswin ne joue plus la comédie. Sa voix a changé — plus profonde, presque distante.\n"Oui. Je suis une Voix. Je sers depuis cent quarante ans."\n\n"Mais écoute-moi avant de te mettre en colère."\n\n"Je ne suis pas ton ennemi. Je suis... las. Cent quarante ans à servir un dieu que je n\'ai jamais vu. Je voulais juste... que quelqu\'un descende dans les Cryptes et règle ça. Dans un sens ou dans l\'autre."\n\n"La vérité : tu peux renforcer le sceau, comme l\'Éveillé du passé. Ou tu peux libérer le Dieu de la Mémoire — et il nous effacera tous. Ou peut-être qu\'il sera différent maintenant. Peut-être qu\'une prison d\'un siècle l\'a changé."\n\n"Séraphine te dira quoi faire. Moi... je suis fatigué de choisir pour les autres."'
   },
@@ -5560,10 +6114,11 @@ var QUEST_DEFS = [
   // Séraphine — chap 3 : le dernier choix
   { id:'seraphine_3', npc:'seraphine', act:3,
     unlockAfter:'oswin_3',
-    title:'Le Verrou ou la Clé',
+    title:'Le Verrou ou la Clé', titleEn:'The Lock or the Key',
     desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 60, nettoie 6 zones et accomplis 40 expéditions.',
+    descEn:'Séraphine knows how to descend into the true Eternal Crypts. But the path requires total preparation.\n→ Reach level 60, clear 6 zones and complete 40 expeditions.',
     check:function(){ return (State.level||1)>=60 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=40; },
-    reward:{ gold:1000 },
+    reward:{ gold:1000 }, alignReward:+1,
     rewardTxt:'1000 🪙 + accès aux Cryptes',
     claimText: function() {
       var ch = State._introChoices || {};
@@ -5580,40 +6135,190 @@ var QUEST_DEFS = [
   // Quête spéciale : retourner dans les Grottes pour trouver le passage
   { id:'retour_grottes', npc:'seraphine', act:4,
     unlockAfter:'seraphine_3',
-    title:'Le Début de Tout',
-    desc:'Séraphine est certaine : il y a quelque chose dans les Grottes des Ombres que tu n\'as pas vu.\nRetournes-y. Cherche ce qui ne devrait pas être là.\n→ Entre dans les Grottes des Ombres.',
+    title:'Le Début de Tout', titleEn:'Where It All Began',
+    desc:'Séraphine pressent quelque chose — là où tout a commencé pour toi, un secret que tu n\'as pas encore percé.\nRetourne à l\'endroit de ton premier éveil. Cherche ce qui ne devrait pas être là.\n→ Cherche le passage caché.',
+    descEn:'Séraphine senses something — where it all began for you, a secret not yet uncovered.\nReturn to the place of your first awakening. Look for what should not be there.\n→ Find the hidden passage.',
     check:function(){ return !!(Meta.passageFound); },
     reward:{ gold:0 },
     rewardTxt:'Le passage',
     claimText:'"Tu l\'as trouvé."\nSéraphine ferme les yeux un instant.\n"J\'ai cherché pendant vingt ans ce que tu as trouvé en quelques minutes. Peut-être que certaines portes ne s\'ouvrent que pour les bonnes personnes."\n\nElle te regarde.\n\n"Qu\'est-ce qu\'il y a de l\'autre côté ?"'
   },
 
+  // ═══ QUÊTES DE CLASSE ════════════════════════════════════════════
+
+  // Guerrier
+  { id:'guerrier_1', npc:'aldric', act:1,
+    title:'L\'Épreuve du Guerrier',
+    desc:'Capitaine Aldric veut voir si tu tiens la ligne.\n→ Tue 30 créatures.',
+    condition:function(){ return State.cls==='Guerrier'; },
+    check:function(){ return (Meta.totalKills||0)>=30; },
+    reward:{ gold:40 }, rankReward:1,
+    rewardTxt:'40 🪙 + Reconnaissance',
+    claimText:'"Pas mal. Tu sais te battre comme un vrai soldat."\nAldric t\'évalue du regard.\n"La ville commence à te connaître. C\'est un début."'
+  },
+  { id:'guerrier_2', npc:'aldric', act:2,
+    unlockAfter:'guerrier_1',
+    title:'Le Défenseur',
+    desc:'Aldric te confie une mission plus difficile.\n→ Tue 100 créatures.',
+    condition:function(){ return State.cls==='Guerrier'; },
+    check:function(){ return (Meta.totalKills||0)>=100; },
+    reward:{ gold:120 }, rankReward:1,
+    rewardTxt:'120 🪙 + Honneur',
+    claimText:'"Tu mérites ce titre." Il pose la main sur ton épaule.\n"Les gens te respectent maintenant. Ça compte plus que tu ne le crois."'
+  },
+
+  // Mage
+  { id:'mage_1', npc:'elise', act:1,
+    title:'L\'Arcaniste',
+    desc:'Sœur Élise veut voir la portée de tes pouvoirs.\n→ Tue 20 créatures.',
+    condition:function(){ return State.cls==='Mage'; },
+    check:function(){ return (Meta.totalKills||0)>=20; },
+    reward:{ gold:40 }, rankReward:1,
+    rewardTxt:'40 🪙 + Reconnaissance',
+    claimText:'"Tes pouvoirs sont réels."\nÉlise croise les mains.\n"L\'Église note ceux qui agissent avec force et discernement."'
+  },
+  { id:'mage_2', npc:'elise', act:2,
+    unlockAfter:'mage_1',
+    title:'Le Maître des Arcanes',
+    desc:'Élise souhaite voir jusqu\'où tu peux aller.\n→ Tue 80 créatures.',
+    condition:function(){ return State.cls==='Mage'; },
+    check:function(){ return (Meta.totalKills||0)>=80; },
+    reward:{ gold:100 }, rankReward:1,
+    rewardTxt:'100 🪙 + Honneur',
+    claimText:'"La ville parle de toi."\nElle sourit légèrement.\n"Tu t\'es fait un nom. Protège-le."'
+  },
+
+  // Chasseur
+  { id:'chasseur_1', npc:'bertrand', act:1,
+    title:'Le Traqueur',
+    desc:'Bertrand veut voir si tu peux naviguer les zones dangereuses.\n→ Tue 25 créatures.',
+    condition:function(){ return State.cls==='Chasseur'; },
+    check:function(){ return (Meta.totalKills||0)>=25; },
+    reward:{ gold:35 }, rankReward:1,
+    rewardTxt:'35 🪙 + Reconnaissance',
+    claimText:'"Un chasseur qui revient toujours."\nBertrand approuve.\n"Les gens commencent à te voir différemment."'
+  },
+  { id:'chasseur_2', npc:'bertrand', act:2,
+    unlockAfter:'chasseur_1',
+    title:'Le Grand Chasseur',
+    desc:'Bertrand veut te confier une mission d\'envergure.\n→ Tue 90 créatures.',
+    condition:function(){ return State.cls==='Chasseur'; },
+    check:function(){ return (Meta.totalKills||0)>=90; },
+    reward:{ gold:110 }, rankReward:1,
+    rewardTxt:'110 🪙 + Honneur',
+    claimText:'"On parle de toi dans les tavernes voisines."\nIl lève son verre.\n"Tu mérites ça."'
+  },
+
+  // Assassin
+  { id:'assassin_1', npc:'oswin', act:1,
+    title:'L\'Ombre',
+    desc:'Oswin a entendu des choses sur toi. Il veut des preuves.\n→ Tue 20 créatures.',
+    condition:function(){ return State.cls==='Assassin'; },
+    check:function(){ return (Meta.totalKills||0)>=20; },
+    reward:{ gold:35 }, rankReward:1,
+    rewardTxt:'35 🪙 + Reconnaissance',
+    claimText:'"*sifflote doucement*\nLes rumeurs sont vraies, alors."\nOswin te regarde différemment.\n"Tu commences à exister aux yeux de cette ville. Dangereusement."'
+  },
+  { id:'assassin_2', npc:'oswin', act:2,
+    unlockAfter:'assassin_1',
+    title:'La Lame dans l\'Ombre',
+    desc:'Oswin veut voir jusqu\'où tu peux aller.\n→ Tue 85 créatures.',
+    condition:function(){ return State.cls==='Assassin'; },
+    check:function(){ return (Meta.totalKills||0)>=85; },
+    reward:{ gold:105 }, rankReward:1,
+    rewardTxt:'105 🪙 + Honneur',
+    claimText:'"Les gens chuchotent ton nom."\nIl reprend sa luth.\n"Certains avec admiration. D\'autres avec peur. Les deux font une réputation."'
+  },
+
+  // Prêtre
+  { id:'pretre_1', npc:'elise', act:1,
+    title:'Le Serviteur de la Lumière',
+    desc:'Sœur Élise te confie une mission de purification.\n→ Tue 15 créatures.',
+    condition:function(){ return State.cls==='Prêtre' || State.cls==='Pretre'; },
+    check:function(){ return (Meta.totalKills||0)>=15; },
+    reward:{ gold:30 }, rankReward:1,
+    rewardTxt:'30 🪙 + Reconnaissance',
+    claimText:'"La lumière t\'a guidé."\nÉlise pose les mains ensemble.\n"L\'Église reconnaît ton service. La ville aussi."'
+  },
+  { id:'pretre_2', npc:'elise', act:2,
+    unlockAfter:'pretre_1',
+    title:'Le Gardien des Âmes',
+    desc:'Élise te confie une mission plus grande encore.\n→ Tue 75 créatures.',
+    condition:function(){ return State.cls==='Prêtre' || State.cls==='Pretre'; },
+    check:function(){ return (Meta.totalKills||0)>=75; },
+    reward:{ gold:95 }, rankReward:1,
+    rewardTxt:'95 🪙 + Honneur',
+    claimText:'"Tu protèges ceux qui ne peuvent pas se défendre."\nSon regard est doux mais ferme.\n"C\'est pour cela qu\'on te respecte."'
+  },
+
+  // Barbare
+  { id:'barbare_1', npc:'aldric', act:1,
+    title:'La Fureur des Plaines',
+    desc:'Aldric veut voir si tu peux contrôler ta rage.\n→ Tue 35 créatures.',
+    condition:function(){ return State.cls==='Barbare'; },
+    check:function(){ return (Meta.totalKills||0)>=35; },
+    reward:{ gold:45 }, rankReward:1,
+    rewardTxt:'45 🪙 + Reconnaissance',
+    claimText:'"J\'ai vu des guerriers s\'effondrer là où tu tiens."\nAldric croise les bras.\n"La ville parle de toi. Pas toujours avec douceur. Mais elle parle."'
+  },
+  { id:'barbare_2', npc:'aldric', act:2,
+    unlockAfter:'barbare_1',
+    title:'Le Seigneur de la Fureur',
+    desc:'Aldric veut que tu prouves que tu es une légende vivante.\n→ Tue 110 créatures.',
+    condition:function(){ return State.cls==='Barbare'; },
+    check:function(){ return (Meta.totalKills||0)>=110; },
+    reward:{ gold:130 }, rankReward:1,
+    rewardTxt:'130 🪙 + Honneur',
+    claimText:'"Les chansons qu\'on compose sur les barbares parlent rarement de quelqu\'un de vivant."\nIl te serre la main fermement.\n"Tu mérites ton rang."'
+  },
+
   // Cryptes finales (débloqué après retour_grottes)
   { id:'cryptes_final', npc:'bertrand', act:4,
     unlockAfter:'retour_grottes',
-    title:'Les Cryptes Éternelles',
+    title:'Les Cryptes Éternelles', titleEn:'The Eternal Crypts',
     desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 50 expéditions et atteins le niveau 80.',
+    descEn:'You have Séraphine\'s crystal. The path to the true Crypts is open.\nDescend to the final floor.\n→ Complete 50 expeditions and reach level 80.',
     check:function(){ return (Meta.totalRuns||0)>=50 && (State.level||1)>=80; },
     reward:{ gold:2000, potions:10 },
     rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
     claimText: function() {
       var ch = State._introChoices || {};
       var race = State.race || 'Humain';
-      // Ligne personnalisée selon le trait de l'intro
-      var traitLine = ch.trait === 'void'
-        ? '"Tu es revenu. Je ne saurais pas dire ce que tu ressens — peut-être toi non plus. Mais tu es là."'
-        : ch.trait === 'cold'
-        ? '"Tu es revenu. Avec encore ce froid dans les yeux. Mais différent — plus posé. Comme si tu avais enfin compris d\'où il venait."'
-        : '"Tu es revenu. Tu as l\'air... en paix. Pour la première fois depuis ton arrivée."';
-      // Ligne selon la race
-      var raceLine = race === 'Orc'
-        ? '"Peu importe ce qu\'on raconte sur les Orcs. Toi, tu as tenu là où d\'autres ont fui."'
+      var align = Meta.computeAlign();
+
+      // ── FIN : LE GARDIEN (align >= 2) ──────────────────────────────
+      if (align >= 2) {
+        var gardienRace = race === 'Orc'
+          ? '"Un Orc qui choisit de protéger. Ça, personne ne l\'avait prédit."'
+          : race === 'Elfe'
+          ? '"La prophétie disait qu\'un Elfe reviendrait. Elle ne disait pas qu\'il choisirait de rester."'
+          : race === 'Nain'
+          ? '"Les anciens de ta montagne auraient été fiers. Quelqu\'un des profondeurs — pour garder ce que les autres oublient."'
+          : '"Tu n\'avais rien quand tu es arrivé. Et tu as quand même choisi de tout donner."';
+        return '— Le Dieu de la Mémoire lève les yeux sur toi. Sa voix est calme, presque douce.\n\n"Tu n\'as pas changé. Tu t\'es juste souvenu."\n\nIl se tait un instant.\n\n"L\'Éveillé du siècle passé a fait le même choix. Dans la même pièce. Avec les mêmes mains qui tremblaient."\n\n"Pose le cristal sur l\'autel. Le sceau tiendra cent ans de plus. Et quelqu\'un d\'autre viendra après toi — comme tu es venu après lui."\n\nBertrand lève son verre, seul dans la taverne.\n\n'+gardienRace+'\n\n"À l\'Éveillé. Le Gardien."';
+      }
+
+      // ── FIN : LE VIDE (align <= -2) ────────────────────────────────
+      if (align <= -2) {
+        var videRace = race === 'Orc'
+          ? '"On dit que les Orcs ne ressentent rien. Je savais que c\'était faux. Mais toi... tu l\'as peut-être cru."'
+          : race === 'Elfe'
+          ? '"Les Elfes vivent si longtemps qu\'ils finissent par oublier pourquoi. Je comprends."'
+          : race === 'Nain'
+          ? '"Les profondeurs t\'ont pris quelque chose. Avant même que tu arrives ici."'
+          : '"Tu n\'es pas venu chercher des réponses. Tu le sais maintenant."';
+        return '— Le Dieu de la Mémoire te regarde longuement. Pas avec colère. Avec quelque chose qui ressemble à de la reconnaissance.\n\n"Tu n\'es pas revenu pour des réponses."\n\nIl se lève lentement.\n\n"Tu es revenu pour finir ce que tu avais commencé. Mourir vraiment."\n\n"L\'Éveillé du siècle passé avait la même chose dans les yeux, à la fin. Ce vide."\n\n"Brise le cristal. Laisse le sceau s\'effondrer. Ça n\'a plus d\'importance pour toi — et peut-être que c\'est la seule honnêteté qui reste."\n\nBertrand fixe son verre vide sans rien dire.\n\n'+videRace+'\n\n"Il est parti. Comme il était venu."';
+      }
+
+      // ── FIN : LE LIBÉRATEUR (align entre -1 et +1) ─────────────────
+      var libRace = race === 'Orc'
+        ? '"Un Orc qui libère ce que les humains avaient emprisonné. Je ne sais pas si c\'est de la sagesse ou de la folie."'
         : race === 'Elfe'
-        ? '"La prophétie parlait d\'un Elfe qui revenait. Elle ne précisait pas comment il repartirait. Peut-être parce que ça dépendait de toi."'
+        ? '"Tu as entendu quelque chose dans le silence des Cryptes. Quelque chose que les autres n\'entendaient pas."'
         : race === 'Nain'
-        ? '"Les anciens de ta montagne avaient raison — il fallait quelqu\'un des profondeurs. Quelqu\'un qui ne craint pas la pierre."'
-        : '"Tu n\'étais rien de particulier quand tu es arrivé. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle."';
-      return traitLine+'\n\nIl lève son verre.\n\n'+raceLine+'\n\n"À l\'Éveillé. Quel que soit son vrai nom."';
+        ? '"Les profondeurs t\'ont parlé. Et tu as écouté — pas par obéissance. Par curiosité."'
+        : '"Tu n\'es venu ni pour protéger ni pour détruire. Tu es venu parce que tu voulais savoir."';
+      return '— Le Dieu de la Mémoire incline légèrement la tête.\n\n"Tu n\'es pas venu pour protéger. Tu es venu pour ouvrir."\n\nIl sourit — pas comme un dieu. Comme quelqu\'un qui attendait depuis longtemps.\n\n"J\'ai passé cent ans dans cette prison. J\'ai eu le temps de réfléchir à ce que j\'avais fait."\n\n"Peut-être que je suis différent maintenant. Peut-être pas. Mais toi... tu as choisi de ne pas décider à ma place."\n\n"Brise le cristal. Et on verra ensemble ce qui arrive."\n\nBertrand lève son verre lentement.\n\n'+libRace+'\n\n"À l\'Éveillé. Celui qui a choisi l\'inconnu."';
     }
   },
 ];
@@ -5650,7 +6355,7 @@ var NPC_DATA = {
       if (!done['bertrand_3']) return '"Mon grand-père disait que les vrais ennemis sourient le plus."';
       if (!done['oswin_3'])    return '"Fais attention à Oswin. Ce n\'est pas ce qu\'il prétend être."';
       if (!done['seraphine_3'])return '"Séraphine peut t\'ouvrir le chemin. Va lui parler."';
-      if (!done['retour_grottes']) return '"Séraphine dit qu\'il faut retourner là où tu as commencé."\n\nIl baisse la voix.\n\n"Les Grottes des Ombres. Je sais, tu les connais par cœur. Mais... cherche ce que tu n\'as pas encore cherché."';
+      if (!done['retour_grottes']) return '"Séraphine dit qu\'il faut retourner là où tu as commencé."\n\nIl baisse la voix.\n\n"Je sais, tu connais déjà ces endroits. Mais... cherche ce que tu n\'as pas encore cherché. Il y a quelque chose que tu as manqué."';
       if (!done['cryptes_final']) return '"Tu l\'as trouvé ? Le passage ?"\n\nIl se lève.\n\n"Alors va. Ce que tu feras là-bas... ça nous concerne tous."';
       return '"Tu as accompli ce que personne n\'osait faire, ami. Je lèverai mon verre à ta santé pour le reste de mes jours."';
     }
@@ -5680,7 +6385,7 @@ var NPC_DATA = {
       if (!done['bertrand_3'])  return '"Bertrand sait plus qu\'il ne dit. Sa famille est liée à tout ça."';
       if (!done['oswin_3'])     return '"*te regarde dans les yeux sans sourire*\nIl est temps que je sois honnête avec toi."';
       if (!done['retour_grottes']) {
-        return '"*pose sa luth*\nTu veux savoir où aller maintenant ?"\n\n"Les Grottes. Là où tout a commencé pour toi. Pour nous tous, en réalité."\n\nIl hésite.\n\n"Cherche ce que tu n\'aurais pas pu voir avant. Quelque chose que la lumière révèle seulement quand on sait regarder."';
+        return '"*pose sa luth*\nTu veux savoir où aller maintenant ?"\n\nIl hésite longuement, regardant ses mains.\n\n"Pense à ton premier pas sur cette terre. Ce que tu portais. Ce que tu fuyais."\n\n"La réponse est dans les fondations. Cherche ce que tu n\'aurais pas pu voir avant."';
       }
       if (!done['cryptes_final']) return '"*hoche la tête*\nTu l\'as trouvé. Bien.\n\nJe joue une dernière chanson ce soir — pour toi. Pour ce que tu vas faire."';
       return '"*soupir*\nJe suis fatigué, ami. Cent quarante ans de mensonges, c\'est long.\nJe joue juste de la musique maintenant. Vraiment."';
@@ -5739,13 +6444,37 @@ var NPC_DATA = {
       if (!done['bertrand_3'])  return '"Il faut que Bertrand te parle de sa famille. C\'est important pour comprendre l\'histoire complète."';
       if (!done['oswin_3'])     return '"*voix grave*\nOswin est une Voix du Dieu. Tu le sais maintenant.\nMais laisse-lui le temps de se confesser lui-même."';
       if (!done['seraphine_3']) return '"Tu es prêt à entendre la suite ?"';
-      if (!done['retour_grottes']) return '"Je sens que la réponse n\'est pas ici."\n\nElle ferme les yeux, concentrée.\n\n"Les Grottes. Là où tu as commencé. Il y a quelque chose que tu n\'as pas vu — quelque chose qui n\'existait pas encore quand tu y es allé pour la première fois. Retournes-y. Cherche dans les recoins que tu n\'as jamais explorés."';
+      if (!done['retour_grottes']) return '"Je sens que la réponse n\'est pas ici."\n\nElle ferme les yeux, concentrée.\n\n"Il y a un endroit... là où tout a commencé pour toi. Quelque chose n\'était pas visible avant. Retournes-y. Cherche ce que tu n\'aurais pas pu voir la première fois."';
       if (!done['cryptes_final']) return '"Tu l\'as trouvé."\n\nElle souffle lentement.\n\n"Va. Ne t\'arrête pas. Ce qui t\'attend là-bas... c\'est pour ça que tu t\'es réveillé ici il y a tout ce temps."';
       var ending = race === 'Orc' ? 'Ta force a toujours été réelle. C\'est ta brutalité qui était un mensonge qu\'on t\'avait enseigné.'
         : race === 'Elfe' ? 'Tu es revenu comme prévu. Mais tu as choisi différemment. C\'est ça qui change tout.'
         : race === 'Nain' ? 'Les anciens de ta montagne avaient raison. Il fallait que ce soit quelqu\'un des profondeurs.'
         : 'Tu n\'étais personne de particulier. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle.';
       return '"Le cristal est dans tes mains maintenant. Le reste t\'appartient."\n\nElle te regarde avec quelque chose qui ressemble à de la fierté.\n\n"'+ending+'"';
+    }
+  },
+  aldric: {
+    name:'Capitaine Aldric',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      var cls = State.cls||'Guerrier';
+      if (cls === 'Guerrier' || cls === 'Barbare') {
+        if (!done['guerrier_1'] && !done['barbare_1']) return '"Hmm. Un combattant, à ce que je vois.\nMontrez-moi de quoi vous êtes capable avant qu\'on parle."';
+        return '"Vous avancez bien. La ville vous respecte davantage chaque jour."';
+      }
+      return '"Je ne traite pas avec n\'importe qui. Revenez quand vous aurez fait vos preuves."';
+    }
+  },
+  elise: {
+    name:'Sœur Élise',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      var cls = State.cls||'Guerrier';
+      if (cls === 'Mage' || cls === 'Prêtre' || cls === 'Pretre') {
+        if (!done['mage_1'] && !done['pretre_1']) return '"La lumière guide ceux qui agissent avec sagesse.\nProuvez-moi la vôtre."';
+        return '"Vos actes parlent pour vous. L\'Église vous reconnaît."';
+      }
+      return '"Toutes les âmes peuvent trouver leur chemin. Peut-être pas ici, pas encore."';
     }
   },
 };
@@ -5759,7 +6488,9 @@ var Quests = (function(){
 
   function getNextQuest(npc) {
     var done = getCompletedQuests();
-    var defs = QUEST_DEFS.filter(function(q){ return q.npc===npc && !done[q.id]; });
+    var defs = QUEST_DEFS.filter(function(q){
+      return q.npc===npc && !done[q.id] && isQuestUnlocked(q) && (!q.condition || q.condition());
+    });
     return defs[0]||null;
   }
 
@@ -5771,7 +6502,7 @@ var Quests = (function(){
       // Portrait : juste le nom, plus d'icône emoji
       var portIco = document.getElementById('npc-portrait-ico');
       if (portIco) portIco.textContent = '';
-      document.getElementById('npc-portrait-name').textContent = nd.name;
+      document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
@@ -5786,16 +6517,18 @@ var Quests = (function(){
         if (def && def.check && def.check()) {
           var claimTxt = typeof def.claimText === 'function' ? def.claimText() : (def.claimText || 'Tu as accompli ce que je t\'avais demandé.');
           document.getElementById('npc-speech').textContent = claimTxt;
-          document.getElementById('npc-quest-title').textContent  = '✅ ' + def.title;
-          document.getElementById('npc-quest-desc').textContent   = def.desc;
+          document.getElementById('npc-quest-title').textContent  = '✅ ' + (CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title);
+          document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&def.descEn?def.descEn:def.desc);
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
           document.getElementById('npc-btn-claim').style.display  = '';
           _currentQuest = def;
         } else if (def) {
-          document.getElementById('npc-speech').textContent = speechText + '\n\n— En cours : ' + def.title + '\n' + def.desc;
-          document.getElementById('npc-quest-title').textContent  = '🗺 En cours : ' + def.title;
-          document.getElementById('npc-quest-desc').textContent   = def.desc;
+          var _qt = CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title;
+          var _qd = CGE_LANG==='en'&&def.descEn?def.descEn:def.desc;
+          document.getElementById('npc-speech').textContent = speechText + '\n\n— '+(CGE_LANG==='en'?'In progress: ':'En cours : ')+ _qt + '\n' + _qd;
+          document.getElementById('npc-quest-title').textContent  = '🗺 '+(CGE_LANG==='en'?'In progress: ':'En cours : ')+ _qt;
+          document.getElementById('npc-quest-desc').textContent   = _qd;
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
         } else {
@@ -5804,12 +6537,12 @@ var Quests = (function(){
       } else {
         // Chercher la prochaine quête débloquée pour ce PNJ
         var done = Meta.completedQuests||{};
-        var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !done[q.id] && isQuestUnlocked(q); });
+        var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !done[q.id] && isQuestUnlocked(q) && (!q.condition || q.condition()); });
         if (next) {
           _currentQuest = next;
           document.getElementById('npc-speech').textContent = speechText;
-          document.getElementById('npc-quest-title').textContent  = '📜 ' + next.title;
-          document.getElementById('npc-quest-desc').textContent   = next.desc;
+          document.getElementById('npc-quest-title').textContent  = '📜 ' + (CGE_LANG==='en'&&next.titleEn?next.titleEn:next.title);
+          document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&next.descEn?next.descEn:next.desc);
           document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + next.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
           document.getElementById('npc-btn-accept').style.display = '';
@@ -5838,6 +6571,10 @@ var Quests = (function(){
       if (r.gold && r.gold > 0) { Meta.totalGold=(Meta.totalGold||0)+r.gold; State.gold=(State.gold||0)+r.gold; if(typeof HUD!=='undefined') HUD.updateGold(); }
       if (r._deduct) { State.gold = Math.max(0, (State.gold||0)-r._deduct); if(typeof HUD!=='undefined') HUD.updateGold(); }
       if (r.potions) { State.potions=(State.potions||0)+r.potions; }
+      if (_currentQuest.rankReward) { Meta.rank = (Meta.rank||0) + _currentQuest.rankReward; }
+      // Alignement : payer Marta vite (< 5 runs) = Gardien ; quêtes de classe = Libérateur
+      if (_currentQuest.id === 'marta_debt' && (Meta.totalRuns||0) <= 4) Meta.nudgeAlign(+1);
+      if (_currentQuest.alignReward) Meta.nudgeAlign(_currentQuest.alignReward);
       if (!Meta.completedQuests) Meta.completedQuests = {};
       Meta.completedQuests[_currentQuest.id] = true;
       if (Meta.activeQuests) delete Meta.activeQuests[_currentNpc];
@@ -5868,7 +6605,7 @@ var Quests = (function(){
       npcs.forEach(function(npc) {
         var active = (Meta.activeQuests||{})[npc];
         if (!active) {
-          var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]); });
+          var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]) && (!q.condition || q.condition()); });
           if (next) {
             var b = document.createElement('div');
             b.className = 'tav-quest-badge';
@@ -5899,6 +6636,10 @@ var Meta = {
   clearedZones: {},
   activeQuests: {},
   completedQuests: {},
+  clues: {},
+  rank: 0,
+  passageFound: false,
+  _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
 
@@ -5915,6 +6656,10 @@ var Meta = {
       Meta.clearedZones    = d.clearedZones||{};
       Meta.activeQuests    = d.activeQuests||{};
       Meta.completedQuests = d.completedQuests||{};
+      Meta.clues           = d.clues||{};
+      Meta.rank            = d.rank||0;
+      Meta.passageFound    = d.passageFound||false;
+      Meta._align          = d._align||0;
       Meta.chest           = d.chest||[];
       Meta.achievements    = d.achievements||{};
     } catch(e){}
@@ -5931,11 +6676,42 @@ var Meta = {
       clearedZones:   Meta.clearedZones,
       activeQuests:   Meta.activeQuests,
       completedQuests:Meta.completedQuests,
+      clues:          Meta.clues,
+      rank:           Meta.rank,
+      passageFound:   Meta.passageFound,
+      _align:         Meta._align,
       chest:          Meta.chest,
       achievements:   Meta.achievements,
     };
     localStorage.setItem('cge_meta', JSON.stringify(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
+  },
+
+  nudgeAlign: function(delta) {
+    Meta._align = Math.max(-5, Math.min(5, (Meta._align||0) + delta));
+  },
+
+  computeAlign: function() {
+    // Recalcule l'alignement à partir de l'état global — appelé à la fin
+    var a = Meta._align || 0;
+    var done = Meta.completedQuests || {};
+    var ch = State._introChoices || {};
+    // Trait d'intro
+    if (ch.trait === 'void') a -= 1;
+    // Rang social élevé → Gardien
+    if ((Meta.rank||0) >= 3) a += 1;
+    // Toutes les quêtes principales complétées → Gardien
+    var mainQuests = ['marta_debt','bertrand_1','oswin_1','seraphine_1','bertrand_2','oswin_2','seraphine_2','bertrand_3','oswin_3','seraphine_3'];
+    var doneCount = mainQuests.filter(function(id){ return done[id]; }).length;
+    if (doneCount >= 9) a += 1;
+    else if (doneCount <= 4) a -= 1;
+    // Beaucoup de zones nettoyées → Libérateur (explorateur)
+    var zones = Object.keys(Meta.clearedZones||{}).length;
+    if (zones >= 8) a += 1;
+    // Classe offensive → léger penchant Libérateur
+    var cls = State.cls || '';
+    if (cls === 'assassin' || cls === 'barbare') a -= 0;  // neutre
+    return Math.max(-5, Math.min(5, a));
   },
 
   clearZone: function(zoneId) {
@@ -5962,11 +6738,15 @@ var Meta = {
 
   buildScreen: function() {
     var _gTotal = Meta.totalGold + (State.gold||0);
-    document.getElementById('hs-gold-val').textContent  = _gTotal;
-    document.getElementById('hs-runs').textContent      = Meta.totalRuns;
-    document.getElementById('hs-best').textContent      = Meta.bestFloor;
-    document.getElementById('hs-kills').textContent     = Meta.totalKills;
+    var _rankNames = ['Inconnu','Connu','Respecté','Honoré','Légendaire'];
+    var _rankEl = document.getElementById('hs-rank-val');
+    if (_rankEl) _rankEl.textContent = _rankNames[Math.min(Meta.rank||0, _rankNames.length-1)];
+    var _elGold = document.getElementById('hs-gold-val'); if (_elGold) _elGold.textContent = _gTotal;
+    var _elRuns = document.getElementById('hs-runs');     if (_elRuns) _elRuns.textContent = Meta.totalRuns;
+    var _elBest = document.getElementById('hs-best');     if (_elBest) _elBest.textContent = Meta.bestFloor;
+    var _elKills= document.getElementById('hs-kills');    if (_elKills) _elKills.textContent = Meta.totalKills;
     var cont = document.getElementById('hs-upgrades');
+    if (!cont) return;
     cont.innerHTML = '';
     META_UPGRADES.forEach(function(u) {
       var lvl   = Meta.levels[u.id]||0;
@@ -7127,7 +7907,14 @@ function goToMenu() {
   var metaEl = document.getElementById('menu-stats');
   if (metaEl) metaEl.textContent = Meta.totalRuns > 0
     ? 'Runs : '+Meta.totalRuns+'  ·  Meilleur étage : '+Meta.bestFloor : '';
-  Nav.go('main-menu');
+  var savedLang = localStorage.getItem('cge_lang');
+  if (!savedLang) {
+    Nav.go('lang-screen');
+  } else {
+    CGE_LANG = savedLang;
+    LangSystem.applyAll();
+    Nav.go('main-menu');
+  }
   buildCharSelect();
 }
 
@@ -7473,15 +8260,24 @@ var TownScreen = {
       return;
     }
 
+    // Access requires level >= 10 AND rank >= 1
+    var lvl2 = State.level||1;
+    var rank2 = Meta.rank||0;
+    if (lvl2 >= 10 && rank2 >= 1) {
+      WorldMap.enter('chateau_maudit');
+      return;
+    }
     // Early game — accès interdit, message racial dès le départ
-    if (race === 'Orc') {
+    if (rank2 < 1) {
+      CGEModal.alert('Accès Interdit', 'Le garde vous regarde de haut en bas.\n\n"Vous n\'avez pas de réputation dans cette ville. Revenez quand les gens vous connaîtront."');
+    } else if (race === 'Orc') {
       CGEModal.alert('Accès Interdit', 'Le garde recule d\'un pas complet, la main sur son épée.\n\n"Un Orc. Ici."\n\nIl appelle du renfort du regard.\n\n"Éloignez-vous. Maintenant."');
     } else if (race === 'Elfe') {
       CGEModal.alert('Accès Interdit', 'Le garde te jauge de haut en bas.\n\n"Elfe. Demi-sang ou pur sang ?"\n\nIl n\'attend pas ta réponse.\n\n"Peu importe. Le Château est fermé aux... non-résidents."');
     } else if (race === 'Nain') {
       CGEModal.alert('Accès Interdit', 'Le garde hausse les épaules.\n\n"Désolé, ami. Règles du Conseil. Pas d\'aventuriers, quelle que soit la taille."\n\nIl ajoute avec un demi-sourire :\n\n"Mauvaise blague. Revenez plus tard."');
     } else {
-      CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes.\n\n"Le Château reste fermé aux aventuriers. Revenez quand vous aurez prouvé votre valeur."');
+      CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes.\n\n"Le Château reste fermé aux aventuriers de rang inconnu. Revenez quand vous aurez prouvé votre valeur."');
     }
   },
 };
@@ -7490,18 +8286,18 @@ var TownScreen = {
 var ZONE_DATA = {
   // hpMult / atkMult / defMult : multiplicateurs appliqués sur les stats de base des ennemis
   // goldMult : multiplicateur sur l'or
-  grottes: { hpMult:1,    atkMult:1,   defMult:1,   goldMult:1,    floors:4, minLevel:1,  label:'Grottes des Ombres' },
-  foret:   { hpMult:5,    atkMult:3,   defMult:2.5, goldMult:4,    floors:5, minLevel:5,  label:'Forêt des Âmes Perdues' },
-  ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar' },
-  port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes' },
-  marais:  { hpMult:100,  atkMult:38,  defMult:30,  goldMult:90,   floors:5, minLevel:28, label:'Marais de Vaelthar' },
-  pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant' },
-  volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol' },
-  cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles' },
-  chateau_maudit:   { hpMult:1200, atkMult:380, defMult:300, goldMult:1000, floors:7, minLevel:55, label:'Le Château Maudit' },
-  cite_oubliee:     { hpMult:2500, atkMult:750, defMult:600, goldMult:2200, floors:8, minLevel:65, label:'La Cité Oubliée' },
-  gouffre_astral:   { hpMult:6000, atkMult:1800, defMult:1400, goldMult:5500, floors:8, minLevel:78, label:'Le Gouffre Astral' },
-  cryptes_profondes:{ hpMult:15000, atkMult:4500, defMult:3500, goldMult:14000, floors:10, minLevel:90, label:'Les Cryptes Profondes' },
+  grottes: { hpMult:1,    atkMult:1,   defMult:1,   goldMult:1,    floors:4, minLevel:1,  label:'Grottes des Ombres',    labelEn:'Shadow Caves' },
+  foret:   { hpMult:5,    atkMult:3,   defMult:2.5, goldMult:4,    floors:5, minLevel:5,  label:'Forêt des Âmes Perdues', labelEn:'Forest of Lost Souls' },
+  ruines:  { hpMult:18,   atkMult:9,   defMult:7,   goldMult:15,   floors:5, minLevel:10, label:'Ruines d\'Astavar',       labelEn:'Ruins of Astavar' },
+  port:    { hpMult:55,   atkMult:22,  defMult:18,  goldMult:45,   floors:5, minLevel:20, label:'Port des Tempêtes',       labelEn:'Storm Harbour' },
+  marais:  { hpMult:100,  atkMult:38,  defMult:30,  goldMult:90,   floors:5, minLevel:28, label:'Marais de Vaelthar',      labelEn:'Vaelthar Marshes' },
+  pics:    { hpMult:180,  atkMult:65,  defMult:55,  goldMult:150,  floors:6, minLevel:35, label:'Pics du Néant',           labelEn:'Peaks of the Void' },
+  volcan:  { hpMult:420,  atkMult:145, defMult:115, goldMult:380,  floors:6, minLevel:42, label:'Caldera d\'Aszgol',       labelEn:'Caldera of Aszgol' },
+  cryptes: { hpMult:700,  atkMult:220, defMult:180, goldMult:600,  floors:6, minLevel:50, label:'Les Cryptes Éternelles',  labelEn:'The Eternal Crypts' },
+  chateau_maudit:   { hpMult:1200, atkMult:380, defMult:300, goldMult:1000, floors:7, minLevel:55, label:'Le Château Maudit',      labelEn:'The Cursed Castle' },
+  cite_oubliee:     { hpMult:2500, atkMult:750, defMult:600, goldMult:2200, floors:8, minLevel:65, label:'La Cité Oubliée',        labelEn:'The Forgotten City' },
+  gouffre_astral:   { hpMult:6000, atkMult:1800, defMult:1400, goldMult:5500, floors:8, minLevel:78, label:'Le Gouffre Astral',    labelEn:'The Astral Chasm' },
+  cryptes_profondes:{ hpMult:15000, atkMult:4500, defMult:3500, goldMult:14000, floors:10, minLevel:90, label:'Les Cryptes Profondes', labelEn:'The Deep Crypts' },
 };
 
 var WorldMap = {
@@ -7532,8 +8328,8 @@ var WorldMap = {
         });
       } else {
         CGEModal.alert(
-          (ZONE_DATA[zoneId]||{}).label || 'Donjon',
-          'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.'
+          T('zone.' + zoneId) || (ZONE_DATA[zoneId]||{}).label || 'Donjon',
+          T('misc.wind')
         );
       }
       return;
@@ -7727,6 +8523,34 @@ var HUD = (function(){
     }
   };
 })();
+
+var CarnetEnquete = {
+  open: function() {
+    var clues = Meta.clues || {};
+    var items = [];
+    var foundBy = CGE_LANG === 'en' ? 'Found in ' : 'Trouvé dans ';
+    if (clues.medallion) {
+      items.push('<div class="carnet-clue"><b>'+T('carnet.clue1.name')+'</b><br>'+foundBy+T('carnet.clue1.loc')+'. '+T('carnet.clue1.text')+'</div>');
+    } else {
+      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
+    }
+    if (clues.carte) {
+      items.push('<div class="carnet-clue"><b>'+T('carnet.clue2.name')+'</b><br>'+foundBy+T('carnet.clue2.loc')+'. '+T('carnet.clue2.text')+'</div>');
+    } else {
+      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
+    }
+    if (clues.journal_marin) {
+      items.push('<div class="carnet-clue"><b>'+T('carnet.clue3.name')+'</b><br>'+foundBy+T('carnet.clue3.loc')+'. '+T('carnet.clue3.text')+'</div>');
+    } else {
+      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
+    }
+    if (clues.medallion && clues.carte && clues.journal_marin) {
+      items.push('<div class="carnet-deduction"><b>'+(CGE_LANG==='en'?'Deduction:':'Déduction :')+'</b> '+T('carnet.deduction')+'</div>');
+    }
+    document.getElementById('gh-carnet-list').innerHTML = items.join('');
+    document.getElementById('gh-carnet-modal').classList.add('show');
+  }
+};
 
 var Embers = (function(){
   var timers = [];
