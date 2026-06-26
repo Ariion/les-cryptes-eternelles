@@ -3073,6 +3073,14 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="town.chateau">🏰 Château</div>
       </div>
+      <!-- NPC: Capitaine Aldric (devant le château) -->
+      <div class="npc-hotspot" id="npc-aldric" onclick="Quests.openNpc('aldric')" style="position:absolute;top:12%;left:54%">
+        <div class="npc-name-tag" data-i18n="npc.aldric">Capitaine Aldric</div>
+      </div>
+      <!-- NPC: Sœur Élise (devant l'église) -->
+      <div class="npc-hotspot" id="npc-elise" onclick="Quests.openNpc('elise')" style="position:absolute;top:38%;left:72%">
+        <div class="npc-name-tag" data-i18n="npc.elise">Sœur Élise</div>
+      </div>
       <!-- hotspot taverne -->
       <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
         <div class="hs-ring"></div>
@@ -5857,7 +5865,7 @@ var LEVEL_UP_CHOICES = [
   { ico:'⚗', name:'Grand Alchimiste',desc:'+3 Potions',          effect:function(){ State.potions=(State.potions||0)+3; } },
   { ico:'🔥', name:'Embrasement',     desc:'+10 ATQ −10 PV max',  effect:function(){ State.atk+=10; State.hpMax=Math.max(20,State.hpMax-10); } },
   { ico:'🧿', name:'Œil du destin',  desc:'Crit +15%',           effect:function(){ State.critBonus=(State.critBonus||0)+0.15; } },
-  { ico:'🩸', name:'Vampirisme',      desc:'Vol de vie +15%',     effect:function(){ State.lifesteal=(State.lifesteal||0)+0.15; } },
+  { ico:'🩸', name:'Vampirisme',      desc:'Vol de vie +15%',     effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.15; } },
   { ico:'🌑', name:'Ombre',           desc:'+5 ATQ +5 DEF +30 PV',effect:function(){ State.atk+=5;State.def+=5;State.hpMax+=30; } },
 ];
 
@@ -6118,9 +6126,9 @@ var QUEST_DEFS = [
   { id:'seraphine_3', npc:'seraphine', act:3,
     unlockAfter:'oswin_3',
     title:'Le Verrou ou la Clé', titleEn:'The Lock or the Key',
-    desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 60, nettoie 6 zones et accomplis 40 expéditions.',
-    descEn:'Séraphine knows how to descend into the true Eternal Crypts. But the path requires total preparation.\n→ Reach level 60, clear 6 zones and complete 40 expeditions.',
-    check:function(){ return (State.level||1)>=60 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=40; },
+    desc:'Séraphine sait comment descendre dans les vraies Cryptes Éternelles. Mais le chemin demande une préparation totale.\n→ Atteins le niveau 25, nettoie 6 zones et accomplis 20 expéditions.',
+    descEn:'Séraphine knows how to descend into the true Eternal Crypts. But the path requires total preparation.\n→ Reach level 25, clear 6 zones and complete 20 expeditions.',
+    check:function(){ return (State.level||1)>=25 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=20; },
     reward:{ gold:1000 }, alignReward:+1,
     rewardTxt:'1000 🪙 + accès aux Cryptes',
     claimText: function() {
@@ -6279,9 +6287,9 @@ var QUEST_DEFS = [
   { id:'cryptes_final', npc:'bertrand', act:4,
     unlockAfter:'retour_grottes',
     title:'Les Cryptes Éternelles', titleEn:'The Eternal Crypts',
-    desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 50 expéditions et atteins le niveau 80.',
-    descEn:'You have Séraphine\'s crystal. The path to the true Crypts is open.\nDescend to the final floor.\n→ Complete 50 expeditions and reach level 80.',
-    check:function(){ return (Meta.totalRuns||0)>=50 && (State.level||1)>=80; },
+    desc:'Tu as le cristal de Séraphine. Le chemin vers les vraies Cryptes est ouvert.\nDescends jusqu\'au dernier étage.\n→ Accomplis 30 expéditions et atteins le niveau 30.',
+    descEn:'You have Séraphine\'s crystal. The path to the true Crypts is open.\nDescend to the final floor.\n→ Complete 30 expeditions and reach level 30.',
+    check:function(){ return (Meta.totalRuns||0)>=30 && (State.level||1)>=30; },
     reward:{ gold:2000, potions:10 },
     rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
     claimText: function() {
@@ -7208,7 +7216,7 @@ var DungeonMap = (function() {
     mctx.save();
     mctx.beginPath();
     // Chemin courbe
-    var mx = (ax+bx)/2 + (Math.random()-0.5)*10;
+    var mx = (ax+bx)/2 + (((ax*13+bx*7)%10)-5);
     var my = (ay+by)/2;
     mctx.moveTo(ax,ay);
     mctx.quadraticCurveTo(mx, my, bx, by);
@@ -8145,7 +8153,7 @@ var ACHIEVEMENT_DEFS = [
   // Progression
   { id:'level_10',     ico:'✨', title:'Prometteur',        titleEn:'Promising',       desc:'Atteindre le niveau 10',                   descEn:'Reach level 10',                     check:function(){ return (State.level||1)>=10; } },
   { id:'level_30',     ico:'⚡', title:'Chevalier',         titleEn:'Knight',          desc:'Atteindre le niveau 30',                   descEn:'Reach level 30',                     check:function(){ return (State.level||1)>=30; } },
-  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=60; } },
+  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=25; } },
   { id:'level_100',    ico:'👑', title:'Légendaire',        titleEn:'Legendary',       desc:'Atteindre le niveau 100',                  descEn:'Reach level 100',                    check:function(){ return (State.level||1)>=100; } },
   // Histoire
   { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        titleEn:'The Awakened',   desc:'Compléter l\'Acte I de l\'histoire',       descEn:'Complete Act I of the story',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
@@ -8312,7 +8320,7 @@ var WorldMap = {
 
     // Zones nettoyées — bloquées définitivement, sauf exception Grottes
     if (Meta.clearedZones[zoneId]) {
-      var isGrottesReturn = zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && !Meta.passageFound;
+      var isGrottesReturn = zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && Meta.passageFound;
       if (isGrottesReturn) {
         // Cas unique : retour dans les Grottes pour trouver le passage
         CGEModal.show({
