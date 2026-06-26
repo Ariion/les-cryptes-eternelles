@@ -3822,9 +3822,9 @@ var ProfilesScreen = {
         '<div class="prof-card-top">'+
           '<div class="prof-card-avatar">'+avatar+'</div>'+
           '<div class="prof-card-info">'+
-            '<div class="prof-card-name">'+p.name+'</div>'+
+            '<div class="prof-card-name">'+p.name.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</div>'+
             '<div class="prof-card-sub">'+rName+' · '+cName+'</div>'+
-            '<div class="prof-card-meta">Niveau '+( p.level||1)+' · Dernière partie : '+dateStr+'</div>'+
+            '<div class="prof-card-meta">'+T('profile.level')+' '+(p.level||1)+' · '+T('profile.lastplayed')+' '+dateStr+'</div>'+
           '</div>'+
           '<div class="prof-card-del" data-id="'+p.id+'">✕</div>'+
         '</div>'+
@@ -4164,7 +4164,20 @@ var STRINGS = {
     'profiles.import': '↓ Importer un code de sauvegarde',
     // HUD
     'hud.floor': 'Étage',
+    'hud.level': 'Niv.',
     'hud.potions': 'Potions',
+    // Modal
+    'modal.ok': 'Compris',
+    'modal.confirm': 'Confirmer',
+    'modal.cancel': 'Annuler',
+    // Inn
+    'inn.fullhp': 'Vous êtes déjà en pleine forme !',
+    'inn.needgold': 'Il vous faut {n} 🪙 pour passer la nuit.',
+    'inn.rested': '✨ Repos (15 🪙) — +{n} PV. Pleine forme !',
+    'inn.rested.status': '✨ Repos (15 🪙) — Soigné ! Statuts dissipés.',
+    // Profile card
+    'profile.level': 'Niveau',
+    'profile.lastplayed': 'Dernière partie :',
     // Combat
     'combat.attack': 'Attaquer',
     'combat.potion': 'Potion',
@@ -4392,7 +4405,20 @@ var STRINGS = {
     'profiles.import': '↓ Import a save code',
     // HUD
     'hud.floor': 'Floor',
+    'hud.level': 'Lv.',
     'hud.potions': 'Potions',
+    // Modal
+    'modal.ok': 'Got it',
+    'modal.confirm': 'Confirm',
+    'modal.cancel': 'Cancel',
+    // Inn
+    'inn.fullhp': 'You are already at full health!',
+    'inn.needgold': 'You need {n} 🪙 to rest for the night.',
+    'inn.rested': '✨ Rest (15 🪙) — +{n} HP. Full health!',
+    'inn.rested.status': '✨ Rest (15 🪙) — Healed! Statuses cleared.',
+    // Profile card
+    'profile.level': 'Level',
+    'profile.lastplayed': 'Last played:',
     // Combat
     'combat.attack': 'Attack',
     'combat.potion': 'Potion',
@@ -8027,9 +8053,9 @@ var InnRoom = {
     var cost = 15;
     var wasMaxHp = (State.hp||0) >= (State.hpMax||1);
     var hadStatuses = (State.persistentStatuses||[]).length > 0;
-    if (wasMaxHp && !hadStatuses) { InnRoom.showStatusBanner('Vous êtes déjà en pleine forme !'); return; }
+    if (wasMaxHp && !hadStatuses) { InnRoom.showStatusBanner(T('inn.fullhp')); return; }
     if ((State.gold||0) < cost) {
-      InnRoom.showStatusBanner('Il vous faut ' + cost + ' 🪙 pour passer la nuit.');
+      InnRoom.showStatusBanner(T('inn.needgold').replace('{n}', cost));
       return;
     }
     State.gold -= cost;
@@ -8037,7 +8063,7 @@ var InnRoom = {
     State.hp = State.hpMax;
     State.persistentStatuses = [];
     InnRoom.updateHp();
-    InnRoom.showStatusBanner(hadStatuses ? '✨ Repos (15 🪙) — Soigné ! Statuts dissipés.' : '✨ Repos (15 🪙) — +' + heal + ' PV. Pleine forme !');
+    InnRoom.showStatusBanner(hadStatuses ? T('inn.rested.status') : T('inn.rested').replace('{n}', heal));
     if (typeof HUD !== 'undefined') { HUD.updateGold(); HUD.updateHP(); }
     if (typeof Sfx !== 'undefined' && Sfx.heal) Sfx.heal();
   },
@@ -8445,7 +8471,7 @@ var HUD = (function(){
     var fb = document.getElementById('gh-floor-badge');
     if (fb) {
       if (screenId === 'dungeon-map' && State && State.floor) {
-        fb.textContent = 'ÉTAGE ' + (FLOOR_LABELS[State.floor-1] || State.floor);
+        fb.textContent = T('hud.floor') + ' ' + (FLOOR_LABELS[State.floor-1] || State.floor);
         fb.style.display = 'block';
       } else {
         fb.style.display = 'none';
@@ -8454,7 +8480,7 @@ var HUD = (function(){
 
     // Level
     var lv = document.getElementById('gh-level');
-    if (lv) lv.textContent = 'Niv. ' + ((State && State.level) || 1);
+    if (lv) lv.textContent = T('hud.level') + ' ' + ((State && State.level) || 1);
 
     // HP bar
     var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
@@ -8485,7 +8511,7 @@ var HUD = (function(){
     var xpBar = document.getElementById('gh-xp-bar-inner');
     if (xpBar) { xpBar.style.width = xpPct+'%'; xpBar.classList.remove('hdr-val-flash'); void xpBar.offsetWidth; xpBar.classList.add('hdr-val-flash'); }
     var lv = document.getElementById('gh-level');
-    if (lv) lv.textContent = 'Niv. '+lvl2;
+    if (lv) lv.textContent = T('hud.level')+' '+lvl2;
   }
 
   return {
@@ -8750,11 +8776,11 @@ var CGEModal = (function() {
 
   // Drop-in replacements
   function alert(title, text, img) {
-    show({ title:title, text:text, img:img||null, okLabel:'Compris' });
+    show({ title:title, text:text, img:img||null, okLabel:T('modal.ok') });
   }
 
   function confirm(title, text, onOk, onCancel, img) {
-    show({ title:title, text:text, img:img||null, okLabel:'Confirmer', cancelLabel:'Annuler', onOk:onOk, onCancel:onCancel });
+    show({ title:title, text:text, img:img||null, okLabel:T('modal.confirm'), cancelLabel:T('modal.cancel'), onOk:onOk, onCancel:onCancel });
   }
 
   return { show:show, close:close, alert:alert, confirm:confirm };
@@ -8764,7 +8790,7 @@ var App = {
   startRun: function() {
     // Récupère le nom saisi, crée ou met à jour le profil
     var inp = document.getElementById('cs-name-input');
-    var heroName = (inp && inp.value.trim()) ? inp.value.trim() : 'Aventurier';
+    var heroName = (inp && inp.value.trim()) ? inp.value.trim() : T('create.name.placeholder');
     State.name = heroName;
     // Créer un nouveau profil si aucun actif, ou si on vient du flux "créer un nouveau perso"
     if (!ProfileManager.getActiveId() || !ProfileManager.getActive() || ProfilesScreen._creating) {
@@ -8885,9 +8911,11 @@ window.addEventListener('load', function(){
         var sw = reg.installing;
         sw.onstatechange = function() {
           if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-            // Nouvelle version disponible → recharger
-            console.log('[CGE] Mise à jour disponible, rechargement...');
-            window.location.reload();
+            console.log('[CGE] Mise à jour disponible');
+            // Ne pas recharger en pleine partie - notifier seulement
+            if (!State || !State._inCombat) {
+              window.location.reload();
+            }
           }
         };
       };
