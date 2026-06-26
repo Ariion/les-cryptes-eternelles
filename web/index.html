@@ -4202,6 +4202,24 @@ var STRINGS = {
     'rest.title': 'Feu de camp',
     'rest.desc': 'Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.',
     'rest.btn': 'Se reposer →',
+    'rest.camp.title': 'Feu de camp',
+    'rest.camp.desc': 'Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.',
+    'rest.camp.btn': 'Se reposer →',
+    'rest.mystery.title': 'Salle Mystérieuse',
+    'rest.mystery.btn': 'Continuer →',
+    'rest.trap.title': 'Piège !',
+    'rest.trap.desc': 'Tu déclenches un mécanisme caché. Les lames jaillissent des murs !',
+    'rest.trap.btn': 'Affronter l\'ennemi →',
+    'shop.inv.full': 'Inventaire plein',
+    'shop.inv.full.buy': 'Équipe ou vends un objet avant d\'en acheter un nouveau.',
+    'shop.inv.full.unequip': 'Libère une place dans ton sac avant de retirer cet équipement.',
+    'shop.inv.full.limit': 'Tu ne peux pas porter plus de 8 objets.',
+    'shop.free.title': 'Achat Gratuit !',
+    'shop.free.desc': 'Cet achat est remboursé grâce à votre pub !',
+    'shop.free.refund': 'Le dernier objet acheté vous est remboursé ! +{n} 🪙',
+    'passage.label': 'PASSAGE OBSCUR',
+    'passage.sub': 'Le mur du fond a toujours été là.',
+    'passage.text': 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.',
     // Misc
     'misc.continue_arrow': 'Continuer →',
     // Town
@@ -4459,6 +4477,24 @@ var STRINGS = {
     'rest.title': 'Campfire',
     'rest.desc': 'You find a precarious shelter in the darkness. The fire crackles softly.',
     'rest.btn': 'Rest →',
+    'rest.camp.title': 'Campfire',
+    'rest.camp.desc': 'You find a precarious shelter in the darkness. The fire crackles softly.',
+    'rest.camp.btn': 'Rest →',
+    'rest.mystery.title': 'Mysterious Room',
+    'rest.mystery.btn': 'Continue →',
+    'rest.trap.title': 'Trap!',
+    'rest.trap.desc': 'You trigger a hidden mechanism. Blades shoot from the walls!',
+    'rest.trap.btn': 'Face the enemy →',
+    'shop.inv.full': 'Inventory full',
+    'shop.inv.full.buy': 'Equip or sell an item before buying a new one.',
+    'shop.inv.full.unequip': 'Free up a slot in your bag before unequipping this item.',
+    'shop.inv.full.limit': 'You cannot carry more than 8 items.',
+    'shop.free.title': 'Free Purchase!',
+    'shop.free.desc': 'This purchase is refunded thanks to your ad!',
+    'shop.free.refund': 'Your last purchase is refunded! +{n} 🪙',
+    'passage.label': 'HIDDEN PASSAGE',
+    'passage.sub': 'The far wall has always been there.',
+    'passage.text': 'You\'ve been here before. Dozens of times perhaps.\n\nBut today something has changed.\n\nThe far stone vibrates slightly. A crack. A finger\'s width long.\n\nYou touch it.\n\nAnd the wall opens.',
     // Misc
     'misc.continue_arrow': 'Continue →',
     // Town
@@ -5808,11 +5844,11 @@ var Rooms = {
     var actual = Math.min(heal, State.hpMax - State.hp);
     Rooms._healAmt = actual;
     document.getElementById('rest-icon').textContent     = '🔥';
-    document.getElementById('rest-title').textContent    = 'Feu de camp';
-    document.getElementById('rest-desc').textContent     = 'Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.';
-    document.getElementById('rest-heal-val').textContent = '+'+actual+' PV';
+    document.getElementById('rest-title').textContent    = T('rest.camp.title');
+    document.getElementById('rest-desc').textContent     = T('rest.camp.desc');
+    document.getElementById('rest-heal-val').textContent = '+'+actual+' '+T('hero.hp');
     document.getElementById('rest-heal-val').style.color = '';
-    document.getElementById('btn-rest-cont').textContent = 'Se reposer →';
+    document.getElementById('btn-rest-cont').textContent = T('rest.camp.btn');
     Nav.go('rest-screen');
   },
 
@@ -5838,10 +5874,10 @@ var Rooms = {
     var ev = events[Math.floor(Math.random()*events.length)]();
     if (typeof HUD !== 'undefined') HUD.updateGold();
     document.getElementById('rest-icon').textContent     = ev.ico;
-    document.getElementById('rest-title').textContent    = 'Salle Mystérieuse';
+    document.getElementById('rest-title').textContent    = T('rest.mystery.title');
     document.getElementById('rest-desc').textContent     = ev.msg;
     document.getElementById('rest-heal-val').textContent = ev.label;
-    document.getElementById('btn-rest-cont').textContent = 'Continuer →';
+    document.getElementById('btn-rest-cont').textContent = T('rest.mystery.btn');
     Nav.go('rest-screen');
   },
 
@@ -5849,11 +5885,11 @@ var Rooms = {
     var dmg = Math.round(State.hpMax * 0.15);
     State.hp = Math.max(1, State.hp - dmg);
     document.getElementById('rest-icon').textContent     = '⚠';
-    document.getElementById('rest-title').textContent    = 'Piège !';
-    document.getElementById('rest-desc').textContent     = 'Tu déclenches un mécanisme caché. Les lames jaillissent des murs !';
-    document.getElementById('rest-heal-val').textContent = '-'+dmg+' PV';
+    document.getElementById('rest-title').textContent    = T('rest.trap.title');
+    document.getElementById('rest-desc').textContent     = T('rest.trap.desc');
+    document.getElementById('rest-heal-val').textContent = '-'+dmg+' '+T('hero.hp');
     document.getElementById('rest-heal-val').style.color = '#e05050';
-    document.getElementById('btn-rest-cont').textContent = 'Affronter l\'ennemi →';
+    document.getElementById('btn-rest-cont').textContent = T('rest.trap.btn');
     Rooms._trapCallback = onContinue;
     Nav.go('rest-screen');
   },
@@ -7260,7 +7296,7 @@ Rooms.shopBuy = function(idx) {
     if (State.inventory.length < 8) {
       State.inventory.push(item);
     } else {
-      CGEModal.alert('Inventaire plein', 'Équipe ou vends un objet avant d\'en acheter un nouveau.');
+      CGEModal.alert(T('shop.inv.full'), T('shop.inv.full.buy'));
       State.gold += cost; return;
     }
   } else if (item.effect) {
@@ -7270,7 +7306,7 @@ Rooms.shopBuy = function(idx) {
   if (State._adShopFreeNext) {
     State._adShopFreeNext = false;
     State.gold += cost;
-    CGEModal.alert('Achat Gratuit !', 'Cet achat est remboursé grâce à votre pub !');
+    CGEModal.alert(T('shop.free.title'), T('shop.free.desc'));
   }
   State._lastShopCost = cost;
   Sfx.buy && Sfx.buy();
@@ -7305,26 +7341,54 @@ var FLOOR_QUOTES = [
   'La mort rôde dans ces couloirs...',
   'Tu touches le fond de l\'abîsse...',
 ];
+var FLOOR_QUOTES_EN = [
+  'The walls seep with darkness...',
+  'The air grows colder and heavier...',
+  'The shadows thicken...',
+  'You sense an ancient presence...',
+  'Death lurks in these corridors...',
+  'You touch the bottom of the abyss...',
+];
+function getFloorQuote(idx) {
+  var arr = CGE_LANG === 'en' ? FLOOR_QUOTES_EN : FLOOR_QUOTES;
+  return arr[Math.min(idx, arr.length-1)];
+}
 
 // Fragments de mémoire — révélés dans les Cryptes après seraphine_3
 // Chaque fragment est un souvenir de l'Éveillé du siècle passé
 var MEMORY_FRAGMENTS = [
   { id:'mem_01', title:'Fragment I — L\'Arrivée',
-    text:'Un homme marche seul sur une route de nuit. Il tient un parchemin. Il se retourne — quelque chose le suit depuis des semaines. Il ne sait pas encore ce que c\'est.\n\nIl sait juste que tant qu\'il marche vers les Cryptes, ça ne s\'approche pas.' },
+    titleEn:'Fragment I — The Arrival',
+    text:'Un homme marche seul sur une route de nuit. Il tient un parchemin. Il se retourne — quelque chose le suit depuis des semaines. Il ne sait pas encore ce que c\'est.\n\nIl sait juste que tant qu\'il marche vers les Cryptes, ça ne s\'approche pas.',
+    textEn:'A man walks alone on a night road. He holds a scroll. He looks back — something has been following him for weeks. He doesn\'t know what it is yet.\n\nHe only knows that as long as he walks toward the Crypts, it doesn\'t come closer.' },
   { id:'mem_02', title:'Fragment II — La Taverne',
-    text:'Une femme derrière un comptoir. Elle lui sert à boire sans poser de questions. Il paie. Il part.\n\nTrois ans plus tard, quand tout est terminé, il revient pour régler sa dette.\n\nLa taverne n\'existait plus.' },
+    titleEn:'Fragment II — The Tavern',
+    text:'Une femme derrière un comptoir. Elle lui sert à boire sans poser de questions. Il paie. Il part.\n\nTrois ans plus tard, quand tout est terminé, il revient pour régler sa dette.\n\nLa taverne n\'existait plus.',
+    textEn:'A woman behind a counter. She serves him a drink without asking questions. He pays. He leaves.\n\nThree years later, when it is all over, he returns to settle his debt.\n\nThe tavern was gone.' },
   { id:'mem_03', title:'Fragment III — Le Barde',
-    text:'Il savait depuis le début. Le barde jouait trop bien, souriait trop peu quand personne ne regardait.\n\nMais il avait besoin de lui. Et le barde avait besoin d\'une fin.\n\nCertains mensonges sont plus utiles que certaines vérités.' },
+    titleEn:'Fragment III — The Bard',
+    text:'Il savait depuis le début. Le barde jouait trop bien, souriait trop peu quand personne ne regardait.\n\nMais il avait besoin de lui. Et le barde avait besoin d\'une fin.\n\nCertains mensonges sont plus utiles que certaines vérités.',
+    textEn:'He knew from the beginning. The bard played too well, smiled too little when no one was watching.\n\nBut he needed him. And the bard needed an ending.\n\nSome lies are more useful than some truths.' },
   { id:'mem_04', title:'Fragment IV — La Sorcière',
-    text:'"Tu ne reviendras pas," lui dit-elle.\n\nIl répondit : "Je sais."\n\n"Alors pourquoi ?"\n\nIl n\'avait pas de réponse. Pas une qu\'il puisse formuler. Certaines décisions existent avant les mots.' },
+    titleEn:'Fragment IV — The Witch',
+    text:'"Tu ne reviendras pas," lui dit-elle.\n\nIl répondit : "Je sais."\n\n"Alors pourquoi ?"\n\nIl n\'avait pas de réponse. Pas une qu\'il puisse formuler. Certaines décisions existent avant les mots.',
+    textEn:'"You won\'t come back," she told him.\n\nHe replied: "I know."\n\n"Then why?"\n\nHe had no answer. Not one he could put into words. Some decisions exist before language.' },
   { id:'mem_05', title:'Fragment V — Le Sceau',
-    text:'Les runes brillaient d\'une lumière qui n\'éclairait pas. Il posa les mains sur la pierre.\n\nDe l\'autre côté, quelque chose bougea. Quelque chose d\'immense et de patient.\n\n"Je t\'attendais," dit la voix.\n\n"Je sais," dit-il. "C\'est pour ça que je suis venu moi-même."' },
+    titleEn:'Fragment V — The Seal',
+    text:'Les runes brillaient d\'une lumière qui n\'éclairait pas. Il posa les mains sur la pierre.\n\nDe l\'autre côté, quelque chose bougea. Quelque chose d\'immense et de patient.\n\n"Je t\'attendais," dit la voix.\n\n"Je sais," dit-il. "C\'est pour ça que je suis venu moi-même."',
+    textEn:'The runes glowed with a light that gave no illumination. He placed his hands on the stone.\n\nOn the other side, something moved. Something immense and patient.\n\n"I\'ve been waiting for you," said the voice.\n\n"I know," he said. "That\'s why I came myself."' },
   { id:'mem_06', title:'Fragment VI — Le Prix',
-    text:'Ce qu\'il a sacrifié n\'était pas sa vie. La mort, ça finit.\n\nCe qu\'il a sacrifié, c\'est tout le reste. Les souvenirs. Le nom. La continuité d\'exister tel qu\'il était.\n\nIl est devenu une partie du verrou.\n\nEt quelque part, cent ans plus tard, quelqu\'un se réveille sans se souvenir de rien.' },
+    titleEn:'Fragment VI — The Price',
+    text:'Ce qu\'il a sacrifié n\'était pas sa vie. La mort, ça finit.\n\nCe qu\'il a sacrifié, c\'est tout le reste. Les souvenirs. Le nom. La continuité d\'exister tel qu\'il était.\n\nIl est devenu une partie du verrou.\n\nEt quelque part, cent ans plus tard, quelqu\'un se réveille sans se souvenir de rien.',
+    textEn:'What he sacrificed was not his life. Death has an end.\n\nWhat he sacrificed was everything else. The memories. The name. The continuity of existing as he was.\n\nHe became part of the lock.\n\nAnd somewhere, a hundred years later, someone wakes up remembering nothing.' },
   { id:'mem_07', title:'Fragment VII — Le Retour',
-    text:'La pierre se souvient de lui. Les Cryptes se souviennent de lui.\n\nTout le monde a oublié.\n\nSauf peut-être... une chanson. Vieille de cent ans. Que personne ne se rappelle avoir composée.' },
+    titleEn:'Fragment VII — The Return',
+    text:'La pierre se souvient de lui. Les Cryptes se souviennent de lui.\n\nTout le monde a oublié.\n\nSauf peut-être... une chanson. Vieille de cent ans. Que personne ne se rappelle avoir composée.',
+    textEn:'The stone remembers him. The Crypts remember him.\n\nEveryone has forgotten.\n\nExcept perhaps... a song. A hundred years old. That no one recalls composing.' },
   { id:'mem_08', title:'Fragment VIII — Le Choix',
-    text:'Il aurait pu briser le sceau. Libérer le Dieu de la Mémoire — cet être qui efface les identités, qui dévore les civilisations en leur faisant oublier qu\'elles ont existé.\n\nMais peut-être qu\'une prison d\'un siècle l\'avait changé. Peut-être qu\'il souffrait, là-dedans.\n\nIl ne le saura jamais. Il a choisi le verrou.\n\nToi... tu dois encore choisir.' },
+    titleEn:'Fragment VIII — The Choice',
+    text:'Il aurait pu briser le sceau. Libérer le Dieu de la Mémoire — cet être qui efface les identités, qui dévore les civilisations en leur faisant oublier qu\'elles ont existé.\n\nMais peut-être qu\'une prison d\'un siècle l\'avait changé. Peut-être qu\'il souffrait, là-dedans.\n\nIl ne le saura jamais. Il a choisi le verrou.\n\nToi... tu dois encore choisir.',
+    textEn:'He could have broken the seal. Released the God of Memory — that being who erases identities, who devours civilizations by making them forget they ever existed.\n\nBut perhaps a century of imprisonment had changed it. Perhaps it suffered, in there.\n\nHe will never know. He chose the lock.\n\nYou... still have to choose.' },
 ];
 
 function advanceFloor() {
@@ -7341,11 +7405,11 @@ function advanceFloor() {
   var ftMem = document.getElementById('ft-memory');
 
   if (mem && ftMem) {
-    ftSub.textContent = mem.title;
-    ftMem.textContent = mem.text;
+    ftSub.textContent = CGE_LANG==='en' ? (mem.titleEn||mem.title) : mem.title;
+    ftMem.textContent = CGE_LANG==='en' ? (mem.textEn||mem.text) : mem.text;
     ftMem.classList.add('show');
   } else {
-    ftSub.textContent = FLOOR_QUOTES[Math.min(State.floor-1, FLOOR_QUOTES.length-1)];
+    ftSub.textContent = getFloorQuote(State.floor-1);
     if (ftMem) { ftMem.textContent = ''; ftMem.classList.remove('show'); }
   }
 
@@ -7830,10 +7894,10 @@ var DungeonMap = (function() {
       var ftSub = document.getElementById('ft-sub');
       var ftMem = document.getElementById('ft-memory');
 
-      ftLabel.textContent = 'PASSAGE OBSCUR';
+      ftLabel.textContent = T('passage.label');
       ftNum.textContent = '⬡';
-      ftSub.textContent = 'Le mur du fond a toujours été là.';
-      ftMem.textContent = 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.';
+      ftSub.textContent = T('passage.sub');
+      ftMem.textContent = T('passage.text');
       ftMem.classList.add('show');
       ft.classList.add('show');
       ft.style.background = 'radial-gradient(ellipse at center, #1a0a2e 0%, #06030f 100%)';
@@ -7868,6 +7932,14 @@ var EquipScreen = (function() {
     gants:'Gantelets', ceinture:'Ceinture', jambieres:'Jambières', bottes:'Bottes',
     collier:'Collier', bague_gauche:'Bague gauche', bague_droite:'Bague droite'
   };
+  var SLOT_LABELS_EN = {
+    arme:'Weapon', bouclier:'Shield', heaume:'Helmet', plastron:'Breastplate',
+    gants:'Gauntlets', ceinture:'Belt', jambieres:'Greaves', bottes:'Boots',
+    collier:'Necklace', bague_gauche:'Left Ring', bague_droite:'Right Ring'
+  };
+  function getSlotLabel(slot) {
+    return (CGE_LANG==='en' ? SLOT_LABELS_EN[slot] : SLOT_LABELS[slot]) || slot;
+  }
 
   var SLOT_DEFAULT_ICO = {
     arme:'⚔', bouclier:'🛡', heaume:'🪖', plastron:'🥋',
@@ -7967,7 +8039,7 @@ var EquipScreen = (function() {
 
     document.getElementById('eq-detail-ico').textContent  = item.ico || '?';
     document.getElementById('eq-detail-name').textContent = item.name || '—';
-    document.getElementById('eq-detail-slot').textContent = SLOT_LABELS[item.slot] || SLOT_LABELS[ctx.slot] || '';
+    document.getElementById('eq-detail-slot').textContent = getSlotLabel(item.slot || ctx.slot);
     document.getElementById('eq-detail-desc').textContent = item.desc || '';
 
     // Stats chips
@@ -8040,7 +8112,7 @@ var EquipScreen = (function() {
     if (!item) return;
     State.inventory = State.inventory || [];
     if (State.inventory.length >= 8) {
-      CGEModal.alert('Inventaire plein', 'Libère une place dans ton sac avant de retirer cet équipement.');
+      CGEModal.alert(T('shop.inv.full'), T('shop.inv.full.unequip'));
       return;
     }
     applyItemStats(item, -1);
@@ -8124,7 +8196,7 @@ var ChestScreen = {
               // Move chest → inventory
               var item = Meta.chest[idx];
               if (!item) return;
-              if ((State.inventory||[]).length >= 8) { CGEModal.alert('Inventaire plein', 'Tu ne peux pas porter plus de 8 objets.'); return; }
+              if ((State.inventory||[]).length >= 8) { CGEModal.alert(T('shop.inv.full'), T('shop.inv.full.limit')); return; }
               Meta.chest.splice(idx, 1);
               State.inventory.push(item);
               Meta.save();
@@ -8405,7 +8477,7 @@ var RewardedAds = (function(){
           State._lastShopCost = 0;
           if (typeof HUD !== 'undefined') HUD.updateGold();
           var sv = document.getElementById('shop-gold-val'); if (sv) sv.textContent = State.gold;
-          CGEModal.alert('Achat Gratuit !', 'Le dernier objet acheté vous est remboursé ! +' + refund + ' 🪙');
+          CGEModal.alert(T('shop.free.title'), T('shop.free.refund').replace('{n}', refund));
         } else {
           CGEModal.alert('Prochain achat gratuit !', 'Le prochain objet acheté en boutique sera remboursé automatiquement.');
           State._adShopFreeNext = true;
