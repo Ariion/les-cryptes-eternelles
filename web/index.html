@@ -2500,41 +2500,41 @@ canvas#particles {
       <!-- Actions -->
       <div id="cb-actions">
         <button class="cb-btn cb-btn-attack" onclick="Combat.playerAttack()">
-          <span class="cb-ico">⚔</span>Attaquer
+          <span class="cb-ico">⚔</span><span data-i18n="combat.attack">Attaquer</span>
         </button>
         <button class="cb-btn cb-btn-defend" onclick="Combat.playerDefend()">
-          <span class="cb-ico">🛡</span>Défendre
+          <span class="cb-ico">🛡</span><span data-i18n="combat.defend">Défendre</span>
         </button>
         <button class="cb-btn cb-btn-skill" id="btn-skill" onclick="Combat.playerSkill()">
-          <span class="cb-ico">✨</span>Compétence
+          <span class="cb-ico">✨</span><span data-i18n="combat.skill">Compétence</span>
           <span class="cb-cd" id="skill-cd"></span>
         </button>
         <button class="cb-btn cb-btn-potion" id="btn-potion" onclick="Combat.usePotion()">
-          <span class="cb-ico">🧪</span>Potion <span id="cb-potion-count"></span>
+          <span class="cb-ico">🧪</span><span data-i18n="combat.potion">Potion</span> <span id="cb-potion-count"></span>
         </button>
         <button class="cb-btn cb-btn-item" onclick="Combat.showItemMenu()">
-          <span class="cb-ico">🎒</span>Sac
+          <span class="cb-ico">🎒</span><span data-i18n="combat.bag">Sac</span>
         </button>
         <button class="cb-btn cb-btn-flee" onclick="Combat.playerFlee()">
-          🏃 Fuir (risqué)
+          🏃 <span data-i18n="combat.flee">Fuir (risqué)</span>
         </button>
       </div>
 
       <!-- Spell picker (Mage & Prêtre) -->
       <div id="spell-overlay">
         <div id="spell-box">
-          <div id="spell-title">CHOISIR UN SORT</div>
+          <div id="spell-title" data-i18n="combat.choosespell">CHOISIR UN SORT</div>
           <div id="spell-list"></div>
-          <button id="spell-cancel" onclick="Combat.closeSpells()">Annuler</button>
+          <button id="spell-cancel" onclick="Combat.closeSpells()" data-i18n="misc.cancel">Annuler</button>
         </div>
       </div>
 
       <!-- Item select overlay (inside combat screen) -->
       <div id="item-overlay">
         <div id="item-overlay-box">
-          <div id="item-overlay-title">UTILISER UN OBJET</div>
+          <div id="item-overlay-title" data-i18n="combat.useitem">UTILISER UN OBJET</div>
           <div id="item-rows"></div>
-          <button id="item-overlay-cancel" onclick="Combat.closeItemMenu()">Annuler</button>
+          <button id="item-overlay-cancel" onclick="Combat.closeItemMenu()" data-i18n="misc.cancel">Annuler</button>
         </div>
       </div>
 
@@ -2552,19 +2552,19 @@ canvas#particles {
         <div id="result-icon">⚔</div>
         <div id="result-title">Résultat</div>
         <div id="result-sub"></div>
-        <button id="result-btn" onclick="Combat.closeResult()">Continuer</button>
+        <button id="result-btn" onclick="Combat.closeResult()" data-i18n="combat.continue">Continuer</button>
       </div>
     </div>
 
     <!-- ── LOOT ── -->
     <div id="loot-screen" class="screen has-game-header">
-      <div id="loot-title">Victoire !</div>
-      <div id="loot-sub">L'ennemi est vaincu</div>
+      <div id="loot-title" data-i18n="loot.title">Victoire !</div>
+      <div id="loot-sub" data-i18n="loot.sub">L'ennemi est vaincu</div>
       <div id="loot-gold-wrap">
         <div id="loot-gold-ico">🪙</div>
         <div>
           <div id="loot-gold-val">+0</div>
-          <div id="loot-gold-lbl">Or gagné</div>
+          <div id="loot-gold-lbl" data-i18n="loot.gold">Or gagné</div>
         </div>
       </div>
       <div id="loot-item-wrap">
@@ -2574,34 +2574,34 @@ canvas#particles {
           <div id="loot-item-desc">Description</div>
         </div>
       </div>
-      <button id="btn-loot-cont" onclick="Rooms.lootContinue()">Continuer →</button>
+      <button id="btn-loot-cont" onclick="Rooms.lootContinue()" data-i18n="misc.continue_arrow">Continuer →</button>
       <div id="loot-ad-wrap"></div>
     </div>
 
     <!-- ── GAME OVER ── -->
     <div id="gameover-screen" class="screen">
       <div id="go-skull">💀</div>
-      <div id="go-title">Défaite</div>
+      <div id="go-title" data-i18n="go.title">Défaite</div>
       <div id="go-quote">"Les cryptes gardent leurs secrets pour l'éternité..."</div>
       <div id="go-stats">
-        <div class="go-stat-row"><span class="go-stat-lbl">Étage atteint</span><span class="go-stat-val" id="go-floor">1</span></div>
-        <div class="go-stat-row"><span class="go-stat-lbl">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
-        <div class="go-stat-row"><span class="go-stat-lbl">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
+        <div class="go-stat-row"><span class="go-stat-lbl" data-i18n="go.floor">Étage atteint</span><span class="go-stat-val" id="go-floor">1</span></div>
+        <div class="go-stat-row"><span class="go-stat-lbl" data-i18n="go.gold">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
+        <div class="go-stat-row"><span class="go-stat-lbl" data-i18n="go.kills">Ennemis vaincus</span><span class="go-stat-val" id="go-kills">0</span></div>
       </div>
-      <button id="btn-go-inn" onclick="App.continueAfterVictory()">🏠 Retour à l'auberge</button>
+      <button id="btn-go-inn" onclick="App.continueAfterVictory()" data-i18n="go.inn">🏠 Retour à l'auberge</button>
       <div id="go-ad-wrap"></div>
-      <button id="btn-go-menu" onclick="Nav.go('main-menu')">Menu principal</button>
+      <button id="btn-go-menu" onclick="Nav.go('main-menu')" data-i18n="menu.main">Menu principal</button>
     </div>
 
     <!-- ── REPOS ── -->
     <div id="rest-screen" class="screen has-game-header">
       <div id="rest-icon">🔥</div>
       <div>
-        <div id="rest-title">Feu de camp</div>
-        <div id="rest-desc">Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.</div>
+        <div id="rest-title" data-i18n="rest.title">Feu de camp</div>
+        <div id="rest-desc" data-i18n="rest.desc">Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.</div>
       </div>
       <div id="rest-heal-val">+0 PV</div>
-      <button id="btn-rest-cont" onclick="Rooms.restContinue()">Se reposer →</button>
+      <button id="btn-rest-cont" onclick="Rooms.restContinue()" data-i18n="rest.btn">Se reposer →</button>
     </div>
 
     <!-- ── BOUTIQUE ── -->
@@ -3884,7 +3884,7 @@ var ProfilesScreen = {
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
     State.scrolls = [];
-    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
@@ -4180,10 +4180,30 @@ var STRINGS = {
     'profile.lastplayed': 'Dernière partie :',
     // Combat
     'combat.attack': 'Attaquer',
+    'combat.defend': 'Défendre',
+    'combat.skill': 'Compétence',
     'combat.potion': 'Potion',
-    'combat.flee': 'Fuir',
+    'combat.bag': 'Sac',
+    'combat.flee': 'Fuir (risqué)',
+    'combat.choosespell': 'CHOISIR UN SORT',
+    'combat.useitem': 'UTILISER UN OBJET',
+    'combat.continue': 'Continuer',
     'combat.victory': 'Victoire !',
     'combat.defeat': 'Défaite',
+    // Loot
+    'loot.title': 'Victoire !',
+    'loot.sub': 'L\'ennemi est vaincu',
+    'loot.gold': 'Or gagné',
+    // Gameover
+    'go.title': 'Défaite',
+    'go.inn': '🏠 Retour à l\'auberge',
+    'menu.main': 'Menu principal',
+    // Rest screen
+    'rest.title': 'Feu de camp',
+    'rest.desc': 'Tu trouves un abri précaire dans les ténèbres. Le feu crépite doucement.',
+    'rest.btn': 'Se reposer →',
+    // Misc
+    'misc.continue_arrow': 'Continuer →',
     // Town
     'town.title': 'Thornwall',
     'town.inn': '🛏 Chambre',
@@ -4286,10 +4306,7 @@ var STRINGS = {
     'misc.cancel': 'Annuler',
     'misc.loading': 'Chargement...',
     'misc.wind': 'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.',
-    // Combat
-    'combat.attack': 'Attaquer',
-    'combat.potion': 'Potion',
-    'combat.flee': 'Fuir',
+    // Combat extra
     'combat.floor': 'Étage',
     'combat.enemy_turn': 'Tour de l\'ennemi…',
     // Gameover
@@ -4421,10 +4438,30 @@ var STRINGS = {
     'profile.lastplayed': 'Last played:',
     // Combat
     'combat.attack': 'Attack',
+    'combat.defend': 'Defend',
+    'combat.skill': 'Skill',
     'combat.potion': 'Potion',
-    'combat.flee': 'Flee',
+    'combat.bag': 'Bag',
+    'combat.flee': 'Flee (risky)',
+    'combat.choosespell': 'CHOOSE A SPELL',
+    'combat.useitem': 'USE AN ITEM',
+    'combat.continue': 'Continue',
     'combat.victory': 'Victory!',
     'combat.defeat': 'Defeat',
+    // Loot
+    'loot.title': 'Victory!',
+    'loot.sub': 'Enemy defeated',
+    'loot.gold': 'Gold gained',
+    // Gameover
+    'go.title': 'Defeat',
+    'go.inn': '🏠 Back to the inn',
+    'menu.main': 'Main menu',
+    // Rest screen
+    'rest.title': 'Campfire',
+    'rest.desc': 'You find a precarious shelter in the darkness. The fire crackles softly.',
+    'rest.btn': 'Rest →',
+    // Misc
+    'misc.continue_arrow': 'Continue →',
     // Town
     'town.title': 'Thornwall',
     'town.inn': '🛏 Inn',
@@ -4527,10 +4564,7 @@ var STRINGS = {
     'misc.cancel': 'Cancel',
     'misc.loading': 'Loading...',
     'misc.wind': 'Everything here has been cleared.\n\nNothing remains but the sound of the wind.',
-    // Combat
-    'combat.attack': 'Attack',
-    'combat.potion': 'Potion',
-    'combat.flee': 'Flee',
+    // Combat extra
     'combat.floor': 'Floor',
     'combat.enemy_turn': 'Enemy turn…',
     // Gameover
@@ -8827,7 +8861,7 @@ var App = {
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
     State.scrolls = [];
-    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null };
+    State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
     // Mana (Mage & Prêtre uniquement)
     if (State.cls === 'Mage')   { State.manaMax = 60; State.mana = 60; }
@@ -8845,7 +8879,7 @@ var App = {
         if (!State.loadRun()) { ProfilesScreen.open(); return; }
       } else { ProfilesScreen.open(); return; }
     }
-    if (State.name === undefined) State.name = 'Aventurier';
+    if (State.name === undefined) State.name = T('create.name.placeholder');
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
