@@ -4304,6 +4304,7 @@ var STRINGS = {
     'misc.close': 'Fermer',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
+    'misc.available': 'Disponible',
     'misc.loading': 'Chargement...',
     'misc.wind': 'Tout a été nettoyé ici.\n\nIl ne reste plus que le bruit du vent.',
     // Combat extra
@@ -4560,6 +4561,7 @@ var STRINGS = {
     'misc.close': 'Close',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
+    'misc.available': 'Available',
     'misc.loading': 'Loading...',
     'misc.wind': 'Everything here has been cleared.\n\nNothing remains but the sound of the wind.',
     // Combat extra
@@ -8218,10 +8220,10 @@ var Travel = {
     var abyss = document.getElementById('tv-abyss');
     if ((State.floor||1) < 5) {
       abyss.classList.add('locked');
-      document.getElementById('tv-abyss-lock').textContent = 'Étage 5+';
+      document.getElementById('tv-abyss-lock').textContent = T('hud.floor')+' 5+';
     } else {
       abyss.classList.remove('locked');
-      document.getElementById('tv-abyss-lock').textContent = 'Disponible';
+      document.getElementById('tv-abyss-lock').textContent = T('misc.available');
     }
     Nav.go('travel-screen');
   },
@@ -8231,7 +8233,7 @@ var Travel = {
     State.hp = Math.min(State.hpMax, (State.hp||0) + heal);
     Sfx.heal();
     Nav.go('rest-screen');
-    document.getElementById('rest-heal-val').textContent = '+'+heal+' PV';
+    document.getElementById('rest-heal-val').textContent = '+'+heal+' '+T('hero.hp');
     updateMapHpBar();
   },
 
@@ -8272,13 +8274,21 @@ var InnRoom = {
       State.saveRun();
       setTimeout(function(){
         var trait = (State._introChoices || {}).trait;
-        var opener = trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
-          : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
-          : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.';
+        var en = CGE_LANG === 'en';
+        var opener = en
+          ? (trait === 'cold' ? 'You were shivering when they found you. Like a dead man.'
+            : trait === 'pain' ? 'You were moaning in your sleep. Three days.'
+            : 'You didn\'t make a sound. We wondered if you\'d ever wake up.')
+          : (trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
+            : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
+            : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.');
+        var martaText = en
+          ? opener + '\n\n"I\'m Marta, the landlady of The Broken Shield. Someone brought you here unconscious three days ago. You owe me 50 coins for the room and care.\n\nIf you want to know where you come from... try the tavern. The people who remember you — if there are any — hang around there."'
+          : opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."';
         CGEModal.show({
           title: 'Marta',
-          text: opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."',
-          okLabel: 'Compris',
+          text: martaText,
+          okLabel: T('modal.ok'),
           onOk: function() {
             // Première quête : payer Marta
             if (typeof Meta !== 'undefined' && !(Meta.completedQuests||{})['marta_debt']) {
@@ -8296,7 +8306,7 @@ var InnRoom = {
     var fill = document.getElementById('inn-hp-bar-fill');
     var txt  = document.getElementById('inn-hp-text');
     if (fill) fill.style.width = Math.max(0, Math.min(100, hp/hpMax*100)) + '%';
-    if (txt)  txt.textContent = hp + ' / ' + hpMax + ' PV';
+    if (txt)  txt.textContent = hp + ' / ' + hpMax + ' ' + T('hero.hp');
   },
   rest: function() {
     var cost = 15;
@@ -8506,64 +8516,92 @@ var TownScreen = {
     var act4 = !!done['cryptes_final'];
     var act3 = !!done['seraphine_3'];
     var act2 = !!done['seraphine_2'];
+    var en = CGE_LANG === 'en';
 
     // Act IV — château ouvert à tous, mais épilogue racial
     if (act4) {
       var txt = race === 'Orc'
-        ? 'Les gardes s\'écartent lentement. L\'un d\'eux baisse les yeux.\n\n"Entrez, Seigneur des Cryptes."\n\nLa première fois qu\'un Orc franchit ces grilles depuis cent ans.'
+        ? (en ? 'The guards part slowly. One of them lowers their eyes.\n\n"Enter, Lord of the Crypts."\n\nThe first time an Orc has passed through these gates in a hundred years.'
+               : 'Les gardes s\'écartent lentement. L\'un d\'eux baisse les yeux.\n\n"Entrez, Seigneur des Cryptes."\n\nLa première fois qu\'un Orc franchit ces grilles depuis cent ans.')
         : race === 'Elfe'
-        ? 'Les grilles s\'ouvrent sans un mot. Comme si elles t\'attendaient.\n\nUn garde chuchote à l\'autre : « C\'est l\'Elfe de la prophétie. »'
+        ? (en ? 'The gates open without a word. As if they were waiting for you.\n\nA guard whispers to the other: "It\'s the Elf of the prophecy."'
+               : 'Les grilles s\'ouvrent sans un mot. Comme si elles t\'attendaient.\n\nUn garde chuchote à l\'autre : « C\'est l\'Elfe de la prophétie. »')
         : race === 'Nain'
-        ? 'Le capitaine de garde te salue du poing sur la poitrine.\n\n"Le Seigneur des Cryptes. Les forges du Château sont à ta disposition."'
-        : 'Le garde te reconnaît et s\'incline.\n\n"Le Seigneur des Cryptes. Sa Grâce vous attendait."';
-      CGEModal.alert('Le Château', txt);
+        ? (en ? 'The captain of the guard salutes you with a fist to his chest.\n\n"The Lord of the Crypts. The Castle\'s forges are at your disposal."'
+               : 'Le capitaine de garde te salue du poing sur la poitrine.\n\n"Le Seigneur des Cryptes. Les forges du Château sont à ta disposition."')
+        : (en ? 'The guard recognises you and bows.\n\n"The Lord of the Crypts. His Grace was expecting you."'
+               : 'Le garde te reconnaît et s\'incline.\n\n"Le Seigneur des Cryptes. Sa Grâce vous attendait."');
+      CGEModal.alert(en ? 'The Castle' : 'Le Château', txt);
       return;
     }
 
-    // Act III — accès limité pour certaines races avec Séraphine's word
+    // Act III — accès limité
     if (act3) {
       if (race === 'Orc') {
-        CGEModal.alert('Accès Conditionnel', 'Un garde lève sa hallebarde.\n\n"On nous a prévenus. Séraphine a garanti ta conduite."\n\nIl hésite longuement.\n\n"Une visite. Sous escorte."');
+        CGEModal.alert(en ? 'Conditional Access' : 'Accès Conditionnel',
+          en ? 'A guard raises his halberd.\n\n"We were warned. Séraphine vouched for your conduct."\n\nHe hesitates for a long moment.\n\n"One visit. Under escort."'
+             : 'Un garde lève sa hallebarde.\n\n"On nous a prévenus. Séraphine a garanti ta conduite."\n\nIl hésite longuement.\n\n"Une visite. Sous escorte."');
       } else if (race === 'Elfe') {
-        CGEModal.alert('Le Château', 'Les gardes reculent instinctivement.\n\n"Un Elfe... on disait que vous reviendriez."\n\nIls te laissent entrer, troublés.');
+        CGEModal.alert(en ? 'The Castle' : 'Le Château',
+          en ? 'The guards instinctively step back.\n\n"An Elf... they said you would return."\n\nThey let you in, unsettled.'
+             : 'Les gardes reculent instinctivement.\n\n"Un Elfe... on disait que vous reviendriez."\n\nIls te laissent entrer, troublés.');
       } else {
-        CGEModal.alert('Le Château', 'Le garde consulte une liste, hoche la tête.\n\n"Séraphine vous a recommandé. Entrez — le Conseiller vous reçoit."');
+        CGEModal.alert(en ? 'The Castle' : 'Le Château',
+          en ? 'The guard consults a list, nods.\n\n"Séraphine recommended you. Enter — the Counsellor will receive you."'
+             : 'Le garde consulte une liste, hoche la tête.\n\n"Séraphine vous a recommandé. Entrez — le Conseiller vous reçoit."');
       }
       return;
     }
 
-    // Act II — accès refusé avec message racial
+    // Act II — accès refusé
     if (act2) {
       if (race === 'Orc') {
-        CGEModal.alert('Accès Refusé', 'Le garde fait un pas en arrière, main sur son épée.\n\n"Un Orc ne franchit pas ces grilles."\n\nIl ne te laisse pas finir.\n\n"Partez. Maintenant."');
+        CGEModal.alert(en ? 'Access Denied' : 'Accès Refusé',
+          en ? 'The guard takes a step back, hand on his sword.\n\n"An Orc does not pass through these gates."\n\nHe doesn\'t let you finish.\n\n"Leave. Now."'
+             : 'Le garde fait un pas en arrière, main sur son épée.\n\n"Un Orc ne franchit pas ces grilles."\n\nIl ne te laisse pas finir.\n\n"Partez. Maintenant."');
       } else if (race === 'Elfe') {
-        CGEModal.alert('Accès Refusé', 'Le garde t\'observe longuement avec méfiance.\n\n"Les Elfes ne sont pas les bienvenus au Château depuis... l\'incident."\n\nIl ne précise pas lequel.\n\n"Revenez avec une lettre du Conseiller."');
+        CGEModal.alert(en ? 'Access Denied' : 'Accès Refusé',
+          en ? 'The guard watches you for a long time with suspicion.\n\n"Elves have not been welcome at the Castle since... the incident."\n\nHe doesn\'t specify which one.\n\n"Come back with a letter from the Counsellor."'
+             : 'Le garde t\'observe longuement avec méfiance.\n\n"Les Elfes ne sont pas les bienvenus au Château depuis... l\'incident."\n\nIl ne précise pas lequel.\n\n"Revenez avec une lettre du Conseiller."');
       } else if (race === 'Nain') {
-        CGEModal.alert('Accès Refusé', '"Nain ou pas, les règles sont les règles."\n\nIl adoucit le ton.\n\n"Vous n\'êtes pas encore assez connus de Sa Grâce. Faites-vous remarquer et ça changera."');
+        CGEModal.alert(en ? 'Access Denied' : 'Accès Refusé',
+          en ? '"Dwarf or not, rules are rules."\n\nHe softens his tone.\n\n"You\'re not yet well known to His Grace. Make yourself noticed and that will change."'
+             : '"Nain ou pas, les règles sont les règles."\n\nIl adoucit le ton.\n\n"Vous n\'êtes pas encore assez connus de Sa Grâce. Faites-vous remarquer et ça changera."');
       } else {
-        CGEModal.alert('Accès Refusé', '"Vous progressez, aventurier. Mais il vous manque encore quelque chose."\n\nIl tape sa hallebarde sur les pavés.\n\n"Revenez quand Séraphine aura validé votre dossier."');
+        CGEModal.alert(en ? 'Access Denied' : 'Accès Refusé',
+          en ? '"You\'re making progress, adventurer. But something is still missing."\n\nHe taps his halberd on the cobblestones.\n\n"Come back once Séraphine has approved your file."'
+             : '"Vous progressez, aventurier. Mais il vous manque encore quelque chose."\n\nIl tape sa hallebarde sur les pavés.\n\n"Revenez quand Séraphine aura validé votre dossier."');
       }
       return;
     }
 
-    // Access requires level >= 10 AND rank >= 1
+    // Accès early game
     var lvl2 = State.level||1;
     var rank2 = Meta.rank||0;
     if (lvl2 >= 10 && rank2 >= 1) {
       WorldMap.enter('chateau_maudit');
       return;
     }
-    // Early game — accès interdit, message racial dès le départ
     if (rank2 < 1) {
-      CGEModal.alert('Accès Interdit', 'Le garde vous regarde de haut en bas.\n\n"Vous n\'avez pas de réputation dans cette ville. Revenez quand les gens vous connaîtront."');
+      CGEModal.alert(en ? 'No Entry' : 'Accès Interdit',
+        en ? 'The guard looks you up and down.\n\n"You have no reputation in this town. Come back when people know who you are."'
+           : 'Le garde vous regarde de haut en bas.\n\n"Vous n\'avez pas de réputation dans cette ville. Revenez quand les gens vous connaîtront."');
     } else if (race === 'Orc') {
-      CGEModal.alert('Accès Interdit', 'Le garde recule d\'un pas complet, la main sur son épée.\n\n"Un Orc. Ici."\n\nIl appelle du renfort du regard.\n\n"Éloignez-vous. Maintenant."');
+      CGEModal.alert(en ? 'No Entry' : 'Accès Interdit',
+        en ? 'The guard steps back fully, hand on his sword.\n\n"An Orc. Here."\n\nHe looks around for backup.\n\n"Move along. Now."'
+           : 'Le garde recule d\'un pas complet, la main sur son épée.\n\n"Un Orc. Ici."\n\nIl appelle du renfort du regard.\n\n"Éloignez-vous. Maintenant."');
     } else if (race === 'Elfe') {
-      CGEModal.alert('Accès Interdit', 'Le garde te jauge de haut en bas.\n\n"Elfe. Demi-sang ou pur sang ?"\n\nIl n\'attend pas ta réponse.\n\n"Peu importe. Le Château est fermé aux... non-résidents."');
+      CGEModal.alert(en ? 'No Entry' : 'Accès Interdit',
+        en ? 'The guard sizes you up.\n\n"Elf. Half-blood or pure-blood?"\n\nHe doesn\'t wait for your answer.\n\n"No matter. The Castle is closed to... non-residents."'
+           : 'Le garde te jauge de haut en bas.\n\n"Elfe. Demi-sang ou pur sang ?"\n\nIl n\'attend pas ta réponse.\n\n"Peu importe. Le Château est fermé aux... non-résidents."');
     } else if (race === 'Nain') {
-      CGEModal.alert('Accès Interdit', 'Le garde hausse les épaules.\n\n"Désolé, ami. Règles du Conseil. Pas d\'aventuriers, quelle que soit la taille."\n\nIl ajoute avec un demi-sourire :\n\n"Mauvaise blague. Revenez plus tard."');
+      CGEModal.alert(en ? 'No Entry' : 'Accès Interdit',
+        en ? 'The guard shrugs.\n\n"Sorry, friend. Council rules. No adventurers, whatever the size."\n\nHe adds with a half-smile:\n\n"Bad joke. Come back later."'
+           : 'Le garde hausse les épaules.\n\n"Désolé, ami. Règles du Conseil. Pas d\'aventuriers, quelle que soit la taille."\n\nIl ajoute avec un demi-sourire :\n\n"Mauvaise blague. Revenez plus tard."');
     } else {
-      CGEModal.alert('Accès Interdit', 'Deux gardes croisent leurs hallebardes.\n\n"Le Château reste fermé aux aventuriers de rang inconnu. Revenez quand vous aurez prouvé votre valeur."');
+      CGEModal.alert(en ? 'No Entry' : 'Accès Interdit',
+        en ? 'Two guards cross their halberds.\n\n"The Castle remains closed to adventurers of unknown rank. Come back when you\'ve proven your worth."'
+           : 'Deux gardes croisent leurs hallebardes.\n\n"Le Château reste fermé aux aventuriers de rang inconnu. Revenez quand vous aurez prouvé votre valeur."');
     }
   },
 };
