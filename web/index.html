@@ -4390,11 +4390,9 @@ var STRINGS = {
     'ad.revive': 'Revivre',
     'ad.double_chest': '×2 Coffre',
     'ad.free_item': 'Objet gratuit',
-    // Achievements screen
-    'ach.title': 'Succès',
-    'ach.close': 'Fermer',
     'ach.unlocked': 'Débloqué',
     'ach.locked': 'Verrouillé',
+    'quest.done': 'Tu as accompli ce qui t\'était demandé.',
   },
   en: {
     // Main menu
@@ -4648,11 +4646,9 @@ var STRINGS = {
     'ad.revive': 'Revive',
     'ad.double_chest': '×2 Chest',
     'ad.free_item': 'Free Item',
-    // Achievements screen
-    'ach.title': 'Achievements',
-    'ach.close': 'Close',
     'ach.unlocked': 'Unlocked',
     'ach.locked': 'Locked',
+    'quest.done': 'You\'ve accomplished what was asked of you.',
   }
 };
 
@@ -4706,6 +4702,10 @@ var Nav = {
       else if (id==='world-map-2') { Music.play('dungeon'); }
       else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen'||id==='story-intro') Music.stop();
       else if (id==='gameover-screen') Music.stop();
+    }
+    // Stop dungeon map RAF when leaving that screen
+    if (prev === 'dungeon-map' && id !== 'dungeon-map' && typeof DungeonMap !== 'undefined') {
+      DungeonMap._rafRunning = false;
     }
     if (prev && screens[prev]) {
       var el = screens[prev];
@@ -7364,6 +7364,7 @@ function updateMapHpBar() {
 var DungeonMap = (function() {
   var mc, mctx, W, H;
   var torchT = 0;
+  var _rafRunning = false;
 
   // Disposition des nœuds : 6 rangées, 1-2 nœuds par rangée, branchements
   // Chaque nœud : { id, row, col, x, y, parents[], state:'locked'|'available'|'done'|'current' }
@@ -7679,7 +7680,7 @@ var DungeonMap = (function() {
   }
 
   function render() {
-    if (!mc || !mctx) return;
+    if (!mc || !mctx || !_rafRunning) return;
     torchT++;
     mctx.clearRect(0,0,W,H);
 
@@ -7721,7 +7722,7 @@ var DungeonMap = (function() {
     // Nœuds
     nodes.forEach(drawNode);
 
-    requestAnimationFrame(render);
+    if (_rafRunning) requestAnimationFrame(render);
   }
 
   function onTap(evt) {
@@ -7797,6 +7798,8 @@ var DungeonMap = (function() {
 
   return {
     _decors: null,
+    get _rafRunning() { return _rafRunning; },
+    set _rafRunning(v) { _rafRunning = v; },
     init: function(floor, hp, hpMax) {
       mc = document.getElementById('map-canvas');
       var wrap = document.getElementById('dm-canvas-wrap');
@@ -7808,6 +7811,8 @@ var DungeonMap = (function() {
       mc.removeEventListener('touchstart', onTap);
       mc.addEventListener('click', onTap);
       mc.addEventListener('touchstart', onTap, { passive:false });
+      _rafRunning = true;
+      requestAnimationFrame(render);
       initMap(floor, hp, hpMax);
       // Passage hint visibility
       var hint = document.getElementById('passage-hint');
@@ -8467,7 +8472,7 @@ var Achievements = (function(){
     var done = _unlocked();
     var total = ACHIEVEMENT_DEFS.length;
     var count = Object.keys(done).length;
-    var html = '<div style="text-align:center;font-family:Cinzel,serif;font-size:11px;color:rgba(201,165,80,0.5);letter-spacing:2px;margin-bottom:12px">'+count+' / '+total+' DÉBLOQUÉS</div>';
+    var html = '<div style="text-align:center;font-family:Cinzel,serif;font-size:11px;color:rgba(201,165,80,0.5);letter-spacing:2px;margin-bottom:12px">'+count+' / '+total+' '+T('ach.unlocked')+'</div>';
     ACHIEVEMENT_DEFS.forEach(function(a) {
       var unlocked = !!done[a.id];
       html += '<div class="ach-row'+(unlocked?' ach-done':'')+'">'+
@@ -8475,7 +8480,7 @@ var Achievements = (function(){
         '<div class="ach-info"><div class="ach-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div><div class="ach-desc">'+(unlocked?(CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc):'???')+'</div></div>'+
         (unlocked?'<span class="ach-check">✓</span>':'')+'</div>';
     });
-    CGEModal.show({ title: '🏆 Succès', text: '', html: html, okLabel: 'Fermer' });
+    CGEModal.show({ title: T('ach.title'), text: '', html: html, okLabel: T('misc.close') });
   }
 
   return { check: check, showAll: showAll };
@@ -8657,22 +8662,21 @@ var WorldMap = {
   },
 
   updateHotspots: function() {
-    var map = {
-      grottes: 'hs-reg-peaks', foret: 'hs-reg-forest', ruines: 'hs-reg-ruins',
-      port: 'hs-reg-port', pics: 'hs-reg-cave', cryptes: 'hs-reg-cave'
-    };
-    // Actually use the hotspot IDs from HTML
+    // One-to-one mapping: only zones that have a dedicated hotspot element
     var hsMap = {
-      grottes:'hs-reg-peaks', foret:'hs-reg-forest', ruines:'hs-reg-ruins',
-      port:'hs-reg-port', marais:'hs-reg-marais', pics:'hs-reg-cave',
-      volcan:'hs-reg-volcan', cryptes:'hs-reg-cave'
+      grottes: 'hs-reg-peaks',
+      foret:   'hs-reg-forest',
+      ruines:  'hs-reg-ruins',
+      port:    'hs-reg-port',
+      marais:  'hs-reg-marais',
+      volcan:  'hs-reg-volcan',
+      cryptes: 'hs-reg-cave',
     };
-    Object.keys(ZONE_DATA).forEach(function(id) {
+    Object.keys(hsMap).forEach(function(id) {
       var el = document.getElementById(hsMap[id]);
       if (!el) return;
-      var cleared = Meta.clearedZones[id];
-      var locked = !Meta.isZoneUnlocked(id);
-      el.classList.toggle('cleared', !!cleared);
+      var cleared = !!(Meta.clearedZones||{})[id];
+      el.classList.toggle('cleared', cleared);
       el.style.opacity = '';
       el.style.pointerEvents = '';
     });
