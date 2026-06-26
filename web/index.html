@@ -6429,6 +6429,33 @@ var NPC_DATA = {
       if (!done['retour_grottes']) return '"Séraphine dit qu\'il faut retourner là où tu as commencé."\n\nIl baisse la voix.\n\n"Je sais, tu connais déjà ces endroits. Mais... cherche ce que tu n\'as pas encore cherché. Il y a quelque chose que tu as manqué."';
       if (!done['cryptes_final']) return '"Tu l\'as trouvé ? Le passage ?"\n\nIl se lève.\n\n"Alors va. Ce que tu feras là-bas... ça nous concerne tous."';
       return '"Tu as accompli ce que personne n\'osait faire, ami. Je lèverai mon verre à ta santé pour le reste de mes jours."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"Hey. We serve everyone here, that\'s the rule."\nHe eyes you over his glass.\n"But I\'m watching you."';
+        if (race === 'Elfe') return '"An Elf, in this tavern."\nHe tilts his head slightly.\n"It\'s been a long time since your people passed through here."';
+        if (race === 'Nain') return '"A Dwarf! Excellent. What will you have?"\nHe slaps the table.\n"I\'ve got a brew from the Northern mines."';
+        return '"New in town? Order something or give up your seat."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"I saw you. On the road — an Orc running alone, at night."\nHe narrows his eyes.\n"Was someone chasing you? Or were you running from something else?\n\nProve to me you\'re not like the others."';
+        if (race === 'Elfe') return '"I recognised you. Your eyes. I\'ve seen that look once before, on a dying Elf in the Crypts."\n\n"She told me something before she died. Prove to me you deserve to hear it."';
+        if (race === 'Nain') return '"Still hanging around, are you."\nHe raises his glass with a smile.\n"A Dwarf who survives these crypts deserves respect. Show me you\'re serious."';
+        return '"I\'ve seen you somewhere. On the road, three weeks ago. You were running."\n\nHe pauses, studying you.\n\n"I\'ll say more when you prove you\'re not a coward."';
+      }
+      if (!done['oswin_1'])    return '"Go talk to Oswin. He seems like a fool but he knows things."';
+      if (!done['seraphine_1'])return '"Séraphine was looking for you earlier. She seems to know you."';
+      if (!done['bertrand_2']) return '"You\'re progressing. Come back once you\'ve reached the depths of a real dungeon. I have something for you."';
+      if (!done['oswin_2'])    return '"Talk to Oswin. He found something in the ruins."';
+      if (!done['seraphine_2'])return '"Séraphine can explain what that scroll means. Trust her."';
+      if (!done['bertrand_3']) return '"My grandfather used to say that real enemies smile the most."';
+      if (!done['oswin_3'])    return '"Be careful with Oswin. He\'s not what he claims to be."';
+      if (!done['seraphine_3'])return '"Séraphine can open the way for you. Go talk to her."';
+      if (!done['retour_grottes']) return '"Séraphine says you need to return to where you started."\n\nHe lowers his voice.\n\n"I know, you already know those places. But... look for what you haven\'t found yet. There\'s something you missed."';
+      if (!done['cryptes_final']) return '"You found it? The passage?"\n\nHe stands up.\n\n"Then go. What you do in there... it concerns all of us."';
+      return '"You\'ve done what no one else dared, friend. I\'ll raise my glass to you for the rest of my days."';
     }
   },
   oswin: {
@@ -6460,6 +6487,34 @@ var NPC_DATA = {
       }
       if (!done['cryptes_final']) return '"*hoche la tête*\nTu l\'as trouvé. Bien.\n\nJe joue une dernière chanson ce soir — pour toi. Pour ce que tu vas faire."';
       return '"*soupir*\nJe suis fatigué, ami. Cent quarante ans de mensonges, c\'est long.\nJe joue juste de la musique maintenant. Vraiment."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"*keeps playing without looking up*\nAn Orc in a tavern. Nothing unusual.\n\n*a wrong note*\n\nWell. A little."';
+        if (race === 'Elfe') return '"*stops playing*\nYou hear music differently, don\'t you?\nElves always hear it differently."';
+        if (race === 'Nain') return '"*plays louder*\nFor you, friend Dwarf! The songs of the mines deserve to be honoured!"';
+        return '"*tunes his lute without looking at you*\nI play, you listen. That\'s how it works."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"*looks at you over his lute*\nBertrand spoke to you? Good.\nThere\'s something in you that transcends race, friend. I don\'t know what yet."';
+        if (race === 'Elfe') return '"You know... the song I\'m talking about — it was written in Elvish.\nA hundred years ago, someone translated it. It speaks of you, I think."';
+        if (race === 'Nain') return '"Bertrand sent you to me? He has a good nose.\nI know a Dwarven song. Very old. It mentions the Crypts — and someone like you."';
+        return '"*watches you for a long moment*\nThere\'s something in your eyes. Something I recognise without knowing where from."\n\nHe drifts back into his music, thoughtful.';
+      }
+      if (!done['oswin_1'])     return '"You come from Bertrand? Good."\n\nHe lowers his lute.\n\n"I have a song. A hundred years old. It speaks of someone who looks strangely like you."';
+      if (!done['seraphine_1']) return '"You should go see Séraphine. She seems odd, yes. But she knows things about the Crypts that no one else does."';
+      if (!done['bertrand_2'])  return '"*plays softly*\nThe scroll Bertrand keeps... ask him for it. It\'s time."';
+      if (!done['oswin_2'])     return '"I went to the Ruins. I saw something that troubled me. Come back once you\'ve cleared them."';
+      if (!done['seraphine_2']) return '"What I have to tell you can wait until Séraphine has explained everything."';
+      if (!done['bertrand_3'])  return '"Bertrand knows more than he lets on. His family is tied to all of this."';
+      if (!done['oswin_3'])     return '"*looks you in the eyes without smiling*\nIt\'s time I was honest with you."';
+      if (!done['retour_grottes']) {
+        return '"*sets down his lute*\nYou want to know where to go now?"\n\nHe hesitates, looking at his hands.\n\n"Think of your first step on this earth. What you carried. What you were running from."\n\n"The answer is in the foundations. Look for what you couldn\'t have seen before."';
+      }
+      if (!done['cryptes_final']) return '"*nods*\nYou found it. Good.\n\nI\'ll play one last song tonight — for you. For what you\'re about to do."';
+      return '"*sighs*\nI\'m tired, friend. A hundred and forty years of lies is a long time.\nI\'m just playing music now. Really."';
     }
   },
   marta: {
@@ -6483,6 +6538,26 @@ var NPC_DATA = {
       if (race === 'Orc') return '"Tu as remboursé. Ça mérite le respect."\nElle te sert sans rechigner.\n"Les autres se calmeront. Donne-leur du temps."';
       if (race === 'Elfe') return '"Ta dette est effacée. Et... tu as été à la hauteur."\nElle te regarde différemment.\n"La Lyonnesse — Bertrand te connaît peut-être."';
       return '"Tu n\'as plus de dette ici. Tu peux rester aussi longtemps que tu veux."\nElle essuie le comptoir.\n"La Lyonnesse, en face. Si quelqu\'un te connaît... ils seront là-bas."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        var gold = State.gold||0;
+        if (gold >= 50) {
+          if (race === 'Orc') return '"You have the 50 coins? Good."\nShe takes a step back as she takes the money.\n"I have nothing against your people. Just... be mindful of what others see."';
+          if (race === 'Elfe') return '"You have the coins? Unexpected."\nShe accepts with a wary look.\n"Elves always settle their debts. I\'ll remember that."';
+          if (race === 'Nain') return '"Good, good! A Dwarf who honours his word — as always."\nShe takes the coins with a smile.\n"Your reputation precedes you."';
+          return '"You have the 50 coins?"\nShe holds out her hand.\n"Good. Now... let me tell you something."';
+        }
+        if (race === 'Orc') return '"I don\'t know why I kept you here. The other guests are asking questions."\nShe lowers her voice.\n"You owe me '+(50-gold)+' coins. Come back soon."';
+        if (race === 'Elfe') return '"An Elf in debt... I was warned."\nShe watches you.\n"'+(50-gold)+' coins. And next time, you pay in advance."';
+        if (race === 'Nain') return '"A Dwarf who doesn\'t pay? That surprises me."\nShe smiles despite herself.\n"You\'re '+(50-gold)+' coins short, friend. Go earn them."';
+        return '"Still in debt, I see. You owe me '+(50-gold)+' more coins.\nGo earn enough to pay. The inn is not a charity."';
+      }
+      if (race === 'Orc') return '"You paid up. That deserves respect."\nShe serves you without complaint.\n"The others will come around. Give them time."';
+      if (race === 'Elfe') return '"Your debt is cleared. And... you lived up to it."\nShe looks at you differently.\n"The Lyonnesse — Bertrand might know you."';
+      return '"You have no debt here anymore. You can stay as long as you like."\nShe wipes the counter.\n"The Lyonnesse, across the way. If anyone knows you... they\'ll be there."';
     }
   },
   seraphine: {
@@ -6522,6 +6597,42 @@ var NPC_DATA = {
         : race === 'Nain' ? 'Les anciens de ta montagne avaient raison. Il fallait que ce soit quelqu\'un des profondeurs.'
         : 'Tu n\'étais personne de particulier. Et tu as quand même réussi. C\'est peut-être ça, le vrai miracle.';
       return '"Le cristal est dans tes mains maintenant. Le reste t\'appartient."\n\nElle te regarde avec quelque chose qui ressemble à de la fierté.\n\n"'+ending+'"';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var race = State.race||'Humain';
+      if (!done['marta_debt']) {
+        if (race === 'Orc') return '"*without looking up*\nAn Orc\'s aura is always more... raw.\n\nBut yours...\n\n*she finally looks at you*\n\nUnexpected."';
+        if (race === 'Elfe') return '"*stands up immediately*\nYou\'re an Elf. And you carry something ancient.\n\nSit down. I need to verify something."';
+        if (race === 'Nain') return '"*consults her grimoire without stopping*\nDwarves have a particular resonance with the stones of the Crypts.\nIt\'s probably why you\'re still alive."';
+        return '"*barely looks up from her grimoire*\nYou\'re the one Oswin speaks of? Interesting. Come back when you\'re less... vague."';
+      }
+      if (!done['bertrand_1']) {
+        if (race === 'Orc') return '"I sense something on you. An ancient aura — not human, not elven.\n\nOrc?\nYes. But altered. By something you haven\'t understood yet."';
+        if (race === 'Elfe') return '"This aura — I read it in an old text.\nIt spoke of an Elf who returned.\n\nNot reincarnated. Recalled. It\'s different."';
+        return '"I sense something on you. An ancient aura. But I can\'t speak of it yet.\nTalk to the others first."';
+      }
+      if (!done['oswin_1'])     return '"Has Oswin told you about the prophecy? No? Go see him."';
+      if (!done['seraphine_1']) {
+        var frag = race === 'Orc' ? 'a fragment of the Crypts — Orcs have a natural bond with the deep stones. You\'ll recognise what you\'re looking for.'
+          : race === 'Elfe' ? 'a fragment of the Crypts. Your elven blood will guide you — listen to what the stones sing.'
+          : race === 'Nain' ? 'a fragment of the Crypts. Dig. Your Dwarven instinct will tell you where.'
+          : 'a fragment of the Crypts. Clear an entire zone.';
+        return '"Good. Oswin warned me you would come."\n\n"The aura you carry... it doesn\'t belong to this century. I need to analyse it."\n\n"Bring me '+frag+'"';
+      }
+      if (!done['bertrand_2'])  return '"Bertrand holds something important. It\'s time he trusted you."';
+      if (!done['oswin_2'])     return '"Oswin mentioned a portrait in the Ruins. I think I know what it is. Go help him verify."';
+      if (!done['seraphine_2']) return '"What I discovered in the archives... it\'s more serious than I thought.\nCome back once Oswin has told you everything about the book."';
+      if (!done['bertrand_3'])  return '"Bertrand needs to tell you about his family. It\'s important to understand the full story."';
+      if (!done['oswin_3'])     return '"*grave voice*\nOswin is a Voice of the God. You know that now.\nBut give him time to confess it himself."';
+      if (!done['seraphine_3']) return '"Are you ready to hear the rest?"';
+      if (!done['retour_grottes']) return '"I sense the answer isn\'t here."\n\nShe closes her eyes, concentrating.\n\n"There\'s a place... where everything began for you. Something wasn\'t visible before. Go back. Look for what you couldn\'t have seen the first time."';
+      if (!done['cryptes_final']) return '"You found it."\n\nShe exhales slowly.\n\n"Go. Don\'t stop. What awaits you there... that\'s why you woke up here all that time ago."';
+      var ending = race === 'Orc' ? 'Your strength was always real. It was your brutality that was a lie they taught you.'
+        : race === 'Elfe' ? 'You came back as foreseen. But you chose differently. That\'s what changes everything.'
+        : race === 'Nain' ? 'The elders of your mountain were right. It had to be someone from the depths.'
+        : 'You were nobody special. And you succeeded anyway. Maybe that\'s the real miracle.';
+      return '"The crystal is in your hands now. The rest belongs to you."\n\nShe looks at you with something resembling pride.\n\n"'+ending+'"';
     }
   },
   aldric: {
@@ -6534,6 +6645,15 @@ var NPC_DATA = {
         return '"Vous avancez bien. La ville vous respecte davantage chaque jour."';
       }
       return '"Je ne traite pas avec n\'importe qui. Revenez quand vous aurez fait vos preuves."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var cls = State.cls||'Guerrier';
+      if (cls === 'Guerrier' || cls === 'Barbare') {
+        if (!done['guerrier_1'] && !done['barbare_1']) return '"Hmm. A fighter, I see.\nShow me what you\'re made of before we talk."';
+        return '"You\'re progressing well. The town respects you more each day."';
+      }
+      return '"I don\'t deal with just anyone. Come back when you\'ve proven yourself."';
     }
   },
   elise: {
@@ -6546,6 +6666,15 @@ var NPC_DATA = {
         return '"Vos actes parlent pour vous. L\'Église vous reconnaît."';
       }
       return '"Toutes les âmes peuvent trouver leur chemin. Peut-être pas ici, pas encore."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      var cls = State.cls||'Guerrier';
+      if (cls === 'Mage' || cls === 'Prêtre' || cls === 'Pretre') {
+        if (!done['mage_1'] && !done['pretre_1']) return '"Light guides those who act with wisdom.\nProve yours to me."';
+        return '"Your deeds speak for you. The Church acknowledges your service."';
+      }
+      return '"Every soul can find its path. Perhaps not here. Not yet."';
     }
   },
 };
@@ -6572,14 +6701,15 @@ var Quests = (function(){
       var nd = NPC_DATA[npc];
       // Portrait : juste le nom, plus d'icône emoji
       var portIco = document.getElementById('npc-portrait-ico');
-      if (portIco) portIco.textContent = '';
+      var _npcIcons = {bertrand:'🍺',oswin:'🎵',marta:'🏠',seraphine:'🔮',aldric:'⚔',elise:'✨'};
+      if (portIco) portIco.textContent = _npcIcons[npc] || '👤';
       document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
 
       // Dialogue contextuel basé sur la progression narrative
-      var speechText = (typeof nd.dialogue === 'function') ? nd.dialogue() : '';
+      var speechText = (CGE_LANG==='en' && typeof nd.dialogueEn==='function') ? nd.dialogueEn() : (typeof nd.dialogue==='function' ? nd.dialogue() : '');
 
       // Quête active en cours pour ce PNJ ?
       var active = getActiveQuest(npc);
@@ -7049,7 +7179,7 @@ Rooms.shopBuy = function(idx) {
       State.inventory.push(item);
     } else {
       CGEModal.alert('Inventaire plein', 'Équipe ou vends un objet avant d\'en acheter un nouveau.');
-      State.gold += item.cost; return;
+      State.gold += cost; return;
     }
   } else if (item.effect) {
     item.effect();
