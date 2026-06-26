@@ -6394,6 +6394,86 @@ var QUEST_DEFS = [
   },
 ];
 
+// English claimText for quests (kept separate to avoid bloating QUEST_DEFS)
+var QUEST_CLAIM_EN = {
+  marta_debt: 'Marta nods, relieved. "Good. I was wondering if you\'d run like the others."\nShe leans toward you, voice low.\n"The Lyonnesse — the tavern across the way. There are people there who asked about you. People who apparently know you."\nShe pauses.\n"Or who claim to know you."',
+  bertrand_1: '"Not bad. You know how to fight."\nHe sits down across from you and lowers his voice.\n"I saw you three weeks ago. On the Stone Road. You were running toward the town, no weapon, no cloak. Looking behind you as if the devil was chasing you."\n\n"When you collapsed in front of The Broken Shield... we thought you were dead."\n\n"What troubles me... is that in your clenched hand, you were holding a scroll. Marta kept it somewhere."\n\nNew quest available: talk to Oswin.',
+  oswin_1: '"You came back. Good."\nOswin sets down his lute and looks at you differently — no more smiling.\n"The song is called *The Ballad of the Awakened*. It\'s a hundred years old. It describes someone who returns from the dead, with no name, no past."\n\n"It also describes the Eternal Crypts — the real ones, not the old caves you\'ve been exploring. Crypts that breathe. That remember."\n\n"There\'s a woman here who knows more than I do. Séraphine. She\'s been watching you since you arrived."',
+  seraphine_1: '"I suspected as much."\nSéraphine closes her grimoire and fixes you with her gaze.\n"The aura you carry... it belongs to someone who died exactly a hundred years ago. Someone called the Awakened — like in Oswin\'s song."\n\n"This is no coincidence. You carry a fragment of their soul. Perhaps their entire being, transferred into a new body."\n\nShe hesitates.\n"If that\'s true... then you may remember things without knowing where they come from. Reflexes. Irrational fears. Faces you\'ve never seen."\n\n"And if that\'s true... someone else knows it too. And that someone does not want you descending into the true Crypts."',
+  bertrand_2: '"You went all the way. Good."\nBertrand produces a small crumpled, yellowed scroll.\n"We found it in your hand. We can\'t make out the writing — it\'s not a known language."\n\nYou unfold it. And something in you... recognises the symbols. Not consciously. But your eyes stop on one phrase, and without even thinking you whisper:\n\n*"The seal still holds. For how long?"*\n\n"You just read that?", says Bertrand, pale.\n\n"I... I don\'t know how."',
+  oswin_2: '"You found it, didn\'t you?"\nOswin pulls out a notebook covered in notes.\n"The portrait in the Ruins library. *It looks exactly like you.*"\n\n"The title of the book beneath the portrait: *Memoirs of the Awakened, Guardian of the Seal, year 847.*"\n\n"We are in 947. Exactly a hundred years ago."\n\nOswin pauses. He no longer looks like a cheerful bard at all.\n\n"There\'s something I haven\'t told you. Something that... you deserve to know. But not here. Not now. Come see me once you\'ve spoken to Séraphine."',
+  seraphine_2: '"Sit down. What I\'m about to tell you does not leave this table."\n\nSéraphine pours you wine.\n\n"The Eternal Crypts are not a dungeon. They are the foundations of a PRISON. Built a thousand years ago to contain something people called the God of Memory."\n\n"A being that fed on memories. On identities. It could erase an entire civilisation — not by killing it, but by making it forget it had ever existed."\n\n"The Awakened of the past century reinforced the seal at the cost of their own existence. They became *part of the lock*."\n\n"You... are either their designated successor. Or the key someone is using to open it."\n\nShe looks you in the eyes.\n\n"And I\'m beginning to think Oswin isn\'t really a bard."',
+  bertrand_3: '"My grandfather was a guardian of the Crypts. One of the last."\nBertrand wipes his hands on his apron, nervous.\n"He told me, before he died: *if a stranger arrives with no memory, flee. Or help them. Both are dangerous.*"\n\n"I stayed. I chose to help you."\n\n"He also told me something else. That the God of Memory has *Voices* in the world — agents who have served for centuries, who don\'t age, who prepare his liberation."\n\n"These Voices... they pass themselves off as ordinary people. Innkeepers. Merchants. Bards."\n\nHe looks you straight in the eye.\n\n"Watch out for Oswin."',
+  oswin_3: '"You\'re starting to understand."\nOswin drops the act. His voice has changed — deeper, almost distant.\n"Yes. I am a Voice. I\'ve been serving for a hundred and forty years."\n\n"But listen to me before you get angry."\n\n"I\'m not your enemy. I\'m... tired. A hundred and forty years serving a god I\'ve never seen. I just wanted... someone to descend into the Crypts and settle it. One way or another."\n\n"The truth: you can reinforce the seal, like the Awakened of the past. Or you can free the God of Memory — and he\'ll erase us all. Or maybe he\'ll be different now. Maybe a century of imprisonment has changed him."\n\n"Séraphine will tell you what to do. Me... I\'m tired of choosing for others."',
+  retour_grottes: '"You found it."\nSéraphine closes her eyes for a moment.\n"I spent twenty years searching for what you found in minutes. Perhaps certain doors only open for the right people."\n\nShe looks at you.\n\n"What\'s on the other side?"',
+  guerrier_1: '"Not bad. You know how to fight like a real soldier."\nAldric sizes you up.\n"The town is starting to know who you are. It\'s a beginning."',
+  guerrier_2: '"You deserve this title." He places a hand on your shoulder.\n"People respect you now. That means more than you think."',
+  mage_1: '"Your powers are real."\nÉlise folds her hands.\n"The Church takes note of those who act with force and discernment."',
+  mage_2: '"The town is talking about you."\nShe smiles slightly.\n"You\'ve made a name for yourself. Protect it."',
+  chasseur_1: '"A hunter who always comes back."\nBertrand nods approvingly.\n"People are starting to see you differently."',
+  chasseur_2: '"They\'re talking about you in the neighbouring taverns."\nHe raises his glass.\n"You\'ve earned it."',
+  assassin_1: '"*whistles softly*\nThe rumours are true, then."\nOswin looks at you differently.\n"You\'re starting to exist in the eyes of this town. Dangerously so."',
+  assassin_2: '"People are whispering your name."\nHe picks up his lute again.\n"Some with admiration. Others with fear. Both make a reputation."',
+  pretre_1: '"Light guided you."\nÉlise places her hands together.\n"The Church acknowledges your service. And so does the town."',
+  pretre_2: '"You protect those who cannot protect themselves."\nHer gaze is gentle but firm.\n"That is why people respect you."',
+  barbare_1: '"I\'ve seen warriors crumble where you hold firm."\nAldric crosses his arms.\n"The town is talking about you. Not always gently. But it\'s talking."',
+  barbare_2: '"The songs written about barbarians rarely feature someone still living."\nHe shakes your hand firmly.\n"You\'ve earned your rank."',
+  seraphine_3: function() {
+    var ch = State._introChoices || {};
+    var closing = ch.trait === 'void'
+      ? '"You who feel nothing... perhaps that\'s a strength. Not a weakness."'
+      : ch.trait === 'cold'
+      ? '"You who carry coldness within you... the Crypts won\'t frighten you. They almost belong to you already."'
+      : '"You who suffered from the very first moment... you already know what it costs to hold on."';
+    return '"You\'re ready."\nSéraphine draws a black crystal from her cloak.\n"This opens the final level of the Crypts. Where the Awakened sacrificed everything."\n\n"When you descend, memories will return to you. Not yours — theirs. Yours may be the same."\n\n"At some point, you will have a choice: place the crystal on the altar and reinforce the seal, or shatter it and free what lies beneath."\n\n"I\'ve told you everything I know. The rest... is up to you."\n\nShe places her hand on your shoulder.\n'+closing;
+  },
+  cryptes_final: function() {
+    var race = State.race || 'Humain';
+    var align = Meta.computeAlign();
+    if (align >= 2) {
+      var gRace = race === 'Orc'
+        ? '"An Orc who chooses to protect. No one predicted that."'
+        : race === 'Elfe'
+        ? '"The prophecy said an Elf would return. It didn\'t say they would choose to stay."'
+        : race === 'Nain'
+        ? '"The elders of your mountain would have been proud. Someone from the depths — to guard what others forget."'
+        : '"You had nothing when you arrived. And you chose to give everything anyway."';
+      return '— The God of Memory raises his eyes to you. His voice is calm, almost gentle.\n\n"You haven\'t changed. You just remembered."\n\nHe falls silent for a moment.\n\n"The Awakened of the past century made the same choice. In the same room. With the same trembling hands."\n\n"Place the crystal on the altar. The seal will hold for another hundred years. And someone else will come after you — as you came after them."\n\nBertrand raises his glass, alone in the tavern.\n\n'+gRace+'\n\n"To the Awakened. The Guardian."';
+    }
+    if (align <= -2) {
+      var vRace = race === 'Orc'
+        ? '"They say Orcs feel nothing. I knew that was false. But you... perhaps you believed it."'
+        : race === 'Elfe'
+        ? '"Elves live so long they eventually forget why. I understand."'
+        : race === 'Nain'
+        ? '"The depths took something from you. Before you even arrived here."'
+        : '"You didn\'t come looking for answers. You know that now."';
+      return '— The God of Memory watches you for a long time. Not with anger. With something resembling recognition.\n\n"You didn\'t come back for answers."\n\nHe rises slowly.\n\n"You came back to finish what you started. To truly die."\n\n"The Awakened of the past century had the same thing in their eyes, at the end. That void."\n\n"Shatter the crystal. Let the seal collapse. It no longer matters to you — and perhaps that\'s the only honesty that remains."\n\nBertrand stares at his empty glass in silence.\n\n'+vRace+'\n\n"They\'re gone. As they came."';
+    }
+    var lRace = race === 'Orc'
+      ? '"An Orc freeing what humans had imprisoned. I don\'t know if that\'s wisdom or madness."'
+      : race === 'Elfe'
+      ? '"You heard something in the silence of the Crypts. Something the others couldn\'t hear."'
+      : race === 'Nain'
+      ? '"The depths spoke to you. And you listened — not out of obedience. Out of curiosity."'
+      : '"You came neither to protect nor to destroy. You came because you wanted to know."';
+    return '— The God of Memory tilts his head slightly.\n\n"You didn\'t come to protect. You came to open."\n\nHe smiles — not like a god. Like someone who has waited a long time.\n\n"I spent a hundred years in this prison. I had time to think about what I had done."\n\n"Perhaps I\'m different now. Perhaps not. But you... you chose not to decide for me."\n\n"Shatter the crystal. And we\'ll see together what happens."\n\nBertrand raises his glass slowly.\n\n'+lRace+'\n\n"To the Awakened. The one who chose the unknown."';
+  },
+};
+
+// Resolve claimText with EN support
+function resolveClaimText(def) {
+  if (CGE_LANG === 'en') {
+    var enFn = def.claimTextEn;
+    if (typeof enFn === 'function') return enFn();
+    if (typeof enFn === 'string') return enFn;
+    var enStr = QUEST_CLAIM_EN[def.id];
+    if (typeof enStr === 'function') return enStr();
+    if (typeof enStr === 'string') return enStr;
+  }
+  return typeof def.claimText === 'function' ? def.claimText() : (def.claimText || T('quest.done'));
+}
+
 // Quelles quêtes sont débloquées (visibles au PNJ) ?
 function isQuestUnlocked(q) {
   if (!q.unlockAfter) return true;
@@ -6716,7 +6796,7 @@ var Quests = (function(){
       if (active) {
         var def = QUEST_DEFS.find(function(q){ return q.id===active; });
         if (def && def.check && def.check()) {
-          var claimTxt = typeof def.claimText === 'function' ? def.claimText() : (def.claimText || 'Tu as accompli ce que je t\'avais demandé.');
+          var claimTxt = resolveClaimText(def);
           document.getElementById('npc-speech').textContent = claimTxt;
           document.getElementById('npc-quest-title').textContent  = '✅ ' + (CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title);
           document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&def.descEn?def.descEn:def.desc);
