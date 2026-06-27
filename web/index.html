@@ -6185,7 +6185,13 @@ var Rooms = {
 
   showLoot: function(e) {
     Rooms._lastEnemy = e;
-    document.getElementById('loot-gold-val').textContent = '+'+e.gold;
+    // Créditer réellement l'or du combat (il était affiché mais jamais ajouté).
+    var goldGain = e.gold || 0;
+    State.gold = (State.gold||0) + goldGain;
+    Meta.totalGold = (Meta.totalGold||0) + goldGain;
+    State._lastCombatGold = goldGain; // base pour la pub ×2
+    if (typeof HUD !== 'undefined') HUD.updateGold();
+    document.getElementById('loot-gold-val').textContent = '+'+goldGain;
     var wrap = document.getElementById('loot-item-wrap');
     var btn  = document.getElementById('btn-loot-cont');
     // Taux de drop plus élevé pour les boss
@@ -7910,6 +7916,8 @@ function updateMapHpBar() {
 }
 
 // ── DUNGEON MAP ───────────────────────────────────────────────────
+// Facteur global d'or gagné en combat (ajuster pour l'équilibrage économique)
+var GOLD_FACTOR = 0.5;
 var DungeonMap = (function() {
   var mc, mctx, W, H;
   var torchT = 0;
@@ -8383,7 +8391,7 @@ var DungeonMap = (function() {
           hp:   Math.round(enemyData.hp   * (zm.hpMult||1)  * floorBonus * bossBonus * eliteBonus),
           atk:  Math.round(enemyData.atk  * (zm.atkMult||1) * floorBonus * (type==='boss'?2:1) * eliteBonus),
           def:  Math.round(enemyData.def  * (zm.defMult||1) * floorBonus * (type==='boss'?1.5:1)),
-          gold: Math.round(enemyData.gold * (zm.goldMult||1) * floorBonus * (type==='boss'?5:eliteBonus)),
+          gold: Math.round(enemyData.gold * (zm.goldMult||1) * floorBonus * (type==='boss'?5:eliteBonus) * GOLD_FACTOR),
           boss: type==='boss',
           name: type==='boss' ? '☠ '+enemyData.name : (type==='elite' ? '★ '+enemyData.name : enemyData.name),
         });
