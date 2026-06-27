@@ -4439,6 +4439,15 @@ var STRINGS = {
     'ads.title': 'Publicité',
     'ads.body': 'Une publicité va être diffusée. Confirme pour recevoir ta récompense.',
     'ads.watch': 'Voir la pub',
+    'camp.title': '🔥 Feu de camp',
+    'camp.desc': 'Un feu de camp fait main crépite juste avant la porte du boss.\n\nTu peux te reposer gratuitement pour récupérer 75% de tes PV, ou continuer directement.',
+    'camp.rest': 'Se reposer (+75% PV)',
+    'camp.continue': 'Continuer →',
+    'camp.rested': 'Tu t\'es reposé près du feu. +{n} PV récupérés.\n\nLa porte du boss t\'attend.',
+    'tuto.map.title': '🗺 La carte du donjon',
+    'tuto.map.body': 'Touche un nœud accessible (en surbrillance) pour avancer.\n\nLes salles sont cachées : ⚔ ennemi, 🔥 repos, 🛒 boutique, ❓ mystère, ⚠ piège.\nUn 🔥 feu de camp apparaît toujours juste avant le ☠ boss.\n\nChoisis bien ton chemin — chaque nœud compte !',
+    'tuto.combat.title': '⚔ Le combat',
+    'tuto.combat.body': 'À ton tour, choisis une action :\n\n⚔ Attaquer — inflige des dégâts.\n🛡 Défendre — réduit les dégâts du prochain coup.\n✨ Compétence — pouvoir spécial de ta classe.\n🧪 Potion — restaure tes PV.\n🎒 Sac — utilise un objet.\n🏃 Fuir — tente de quitter le combat (risqué).',
     'passage.label': 'PASSAGE OBSCUR',
     'passage.sub': 'Le mur du fond a toujours été là.',
     'passage.text': 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.',
@@ -4809,6 +4818,15 @@ var STRINGS = {
     'ads.title': 'Advertisement',
     'ads.body': 'An ad will be shown. Confirm to receive your reward.',
     'ads.watch': 'Watch ad',
+    'camp.title': '🔥 Campfire',
+    'camp.desc': 'A hand-made campfire crackles just before the boss door.\n\nYou can rest for free to recover 75% of your HP, or continue right away.',
+    'camp.rest': 'Rest (+75% HP)',
+    'camp.continue': 'Continue →',
+    'camp.rested': 'You rested by the fire. +{n} HP recovered.\n\nThe boss door awaits.',
+    'tuto.map.title': '🗺 The dungeon map',
+    'tuto.map.body': 'Tap a highlighted node to advance.\n\nRooms are hidden: ⚔ enemy, 🔥 rest, 🛒 shop, ❓ mystery, ⚠ trap.\nA 🔥 campfire always appears right before the ☠ boss.\n\nChoose your path wisely — every node counts!',
+    'tuto.combat.title': '⚔ Combat',
+    'tuto.combat.body': 'On your turn, choose an action:\n\n⚔ Attack — deal damage.\n🛡 Defend — reduce the next hit.\n✨ Skill — your class\'s special power.\n🧪 Potion — restore HP.\n🎒 Bag — use an item.\n🏃 Flee — try to leave the fight (risky).',
     'passage.label': 'HIDDEN PASSAGE',
     'passage.sub': 'The far wall has always been there.',
     'passage.text': 'You\'ve been here before. Dozens of times perhaps.\n\nBut today something has changed.\n\nThe far stone vibrates slightly. A crack. A finger\'s width long.\n\nYou touch it.\n\nAnd the wall opens.',
@@ -5827,6 +5845,12 @@ var Combat = (function(){
       updatePotionBtn();
       setButtons(true);
       log((CGE_LANG==='en'?'⚔ '+(enemy.nameEn||enemy.name)+' emerges from the shadows!':'⚔ '+enemy.name+' surgit de l\'ombre !')+(enemy.boss?' ☠':''),'system');
+      // Tutoriel combat — une seule fois
+      if (!Meta.tutoCombat) {
+        Meta.tutoCombat = true;
+        if (typeof Meta.save === 'function') Meta.save();
+        setTimeout(function(){ CGEModal.alert(T('tuto.combat.title'), T('tuto.combat.body')); }, 450);
+      }
       // Elfe : initiative — frappe en premier
       if (getPassive() === 'initiative') {
         setTimeout(function(){
@@ -7410,6 +7434,8 @@ var Meta = {
   passageFound: false,
   _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
   achievements: {},
+  tutoMap: false,
+  tutoCombat: false,
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
@@ -7432,6 +7458,8 @@ var Meta = {
       Meta._align          = d._align||0;
       Meta.chest           = d.chest||[];
       Meta.achievements    = d.achievements||{};
+      Meta.tutoMap         = d.tutoMap||false;
+      Meta.tutoCombat      = d.tutoCombat||false;
     } catch(e){}
   },
 
@@ -7452,6 +7480,8 @@ var Meta = {
       _align:         Meta._align,
       chest:          Meta.chest,
       achievements:   Meta.achievements,
+      tutoMap:        Meta.tutoMap,
+      tutoCombat:     Meta.tutoCombat,
     };
     localStorage.setItem('cge_meta', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
@@ -7936,6 +7966,8 @@ var DungeonMap = (function() {
         });
       });
     });
+    // Feu de camp garanti juste avant le boss (rangée 4 → nœuds 8 et 9)
+    nodes.forEach(function(n){ if (n.id === 8 || n.id === 9) n.type = 'campfire'; });
     // Débloque les voisins du nœud de départ
     unlockChildren(0);
     // Passage secret dans les Grottes
@@ -7946,6 +7978,36 @@ var DungeonMap = (function() {
     DungeonMap._decors = buildDecors();
     updateFloorUI(floor, hp, hpMax);
     render();
+    maybeTutoMap();
+  }
+
+  // Feu de camp avant le boss — choix : se reposer (gratuit, +75% PV) ou continuer
+  function showCampfire() {
+    CGEModal.show({
+      title: T('camp.title'),
+      text: T('camp.desc'),
+      okLabel: T('camp.rest'),
+      cancelLabel: T('camp.continue'),
+      onOk: function() {
+        var before = State.hp || 0;
+        State.hp = Math.min(State.hpMax, before + Math.round(State.hpMax * 0.75));
+        var gained = State.hp - before;
+        if (typeof HUD !== 'undefined') HUD.updateHP();
+        if (typeof State.saveRun === 'function') State.saveRun();
+        CGEModal.alert(T('camp.title'), T('camp.rested').replace('{n}', gained));
+      },
+      onCancel: function() {}
+    });
+  }
+
+  // Tutoriel carte — une seule fois (première expédition)
+  function maybeTutoMap() {
+    if (Meta.tutoMap) return;
+    Meta.tutoMap = true;
+    if (typeof Meta.save === 'function') Meta.save();
+    setTimeout(function() {
+      CGEModal.alert(T('tuto.map.title'), T('tuto.map.body'));
+    }, 700);
   }
 
   function unlockChildren(nodeId) {
@@ -8149,11 +8211,17 @@ var DungeonMap = (function() {
       mctx.strokeStyle='rgba(201,165,80,0.9)'; mctx.lineWidth=2;
       mctx.stroke();
 
-      // ?
-      mctx.fillStyle='#C9A550';
-      mctx.font='bold '+(r*1.1)+'px Cinzel,serif';
-      mctx.textAlign='center'; mctx.textBaseline='middle';
-      mctx.fillText('?', x, y+1);
+      // ? (ou 🔥 pour le feu de camp avant-boss)
+      if (n.type === 'campfire') {
+        mctx.font = (r*1.2)+'px serif';
+        mctx.textAlign='center'; mctx.textBaseline='middle';
+        mctx.fillText('🔥', x, y+1);
+      } else {
+        mctx.fillStyle='#C9A550';
+        mctx.font='bold '+(r*1.1)+'px Cinzel,serif';
+        mctx.textAlign='center'; mctx.textBaseline='middle';
+        mctx.fillText('?', x, y+1);
+      }
 
       // Boss ou start : icône spéciale
       if (n.id===10) {
@@ -8177,6 +8245,13 @@ var DungeonMap = (function() {
       mctx.fillStyle = 'rgba(220,80,80,0.8)';
       mctx.textAlign='center'; mctx.textBaseline='top';
       mctx.fillText('BOSS', x, y+r+4);
+    }
+    // Label feu de camp
+    if (n.type === 'campfire' && n.state === 'available') {
+      mctx.font = 'bold 9px Cinzel,serif';
+      mctx.fillStyle = 'rgba(230,150,80,0.9)';
+      mctx.textAlign='center'; mctx.textBaseline='top';
+      mctx.fillText(CGE_LANG==='en'?'REST':'REPOS', x, y+r+4);
     }
 
     mctx.restore();
@@ -8283,6 +8358,8 @@ var DungeonMap = (function() {
         Rooms.showMystery();
       } else if (type === 'trap') {
         Rooms.showTrap(function() { startCombat('combat'); });
+      } else if (type === 'campfire') {
+        showCampfire();
       } else {
         startCombat(type);
       }
