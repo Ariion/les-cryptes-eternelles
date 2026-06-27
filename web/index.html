@@ -600,7 +600,8 @@ canvas#particles {
   content:''; position:absolute; inset:0;
   background: linear-gradient(to bottom, rgba(7,9,15,0.18) 0%, rgba(7,9,15,0.45) 100%); }
 .zone-cryptes #dm-bg {
-  background-image: url('images/cryptes.jpg');
+  /* TODO art : ajouter un visuel dédié images/cryptes.jpg ; repli sur grottes en attendant */
+  background-image: url('images/grottes.jpg');
   background-size:cover; background-position:center;
   background-color:#0c0008;
 }
@@ -1897,6 +1898,15 @@ canvas#particles {
 #npc-btns button:hover { background:rgba(201,165,80,0.25); }
 #npc-btn-accept { background:rgba(80,150,80,0.2); border-color:#3a7a3a; color:#7ec87e; }
 #npc-btn-claim  { background:rgba(201,165,80,0.25); border-color:#C9A550; color:#C9A550; }
+#npc-final-choice { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.npc-final-btn {
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:0.5px;
+  padding:12px 10px; border-radius:8px; border:1px solid #5a4020; cursor:pointer;
+  background:rgba(201,165,80,0.10); color:#d8c089; transition:all 0.2s; text-align:left;
+  -webkit-tap-highlight-color:transparent;
+}
+.npc-final-btn:hover { background:rgba(201,165,80,0.22); border-color:#C9A550; color:#f0dca8; }
+.npc-final-btn:active { transform:scale(0.98); }
 
 /* ── TOWN SCREEN ── */
 #town-screen {
@@ -1961,6 +1971,7 @@ canvas#particles {
 #hs-reg-peaks   { top:68%; left:62%; }
 #hs-reg-marais  { top:55%; left:48%; }
 #hs-reg-volcan  { top:22%; left:68%; }
+#hs-reg-pics    { top:14%; left:52%; }
 #hs-town-taverne { top:58%; left:64%; }
 /* badges danger */
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
@@ -3028,6 +3039,11 @@ canvas#particles {
           <div id="npc-quest-desc"></div>
           <div id="npc-quest-reward"></div>
         </div>
+        <div id="npc-final-choice" style="display:none">
+          <button class="npc-final-btn" onclick="Quests.chooseFinal('gardien')" data-i18n="final.gardien">🛡 Poser le cristal sur l'autel — renforcer le sceau</button>
+          <button class="npc-final-btn" onclick="Quests.chooseFinal('liberateur')" data-i18n="final.liberateur">🗝 Briser le cristal — libérer ce qui dort</button>
+          <button class="npc-final-btn" onclick="Quests.chooseFinal('vide')" data-i18n="final.vide">💀 Briser le cristal — laisser tout s'effondrer</button>
+        </div>
         <div id="npc-btns">
           <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
           <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
@@ -3147,6 +3163,11 @@ canvas#particles {
       <div class="hotspot" id="hs-reg-volcan" onclick="WorldMap.enter('volcan')">
         <div class="hs-ring"></div>
         <div class="hs-lbl extreme">🌋 Volcan · Extrême</div>
+      </div>
+      <!-- pics du néant (haut centre) -->
+      <div class="hotspot" id="hs-reg-pics" onclick="WorldMap.enter('pics')">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl extreme">🏔 Pics · Glacial</div>
       </div>
     </div>
 
@@ -3400,6 +3421,8 @@ State.saveRun = function() {
       bag: State.bag || [],
       scrolls: State.scrolls || [],
       mana: State.mana || 0, manaMax: State.manaMax || 0,
+      _introChoices: State._introChoices || null,
+      _finalChoice: State._finalChoice || null,
     };
     localStorage.setItem('cge_run', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
@@ -4419,6 +4442,10 @@ var STRINGS = {
     'quest.close': 'Fermer',
     'quest.inprogress': 'En cours : ',
     'quest.reward': 'Récompense : ',
+    'final.prompt': '— Tu tiens le cristal de Séraphine. Devant toi, l\'autel. En dessous, le sceau. Et la voix du Dieu de la Mémoire, patiente.\n\n« Tu sais déjà ce que tu es venu faire. Choisis. »',
+    'final.gardien': '🛡 Poser le cristal sur l\'autel — renforcer le sceau',
+    'final.liberateur': '🗝 Briser le cristal — libérer ce qui dort',
+    'final.vide': '💀 Briser le cristal — laisser tout s\'effondrer',
     // Gameover
     'go.victory': 'VICTOIRE !',
     'go.floor': 'Étage atteint',
@@ -4697,6 +4724,10 @@ var STRINGS = {
     'quest.close': 'Close',
     'quest.inprogress': 'In progress: ',
     'quest.reward': 'Reward: ',
+    'final.prompt': '— You hold Séraphine\'s crystal. Before you, the altar. Beneath it, the seal. And the voice of the God of Memory, patient.\n\n"You already know what you came to do. Choose."',
+    'final.gardien': '🛡 Place the crystal on the altar — reinforce the seal',
+    'final.liberateur': '🗝 Shatter the crystal — free what sleeps',
+    'final.vide': '💀 Shatter the crystal — let everything collapse',
     // Gameover
     'go.victory': 'VICTORY!',
     'go.floor': 'Floor reached',
@@ -5124,7 +5155,7 @@ var SPELLS = {
     { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     cost:28, desc:'Récup 55% PV max',
       cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !'}; } },
     { id:'shield',    ico:'✨', name:'Bouclier Divin',  cost:18, desc:'+12 DEF pendant 2 tours',
-      cast:function(){ State.def+=12; return {log:'Bouclier divin ! +12 DEF pour 2 tours.',shield:2}; } },
+      cast:function(){ return {log:'Bouclier divin ! +12 DEF pour 2 tours.',shield:2,shieldDef:12}; } },
     { id:'smite',     ico:'⚡', name:'Jugement',        cost:22, desc:'1.2× ATQ + Brûlure 2 tours',
       unlockLevel:8,
       cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',burn:2}; } },
@@ -5223,9 +5254,11 @@ var Combat = (function(){
     setTimeout(function(){ el.classList.remove('hit'); }, 400);
   }
 
-  function calcDmg(atk, def) {
+  function calcDmg(atk, def, isEnemy) {
     var base = Math.max(1, atk - def);
-    var crit = Math.random() < 0.15;
+    // Le bonus de critique du joueur ne s'applique qu'à SES attaques, pas à l'ennemi
+    var critChance = isEnemy ? 0.15 : (0.15 + (State.critBonus||0) + ((Meta.bonuses && Meta.bonuses.crit)||0));
+    var crit = Math.random() < critChance;
     return { dmg: crit ? Math.round(base*1.5) : base, crit:crit };
   }
 
@@ -5238,8 +5271,12 @@ var Combat = (function(){
 
   function addStatus(list, type, turns, val) {
     var ex = list.find(function(s){ return s.type===type; });
-    if (ex) { ex.turns = Math.max(ex.turns, turns); }
-    else list.push({ type:type, turns:turns, val:val||0 });
+    if (ex) { ex.turns = Math.max(ex.turns, turns); }  // pas de stack : on prolonge seulement
+    else {
+      list.push({ type:type, turns:turns, val:val||0 });
+      // Buff défensif temporaire du joueur : on applique la DEF ici, retirée à l'expiration
+      if (list === statuses && (type==='shield' || type==='defend') && val) { State.def += val; }
+    }
     renderStatuses();
   }
 
@@ -5261,6 +5298,8 @@ var Combat = (function(){
       if (s.type==='poison') { var pdmg=s.val; if(getPassive()==='poison_resist') pdmg=Math.ceil(pdmg*0.5); State.hp=Math.max(0,State.hp-pdmg); updatePlayerUI(); log('☠ Poison : -'+pdmg+' PV'+(pdmg<s.val?' (résistance naine)':''),'enemy'); }
       if (s.type==='burn')   { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('🔥 Brûlure : -'+s.val+' PV','enemy'); }
       s.turns--;
+      // Fin d'un buff défensif → on rend la DEF empruntée
+      if (s.turns <= 0 && (s.type==='shield' || s.type==='defend') && s.val) { State.def -= s.val; updatePlayerUI(); }
       return s.turns > 0;
     });
     enemyStatuses = enemyStatuses.filter(function(s){
@@ -5339,6 +5378,8 @@ var Combat = (function(){
   function endCombat(victory) {
     clearTimer();
     setButtons(false);
+    // Rendre toute DEF temporaire encore active avant de quitter le combat (sinon fuite permanente)
+    statuses.forEach(function(s){ if ((s.type==='shield'||s.type==='defend') && s.val) State.def -= s.val; });
     State.persistentStatuses = statuses.filter(function(s){ return s.type==='poison'||s.type==='burn'; });
     statuses = []; enemyStatuses = []; renderStatuses();
     if (victory) {
@@ -5450,7 +5491,7 @@ var Combat = (function(){
         log('💨 Tu esquives l\'attaque !','player');
         turnLocked=false; setButtons(true); return;
       }
-      var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def);
+      var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def, true);
       playerDef = false;
 
       // Boss : capacités spéciales
@@ -5596,8 +5637,8 @@ var Combat = (function(){
       updateSkillBtn();
       Sfx.skill();
       if (c.id === 'Guerrier') {
-        State.def += 8; playerDef = true;
-        log('Bouclier de fer ! (+8 DEF ce tour)','player');
+        addStatus(statuses, 'defend', 2, 8); playerDef = true;
+        log('Bouclier de fer ! (+8 DEF)','player');
         enemyTurn();
       } else if (c.id === 'Chasseur') {
         var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
@@ -5662,7 +5703,7 @@ var Combat = (function(){
       if (res.heal) { showHeal(res.heal); updatePlayerUI(); Sfx.heal(); }
       if (res.stun) { addStatus(enemyStatuses, 'stun', res.stun, 0); }
       if (res.burn) { addStatus(enemyStatuses, 'burn', res.burn, Math.round(State.atk*0.3)); }
-      if (res.shield) { addStatus(statuses, 'shield', res.shield, 0); State.def += 12; }
+      if (res.shield) { addStatus(statuses, 'shield', res.shield, res.shieldDef || 12); }
       log(res.log, res.heal ? 'heal' : 'player');
       if (enemy.hp <= 0) { endCombat(true); return; }
       enemyTurn();
@@ -6511,9 +6552,10 @@ var QUEST_DEFS = [
       var ch = State._introChoices || {};
       var race = State.race || 'Humain';
       var align = Meta.computeAlign();
+      var choice = State._finalChoice || (align >= 2 ? 'gardien' : align <= -2 ? 'vide' : 'liberateur');
 
-      // ── FIN : LE GARDIEN (align >= 2) ──────────────────────────────
-      if (align >= 2) {
+      // ── FIN : LE GARDIEN ───────────────────────────────────────────
+      if (choice === 'gardien') {
         var gardienRace = race === 'Orc'
           ? '"Un Orc qui choisit de protéger. Ça, personne ne l\'avait prédit."'
           : race === 'Elfe'
@@ -6524,8 +6566,8 @@ var QUEST_DEFS = [
         return '— Le Dieu de la Mémoire lève les yeux sur toi. Sa voix est calme, presque douce.\n\n"Tu n\'as pas changé. Tu t\'es juste souvenu."\n\nIl se tait un instant.\n\n"L\'Éveillé du siècle passé a fait le même choix. Dans la même pièce. Avec les mêmes mains qui tremblaient."\n\n"Pose le cristal sur l\'autel. Le sceau tiendra cent ans de plus. Et quelqu\'un d\'autre viendra après toi — comme tu es venu après lui."\n\nBertrand lève son verre, seul dans la taverne.\n\n'+gardienRace+'\n\n"À l\'Éveillé. Le Gardien."';
       }
 
-      // ── FIN : LE VIDE (align <= -2) ────────────────────────────────
-      if (align <= -2) {
+      // ── FIN : LE VIDE ──────────────────────────────────────────────
+      if (choice === 'vide') {
         var videRace = race === 'Orc'
           ? '"On dit que les Orcs ne ressentent rien. Je savais que c\'était faux. Mais toi... tu l\'as peut-être cru."'
           : race === 'Elfe'
@@ -6585,7 +6627,8 @@ var QUEST_CLAIM_EN = {
   cryptes_final: function() {
     var race = State.race || 'Humain';
     var align = Meta.computeAlign();
-    if (align >= 2) {
+    var choice = State._finalChoice || (align >= 2 ? 'gardien' : align <= -2 ? 'vide' : 'liberateur');
+    if (choice === 'gardien') {
       var gRace = race === 'Orc'
         ? '"An Orc who chooses to protect. No one predicted that."'
         : race === 'Elfe'
@@ -6595,7 +6638,7 @@ var QUEST_CLAIM_EN = {
         : '"You had nothing when you arrived. And you chose to give everything anyway."';
       return '— The God of Memory raises his eyes to you. His voice is calm, almost gentle.\n\n"You haven\'t changed. You just remembered."\n\nHe falls silent for a moment.\n\n"The Awakened of the past century made the same choice. In the same room. With the same trembling hands."\n\n"Place the crystal on the altar. The seal will hold for another hundred years. And someone else will come after you — as you came after them."\n\nBertrand raises his glass, alone in the tavern.\n\n'+gRace+'\n\n"To the Awakened. The Guardian."';
     }
-    if (align <= -2) {
+    if (choice === 'vide') {
       var vRace = race === 'Orc'
         ? '"They say Orcs feel nothing. I knew that was false. But you... perhaps you believed it."'
         : race === 'Elfe'
@@ -6942,6 +6985,7 @@ var Quests = (function(){
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
+      document.getElementById('npc-final-choice').style.display = 'none';
 
       // Dialogue contextuel basé sur la progression narrative
       var speechText = (CGE_LANG==='en' && typeof nd.dialogueEn==='function') ? nd.dialogueEn() : (typeof nd.dialogue==='function' ? nd.dialogue() : '');
@@ -6951,14 +6995,21 @@ var Quests = (function(){
       if (active) {
         var def = QUEST_DEFS.find(function(q){ return q.id===active; });
         if (def && def.check && def.check()) {
-          var claimTxt = resolveClaimText(def);
-          document.getElementById('npc-speech').textContent = claimTxt;
+          _currentQuest = def;
           document.getElementById('npc-quest-title').textContent  = '✅ ' + (CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title);
           document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&def.descEn?def.descEn:def.desc);
-          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
+          document.getElementById('npc-quest-reward').textContent = T('quest.reward') + def.rewardTxt;
           document.getElementById('npc-quest-info').style.display = '';
-          document.getElementById('npc-btn-claim').style.display  = '';
-          _currentQuest = def;
+          if (def.id === 'cryptes_final' && !State._finalChoice) {
+            // Le moment du choix final — 3 voies explicites offertes au joueur
+            document.getElementById('npc-speech').textContent = T('final.prompt');
+            document.getElementById('npc-final-choice').style.display = '';
+            document.getElementById('npc-btn-claim').style.display  = 'none';
+          } else {
+            document.getElementById('npc-speech').textContent = resolveClaimText(def);
+            document.getElementById('npc-final-choice').style.display = 'none';
+            document.getElementById('npc-btn-claim').style.display  = '';
+          }
         } else if (def) {
           var _qt = CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title;
           var _qd = CGE_LANG==='en'&&def.descEn?def.descEn:def.desc;
@@ -6999,6 +7050,14 @@ var Quests = (function(){
       Meta.save();
       document.getElementById('npc-btn-accept').style.display = 'none';
       document.getElementById('npc-speech').textContent = 'Quête acceptée. Bonne chance.';
+    },
+
+    chooseFinal: function(path) {
+      State._finalChoice = path;
+      if (typeof State.saveRun === 'function') State.saveRun();
+      document.getElementById('npc-final-choice').style.display = 'none';
+      document.getElementById('npc-speech').textContent = _currentQuest ? resolveClaimText(_currentQuest) : '';
+      document.getElementById('npc-btn-claim').style.display = '';
     },
 
     claim: function() {
@@ -7077,7 +7136,7 @@ var Meta = {
   passageFound: false,
   _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
   chest: [],          // persistent cross-run storage (max 20 items)
-  ZONE_ORDER: ['grottes','foret','ruines','port','pics','cryptes'],
+  ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
   load: function() {
     try {
@@ -8936,6 +8995,7 @@ var WorldMap = {
       ruines:  'hs-reg-ruins',
       port:    'hs-reg-port',
       marais:  'hs-reg-marais',
+      pics:    'hs-reg-pics',
       volcan:  'hs-reg-volcan',
       cryptes: 'hs-reg-cave',
     };
@@ -9182,22 +9242,33 @@ var CloudSync = (function() {
   function getUser() { return _user; }
 
   function _onSignIn(user) {
-    // Load profiles from Firestore and merge with local
+    // Fusionne cloud + local SANS écraser : pour chaque profil (par id) on garde
+    // la version la plus récemment jouée (lastPlayed). Les profils locaux jamais
+    // synchronisés sont conservés. Évite la perte de progression hors-ligne.
     _db.collection('users').doc(user.uid).collection('data').doc('profiles').get().then(function(doc) {
-      if (doc.exists) {
-        var data = doc.data();
-        if (data && data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
-          // Use cloud profiles (they are the source of truth)
-          localStorage.setItem('cge_profiles', Vault.pack(data.profiles));
-          if (data.activeId) localStorage.setItem('cge_active', data.activeId);
-        } else {
-          // First time with cloud: push local to cloud
-          _pushProfiles();
-        }
-      } else {
-        _pushProfiles();
+      var cloud = (doc.exists && doc.data() && Array.isArray(doc.data().profiles)) ? doc.data().profiles : [];
+      var cloudActive = (doc.exists && doc.data()) ? doc.data().activeId : null;
+      if (!cloud.length) { _pushProfiles(); if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render(); return; }
+
+      var local = ProfileManager.getAll();
+      var byId = {};
+      local.forEach(function(p){ if (p && p.id) byId[p.id] = p; });
+      cloud.forEach(function(p){
+        if (!p || !p.id) return;
+        var ex = byId[p.id];
+        // Le plus récemment joué gagne ; un profil cloud inconnu en local est ajouté
+        if (!ex || (p.lastPlayed||0) >= (ex.lastPlayed||0)) byId[p.id] = p;
+      });
+      var merged = Object.keys(byId).map(function(k){ return byId[k]; });
+      localStorage.setItem('cge_profiles', Vault.pack(merged));
+
+      // Garde l'actif local s'il existe encore, sinon retombe sur celui du cloud
+      var activeId = localStorage.getItem('cge_active');
+      if ((!activeId || !merged.some(function(p){ return p.id===activeId; })) && cloudActive) {
+        localStorage.setItem('cge_active', cloudActive);
       }
-      // Refresh profiles screen if open
+      // Repousse l'état fusionné pour faire converger cloud et local
+      _pushProfiles();
       if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render();
     }).catch(function(e){ console.warn('[CGE] Firestore read error:', e); });
   }
@@ -9355,7 +9426,7 @@ var App = {
       // Essayer de charger depuis le profil actif
       var p = ProfileManager.getActive();
       if (p && p.run) {
-        localStorage.setItem('cge_run', JSON.stringify(p.run));
+        localStorage.setItem('cge_run', Vault.pack(p.run));
         if (!State.loadRun()) { ProfilesScreen.open(); return; }
       } else { ProfilesScreen.open(); return; }
     }
