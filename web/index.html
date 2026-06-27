@@ -3263,6 +3263,98 @@ var CLASSES = [
   { id:'Barbare',  icon:'🪓', name:'Barbare',  sub:'Fureur',   hp:110, atk:15, def:2,  spe:'Frenésie' },
 ];
 
+// ── VAULT — couche anti-triche des sauvegardes ───────────────────
+// Signe + obfusque les données persistées. Pas de la crypto militaire
+// (impossible dans un jeu 100% client), mais assez pour dissuader
+// l'édition naïve du localStorage. Les anciennes saves JSON brutes sont
+// acceptées et ré-signées silencieusement à la prochaine écriture.
+var Vault = (function(){
+  var SALT = 'cge¤eternal¤v1¤7a3f9e2b5c8d';
+  function hash(str){
+    var h = (5381 ^ 0x9e3779b9) >>> 0, s = SALT + '|' + str + '|' + SALT;
+    for (var i=0;i<s.length;i++){ h = (((h<<5)+h) ^ s.charCodeAt(i)) >>> 0; }
+    return ('00000000'+h.toString(16)).slice(-8);
+  }
+  function xor(str){
+    var out='', kl=SALT.length;
+    for (var i=0;i<str.length;i++){ out += String.fromCharCode(str.charCodeAt(i) ^ SALT.charCodeAt(i % kl)); }
+    return out;
+  }
+  function b64e(s){ try { return btoa(unescape(encodeURIComponent(s))); } catch(e){ return ''; } }
+  function b64d(s){ try { return decodeURIComponent(escape(atob(s))); } catch(e){ return ''; } }
+  return {
+    hash: hash,
+    pack: function(obj){
+      try {
+        var json = JSON.stringify(obj);
+        return 'V1:' + b64e(xor(hash(json) + '|' + json));
+      } catch(e){ return ''; }
+    },
+    // -> { data, valid, legacy, empty }
+    unpack: function(raw){
+      if (raw == null || raw === '') return { data:null, valid:false, empty:true, legacy:false };
+      if (typeof raw === 'object') return { data:raw, valid:true, legacy:true };
+      if (raw.slice(0,3) === 'V1:'){
+        var dec = xor(b64d(raw.slice(3)));
+        var sep = dec.indexOf('|');
+        if (sep < 0) return { data:null, valid:false, legacy:false };
+        var sig = dec.slice(0, sep), json = dec.slice(sep+1), data = null;
+        try { data = JSON.parse(json); } catch(e){ return { data:null, valid:false, legacy:false }; }
+        return { data:data, valid: hash(json) === sig, legacy:false };
+      }
+      // Ancien format : JSON brut
+      try { return { data: JSON.parse(raw), valid:true, legacy:true }; }
+      catch(e){ return { data:null, valid:false, legacy:false }; }
+    }
+  };
+})();
+
+function _clampNum(v, lo, hi, dflt){
+  v = +v;
+  if (!isFinite(v)) return dflt;
+  if (v < lo) return lo;
+  if (v > hi) return hi;
+  return v;
+}
+
+// ── INTEGRITY — borne les données chargées à des valeurs plausibles ─
+// Dernier rempart : même signature cassée, les valeurs aberrantes
+// (or:99999, niveau:999) sont ramenées dans des limites légitimes.
+var Integrity = {
+  meta: function(d){
+    if (!d || typeof d !== 'object') return d;
+    d.totalGold  = _clampNum(d.totalGold, 0, 1e9, 0);
+    d.totalKills = _clampNum(d.totalKills, 0, 1e7, 0);
+    d.totalRuns  = _clampNum(d.totalRuns, 0, 1e5, 0);
+    d.bestFloor  = _clampNum(d.bestFloor, 0, 6, 0);
+    d.rank       = _clampNum(d.rank, 0, 20, 0);
+    d._align     = _clampNum(d._align, -5, 5, 0);
+    var b = d.bonuses;
+    if (b && typeof b === 'object') {
+      var caps = { atk:500, def:500, hp:3000, potions:50, goldPct:5, crit:1, dodge:0.9, timerBonus:600, lifesteal:1, regenMeta:100, xpPct:10, startGold:1e5 };
+      Object.keys(caps).forEach(function(k){ if (b[k] != null) b[k] = _clampNum(b[k], 0, caps[k], 0); });
+    }
+    return d;
+  },
+  run: function(d){
+    if (!d || typeof d !== 'object') return d;
+    d.level   = _clampNum(d.level, 1, 99, 1);
+    d.hpMax   = _clampNum(d.hpMax, 1, 1e5, 1);
+    d.hp      = _clampNum(d.hp, 0, d.hpMax, d.hpMax);
+    d.atk     = _clampNum(d.atk, 0, 5000, 0);
+    d.def     = _clampNum(d.def, 0, 5000, 0);
+    d.gold    = _clampNum(d.gold, 0, 1e7, 0);
+    d.xp      = _clampNum(d.xp, 0, 1e9, 0);
+    d.floor   = _clampNum(d.floor, 1, 6, 1);
+    if (d.kills != null)   d.kills   = _clampNum(d.kills, 0, 1e6, 0);
+    if (d.potions != null) d.potions = _clampNum(d.potions, 0, 99, 0);
+    if (d.mana != null)    d.mana    = _clampNum(d.mana, 0, 1e4, 0);
+    if (d.manaMax != null) d.manaMax = _clampNum(d.manaMax, 0, 1e4, 0);
+    if (Array.isArray(d.inventory) && d.inventory.length > 8) d.inventory = d.inventory.slice(0,8);
+    return d;
+  }
+};
+
 var State = {
   race: 'Humain',
   cls:  'Guerrier',
@@ -3295,17 +3387,16 @@ State.saveRun = function() {
       scrolls: State.scrolls || [],
       mana: State.mana || 0, manaMax: State.manaMax || 0,
     };
-    localStorage.setItem('cge_run', JSON.stringify(data));
+    localStorage.setItem('cge_run', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
   } catch(e) {}
 };
 
 State.loadRun = function() {
   try {
-    var raw = localStorage.getItem('cge_run');
-    if (!raw) return false;
-    var d = JSON.parse(raw);
+    var d = Vault.unpack(localStorage.getItem('cge_run')).data;
     if (!d || !d.hp) return false;
+    d = Integrity.run(d);
     Object.keys(d).forEach(function(k){ State[k] = d[k]; });
     return true;
   } catch(e) { return false; }
@@ -3317,7 +3408,7 @@ State.clearSave = function() {
 
 State.hasSave = function() {
   try {
-    var d = JSON.parse(localStorage.getItem('cge_run')||'{}');
+    var d = Vault.unpack(localStorage.getItem('cge_run')).data;
     return !!(d && d.hp);
   } catch(e) { return false; }
 };
@@ -3669,10 +3760,11 @@ var ProfileManager = {
   ACTIVE_KEY: 'cge_active',
 
   getAll: function() {
-    try { return JSON.parse(localStorage.getItem(this.KEY)||'[]'); } catch(e) { return []; }
+    var u = Vault.unpack(localStorage.getItem(this.KEY));
+    return Array.isArray(u.data) ? u.data : [];
   },
   saveAll: function(list) {
-    try { localStorage.setItem(this.KEY, JSON.stringify(list)); } catch(e) {}
+    try { localStorage.setItem(this.KEY, Vault.pack(list)); } catch(e) {}
     if (typeof CloudSync !== 'undefined') CloudSync.syncProfiles(list, this.getActiveId());
   },
   getActiveId: function() { return localStorage.getItem(this.ACTIVE_KEY)||null; },
@@ -3715,10 +3807,10 @@ var ProfileManager = {
     if (!p) return false;
     this.setActiveId(id);
     // Restore meta
-    if (p.meta) { localStorage.setItem('cge_meta', JSON.stringify(p.meta)); Meta.load(); }
+    if (p.meta) { localStorage.setItem('cge_meta', Vault.pack(p.meta)); Meta.load(); }
     else { localStorage.removeItem('cge_meta'); Meta.load(); }
     // Restore run
-    if (p.run) { localStorage.setItem('cge_run', JSON.stringify(p.run)); }
+    if (p.run) { localStorage.setItem('cge_run', Vault.pack(p.run)); }
     else { localStorage.removeItem('cge_run'); }
     // Restore identity
     State.race = p.race || 'Humain';
@@ -3739,16 +3831,22 @@ var ProfileManager = {
     for (var i=0;i<list.length;i++){ if (list[i].id===id){ p=Object.assign({},list[i]); break; } }
     if (!p) return null;
     if (this.getActiveId()===id) {
-      try { p.meta = JSON.parse(localStorage.getItem('cge_meta')||'null'); } catch(e){}
-      try { p.run  = JSON.parse(localStorage.getItem('cge_run')||'null');  } catch(e){}
+      p.meta = Vault.unpack(localStorage.getItem('cge_meta')).data || null;
+      p.run  = Vault.unpack(localStorage.getItem('cge_run')).data || null;
     }
-    try { return btoa(unescape(encodeURIComponent(JSON.stringify(p)))); } catch(e){ return null; }
+    return Vault.pack(p) || null;
   },
 
   importCode: function(code) {
     try {
-      var p = JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+      code = code.trim();
+      var u = Vault.unpack(code);
+      var p = u.valid ? u.data : null;
+      // Repli : ancien code base64 (atob d'un JSON non préfixé V1:)
+      if (!p) { try { p = JSON.parse(decodeURIComponent(escape(atob(code)))); } catch(e){} }
       if (!p || !p.name) return null;
+      if (p.meta) p.meta = Integrity.meta(p.meta);
+      if (p.run)  p.run  = Integrity.run(p.run);
       p.id = Date.now().toString(36)+Math.random().toString(36).slice(2,5);
       p.lastPlayed = Date.now();
       var list = this.getAll();
@@ -3765,9 +3863,8 @@ var ProfileManager = {
     var hasMeta = !!localStorage.getItem('cge_meta');
     var hasRun  = !!localStorage.getItem('cge_run');
     if (!hasMeta && !hasRun) return;
-    var meta = null; var run = null;
-    try { meta = JSON.parse(localStorage.getItem('cge_meta')||'null'); } catch(e){}
-    try { run  = JSON.parse(localStorage.getItem('cge_run')||'null');  } catch(e){}
+    var meta = Vault.unpack(localStorage.getItem('cge_meta')).data;
+    var run  = Vault.unpack(localStorage.getItem('cge_run')).data;
     var race = (run&&run.race)||'Humain';
     var cls  = (run&&run.cls)||'Guerrier';
     var id = Date.now().toString(36)+'mig';
@@ -6964,7 +7061,7 @@ var Meta = {
 
   load: function() {
     try {
-      var d = JSON.parse(localStorage.getItem('cge_meta')||'{}');
+      var d = Integrity.meta(Vault.unpack(localStorage.getItem('cge_meta')).data) || {};
       Meta.totalGold   = d.totalGold||0;
       Meta.totalKills  = d.totalKills||0;
       Meta.totalRuns   = d.totalRuns||0;
@@ -7002,7 +7099,7 @@ var Meta = {
       chest:          Meta.chest,
       achievements:   Meta.achievements,
     };
-    localStorage.setItem('cge_meta', JSON.stringify(data));
+    localStorage.setItem('cge_meta', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
   },
 
@@ -9031,7 +9128,7 @@ var CloudSync = (function() {
         var data = doc.data();
         if (data && data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
           // Use cloud profiles (they are the source of truth)
-          localStorage.setItem('cge_profiles', JSON.stringify(data.profiles));
+          localStorage.setItem('cge_profiles', Vault.pack(data.profiles));
           if (data.activeId) localStorage.setItem('cge_active', data.activeId);
         } else {
           // First time with cloud: push local to cloud
@@ -9051,8 +9148,7 @@ var CloudSync = (function() {
 
   function _pushProfiles() {
     if (!_user || !_db) return;
-    var profiles = [];
-    try { profiles = JSON.parse(localStorage.getItem('cge_profiles')||'[]'); } catch(e){}
+    var profiles = ProfileManager.getAll();
     var activeId = localStorage.getItem('cge_active') || null;
     _db.collection('users').doc(_user.uid).collection('data').doc('profiles').set({
       profiles: profiles,
