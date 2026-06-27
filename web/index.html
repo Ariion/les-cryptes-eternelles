@@ -2398,10 +2398,10 @@ canvas#particles {
       <div id="code-modal">
         <div id="code-modal-title"></div>
         <div id="code-modal-sub"></div>
-        <textarea id="code-modal-textarea" placeholder="Colle ton code ici..."></textarea>
-        <button class="code-modal-btn" id="code-modal-copy" onclick="ProfilesScreen.copyCode()" style="display:none">📋 Copier le code</button>
-        <button class="code-modal-btn" id="code-modal-import" onclick="ProfilesScreen.doImport()" style="display:none">✓ Importer</button>
-        <button class="code-modal-btn" id="code-modal-close" onclick="ProfilesScreen.closeModal()">Fermer</button>
+        <textarea id="code-modal-textarea" placeholder="Colle ton code ici..." data-i18n-placeholder="code.textarea.ph"></textarea>
+        <button class="code-modal-btn" id="code-modal-copy" onclick="ProfilesScreen.copyCode()" style="display:none" data-i18n="code.btn.copy">📋 Copier le code</button>
+        <button class="code-modal-btn" id="code-modal-import" onclick="ProfilesScreen.doImport()" style="display:none" data-i18n="code.btn.import">✓ Importer</button>
+        <button class="code-modal-btn" id="code-modal-close" onclick="ProfilesScreen.closeModal()" data-i18n="code.btn.close">Fermer</button>
       </div>
     </div>
 
@@ -2653,7 +2653,7 @@ canvas#particles {
       </div>
       <div id="passage-hint" class="passage-hint">Une fissure dans la pierre...</div>
       <div id="dm-footer">
-        <div id="dm-node-info">Choisis ton chemin...</div>
+        <div id="dm-node-info" data-i18n="dm.nodeinfo">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
       <button id="dm-camp-btn" onclick="Nav.go('world-map')"><span data-i18n="dm.camp">🗺 Voyager</span></button>
@@ -2670,9 +2670,9 @@ canvas#particles {
 
     <!-- ── LEVEL UP OVERLAY ── -->
     <div id="levelup-overlay">
-      <div id="lu-title">✦ Montée de Niveau ✦</div>
-      <div id="lu-level">Niveau <span id="lu-level-num">2</span></div>
-      <div id="lu-sub">Choisis ton amélioration</div>
+      <div id="lu-title" data-i18n="levelup.title">✦ Montée de Niveau ✦</div>
+      <div id="lu-level"><span data-i18n="levelup.level">Niveau</span> <span id="lu-level-num">2</span></div>
+      <div id="lu-sub" data-i18n="levelup.sub">Choisis ton amélioration</div>
       <div id="lu-cards"></div>
     </div>
 
@@ -2934,8 +2934,8 @@ canvas#particles {
         <div class="tv-card" id="tv-ruins" onclick="Travel.goAlternateDungeon('ruins')">
           <div class="tv-card-ico">🏚</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">Ruines Maudites</div>
-            <div class="tv-card-desc">Difficile · Ennemis d'élite, trésors rares</div>
+            <div class="tv-card-name" data-i18n="travel.ruins.name">Ruines Maudites</div>
+            <div class="tv-card-desc" data-i18n="travel.ruins.desc">Difficile · Ennemis d'élite, trésors rares</div>
           </div>
           <div class="tv-card-badge danger">Niv. 3+</div>
         </div>
@@ -3284,18 +3284,18 @@ canvas#particles {
 <script>
 // ── DATA ─────────────────────────────────────────────────────────
 var RACES = [
-  { id:'Humain',  icon:'🧑', name:'Humain',  sub:'Équilibré',   dhp:0,   datk:0,  ddef:0,  bonus:'+10% XP',           passive:'xp_boost' },
-  { id:'Elfe',    icon:'🧝', name:'Elfe',    sub:'Agilité',     dhp:-10, datk:2,  ddef:-1, bonus:'Frappe en premier',  passive:'initiative' },
-  { id:'Nain',    icon:'⛏',  name:'Nain',    sub:'Endurance',   dhp:20,  datk:-1, ddef:3,  bonus:'Résist. poison',    passive:'poison_resist' },
-  { id:'Orc',     icon:'💪', name:'Orc',     sub:'Brutalité',   dhp:15,  datk:3,  ddef:-2, bonus:'Rage si PV < 30%',  passive:'rage' },
+  { id:'Humain',  icon:'🧑', name:'Humain',  nameEn:'Human',  sub:'Équilibré',   subEn:'Balanced',  dhp:0,   datk:0,  ddef:0,  bonus:'+10% XP',           bonusEn:'+10% XP',            passive:'xp_boost' },
+  { id:'Elfe',    icon:'🧝', name:'Elfe',    nameEn:'Elf',    sub:'Agilité',     subEn:'Agility',   dhp:-10, datk:2,  ddef:-1, bonus:'Frappe en premier',  bonusEn:'Strikes first',      passive:'initiative' },
+  { id:'Nain',    icon:'⛏',  name:'Nain',    nameEn:'Dwarf',  sub:'Endurance',   subEn:'Endurance', dhp:20,  datk:-1, ddef:3,  bonus:'Résist. poison',    bonusEn:'Poison resist',      passive:'poison_resist' },
+  { id:'Orc',     icon:'💪', name:'Orc',     nameEn:'Orc',    sub:'Brutalité',   subEn:'Brutality', dhp:15,  datk:3,  ddef:-2, bonus:'Rage si PV < 30%',  bonusEn:'Rage if HP < 30%',   passive:'rage' },
 ];
 var CLASSES = [
-  { id:'Guerrier', icon:'⚔',  name:'Guerrier', sub:'Solide',   hp:100, atk:12, def:6,  spe:'Bouclier' },
-  { id:'Mage',     icon:'🔮', name:'Mage',     sub:'Puissant', hp:70,  atk:18, def:3,  spe:'Boule de feu' },
-  { id:'Chasseur', icon:'🏹', name:'Chasseur', sub:'Rapide',   hp:85,  atk:14, def:4,  spe:'Double tir' },
-  { id:'Assassin', icon:'🗡', name:'Assassin', sub:'Critique', hp:75,  atk:16, def:3,  spe:'Crit. garanti' },
-  { id:'Prêtre',   icon:'✚',  name:'Prêtre',   sub:'Soigneur', hp:90,  atk:10, def:7,  spe:'Soin 30%' },
-  { id:'Barbare',  icon:'🪓', name:'Barbare',  sub:'Fureur',   hp:110, atk:15, def:2,  spe:'Frenésie' },
+  { id:'Guerrier', icon:'⚔',  name:'Guerrier', nameEn:'Warrior',  sub:'Solide',   subEn:'Sturdy',   hp:100, atk:12, def:6,  spe:'Bouclier',     speEn:'Shield' },
+  { id:'Mage',     icon:'🔮', name:'Mage',     nameEn:'Mage',     sub:'Puissant', subEn:'Powerful', hp:70,  atk:18, def:3,  spe:'Boule de feu', speEn:'Fireball' },
+  { id:'Chasseur', icon:'🏹', name:'Chasseur', nameEn:'Hunter',   sub:'Rapide',   subEn:'Swift',    hp:85,  atk:14, def:4,  spe:'Double tir',   speEn:'Double shot' },
+  { id:'Assassin', icon:'🗡', name:'Assassin', nameEn:'Assassin', sub:'Critique', subEn:'Critical', hp:75,  atk:16, def:3,  spe:'Crit. garanti', speEn:'Guaranteed crit' },
+  { id:'Prêtre',   icon:'✚',  name:'Prêtre',   nameEn:'Priest',   sub:'Soigneur', subEn:'Healer',   hp:90,  atk:10, def:7,  spe:'Soin 30%',     speEn:'Heal 30%' },
+  { id:'Barbare',  icon:'🪓', name:'Barbare',  nameEn:'Barbarian', sub:'Fureur',  subEn:'Fury',     hp:110, atk:15, def:2,  spe:'Frenésie',     speEn:'Frenzy' },
 ];
 
 // ── VAULT — couche anti-triche des sauvegardes ───────────────────
@@ -3527,14 +3527,14 @@ var Sfx = (function(){
       localStorage.setItem('cge_par', parOn?'1':'0');
     },
     confirmReset: function() {
-      CGEModal.confirm('Réinitialiser tout ?', 'Tous les aventuriers, méta-progression, donjons nettoyés seront supprimés. Cette action est irréversible.', function() {
+      CGEModal.confirm(T('reset.confirm.title'), T('reset.confirm.body'), function() {
         ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus','cge_profiles','cge_active'].forEach(function(k){ localStorage.removeItem(k); });
         Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
         Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
         Meta.clearedZones={}; Meta.chest=[]; Meta.achievements={};
         State.hp=0; State.hpMax=0; State.name='Aventurier';
         Nav.go('main-menu');
-        CGEModal.alert('Réinitialisation', 'Tout a été réinitialisé. Bonne aventure !');
+        CGEModal.alert(T('reset.done.title'), T('reset.done.body'));
       });
     },
     load: function() {
@@ -3946,8 +3946,8 @@ var ProfilesScreen = {
       var r = (typeof RACES !== 'undefined') ? RACES.find(function(x){ return x.id===p.race; }) : null;
       var c = (typeof CLASSES !== 'undefined') ? CLASSES.find(function(x){ return x.id===p.cls; }) : null;
       var avatar = (r&&r.icon)||'⚔';
-      var rName  = (r&&r.name)||p.race||'?';
-      var cName  = (c&&c.name)||p.cls||'?';
+      var rName  = (r&&(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name))||p.race||'?';
+      var cName  = (c&&(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name))||p.cls||'?';
       var date   = new Date(p.lastPlayed||p.createdAt||Date.now());
       var dateStr= date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
       var div = document.createElement('div');
@@ -3977,7 +3977,7 @@ var ProfilesScreen = {
     });
     cont.querySelectorAll('.prof-card-del').forEach(function(btn){
       btn.addEventListener('click', function(){
-        CGEModal.confirm('Supprimer ?', 'Supprimer cet aventurier ? Cette action est irréversible.', function() {
+        CGEModal.confirm(T('delhero.confirm.title'), T('delhero.confirm.body'), function() {
           ProfileManager.deleteProfile(btn.dataset.id);
           ProfilesScreen.render();
         });
@@ -4028,10 +4028,10 @@ var ProfilesScreen = {
     this._exportId = id;
     this._mode = 'export';
     var code = ProfileManager.exportCode(id);
-    if (!code) { CGEModal.alert('Erreur', 'Impossible d\'exporter ce profil.'); return; }
+    if (!code) { CGEModal.alert(T('code.error.title'), T('code.export.fail')); return; }
     var modal = document.getElementById('code-modal');
-    document.getElementById('code-modal-title').textContent = '📤 Code de sauvegarde';
-    document.getElementById('code-modal-sub').textContent = 'Copie ce code et partage-le. Il suffit de le coller dans "Importer" sur un autre appareil.';
+    document.getElementById('code-modal-title').textContent = T('code.export.title');
+    document.getElementById('code-modal-sub').textContent = T('code.export.sub');
     document.getElementById('code-modal-textarea').value = code;
     document.getElementById('code-modal-textarea').readOnly = true;
     document.getElementById('code-modal-copy').style.display = 'block';
@@ -4042,8 +4042,8 @@ var ProfilesScreen = {
   openImport: function() {
     this._mode = 'import';
     var modal = document.getElementById('code-modal');
-    document.getElementById('code-modal-title').textContent = '↓ Importer un aventurier';
-    document.getElementById('code-modal-sub').textContent = 'Colle ici le code de sauvegarde reçu depuis un autre appareil.';
+    document.getElementById('code-modal-title').textContent = T('code.import.title');
+    document.getElementById('code-modal-sub').textContent = T('code.import.sub');
     document.getElementById('code-modal-textarea').value = '';
     document.getElementById('code-modal-textarea').readOnly = false;
     document.getElementById('code-modal-copy').style.display = 'none';
@@ -4055,21 +4055,21 @@ var ProfilesScreen = {
   copyCode: function() {
     var ta = document.getElementById('code-modal-textarea');
     ta.select();
-    try { document.execCommand('copy'); CGEModal.alert('Copié !', 'Code copié dans le presse-papier.'); }
+    try { document.execCommand('copy'); CGEModal.alert(T('code.copied.title'), T('code.copied.body')); }
     catch(e) {
-      try { navigator.clipboard.writeText(ta.value).then(function(){ CGEModal.alert('Copié !', 'Code copié avec succès.'); }); }
-      catch(e2) { CGEModal.alert('Copie manuelle', 'Sélectionne tout le texte ci-dessus et copie-le manuellement.'); }
+      try { navigator.clipboard.writeText(ta.value).then(function(){ CGEModal.alert(T('code.copied.title'), T('code.copied.body2')); }); }
+      catch(e2) { CGEModal.alert(T('code.copymanual.title'), T('code.copymanual.body')); }
     }
   },
 
   doImport: function() {
     var code = document.getElementById('code-modal-textarea').value.trim();
-    if (!code) { CGEModal.alert('Champ vide', 'Colle un code d\'abord !'); return; }
+    if (!code) { CGEModal.alert(T('code.empty.title'), T('code.empty.body')); return; }
     var p = ProfileManager.importCode(code);
-    if (!p) { CGEModal.alert('Erreur', 'Code invalide ou corrompu.'); return; }
+    if (!p) { CGEModal.alert(T('code.error.title'), T('code.invalid.body')); return; }
     this.closeModal();
     this.render();
-    CGEModal.alert('Importé !', 'Aventurier "'+p.name+'" importé avec succès !');
+    CGEModal.alert(T('code.imported.title'), T('code.imported.body').replace('{n}', p.name));
   },
 
   closeModal: function() {
@@ -4108,56 +4108,64 @@ var StoryIntro = (function(){
   var SCENES = [
     // 0 — Éveil
     { type:'auto', delay:2800,
-      lines:['Noir.','Absolument tout est noir.','Puis... une sensation.'] },
+      lines:['Noir.','Absolument tout est noir.','Puis... une sensation.'],
+      linesEn:['Black.','Absolutely everything is black.','Then... a sensation.'] },
     // 1 — Première sensation
     { type:'choice',
       lines:['La première chose que tu ressens...'],
+      linesEn:['The first thing you feel...'],
       choices:[
-        { text:'Le froid. Un froid glacial.', key:'trait', val:'cold' },
-        { text:'La douleur. Partout.', key:'trait', val:'pain' },
-        { text:'Rien. Absolument rien.', key:'trait', val:'void' }
+        { text:'Le froid. Un froid glacial.', textEn:'The cold. A freezing cold.', key:'trait', val:'cold' },
+        { text:'La douleur. Partout.', textEn:'The pain. Everywhere.', key:'trait', val:'pain' },
+        { text:'Rien. Absolument rien.', textEn:'Nothing. Absolutely nothing.', key:'trait', val:'void' }
       ]
     },
     // 2 — Une voix
     { type:'choice',
       lines:['Une voix. Lointaine.', 'Elle parle de toi.'],
+      linesEn:['A voice. Distant.', 'It speaks of you.'],
       choices:[
-        { text:'"Il respire encore."', key:'voice', val:'survivor' },
-        { text:'"Par les dieux... réveille-toi."', key:'voice', val:'divine' },
-        { text:'"Quelqu\'un l\'a trouvé."', key:'voice', val:'found' }
+        { text:'"Il respire encore."', textEn:'"He still breathes."', key:'voice', val:'survivor' },
+        { text:'"Par les dieux... réveille-toi."', textEn:'"By the gods... wake up."', key:'voice', val:'divine' },
+        { text:'"Quelqu\'un l\'a trouvé."', textEn:'"Someone found him."', key:'voice', val:'found' }
       ]
     },
     // 3 — La lumière
     { type:'auto', delay:3000,
-      lines:['La lumière arrive.','Brutalement.','Un plafond de bois. Une bougie vacillante.','Tu ne reconnais rien.'] },
+      lines:['La lumière arrive.','Brutalement.','Un plafond de bois. Une bougie vacillante.','Tu ne reconnais rien.'],
+      linesEn:['The light comes.','Brutally.','A wooden ceiling. A flickering candle.','You recognize nothing.'] },
     // 4 — Le vide
     { type:'auto', delay:2200,
-      lines:['Tu cherches quelque chose.','Un nom.','Il n\'est pas là.'] },
+      lines:['Tu cherches quelque chose.','Un nom.','Il n\'est pas là.'],
+      linesEn:['You search for something.','A name.','It is not there.'] },
     // 5 — Race
     { type:'choice',
       lines:['Dans le brouillard de ton esprit...','Une forme. La tienne ?'],
+      linesEn:['In the fog of your mind...','A shape. Yours?'],
       choices:[
-        { text:'Massive. Rugueuse. Taillée dans la pierre.', key:'race', val:'Nain' },
-        { text:'Fine. Presque transparente. Faite pour disparaître.', key:'race', val:'Elfe' },
-        { text:'Large. Puissante. Une rage froide sous la peau.', key:'race', val:'Orc' },
-        { text:'Ordinaire. Mais tes yeux — ils observent tout.', key:'race', val:'Humain' }
+        { text:'Massive. Rugueuse. Taillée dans la pierre.', textEn:'Massive. Rugged. Carved from stone.', key:'race', val:'Nain' },
+        { text:'Fine. Presque transparente. Faite pour disparaître.', textEn:'Slender. Almost transparent. Made to vanish.', key:'race', val:'Elfe' },
+        { text:'Large. Puissante. Une rage froide sous la peau.', textEn:'Broad. Powerful. A cold rage beneath the skin.', key:'race', val:'Orc' },
+        { text:'Ordinaire. Mais tes yeux — ils observent tout.', textEn:'Ordinary. But your eyes — they see everything.', key:'race', val:'Humain' }
       ]
     },
     // 6 — Classe
     { type:'choice',
       lines:['Un instinct remonte.','Quelque chose que ton corps sait faire.'],
+      linesEn:['An instinct surfaces.','Something your body knows how to do.'],
       choices:[
-        { text:'Tes mains cherchent une lame. C\'est un réflexe.', key:'cls', val:'Guerrier' },
-        { text:'Des mots étranges murmurent dans ta tête. Du feu.', key:'cls', val:'Mage' },
-        { text:'Tes yeux balaient l\'horizon avant tout le reste.', key:'cls', val:'Chasseur' },
-        { text:'Un coup. Unique. Invisible. C\'est tout ce que tu sais.', key:'cls', val:'Assassin' },
-        { text:'Tu veux protéger. Avant même de savoir qui.', key:'cls', val:'Prêtre' },
-        { text:'Tu souffres. Et tu souris. Ça ne s\'arrête pas.', key:'cls', val:'Barbare' }
+        { text:'Tes mains cherchent une lame. C\'est un réflexe.', textEn:'Your hands reach for a blade. It\'s a reflex.', key:'cls', val:'Guerrier' },
+        { text:'Des mots étranges murmurent dans ta tête. Du feu.', textEn:'Strange words whisper in your head. Fire.', key:'cls', val:'Mage' },
+        { text:'Tes yeux balaient l\'horizon avant tout le reste.', textEn:'Your eyes sweep the horizon before all else.', key:'cls', val:'Chasseur' },
+        { text:'Un coup. Unique. Invisible. C\'est tout ce que tu sais.', textEn:'One strike. Single. Invisible. That\'s all you know.', key:'cls', val:'Assassin' },
+        { text:'Tu veux protéger. Avant même de savoir qui.', textEn:'You want to protect. Before even knowing whom.', key:'cls', val:'Prêtre' },
+        { text:'Tu souffres. Et tu souris. Ça ne s\'arrête pas.', textEn:'You suffer. And you smile. It never stops.', key:'cls', val:'Barbare' }
       ]
     },
     // 7 — Nom
     { type:'input',
-      lines:['Un mot remonte. Juste un.','Comment t\'appelle-t-on ?'] },
+      lines:['Un mot remonte. Juste un.','Comment t\'appelle-t-on ?'],
+      linesEn:['One word surfaces. Just one.','What are you called?'] },
     // 8 — Marta (fin)
     { type:'auto', delay:4200, finish:true,
       lines:[
@@ -4166,6 +4174,13 @@ var StoryIntro = (function(){
         '"Enfin réveillé ? Vous avez dormi trois jours."',
         'Une femme dans l\'embrasure de la porte.',
         '"Je suis Marta. Et vous me devez de l\'argent."'
+      ],
+      linesEn:[
+        'Suddenly — a voice in the room.',
+        'Real, this time.',
+        '"Awake at last? You slept for three days."',
+        'A woman in the doorway.',
+        '"I am Marta. And you owe me money."'
       ]
     }
   ];
@@ -4205,7 +4220,8 @@ var StoryIntro = (function(){
     var sc = SCENES[idx];
     if (!sc) return;
     _clear();
-    _typeLines(sc.lines, function() {
+    var _lines = (CGE_LANG === 'en' && sc.linesEn) ? sc.linesEn : sc.lines;
+    _typeLines(_lines, function() {
       if (sc.type === 'auto') {
         setTimeout(function(){
           if (sc.finish) _finish(); else _scene(idx+1);
@@ -4216,7 +4232,7 @@ var StoryIntro = (function(){
         sc.choices.forEach(function(opt) {
           var btn = document.createElement('button');
           btn.className = 'si-choice ripple-el';
-          btn.textContent = opt.text;
+          btn.textContent = (CGE_LANG === 'en' && opt.textEn) ? opt.textEn : opt.text;
           btn.addEventListener('click', function(){
             _c[opt.key] = opt.val;
             if (typeof Sfx !== 'undefined') Sfx.nav();
@@ -4553,6 +4569,68 @@ var STRINGS = {
     'ach.unlocked': 'Débloqué',
     'ach.locked': 'Verrouillé',
     'quest.done': 'Tu as accompli ce qui t\'était demandé.',
+    // Rewarded ad result popups
+    'adres.gold.title': 'Or doublé !',
+    'adres.gold.body': '×2 ! Vous recevez {n} pièces supplémentaires !',
+    'adres.revive.title': 'Résurrection !',
+    'adres.revive.body': 'Vous revenez à la vie avec {n} PV !',
+    'adres.chest.title': 'Coffre Doublé !',
+    'adres.chest.body': '×2 ! +{n} 🪙 et un objet bonus ajouté à l\'inventaire !',
+    'adres.free.title': 'Prochain achat gratuit !',
+    'adres.free.body': 'Le prochain objet acheté en boutique sera remboursé automatiquement.',
+    // Rewarded ad buttons
+    'adbtn.revive': '📺 Regarder une pub → Revenir avec 30% HP',
+    'adbtn.doublegold': '📺 Pub → ×2 Or gagné',
+    'adbtn.chest': '📺 Pub → Coffre Bonus (or + objet)',
+    'adbtn.refund': '📺 Pub → Rembourser ce dernier achat',
+    // Reset / delete
+    'reset.confirm.title': 'Réinitialiser tout ?',
+    'reset.confirm.body': 'Tous les aventuriers, méta-progression, donjons nettoyés seront supprimés. Cette action est irréversible.',
+    'reset.done.title': 'Réinitialisation',
+    'reset.done.body': 'Tout a été réinitialisé. Bonne aventure !',
+    'delhero.confirm.title': 'Supprimer ?',
+    'delhero.confirm.body': 'Supprimer cet aventurier ? Cette action est irréversible.',
+    // Export / import code
+    'code.error.title': 'Erreur',
+    'code.export.fail': 'Impossible d\'exporter ce profil.',
+    'code.export.title': '📤 Code de sauvegarde',
+    'code.export.sub': 'Copie ce code et partage-le. Il suffit de le coller dans "Importer" sur un autre appareil.',
+    'code.import.title': '↓ Importer un aventurier',
+    'code.import.sub': 'Colle ici le code de sauvegarde reçu depuis un autre appareil.',
+    'code.copied.title': 'Copié !',
+    'code.copied.body': 'Code copié dans le presse-papier.',
+    'code.copied.body2': 'Code copié avec succès.',
+    'code.copymanual.title': 'Copie manuelle',
+    'code.copymanual.body': 'Sélectionne tout le texte ci-dessus et copie-le manuellement.',
+    'code.empty.title': 'Champ vide',
+    'code.empty.body': 'Colle un code d\'abord !',
+    'code.invalid.body': 'Code invalide ou corrompu.',
+    'code.imported.title': 'Importé !',
+    'code.imported.body': 'Aventurier "{n}" importé avec succès !',
+    'code.textarea.ph': 'Colle ton code ici...',
+    'code.btn.copy': '📋 Copier le code',
+    'code.btn.import': '✓ Importer',
+    'code.btn.close': 'Fermer',
+    // Level-up overlay
+    'levelup.title': '✦ Montée de Niveau ✦',
+    'levelup.level': 'Niveau',
+    'levelup.sub': 'Choisis ton amélioration',
+    // Travel cards
+    'travel.ruins.name': 'Ruines Maudites',
+    'travel.ruins.desc': 'Difficile · Ennemis d\'élite, trésors rares',
+    // Misc UI
+    'quest.accepted': 'Quête acceptée. Bonne chance.',
+    'loot.tobag': 'Mis dans le sac',
+    'loot.none.name': 'Aucun butin',
+    'loot.none.desc': 'L\'ennemi n\'avait rien de valeur...',
+    'misc.pickup_arrow': 'Récupérer →',
+    'misc.continue': 'Continuer',
+    'equip.empty': 'Aucun(e)',
+    'warn.enter.title': 'Attention, Aventurier',
+    'warn.enter.ok': 'Entrer quand même',
+    'warn.enter.cancel': 'Reculer',
+    'warn.zone.locked': '⚠ Zone non recommandée pour ton niveau de progression.',
+    'warn.zone.level': '💀 Niveau conseillé : {rec} (tu es niveau {lvl}).',
   },
   en: {
     // Main menu
@@ -4835,6 +4913,68 @@ var STRINGS = {
     'ach.unlocked': 'Unlocked',
     'ach.locked': 'Locked',
     'quest.done': 'You\'ve accomplished what was asked of you.',
+    // Rewarded ad result popups
+    'adres.gold.title': 'Gold Doubled!',
+    'adres.gold.body': '×2! You receive {n} extra coins!',
+    'adres.revive.title': 'Resurrection!',
+    'adres.revive.body': 'You return to life with {n} HP!',
+    'adres.chest.title': 'Chest Doubled!',
+    'adres.chest.body': '×2! +{n} 🪙 and a bonus item added to your inventory!',
+    'adres.free.title': 'Next Purchase Free!',
+    'adres.free.body': 'The next item bought in the shop will be refunded automatically.',
+    // Rewarded ad buttons
+    'adbtn.revive': '📺 Watch an ad → Return with 30% HP',
+    'adbtn.doublegold': '📺 Ad → ×2 Gold earned',
+    'adbtn.chest': '📺 Ad → Bonus Chest (gold + item)',
+    'adbtn.refund': '📺 Ad → Refund this last purchase',
+    // Reset / delete
+    'reset.confirm.title': 'Reset everything?',
+    'reset.confirm.body': 'All adventurers, meta-progression and cleared dungeons will be deleted. This action is irreversible.',
+    'reset.done.title': 'Reset',
+    'reset.done.body': 'Everything has been reset. Good adventure!',
+    'delhero.confirm.title': 'Delete?',
+    'delhero.confirm.body': 'Delete this adventurer? This action is irreversible.',
+    // Export / import code
+    'code.error.title': 'Error',
+    'code.export.fail': 'Unable to export this profile.',
+    'code.export.title': '📤 Save Code',
+    'code.export.sub': 'Copy this code and share it. Just paste it into "Import" on another device.',
+    'code.import.title': '↓ Import an adventurer',
+    'code.import.sub': 'Paste the save code received from another device here.',
+    'code.copied.title': 'Copied!',
+    'code.copied.body': 'Code copied to clipboard.',
+    'code.copied.body2': 'Code copied successfully.',
+    'code.copymanual.title': 'Manual copy',
+    'code.copymanual.body': 'Select all the text above and copy it manually.',
+    'code.empty.title': 'Empty field',
+    'code.empty.body': 'Paste a code first!',
+    'code.invalid.body': 'Invalid or corrupted code.',
+    'code.imported.title': 'Imported!',
+    'code.imported.body': 'Adventurer "{n}" imported successfully!',
+    'code.textarea.ph': 'Paste your code here...',
+    'code.btn.copy': '📋 Copy the code',
+    'code.btn.import': '✓ Import',
+    'code.btn.close': 'Close',
+    // Level-up overlay
+    'levelup.title': '✦ Level Up ✦',
+    'levelup.level': 'Level',
+    'levelup.sub': 'Choose your upgrade',
+    // Travel cards
+    'travel.ruins.name': 'Cursed Ruins',
+    'travel.ruins.desc': 'Hard · Elite enemies, rare treasures',
+    // Misc UI
+    'quest.accepted': 'Quest accepted. Good luck.',
+    'loot.tobag': 'Put in the bag',
+    'loot.none.name': 'No loot',
+    'loot.none.desc': 'The enemy had nothing of value...',
+    'misc.pickup_arrow': 'Pick up →',
+    'misc.continue': 'Continue',
+    'equip.empty': 'None',
+    'warn.enter.title': 'Beware, Adventurer',
+    'warn.enter.ok': 'Enter anyway',
+    'warn.enter.cancel': 'Back off',
+    'warn.zone.locked': '⚠ Zone not recommended for your progression level.',
+    'warn.zone.level': '💀 Recommended level: {rec} (you are level {lvl}).',
   }
 };
 
@@ -4955,9 +5095,9 @@ function buildCharSelect() {
     card.dataset.id = r.id;
     card.innerHTML =
       '<span class="race-icon">'+r.icon+'</span>' +
-      '<div class="race-name">'+r.name+'</div>' +
-      '<div class="race-sub">'+r.sub+'</div>' +
-      '<div class="race-bonus">'+r.bonus+'</div>';
+      '<div class="race-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>' +
+      '<div class="race-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>' +
+      '<div class="race-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div>';
     card.addEventListener('click', function(){ selectRace(r.id); });
     rg.appendChild(card);
   });
@@ -4971,8 +5111,8 @@ function buildCharSelect() {
     card.dataset.id = c.id;
     card.innerHTML =
       '<span class="class-icon">'+c.icon+'</span>' +
-      '<div class="class-name">'+c.name+'</div>' +
-      '<div class="class-sub">'+c.sub+'</div>';
+      '<div class="class-name">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</div>' +
+      '<div class="class-sub">'+(CGE_LANG==='en'&&c.subEn?c.subEn:c.sub)+'</div>';
     card.addEventListener('click', function(){ selectClass(c.id); });
     cg.appendChild(card);
   });
@@ -5002,7 +5142,7 @@ function updateStats() {
   document.getElementById('stat-hp').textContent  = c.hp  + r.dhp;
   document.getElementById('stat-atk').textContent = c.atk + r.datk;
   document.getElementById('stat-def').textContent = c.def + r.ddef;
-  document.getElementById('stat-spe').textContent = c.spe;
+  document.getElementById('stat-spe').textContent = (CGE_LANG==='en'&&c.speEn?c.speEn:c.spe);
   // Couleur selon bonus/malus race
   ['stat-atk','stat-def'].forEach(function(sid){
     var el = document.getElementById(sid);
@@ -5427,9 +5567,10 @@ var Combat = (function(){
             State.saveRun();
             Sfx.victory();
             document.getElementById('go-skull').textContent = '🏆';
-            document.getElementById('go-title').textContent = 'VICTOIRE !';
+            document.getElementById('go-title').textContent = T('go.victory');
             document.getElementById('go-title').style.color = '#C9A550';
-            document.getElementById('go-quote').textContent = '"' + (zd ? zd.label : 'Le donjon') + ' est vaincu !"';
+            var _zdLabel = zd ? (CGE_LANG==='en'&&zd.labelEn?zd.labelEn:zd.label) : (CGE_LANG==='en'?'The dungeon':'Le donjon');
+            document.getElementById('go-quote').textContent = '"' + _zdLabel + (CGE_LANG==='en'?' is defeated!"':' est vaincu !"');
             document.getElementById('go-floor').textContent = maxFloor;
             document.getElementById('go-gold').textContent  = State.gold||0;
             document.getElementById('go-kills').textContent = State.kills||0;
@@ -5462,7 +5603,7 @@ var Combat = (function(){
         var defeatAdWrap = document.getElementById('defeat-ad-wrap');
         if (defeatAdWrap) {
           defeatAdWrap.innerHTML = !State._adReviveUsed
-            ? '<button class="btn-rewarded-ad" onclick="RewardedAds.showRevive()">📺 Regarder une pub → Revenir avec 30% HP</button>'
+            ? '<button class="btn-rewarded-ad" onclick="RewardedAds.showRevive()">'+T('adbtn.revive')+'</button>'
             : '';
         }
         document.getElementById('defeat-overlay').classList.add('show');
@@ -5558,8 +5699,8 @@ var Combat = (function(){
       var r = RACES.find(function(x){ return x.id===State.race; });
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
 
-      var heroName = State.name && State.name !== 'Aventurier' ? State.name : (r?r.name:'Héros');
-      document.getElementById('cb-player-name').textContent = heroName + (c?' · '+c.name:'');
+      var heroName = State.name && State.name !== 'Aventurier' ? State.name : (r?(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name):(CGE_LANG==='en'?'Hero':'Héros'));
+      document.getElementById('cb-player-name').textContent = heroName + (c?' · '+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name):'');
       var sprEl2 = document.getElementById('cb-enemy-sprite');
       sprEl2.classList.remove('hit','dead');
       sprEl2.textContent = enemy.sprite;
@@ -5940,13 +6081,13 @@ var Rooms = {
       var rarLabel = (RARITY_LABELS||{})[rar]||rar;
       wrap.className = wrap.className.replace(/rarity-\w+/g,'').trim() + ' rarity-'+rar;
       if (item.equip) {
-        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc) + ' · Mis dans le sac<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
+        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc) + ' · ' + T('loot.tobag') + '<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
-        if (btn) btn.textContent = 'Récupérer →';
+        if (btn) btn.textContent = T('misc.pickup_arrow');
       } else {
         document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc)+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
-        if (btn) btn.textContent = 'Continuer →';
+        if (btn) btn.textContent = T('misc.continue_arrow');
       }
       wrap.classList.remove('hidden');
       wrap.classList.remove('show');
@@ -5955,10 +6096,10 @@ var Rooms = {
       wrap.classList.remove('hidden');
       wrap.classList.add('show');
       document.getElementById('loot-item-ico').textContent  = '🍃';
-      document.getElementById('loot-item-name').textContent = 'Aucun butin';
-      document.getElementById('loot-item-desc').textContent = 'L\'ennemi n\'avait rien de valeur...';
+      document.getElementById('loot-item-name').textContent = T('loot.none.name');
+      document.getElementById('loot-item-desc').textContent = T('loot.none.desc');
       Rooms._pendingItem = null;
-      if (btn) btn.textContent = 'Continuer →';
+      if (btn) btn.textContent = T('misc.continue_arrow');
     }
     // Boutons pub rewarded — une fois par combat
     var adWrap = document.getElementById('loot-ad-wrap');
@@ -5966,9 +6107,9 @@ var Rooms = {
       adWrap.innerHTML = '';
       var adBtns = [];
       if (!State._adGoldUsed)
-        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleGold()">📺 Pub → ×2 Or gagné</button>');
+        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleGold()">'+T('adbtn.doublegold')+'</button>');
       if (!State._adChestUsed && e.boss)
-        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleChest()">📺 Pub → Coffre Bonus (or + objet)</button>');
+        adBtns.push('<button class="btn-rewarded-ad" onclick="RewardedAds.showDoubleChest()">'+T('adbtn.chest')+'</button>');
       adWrap.innerHTML = adBtns.join('');
     }
     Nav.go('loot-screen');
@@ -6106,23 +6247,23 @@ var XP_PER_LEVEL = [
 ];
 
 var LEVEL_UP_CHOICES = [
-  { ico:'⚔', name:'Tranchant',       desc:'+4 ATQ',           effect:function(){ State.atk+=4; } },
-  { ico:'🛡', name:'Endurci',        desc:'+5 DEF',           effect:function(){ State.def+=5; } },
-  { ico:'❤', name:'Vigueur',         desc:'+25 PV max + soin',effect:function(){ State.hpMax+=25; State.hp=Math.min(State.hpMax, State.hp+25); } },
-  { ico:'⚡', name:'Rapidité',       desc:'+3 ATQ +2 DEF',    effect:function(){ State.atk+=3; State.def+=2; } },
-  { ico:'🧪', name:'Alchimiste',     desc:'+2 Potions',       effect:function(){ State.potions=(State.potions||0)+2; } },
-  { ico:'🩸', name:'Soif de sang',   desc:'+6 ATQ −3 DEF',    effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-3); } },
-  { ico:'🔮', name:'Arcane',         desc:'+8 ATQ (fragile)', effect:function(){ State.atk+=8; State.hpMax=Math.max(10,State.hpMax-10); } },
-  { ico:'🌿', name:'Régénération',   desc:'+3 PV après chaque combat', effect:function(){ State.regenPerFight=(State.regenPerFight||0)+3; } },
-  { ico:'🎯', name:'Précision',      desc:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
-  { ico:'💪', name:'Force brute',     desc:'+6 ATQ',              effect:function(){ State.atk+=6; } },
-  { ico:'🏰', name:'Fortifié',        desc:'+8 DEF',              effect:function(){ State.def+=8; } },
-  { ico:'🌊', name:'Flux vital',      desc:'+40 PV max',          effect:function(){ State.hpMax+=40; State.hp=Math.min(State.hpMax,State.hp+20); } },
-  { ico:'⚗', name:'Grand Alchimiste',desc:'+3 Potions',          effect:function(){ State.potions=(State.potions||0)+3; } },
-  { ico:'🔥', name:'Embrasement',     desc:'+10 ATQ −10 PV max',  effect:function(){ State.atk+=10; State.hpMax=Math.max(20,State.hpMax-10); } },
-  { ico:'🧿', name:'Œil du destin',  desc:'Crit +15%',           effect:function(){ State.critBonus=(State.critBonus||0)+0.15; } },
-  { ico:'🩸', name:'Vampirisme',      desc:'Vol de vie +15%',     effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.15; } },
-  { ico:'🌑', name:'Ombre',           desc:'+5 ATQ +5 DEF +30 PV',effect:function(){ State.atk+=5;State.def+=5;State.hpMax+=30; } },
+  { ico:'⚔', name:'Tranchant',       nameEn:'Sharpened',        desc:'+4 ATQ',           descEn:'+4 ATK',           effect:function(){ State.atk+=4; } },
+  { ico:'🛡', name:'Endurci',        nameEn:'Hardened',         desc:'+5 DEF',           descEn:'+5 DEF',           effect:function(){ State.def+=5; } },
+  { ico:'❤', name:'Vigueur',         nameEn:'Vigor',            desc:'+25 PV max + soin',descEn:'+25 max HP + heal',effect:function(){ State.hpMax+=25; State.hp=Math.min(State.hpMax, State.hp+25); } },
+  { ico:'⚡', name:'Rapidité',       nameEn:'Quickness',        desc:'+3 ATQ +2 DEF',    descEn:'+3 ATK +2 DEF',    effect:function(){ State.atk+=3; State.def+=2; } },
+  { ico:'🧪', name:'Alchimiste',     nameEn:'Alchemist',        desc:'+2 Potions',       descEn:'+2 Potions',       effect:function(){ State.potions=(State.potions||0)+2; } },
+  { ico:'🩸', name:'Soif de sang',   nameEn:'Bloodthirst',      desc:'+6 ATQ −3 DEF',    descEn:'+6 ATK −3 DEF',    effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-3); } },
+  { ico:'🔮', name:'Arcane',         nameEn:'Arcane',           desc:'+8 ATQ (fragile)', descEn:'+8 ATK (fragile)', effect:function(){ State.atk+=8; State.hpMax=Math.max(10,State.hpMax-10); } },
+  { ico:'🌿', name:'Régénération',   nameEn:'Regeneration',     desc:'+3 PV après chaque combat', descEn:'+3 HP after each fight', effect:function(){ State.regenPerFight=(State.regenPerFight||0)+3; } },
+  { ico:'🎯', name:'Précision',      nameEn:'Precision',        desc:'Crit +10%',        descEn:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
+  { ico:'💪', name:'Force brute',     nameEn:'Brute Force',      desc:'+6 ATQ',              descEn:'+6 ATK',            effect:function(){ State.atk+=6; } },
+  { ico:'🏰', name:'Fortifié',        nameEn:'Fortified',        desc:'+8 DEF',              descEn:'+8 DEF',            effect:function(){ State.def+=8; } },
+  { ico:'🌊', name:'Flux vital',      nameEn:'Life Flow',        desc:'+40 PV max',          descEn:'+40 max HP',        effect:function(){ State.hpMax+=40; State.hp=Math.min(State.hpMax,State.hp+20); } },
+  { ico:'⚗', name:'Grand Alchimiste',nameEn:'Grand Alchemist',  desc:'+3 Potions',          descEn:'+3 Potions',        effect:function(){ State.potions=(State.potions||0)+3; } },
+  { ico:'🔥', name:'Embrasement',     nameEn:'Conflagration',    desc:'+10 ATQ −10 PV max',  descEn:'+10 ATK −10 max HP', effect:function(){ State.atk+=10; State.hpMax=Math.max(20,State.hpMax-10); } },
+  { ico:'🧿', name:'Œil du destin',  nameEn:'Eye of Fate',      desc:'Crit +15%',           descEn:'Crit +15%',         effect:function(){ State.critBonus=(State.critBonus||0)+0.15; } },
+  { ico:'🩸', name:'Vampirisme',      nameEn:'Vampirism',        desc:'Vol de vie +15%',     descEn:'Lifesteal +15%',    effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.15; } },
+  { ico:'🌑', name:'Ombre',           nameEn:'Shadow',           desc:'+5 ATQ +5 DEF +30 PV',descEn:'+5 ATK +5 DEF +30 HP',effect:function(){ State.atk+=5;State.def+=5;State.hpMax+=30; } },
 ];
 
 function refreshCombatHp() {
@@ -6164,7 +6305,7 @@ function triggerLevelUp() {
   pool.forEach(function(choice) {
     var d = document.createElement('div');
     d.className = 'lu-card';
-    d.innerHTML = '<span class="lu-ico">'+choice.ico+'</span><div><div class="lu-name">'+choice.name+'</div><div class="lu-desc">'+choice.desc+'</div></div>';
+    d.innerHTML = '<span class="lu-ico">'+choice.ico+'</span><div><div class="lu-name">'+(CGE_LANG==='en'&&choice.nameEn?choice.nameEn:choice.name)+'</div><div class="lu-desc">'+(CGE_LANG==='en'&&choice.descEn?choice.descEn:choice.desc)+'</div></div>';
     d.addEventListener('click', function(){
       try { choice.effect(); } catch(e){}
       try { refreshCombatHp(); } catch(e){}
@@ -6195,34 +6336,34 @@ function triggerLevelUp() {
 
 // ── MÉTA-PROGRESSION ─────────────────────────────────────────────
 var META_UPGRADES = [
-  { id:'atk',    ico:'⚔', name:'Forge du Héros',   desc:'+2 ATQ de base',       max:5, cost:60,  effect:function(){ Meta.bonuses.atk+=2; } },
-  { id:'def',    ico:'🛡', name:'Armure Ancestrale',desc:'+3 DEF de base',       max:5, cost:60,  effect:function(){ Meta.bonuses.def+=3; } },
-  { id:'hp',     ico:'❤', name:'Constitution',     desc:'+20 PV de base',       max:5, cost:50,  effect:function(){ Meta.bonuses.hp+=20; } },
-  { id:'potion', ico:'🧪', name:'Alchimie',         desc:'+1 Potion de départ',  max:3, cost:80,  effect:function(){ Meta.bonuses.potions+=1; } },
-  { id:'gold',   ico:'🪙', name:'Commerce',         desc:'+20% or gagné',        max:3, cost:100, effect:function(){ Meta.bonuses.goldPct+=0.2; } },
-  { id:'crit',   ico:'🎯', name:'Instinct Meurtrier',desc:'+5% chance critique',  max:4, cost:90,  effect:function(){ Meta.bonuses.crit+=0.05; } },
-  { id:'dodge',  ico:'💨', name:'Esquive',           desc:'+5% esquiver une attaque', max:3, cost:100, effect:function(){ Meta.bonuses.dodge=(Meta.bonuses.dodge||0)+0.05; } },
-  { id:'timer',  ico:'⏱', name:'Réflexes',          desc:'+1s au chrono de combat',  max:3, cost:80,  effect:function(){ Meta.bonuses.timerBonus=(Meta.bonuses.timerBonus||0)+1; } },
-  { id:'lifesteal',ico:'🩸',name:'Vampirisme',       desc:'Récupère 10% des dégâts infligés', max:3, cost:120, effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.10; } },
-  { id:'regen',  ico:'🌿', name:'Régénération',      desc:'+3 PV après chaque victoire', max:5, cost:60, effect:function(){ Meta.bonuses.regenMeta=(Meta.bonuses.regenMeta||0)+3; } },
-  { id:'xpBoost',ico:'✨', name:'Sagesse',           desc:'+10% XP par combat',       max:3, cost:90,  effect:function(){ Meta.bonuses.xpPct=(Meta.bonuses.xpPct||0)+0.10; } },
-  { id:'startGold',ico:'💰',name:'Fortune',          desc:'+25 or au départ',         max:4, cost:80,  effect:function(){ Meta.bonuses.startGold=(Meta.bonuses.startGold||0)+25; } },
+  { id:'atk',    ico:'⚔', name:'Forge du Héros',   nameEn:'Hero\'s Forge',      desc:'+2 ATQ de base',       descEn:'+2 base ATK',        max:5, cost:60,  effect:function(){ Meta.bonuses.atk+=2; } },
+  { id:'def',    ico:'🛡', name:'Armure Ancestrale',nameEn:'Ancestral Armor',    desc:'+3 DEF de base',       descEn:'+3 base DEF',        max:5, cost:60,  effect:function(){ Meta.bonuses.def+=3; } },
+  { id:'hp',     ico:'❤', name:'Constitution',     nameEn:'Constitution',       desc:'+20 PV de base',       descEn:'+20 base HP',        max:5, cost:50,  effect:function(){ Meta.bonuses.hp+=20; } },
+  { id:'potion', ico:'🧪', name:'Alchimie',         nameEn:'Alchemy',            desc:'+1 Potion de départ',  descEn:'+1 starting Potion', max:3, cost:80,  effect:function(){ Meta.bonuses.potions+=1; } },
+  { id:'gold',   ico:'🪙', name:'Commerce',         nameEn:'Commerce',           desc:'+20% or gagné',        descEn:'+20% gold earned',   max:3, cost:100, effect:function(){ Meta.bonuses.goldPct+=0.2; } },
+  { id:'crit',   ico:'🎯', name:'Instinct Meurtrier',nameEn:'Killer Instinct',   desc:'+5% chance critique',  descEn:'+5% crit chance',    max:4, cost:90,  effect:function(){ Meta.bonuses.crit+=0.05; } },
+  { id:'dodge',  ico:'💨', name:'Esquive',           nameEn:'Evasion',           desc:'+5% esquiver une attaque', descEn:'+5% chance to dodge an attack', max:3, cost:100, effect:function(){ Meta.bonuses.dodge=(Meta.bonuses.dodge||0)+0.05; } },
+  { id:'timer',  ico:'⏱', name:'Réflexes',          nameEn:'Reflexes',          desc:'+1s au chrono de combat',  descEn:'+1s on the combat timer', max:3, cost:80,  effect:function(){ Meta.bonuses.timerBonus=(Meta.bonuses.timerBonus||0)+1; } },
+  { id:'lifesteal',ico:'🩸',name:'Vampirisme',       nameEn:'Vampirism',         desc:'Récupère 10% des dégâts infligés', descEn:'Recover 10% of damage dealt', max:3, cost:120, effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.10; } },
+  { id:'regen',  ico:'🌿', name:'Régénération',      nameEn:'Regeneration',      desc:'+3 PV après chaque victoire', descEn:'+3 HP after each victory', max:5, cost:60, effect:function(){ Meta.bonuses.regenMeta=(Meta.bonuses.regenMeta||0)+3; } },
+  { id:'xpBoost',ico:'✨', name:'Sagesse',           nameEn:'Wisdom',            desc:'+10% XP par combat',       descEn:'+10% XP per fight',  max:3, cost:90,  effect:function(){ Meta.bonuses.xpPct=(Meta.bonuses.xpPct||0)+0.10; } },
+  { id:'startGold',ico:'💰',name:'Fortune',          nameEn:'Fortune',           desc:'+25 or au départ',         descEn:'+25 starting gold',  max:4, cost:80,  effect:function(){ Meta.bonuses.startGold=(Meta.bonuses.startGold||0)+25; } },
 ];
 
 // ── QUESTS ────────────────────────────────────────────────────────
 // ── MODIFICATEURS DE RUN ─────────────────────────────────────────
 var RUN_MODIFIERS = [
-  { id:'curse_atk',  ico:'💀', name:'Malédiction de faiblesse', desc:'-20% ATQ ce run',        bad:true,  apply:function(){ State.atk=Math.max(1,Math.round(State.atk*0.8)); } },
-  { id:'curse_def',  ico:'💀', name:'Armure maudite',           desc:'-20% DEF ce run',        bad:true,  apply:function(){ State.def=Math.max(0,Math.round(State.def*0.8)); } },
-  { id:'curse_hp',   ico:'💀', name:'Cœur fragile',             desc:'-15% PV max ce run',     bad:true,  apply:function(){ State.hpMax=Math.max(10,Math.round(State.hpMax*0.85)); State.hp=Math.min(State.hp,State.hpMax); } },
-  { id:'curse_flee', ico:'🔒', name:'Pas de fuite',             desc:'Impossible de fuir',     bad:true,  apply:function(){ State.fleeBonus=-1; } },
-  { id:'curse_shop', ico:'💸', name:'Marché maudit',            desc:'Shops 50% plus chers',   bad:true,  apply:function(){ State._shopMod=(State._shopMod||1)*1.5; } },
-  { id:'bless_gold', ico:'🪙', name:'Fortune',                  desc:'+60% or ce run',         bad:false, apply:function(){ State._runGoldBonus=(State._runGoldBonus||1)*1.6; } },
-  { id:'bless_atk',  ico:'⚔', name:'Rage guerrière',           desc:'+20% ATQ ce run',        bad:false, apply:function(){ State.atk=Math.round(State.atk*1.2); } },
-  { id:'bless_xp',   ico:'✨', name:'Illumination',             desc:'+30% XP ce run',         bad:false, apply:function(){ State._runXpBonus=(State._runXpBonus||1)*1.3; } },
-  { id:'bless_pot',  ico:'🧪', name:'Alchimiste inspiré',       desc:'+2 Potions de départ',   bad:false, apply:function(){ State.potions=(State.potions||0)+2; } },
-  { id:'bless_hp',   ico:'❤', name:'Vitalité débordante',      desc:'+20% PV max ce run',     bad:false, apply:function(){ State.hpMax=Math.round(State.hpMax*1.2); State.hp=State.hpMax; } },
-  { id:'bless_crit', ico:'🎯', name:'Vision critique',          desc:'+10% chances critique',  bad:false, apply:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
+  { id:'curse_atk',  ico:'💀', name:'Malédiction de faiblesse', nameEn:'Curse of Weakness',   desc:'-20% ATQ ce run',        descEn:'-20% ATK this run',      bad:true,  apply:function(){ State.atk=Math.max(1,Math.round(State.atk*0.8)); } },
+  { id:'curse_def',  ico:'💀', name:'Armure maudite',           nameEn:'Cursed Armor',        desc:'-20% DEF ce run',        descEn:'-20% DEF this run',      bad:true,  apply:function(){ State.def=Math.max(0,Math.round(State.def*0.8)); } },
+  { id:'curse_hp',   ico:'💀', name:'Cœur fragile',             nameEn:'Fragile Heart',       desc:'-15% PV max ce run',     descEn:'-15% max HP this run',   bad:true,  apply:function(){ State.hpMax=Math.max(10,Math.round(State.hpMax*0.85)); State.hp=Math.min(State.hp,State.hpMax); } },
+  { id:'curse_flee', ico:'🔒', name:'Pas de fuite',             nameEn:'No Escape',           desc:'Impossible de fuir',     descEn:'Cannot flee',            bad:true,  apply:function(){ State.fleeBonus=-1; } },
+  { id:'curse_shop', ico:'💸', name:'Marché maudit',            nameEn:'Cursed Market',       desc:'Shops 50% plus chers',   descEn:'Shops 50% more expensive', bad:true,  apply:function(){ State._shopMod=(State._shopMod||1)*1.5; } },
+  { id:'bless_gold', ico:'🪙', name:'Fortune',                  nameEn:'Fortune',             desc:'+60% or ce run',         descEn:'+60% gold this run',     bad:false, apply:function(){ State._runGoldBonus=(State._runGoldBonus||1)*1.6; } },
+  { id:'bless_atk',  ico:'⚔', name:'Rage guerrière',           nameEn:'Battle Rage',         desc:'+20% ATQ ce run',        descEn:'+20% ATK this run',      bad:false, apply:function(){ State.atk=Math.round(State.atk*1.2); } },
+  { id:'bless_xp',   ico:'✨', name:'Illumination',             nameEn:'Enlightenment',       desc:'+30% XP ce run',         descEn:'+30% XP this run',       bad:false, apply:function(){ State._runXpBonus=(State._runXpBonus||1)*1.3; } },
+  { id:'bless_pot',  ico:'🧪', name:'Alchimiste inspiré',       nameEn:'Inspired Alchemist',  desc:'+2 Potions de départ',   descEn:'+2 starting Potions',    bad:false, apply:function(){ State.potions=(State.potions||0)+2; } },
+  { id:'bless_hp',   ico:'❤', name:'Vitalité débordante',      nameEn:'Overflowing Vitality',desc:'+20% PV max ce run',     descEn:'+20% max HP this run',   bad:false, apply:function(){ State.hpMax=Math.round(State.hpMax*1.2); State.hp=State.hpMax; } },
+  { id:'bless_crit', ico:'🎯', name:'Vision critique',          nameEn:'Critical Vision',     desc:'+10% chances critique',  descEn:'+10% crit chance',       bad:false, apply:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
 ];
 
 var RunMods = (function(){
@@ -6244,7 +6385,7 @@ var RunMods = (function(){
       picked.forEach(function(m){
         var d = document.createElement('div');
         d.className = 'runmod-card '+(m.bad?'bad':'good');
-        d.innerHTML = '<div class="runmod-ico">'+m.ico+'</div><div><div class="runmod-name">'+m.name+'</div><div class="runmod-desc">'+m.desc+'</div></div>';
+        d.innerHTML = '<div class="runmod-ico">'+m.ico+'</div><div><div class="runmod-name">'+(CGE_LANG==='en'&&m.nameEn?m.nameEn:m.name)+'</div><div class="runmod-desc">'+(CGE_LANG==='en'&&m.descEn?m.descEn:m.desc)+'</div></div>';
         list.appendChild(d);
       });
       var ov = document.getElementById('runmod-overlay');
@@ -6276,6 +6417,7 @@ var QUEST_DEFS = [
     check:function(){ return (State.gold||0)>=50; },
     reward:{ gold:0, _deduct:50 },
     rewardTxt:'Ta liberté — et peut-être une piste.',
+    rewardTxtEn:'Your freedom — and perhaps a lead.',
     claimText:'Marta hoche la tête, soulagée. "Bien. Je me demandais si tu allais fuir comme les autres."\nElle se penche vers toi, voix basse.\n"La Lyonnesse — la taverne en face. Il y a des gens là-bas qui t\'ont demandé. Des gens qui te connaissent, apparemment."\nElle marque une pause.\n"Ou qui prétendent te connaître."'
   },
 
@@ -6287,6 +6429,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=25; },
     reward:{ gold:30 },
     rewardTxt:'30 🪙',
+    rewardTxtEn:'30 🪙',
     claimText:'"Pas mal. Tu sais te battre."\nIl s\'assoit en face de toi et baisse la voix.\n"Je t\'ai vu il y a trois semaines. Sur la Route des Pierres. Tu courais vers la ville, sans arme, sans manteau. Tu regardais derrière toi comme si le diable te poursuivait."\n\n"Quand tu t\'es écroulé devant L\'Écu Brisé... on a pensé que tu étais mort."\n\n"Ce qui me trouble... c\'est que dans ta main serrée, tu tenais un parchemin. Marta l\'a gardé quelque part."\n\nNouvelle quête disponible : parle à Oswin.'
   },
 
@@ -6299,6 +6442,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.bestFloor||0)>=5 && (Meta.totalRuns||0)>=3; },
     reward:{ gold:60 },
     rewardTxt:'60 🪙',
+    rewardTxtEn:'60 🪙',
     claimText:'"Tu es revenu. Bien."\nOswin pose sa luth et te regarde différemment — plus de sourire.\n"La chanson s\'appelle *La Ballade de l\'Éveillé*. Elle date de cent ans. Elle décrit quelqu\'un qui revient d\'entre les morts, sans nom, sans passé."\n\n"Elle décrit aussi les Cryptes Éternelles — les vraies, pas les vieilles caves que tu arpentes. Des Cryptes qui respirent. Qui se souviennent."\n\n"Il y a une femme ici qui en sait plus que moi. Séraphine. Elle t\'observe depuis ton arrivée."'
   },
 
@@ -6311,6 +6455,7 @@ var QUEST_DEFS = [
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=2; },
     reward:{ gold:100 }, alignReward:+1,
     rewardTxt:'100 🪙 + une vérité',
+    rewardTxtEn:'100 🪙 + a truth',
     claimText:'"Je m\'en doutais."\nSéraphine referme son grimoire et te fixe.\n"L\'aura que tu portes... elle appartient à quelqu\'un qui est mort il y a exactement cent ans. Quelqu\'un qui s\'appelait l\'Éveillé — comme dans la chanson d\'Oswin."\n\n"Ce n\'est pas une coïncidence. Tu portes un fragment de son âme. Peut-être tout son être, transféré dans un nouveau corps."\n\nElle hésite.\n"Si c\'est vrai... alors tu te rappelles peut-être des choses, sans savoir d\'où elles viennent. Des réflexes. Des peurs irrationnelles. Des visages que tu n\'as jamais vus."\n\n"Et si c\'est vrai... quelqu\'un d\'autre le sait aussi. Et cette personne ne veut pas que tu descendes dans les vraies Cryptes."'
   },
 
@@ -6325,6 +6470,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.bestFloor||0)>=8 && (Meta.totalRuns||0)>=8; },
     reward:{ gold:150 },
     rewardTxt:'150 🪙 + le parchemin',
+    rewardTxtEn:'150 🪙 + the scroll',
     claimText:'"Tu es allé au bout. Bien."\nBertrand sort un petit rouleau de parchemin froissé, jauni.\n"On l\'a trouvé dans ta main. On ne comprend pas l\'écriture — ce n\'est pas une langue connue."\n\nTu le déplie. Et quelque chose en toi... reconnaît les symboles. Pas consciemment. Mais tes yeux s\'arrêtent sur une phrase, et sans même réfléchir tu murmures :\n\n*"Le sceau tient encore. Pour combien de temps ?"*\n\n"Tu viens de lire ça ?", dit Bertrand, blême.\n\n"Je... je ne sais pas comment."'
   },
 
@@ -6337,6 +6483,7 @@ var QUEST_DEFS = [
     check:function(){ return !!(Meta.clearedZones||{})['ruines']; },
     reward:{ gold:200 },
     rewardTxt:'200 🪙 + une révélation',
+    rewardTxtEn:'200 🪙 + a revelation',
     claimText:'"Tu l\'as vu, n\'est-ce pas ?"\nOswin sort un carnet couvert de notes.\n"Le portrait dans la bibliothèque des Ruines. *Il te ressemble trait pour trait.*"\n\n"Le titre du livre sous le portrait : *Mémoires de l\'Éveillé, gardien du Sceau, an 847.*"\n\n"Nous sommes en 947. Il y a cent ans exactement."\n\nOswin marque une pause. Il n\'a plus du tout l\'air d\'un barde joyeux.\n\n"Il y a quelque chose que je ne t\'ai pas dit. Quelque chose que... tu mérites de savoir. Mais pas ici. Pas maintenant. Viens me voir quand tu auras parlé à Séraphine."'
   },
 
@@ -6349,6 +6496,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalRuns||0)>=20; },
     reward:{ gold:300 },
     rewardTxt:'300 🪙 + la vérité',
+    rewardTxtEn:'300 🪙 + the truth',
     claimText:'"Assieds-toi. Ce que je vais te dire ne quitte pas cette table."\n\nSéraphine te verse du vin.\n\n"Les Cryptes Éternelles ne sont pas un donjon. Ce sont les fondations d\'une PRISON. Construite il y a mille ans pour enfermer quelque chose que les gens appelaient le Dieu de la Mémoire."\n\n"Un être qui se nourrissait des souvenirs. Des identités. Il pouvait effacer une civilisation entière — pas en la tuant, mais en lui faisant oublier qu\'elle avait existé."\n\n"L\'Éveillé du siècle passé a renforcé le sceau au prix de sa propre existence. Il est devenu *une partie du verrou*."\n\n"Toi... tu es soit son successeur désigné. Soit la clé que quelqu\'un utilise pour l\'ouvrir."\n\nElle te regarde dans les yeux.\n\n"Et je commence à penser qu\'Oswin n\'est pas vraiment un barde."'
   },
 
@@ -6363,6 +6511,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=200; },
     reward:{ gold:400 }, alignReward:+1,
     rewardTxt:'400 🪙',
+    rewardTxtEn:'400 🪙',
     claimText:'"Mon grand-père était gardien des Cryptes. Un des derniers."\nBertrand s\'essuie les mains sur son tablier, nerveux.\n"Il m\'a dit, avant de mourir : *si un étranger arrive sans mémoire, fuis. Ou aide-le. Les deux sont dangereux.*"\n\n"Je suis resté. J\'ai choisi de t\'aider."\n\n"Il m\'a dit aussi autre chose. Que le Dieu de la Mémoire a des *Voix* dans le monde — des agents qui servent depuis des siècles, qui ne vieillissent pas, qui préparent sa libération."\n\n"Ces Voix... elles se font passer pour des gens ordinaires. Des aubergistes. Des marchands. Des bardes."\n\nIl te regarde droit dans les yeux.\n\n"Fais attention à Oswin."'
   },
 
@@ -6375,6 +6524,7 @@ var QUEST_DEFS = [
     check:function(){ return Object.keys(Meta.clearedZones||{}).length>=5 && (Meta.totalRuns||0)>=30; },
     reward:{ gold:0 }, alignReward:-1,
     rewardTxt:'Une révélation',
+    rewardTxtEn:'A revelation',
     claimText:'"Tu commences à comprendre."\nOswin ne joue plus la comédie. Sa voix a changé — plus profonde, presque distante.\n"Oui. Je suis une Voix. Je sers depuis cent quarante ans."\n\n"Mais écoute-moi avant de te mettre en colère."\n\n"Je ne suis pas ton ennemi. Je suis... las. Cent quarante ans à servir un dieu que je n\'ai jamais vu. Je voulais juste... que quelqu\'un descende dans les Cryptes et règle ça. Dans un sens ou dans l\'autre."\n\n"La vérité : tu peux renforcer le sceau, comme l\'Éveillé du passé. Ou tu peux libérer le Dieu de la Mémoire — et il nous effacera tous. Ou peut-être qu\'il sera différent maintenant. Peut-être qu\'une prison d\'un siècle l\'a changé."\n\n"Séraphine te dira quoi faire. Moi... je suis fatigué de choisir pour les autres."'
   },
 
@@ -6387,6 +6537,7 @@ var QUEST_DEFS = [
     check:function(){ return (State.level||1)>=25 && Object.keys(Meta.clearedZones||{}).length>=6 && (Meta.totalRuns||0)>=20; },
     reward:{ gold:1000 }, alignReward:+1,
     rewardTxt:'1000 🪙 + accès aux Cryptes',
+    rewardTxtEn:'1000 🪙 + access to the Crypts',
     claimText: function() {
       var ch = State._introChoices || {};
       var closing = ch.trait === 'void'
@@ -6408,6 +6559,7 @@ var QUEST_DEFS = [
     check:function(){ return !!(Meta.passageFound); },
     reward:{ gold:0 },
     rewardTxt:'Le passage',
+    rewardTxtEn:'The passage',
     claimText:'"Tu l\'as trouvé."\nSéraphine ferme les yeux un instant.\n"J\'ai cherché pendant vingt ans ce que tu as trouvé en quelques minutes. Peut-être que certaines portes ne s\'ouvrent que pour les bonnes personnes."\n\nElle te regarde.\n\n"Qu\'est-ce qu\'il y a de l\'autre côté ?"'
   },
 
@@ -6421,6 +6573,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=30; },
     reward:{ gold:40 }, rankReward:1,
     rewardTxt:'40 🪙 + Reconnaissance',
+    rewardTxtEn:'40 🪙 + Gratitude',
     claimText:'"Pas mal. Tu sais te battre comme un vrai soldat."\nAldric t\'évalue du regard.\n"La ville commence à te connaître. C\'est un début."'
   },
   { id:'guerrier_2', npc:'aldric', act:2,
@@ -6431,6 +6584,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=100; },
     reward:{ gold:120 }, rankReward:1,
     rewardTxt:'120 🪙 + Honneur',
+    rewardTxtEn:'120 🪙 + Honor',
     claimText:'"Tu mérites ce titre." Il pose la main sur ton épaule.\n"Les gens te respectent maintenant. Ça compte plus que tu ne le crois."'
   },
 
@@ -6442,6 +6596,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=20; },
     reward:{ gold:40 }, rankReward:1,
     rewardTxt:'40 🪙 + Reconnaissance',
+    rewardTxtEn:'40 🪙 + Gratitude',
     claimText:'"Tes pouvoirs sont réels."\nÉlise croise les mains.\n"L\'Église note ceux qui agissent avec force et discernement."'
   },
   { id:'mage_2', npc:'elise', act:2,
@@ -6452,6 +6607,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=80; },
     reward:{ gold:100 }, rankReward:1,
     rewardTxt:'100 🪙 + Honneur',
+    rewardTxtEn:'100 🪙 + Honor',
     claimText:'"La ville parle de toi."\nElle sourit légèrement.\n"Tu t\'es fait un nom. Protège-le."'
   },
 
@@ -6463,6 +6619,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=25; },
     reward:{ gold:35 }, rankReward:1,
     rewardTxt:'35 🪙 + Reconnaissance',
+    rewardTxtEn:'35 🪙 + Gratitude',
     claimText:'"Un chasseur qui revient toujours."\nBertrand approuve.\n"Les gens commencent à te voir différemment."'
   },
   { id:'chasseur_2', npc:'bertrand', act:2,
@@ -6473,6 +6630,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=90; },
     reward:{ gold:110 }, rankReward:1,
     rewardTxt:'110 🪙 + Honneur',
+    rewardTxtEn:'110 🪙 + Honor',
     claimText:'"On parle de toi dans les tavernes voisines."\nIl lève son verre.\n"Tu mérites ça."'
   },
 
@@ -6484,6 +6642,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=20; },
     reward:{ gold:35 }, rankReward:1,
     rewardTxt:'35 🪙 + Reconnaissance',
+    rewardTxtEn:'35 🪙 + Gratitude',
     claimText:'"*sifflote doucement*\nLes rumeurs sont vraies, alors."\nOswin te regarde différemment.\n"Tu commences à exister aux yeux de cette ville. Dangereusement."'
   },
   { id:'assassin_2', npc:'oswin', act:2,
@@ -6494,6 +6653,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=85; },
     reward:{ gold:105 }, rankReward:1,
     rewardTxt:'105 🪙 + Honneur',
+    rewardTxtEn:'105 🪙 + Honor',
     claimText:'"Les gens chuchotent ton nom."\nIl reprend sa luth.\n"Certains avec admiration. D\'autres avec peur. Les deux font une réputation."'
   },
 
@@ -6505,6 +6665,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=15; },
     reward:{ gold:30 }, rankReward:1,
     rewardTxt:'30 🪙 + Reconnaissance',
+    rewardTxtEn:'30 🪙 + Gratitude',
     claimText:'"La lumière t\'a guidé."\nÉlise pose les mains ensemble.\n"L\'Église reconnaît ton service. La ville aussi."'
   },
   { id:'pretre_2', npc:'elise', act:2,
@@ -6515,6 +6676,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=75; },
     reward:{ gold:95 }, rankReward:1,
     rewardTxt:'95 🪙 + Honneur',
+    rewardTxtEn:'95 🪙 + Honor',
     claimText:'"Tu protèges ceux qui ne peuvent pas se défendre."\nSon regard est doux mais ferme.\n"C\'est pour cela qu\'on te respecte."'
   },
 
@@ -6526,6 +6688,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=35; },
     reward:{ gold:45 }, rankReward:1,
     rewardTxt:'45 🪙 + Reconnaissance',
+    rewardTxtEn:'45 🪙 + Gratitude',
     claimText:'"J\'ai vu des guerriers s\'effondrer là où tu tiens."\nAldric croise les bras.\n"La ville parle de toi. Pas toujours avec douceur. Mais elle parle."'
   },
   { id:'barbare_2', npc:'aldric', act:2,
@@ -6536,6 +6699,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalKills||0)>=110; },
     reward:{ gold:130 }, rankReward:1,
     rewardTxt:'130 🪙 + Honneur',
+    rewardTxtEn:'130 🪙 + Honor',
     claimText:'"Les chansons qu\'on compose sur les barbares parlent rarement de quelqu\'un de vivant."\nIl te serre la main fermement.\n"Tu mérites ton rang."'
   },
 
@@ -6548,6 +6712,7 @@ var QUEST_DEFS = [
     check:function(){ return (Meta.totalRuns||0)>=30 && (State.level||1)>=30; },
     reward:{ gold:2000, potions:10 },
     rewardTxt:'2000 🪙 + 10 🧪 + la fin de l\'histoire',
+    rewardTxtEn:'2000 🪙 + 10 🧪 + the end of the story',
     claimText: function() {
       var ch = State._introChoices || {};
       var race = State.race || 'Humain';
@@ -6998,7 +7163,7 @@ var Quests = (function(){
           _currentQuest = def;
           document.getElementById('npc-quest-title').textContent  = '✅ ' + (CGE_LANG==='en'&&def.titleEn?def.titleEn:def.title);
           document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&def.descEn?def.descEn:def.desc);
-          document.getElementById('npc-quest-reward').textContent = T('quest.reward') + def.rewardTxt;
+          document.getElementById('npc-quest-reward').textContent = T('quest.reward') + ((CGE_LANG==='en'&&def.rewardTxtEn)?def.rewardTxtEn:def.rewardTxt);
           document.getElementById('npc-quest-info').style.display = '';
           if (def.id === 'cryptes_final' && !State._finalChoice) {
             // Le moment du choix final — 3 voies explicites offertes au joueur
@@ -7016,7 +7181,7 @@ var Quests = (function(){
           document.getElementById('npc-speech').textContent = speechText + '\n\n— '+(CGE_LANG==='en'?'In progress: ':'En cours : ')+ _qt + '\n' + _qd;
           document.getElementById('npc-quest-title').textContent  = '🗺 '+(CGE_LANG==='en'?'In progress: ':'En cours : ')+ _qt;
           document.getElementById('npc-quest-desc').textContent   = _qd;
-          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + def.rewardTxt;
+          document.getElementById('npc-quest-reward').textContent = T('quest.reward') + ((CGE_LANG==='en'&&def.rewardTxtEn)?def.rewardTxtEn:def.rewardTxt);
           document.getElementById('npc-quest-info').style.display = '';
         } else {
           document.getElementById('npc-speech').textContent = speechText;
@@ -7030,7 +7195,7 @@ var Quests = (function(){
           document.getElementById('npc-speech').textContent = speechText;
           document.getElementById('npc-quest-title').textContent  = '📜 ' + (CGE_LANG==='en'&&next.titleEn?next.titleEn:next.title);
           document.getElementById('npc-quest-desc').textContent   = (CGE_LANG==='en'&&next.descEn?next.descEn:next.desc);
-          document.getElementById('npc-quest-reward').textContent = 'Récompense : ' + next.rewardTxt;
+          document.getElementById('npc-quest-reward').textContent = T('quest.reward') + ((CGE_LANG==='en'&&next.rewardTxtEn)?next.rewardTxtEn:next.rewardTxt);
           document.getElementById('npc-quest-info').style.display = '';
           document.getElementById('npc-btn-accept').style.display = '';
         } else {
@@ -7049,7 +7214,7 @@ var Quests = (function(){
       Meta.activeQuests[_currentNpc] = _currentQuest.id;
       Meta.save();
       document.getElementById('npc-btn-accept').style.display = 'none';
-      document.getElementById('npc-speech').textContent = 'Quête acceptée. Bonne chance.';
+      document.getElementById('npc-speech').textContent = T('quest.accepted');
     },
 
     chooseFinal: function(path) {
@@ -7084,7 +7249,7 @@ var Quests = (function(){
       Meta.save(); State.saveRun();
       document.getElementById('npc-btn-claim').style.display = 'none';
       document.getElementById('npc-quest-info').style.display = 'none';
-      document.getElementById('npc-speech').textContent = '✅ ' + _currentQuest.rewardTxt;
+      document.getElementById('npc-speech').textContent = '✅ ' + ((CGE_LANG==='en'&&_currentQuest.rewardTxtEn)?_currentQuest.rewardTxtEn:_currentQuest.rewardTxt);
       _currentQuest = null;
     },
 
@@ -7253,9 +7418,9 @@ var Meta = {
       card.innerHTML =
         '<span class="uc-ico">'+u.ico+'</span>'+
         '<div class="uc-info">'+
-          '<div class="uc-name">'+u.name+'</div>'+
-          '<div class="uc-desc">'+u.desc+'</div>'+
-          '<div class="uc-prog">Niveau '+lvl+' / '+u.max+(maxed?' — MAXÉ':'')+'</div>'+
+          '<div class="uc-name">'+(CGE_LANG==='en'&&u.nameEn?u.nameEn:u.name)+'</div>'+
+          '<div class="uc-desc">'+(CGE_LANG==='en'&&u.descEn?u.descEn:u.desc)+'</div>'+
+          '<div class="uc-prog">'+(CGE_LANG==='en'?'Level ':'Niveau ')+lvl+' / '+u.max+(maxed?(CGE_LANG==='en'?' — MAXED':' — MAXÉ'):'')+'</div>'+
         '</div>'+
         (maxed ? '' : '<div class="uc-cost">'+cost+'</div>');
       if (!maxed) {
@@ -7498,7 +7663,7 @@ Rooms.shopBuy = function(idx) {
   // Bouton pub "rembourser cet achat" — une fois par run
   var shopAd = document.getElementById('shop-ad-wrap');
   if (shopAd && !State._adShopUsed) {
-    shopAd.innerHTML = '<button class="btn-rewarded-ad" onclick="RewardedAds.showFreeShopItem()">📺 Pub → Rembourser ce dernier achat</button>';
+    shopAd.innerHTML = '<button class="btn-rewarded-ad" onclick="RewardedAds.showFreeShopItem()">'+T('adbtn.refund')+'</button>';
   }
 };
 
@@ -7997,7 +8162,7 @@ var DungeonMap = (function() {
     if (navigator.vibrate) navigator.vibrate(30);
 
     setTimeout(function(){
-      document.getElementById('dm-node-info').textContent = 'Choisis ton chemin...';
+      document.getElementById('dm-node-info').textContent = T('dm.nodeinfo');
       State.potions = State.potions !== undefined ? State.potions : 2;
       var type = hit.type;
       if (type === 'rest') {
@@ -8152,7 +8317,7 @@ var EquipScreen = (function() {
       } else {
         row.classList.remove('has-item');
         if (ico)  { ico.textContent = SLOT_DEFAULT_ICO[slot] || '?'; }
-        if (name) { name.textContent = 'Aucun(e)'; name.className = 'eq-slot-item-name eq-slot-empty'; }
+        if (name) { name.textContent = T('equip.empty'); name.className = 'eq-slot-item-name eq-slot-empty'; }
         if (stat) { stat.textContent = ''; }
       }
     });
@@ -8512,7 +8677,7 @@ var InnRoom = {
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
     var el = document.getElementById('inn-hero-name');
     var heroName = State.name && State.name !== 'Aventurier' ? State.name + ' · ' : '';
-    if (el) el.textContent = heroName + (r.icon||'') + ' ' + r.name + ' ' + c.name;
+    if (el) el.textContent = heroName + (r.icon||'') + ' ' + (CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name) + ' ' + (CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name);
     InnRoom.updateHp();
     if (typeof HUD !== 'undefined') HUD.updateHP();
     State.saveRun(); // auto-save à chaque retour à l'auberge
@@ -8642,7 +8807,7 @@ var RewardedAds = (function(){
         State.gold = (State.gold||0) + bonus;
         State._adGoldUsed = true;
         document.querySelectorAll('.btn-rewarded-ad').forEach(function(b){ b.remove(); });
-        CGEModal.alert('Or doublé !', '×2 ! Vous recevez ' + bonus + ' pièces supplémentaires !');
+        CGEModal.alert(T('adres.gold.title'), T('adres.gold.body').replace('{n}', bonus));
         document.getElementById('shop-gold-val') && (document.getElementById('shop-gold-val').textContent = State.gold);
         if (typeof HUD !== 'undefined') HUD.updateGold();
       });
@@ -8656,7 +8821,7 @@ var RewardedAds = (function(){
         State.dead = false;
         document.getElementById('defeat-overlay') && document.getElementById('defeat-overlay').classList.remove('show');
         Nav.go('dungeon-map');
-        CGEModal.alert('Résurrection !', 'Vous revenez à la vie avec ' + reviveHp + ' PV !');
+        CGEModal.alert(T('adres.revive.title'), T('adres.revive.body').replace('{n}', reviveHp));
         if (typeof HUD !== 'undefined') HUD.updateHP();
       });
     },
@@ -8678,7 +8843,7 @@ var RewardedAds = (function(){
           State.inventory = State.inventory || [];
           if (State.inventory.length < 8) State.inventory.push(bonus);
         }
-        CGEModal.alert('Coffre Doublé !', '×2 ! +' + bonusGold + ' 🪙 et un objet bonus ajouté à l\'inventaire !');
+        CGEModal.alert(T('adres.chest.title'), T('adres.chest.body').replace('{n}', bonusGold));
       });
     },
     showFreeShopItem: function() {
@@ -8695,7 +8860,7 @@ var RewardedAds = (function(){
           var sv = document.getElementById('shop-gold-val'); if (sv) sv.textContent = State.gold;
           CGEModal.alert(T('shop.free.title'), T('shop.free.refund').replace('{n}', refund));
         } else {
-          CGEModal.alert('Prochain achat gratuit !', 'Le prochain objet acheté en boutique sera remboursé automatiquement.');
+          CGEModal.alert(T('adres.free.title'), T('adres.free.body'));
           State._adShopFreeNext = true;
         }
       });
@@ -8948,8 +9113,8 @@ var WorldMap = {
     }
 
     var warnings = [];
-    if (!Meta.isZoneUnlocked(zoneId)) warnings.push('⚠ Zone non recommandée pour ton niveau de progression.');
-    if (lvl < zone.minLevel) warnings.push('💀 Niveau conseillé : ' + zone.minLevel + ' (tu es niveau ' + lvl + ').');
+    if (!Meta.isZoneUnlocked(zoneId)) warnings.push(T('warn.zone.locked'));
+    if (lvl < zone.minLevel) warnings.push(T('warn.zone.level').replace('{rec}', zone.minLevel).replace('{lvl}', lvl));
     function doEnter() {
       State._zoneMod = {
         hpMult:   zone.hpMult||1,
@@ -8976,10 +9141,10 @@ var WorldMap = {
 
     if (warnings.length) {
       CGEModal.show({
-        title: 'Attention, Aventurier',
+        title: T('warn.enter.title'),
         text: warnings.join('\n\n'),
-        okLabel: 'Entrer quand même',
-        cancelLabel: 'Reculer',
+        okLabel: T('warn.enter.ok'),
+        cancelLabel: T('warn.enter.cancel'),
         onOk: doEnter
       });
       return;
@@ -9341,7 +9506,7 @@ var CGEModal = (function() {
       imgEl.className = '';
     }
 
-    okBtn.textContent = opts.okLabel || 'Continuer';
+    okBtn.textContent = opts.okLabel || T('misc.continue');
     okBtn.onclick = function() { close(); if (opts.onOk) opts.onOk(); };
 
     if (opts.cancelLabel) {
