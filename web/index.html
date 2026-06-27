@@ -600,14 +600,64 @@ canvas#particles {
   content:''; position:absolute; inset:0;
   background: linear-gradient(to bottom, rgba(7,9,15,0.18) 0%, rgba(7,9,15,0.45) 100%); }
 .zone-cryptes #dm-bg {
-  /* TODO art : ajouter un visuel dédié images/cryptes.jpg ; repli sur grottes en attendant */
-  background-image: url('images/grottes.jpg');
+  background-image: url('images/cryptes.jpg');
   background-size:cover; background-position:center;
   background-color:#0c0008;
 }
 .zone-cryptes #dm-bg::after {
   content:''; position:absolute; inset:0;
   background: linear-gradient(to bottom, rgba(12,0,8,0.18) 0%, rgba(12,0,8,0.48) 100%); }
+/* Marais — putride, brumeux */
+.zone-marais #dm-bg {
+  background-image: url('images/marais.jpg');
+  background-size:cover; background-position:center;
+  background-color:#070d08;
+}
+.zone-marais #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(7,13,8,0.18) 0%, rgba(7,13,8,0.46) 100%); }
+/* Volcan — ardent, cendres */
+.zone-volcan #dm-bg {
+  background-image: url('images/volcan.jpg');
+  background-size:cover; background-position:center;
+  background-color:#140503;
+}
+.zone-volcan #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(20,5,3,0.16) 0%, rgba(20,5,3,0.46) 100%); }
+/* Acte IV — zones profondes (postgame) */
+.zone-chateau_maudit #dm-bg {
+  background-image: url('images/chateau_maudit.jpg');
+  background-size:cover; background-position:center;
+  background-color:#0a0810;
+}
+.zone-chateau_maudit #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(10,8,16,0.18) 0%, rgba(10,8,16,0.48) 100%); }
+.zone-cite_oubliee #dm-bg {
+  background-image: url('images/cite_oubliee.jpg');
+  background-size:cover; background-position:center;
+  background-color:#06080c;
+}
+.zone-cite_oubliee #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(6,8,12,0.18) 0%, rgba(6,8,12,0.48) 100%); }
+.zone-gouffre_astral #dm-bg {
+  background-image: url('images/gouffre_astral.jpg');
+  background-size:cover; background-position:center;
+  background-color:#080610;
+}
+.zone-gouffre_astral #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(8,6,16,0.16) 0%, rgba(8,6,16,0.48) 100%); }
+.zone-cryptes_profondes #dm-bg {
+  background-image: url('images/cryptes_profondes.jpg');
+  background-size:cover; background-position:center;
+  background-color:#0c0006;
+}
+.zone-cryptes_profondes #dm-bg::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(to bottom, rgba(12,0,6,0.18) 0%, rgba(12,0,6,0.50) 100%); }
 /* ── RARETÉS ─────────────────────────────────────────────────── */
 .rarity-common    { border-color:rgba(160,160,160,0.45)!important; }
 .rarity-uncommon  { border-color:rgba(60,200,60,0.65)!important;  background:rgba(20,70,20,0.18)!important; }
@@ -2894,11 +2944,11 @@ canvas#particles {
       <div id="tv-header">
         <div id="tv-back" onclick="Nav.go('dungeon-map')">←</div>
         <div id="tv-title" data-i18n="travel.title">Carte du Monde</div>
-        <div id="tv-sub">Étage <span id="tv-floor-num">I</span></div>
+        <div id="tv-sub"><span data-i18n="travel.floor">Étage</span> <span id="tv-floor-num">I</span></div>
       </div>
       <div id="tv-body">
 
-        <div class="tv-section-lbl">Repos &amp; Soins</div>
+        <div class="tv-section-lbl" data-i18n="travel.sec.rest">Repos &amp; Soins</div>
 
         <div class="tv-card" onclick="Travel.goCamp()">
           <div class="tv-card-ico">🔥</div>
@@ -2909,26 +2959,26 @@ canvas#particles {
           <div class="tv-card-badge safe" data-i18n="travel.free">Gratuit</div>
         </div>
 
-        <div class="tv-section-lbl">Commerce</div>
+        <div class="tv-section-lbl" data-i18n="travel.sec.trade">Commerce</div>
 
         <div class="tv-card" onclick="Travel.goTown()">
           <div class="tv-card-ico">🏘</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">Village de Thornwall</div>
-            <div class="tv-card-desc">Marchands, forgeron et auberge — dépense ton or wisely</div>
+            <div class="tv-card-name" data-i18n="travel.town.name">Village de Thornwall</div>
+            <div class="tv-card-desc" data-i18n="travel.town.desc">Marchands, forgeron et auberge — dépense ton or judicieusement</div>
           </div>
-          <div class="tv-card-badge">Boutique</div>
+          <div class="tv-card-badge" data-i18n="travel.town.badge">Boutique</div>
         </div>
 
-        <div class="tv-section-lbl">Autres Donjons</div>
+        <div class="tv-section-lbl" data-i18n="travel.sec.dungeons">Autres Donjons</div>
 
         <div class="tv-card" id="tv-cave" onclick="Travel.goAlternateDungeon('cave')">
           <div class="tv-card-ico">🦇</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">Grotte des Chauves-souris</div>
-            <div class="tv-card-desc">Facile · Ennemis faibles, bon or pour débutants</div>
+            <div class="tv-card-name" data-i18n="travel.cave.name">Grotte des Chauves-souris</div>
+            <div class="tv-card-desc" data-i18n="travel.cave.desc">Facile · Ennemis faibles, bon or pour débutants</div>
           </div>
-          <div class="tv-card-badge safe">Niv. 1–2</div>
+          <div class="tv-card-badge safe" data-i18n="travel.cave.badge">Niv. 1–2</div>
         </div>
 
         <div class="tv-card" id="tv-ruins" onclick="Travel.goAlternateDungeon('ruins')">
@@ -2937,14 +2987,14 @@ canvas#particles {
             <div class="tv-card-name" data-i18n="travel.ruins.name">Ruines Maudites</div>
             <div class="tv-card-desc" data-i18n="travel.ruins.desc">Difficile · Ennemis d'élite, trésors rares</div>
           </div>
-          <div class="tv-card-badge danger">Niv. 3+</div>
+          <div class="tv-card-badge danger" data-i18n="travel.ruins.badge">Niv. 3+</div>
         </div>
 
         <div class="tv-card" id="tv-abyss" onclick="Travel.goAlternateDungeon('abyss')">
           <div class="tv-card-ico">🌑</div>
           <div class="tv-card-info">
-            <div class="tv-card-name">L'Abîsse Sans Fond</div>
-            <div class="tv-card-desc">Extrême · Réservé aux héros légendaires</div>
+            <div class="tv-card-name" data-i18n="travel.abyss.name">L'Abîsse Sans Fond</div>
+            <div class="tv-card-desc" data-i18n="travel.abyss.desc">Extrême · Réservé aux héros légendaires</div>
           </div>
           <div class="tv-card-badge danger" id="tv-abyss-lock">Étage 5+</div>
         </div>
@@ -4346,6 +4396,19 @@ var STRINGS = {
     'combat.continue': 'Continuer',
     'combat.victory': 'Victoire !',
     'combat.defeat': 'Défaite',
+    // Combat log (fixed lines)
+    'cl.tooslow': '⏰ Trop lent ! Le monstre profite de ta lenteur...',
+    'cl.stunned': 'Tu es étourdi et perds ton tour !',
+    'cl.dodge': '💨 Tu esquives l\'attaque !',
+    'cl.defend': 'Tu te mets en garde. (-50% dégâts ce tour)',
+    'cl.ragebonus': '🟠 Rage orcque ! ATQ ×1.5',
+    'cl.nomana': 'Plus de mana !',
+    'cl.notenoughmana': 'Plus assez de mana !',
+    'cl.shieldskill': 'Bouclier de fer ! (+8 DEF)',
+    'cl.nopotions': 'Plus de potions !',
+    'cl.confusion': '🔮 Confusion ! L\'ennemi perd son tour.',
+    'cl.flee': 'Tu t\'enfuis dans l\'obscurité !',
+    'cl.fleefail': 'Impossible de fuir !',
     // Loot
     'loot.title': 'Victoire !',
     'loot.sub': 'L\'ennemi est vaincu',
@@ -4404,6 +4467,19 @@ var STRINGS = {
     'wm.back': 'Retour',
     // Travel
     'travel.title': 'Carte du Monde',
+    'travel.floor': 'Étage',
+    'travel.sec.rest': 'Repos & Soins',
+    'travel.sec.trade': 'Commerce',
+    'travel.sec.dungeons': 'Autres Donjons',
+    'travel.town.name': 'Village de Thornwall',
+    'travel.town.desc': 'Marchands, forgeron et auberge — dépense ton or judicieusement',
+    'travel.town.badge': 'Boutique',
+    'travel.cave.name': 'Grotte des Chauves-souris',
+    'travel.cave.desc': 'Facile · Ennemis faibles, bon or pour débutants',
+    'travel.cave.badge': 'Niv. 1–2',
+    'travel.ruins.badge': 'Niv. 3+',
+    'travel.abyss.name': 'L\'Abîsse Sans Fond',
+    'travel.abyss.desc': 'Extrême · Réservé aux héros légendaires',
     'travel.camp': 'Campement',
     'travel.camp.desc': 'Allume un feu et récupère 35% de tes PV',
     'travel.free': 'Gratuit',
@@ -4690,6 +4766,19 @@ var STRINGS = {
     'combat.continue': 'Continue',
     'combat.victory': 'Victory!',
     'combat.defeat': 'Defeat',
+    // Combat log (fixed lines)
+    'cl.tooslow': '⏰ Too slow! The monster takes advantage of your sluggishness...',
+    'cl.stunned': 'You are stunned and lose your turn!',
+    'cl.dodge': '💨 You dodge the attack!',
+    'cl.defend': 'You raise your guard. (-50% damage this turn)',
+    'cl.ragebonus': '🟠 Orcish rage! ATK ×1.5',
+    'cl.nomana': 'Out of mana!',
+    'cl.notenoughmana': 'Not enough mana!',
+    'cl.shieldskill': 'Iron shield! (+8 DEF)',
+    'cl.nopotions': 'No potions left!',
+    'cl.confusion': '🔮 Confusion! The enemy loses its turn.',
+    'cl.flee': 'You flee into the darkness!',
+    'cl.fleefail': 'Your escape failed!',
     // Loot
     'loot.title': 'Victory!',
     'loot.sub': 'Enemy defeated',
@@ -4748,6 +4837,19 @@ var STRINGS = {
     'wm.back': 'Back',
     // Travel
     'travel.title': 'World Map',
+    'travel.floor': 'Floor',
+    'travel.sec.rest': 'Rest & Healing',
+    'travel.sec.trade': 'Trade',
+    'travel.sec.dungeons': 'Other Dungeons',
+    'travel.town.name': 'Village of Thornwall',
+    'travel.town.desc': 'Merchants, blacksmith and inn — spend your gold wisely',
+    'travel.town.badge': 'Shop',
+    'travel.cave.name': 'Bat Cave',
+    'travel.cave.desc': 'Easy · Weak enemies, good gold for beginners',
+    'travel.cave.badge': 'Lv. 1–2',
+    'travel.ruins.badge': 'Lv. 3+',
+    'travel.abyss.name': 'The Bottomless Abyss',
+    'travel.abyss.desc': 'Extreme · For legendary heroes only',
     'travel.camp': 'Camp',
     'travel.camp.desc': 'Light a fire and recover 35% HP',
     'travel.free': 'Free',
@@ -5284,27 +5386,27 @@ function getBossForZone(zone, floor) {
 // ── SORTS (Mage & Prêtre) ────────────────────────────────────────
 var SPELLS = {
   Mage: [
-    { id:'fireball',  ico:'🔥', name:'Boule de Feu',   cost:20, desc:'1.8× ATQ — dégâts de feu',
-      cast:function(enemy){ var d=Math.round(State.atk*1.8); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Boule de feu ! '+d+' dégâts de feu !',crit:true}; } },
-    { id:'lightning', ico:'⚡', name:'Éclair',          cost:15, desc:'1.4× ATQ + Étourdi 1 tour',
-      cast:function(enemy){ var d=Math.round(State.atk*1.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Éclair ! '+d+' dégâts + étourdi !',crit:false,stun:1}; } },
-    { id:'blizzard',  ico:'❄', name:'Blizzard',         cost:32, desc:'2.4× ATQ — dégâts de glace',
+    { id:'fireball',  ico:'🔥', name:'Boule de Feu',   nameEn:'Fireball',     cost:20, desc:'1.8× ATQ — dégâts de feu',  descEn:'1.8× ATK — fire damage',
+      cast:function(enemy){ var d=Math.round(State.atk*1.8); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Boule de feu ! '+d+' dégâts de feu !',logEn:'Fireball! '+d+' fire damage!',crit:true}; } },
+    { id:'lightning', ico:'⚡', name:'Éclair',          nameEn:'Lightning',    cost:15, desc:'1.4× ATQ + Étourdi 1 tour',  descEn:'1.4× ATK + Stun 1 turn',
+      cast:function(enemy){ var d=Math.round(State.atk*1.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Éclair ! '+d+' dégâts + étourdi !',logEn:'Lightning! '+d+' damage + stun!',crit:false,stun:1}; } },
+    { id:'blizzard',  ico:'❄', name:'Blizzard',         nameEn:'Blizzard',     cost:32, desc:'2.4× ATQ — dégâts de glace', descEn:'2.4× ATK — ice damage',
       unlockLevel:8,
-      cast:function(enemy){ var d=Math.round(State.atk*2.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Blizzard ! '+d+' dégâts de glace !',crit:true}; } },
-    { id:'arcane',    ico:'🔮', name:'Tempête Arcane',  cost:45, desc:'3.0× ATQ — dégâts purs',
+      cast:function(enemy){ var d=Math.round(State.atk*2.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Blizzard ! '+d+' dégâts de glace !',logEn:'Blizzard! '+d+' ice damage!',crit:true}; } },
+    { id:'arcane',    ico:'🔮', name:'Tempête Arcane',  nameEn:'Arcane Storm', cost:45, desc:'3.0× ATQ — dégâts purs',    descEn:'3.0× ATK — pure damage',
       unlockLevel:15,
-      cast:function(enemy){ var d=Math.round(State.atk*3.0); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tempête arcane ! '+d+' dégâts purs !',crit:true}; } },
+      cast:function(enemy){ var d=Math.round(State.atk*3.0); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tempête arcane ! '+d+' dégâts purs !',logEn:'Arcane storm! '+d+' pure damage!',crit:true}; } },
   ],
   Prêtre: [
-    { id:'heal_sm',   ico:'💚', name:'Soin Léger',      cost:12, desc:'Récup 25% PV max',
-      cast:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin léger ! +'+h+' PV.'}; } },
-    { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     cost:28, desc:'Récup 55% PV max',
-      cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !'}; } },
-    { id:'shield',    ico:'✨', name:'Bouclier Divin',  cost:18, desc:'+12 DEF pendant 2 tours',
-      cast:function(){ return {log:'Bouclier divin ! +12 DEF pour 2 tours.',shield:2,shieldDef:12}; } },
-    { id:'smite',     ico:'⚡', name:'Jugement',        cost:22, desc:'1.2× ATQ + Brûlure 2 tours',
+    { id:'heal_sm',   ico:'💚', name:'Soin Léger',      nameEn:'Minor Heal',   cost:12, desc:'Récup 25% PV max',          descEn:'Restore 25% max HP',
+      cast:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin léger ! +'+h+' PV.',logEn:'Minor heal! +'+h+' HP.'}; } },
+    { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     nameEn:'Major Heal',   cost:28, desc:'Récup 55% PV max',          descEn:'Restore 55% max HP',
+      cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !',logEn:'Major heal! +'+h+' HP!'}; } },
+    { id:'shield',    ico:'✨', name:'Bouclier Divin',  nameEn:'Divine Shield', cost:18, desc:'+12 DEF pendant 2 tours',  descEn:'+12 DEF for 2 turns',
+      cast:function(){ return {log:'Bouclier divin ! +12 DEF pour 2 tours.',logEn:'Divine shield! +12 DEF for 2 turns.',shield:2,shieldDef:12}; } },
+    { id:'smite',     ico:'⚡', name:'Jugement',        nameEn:'Judgment',     cost:22, desc:'1.2× ATQ + Brûlure 2 tours', descEn:'1.2× ATK + Burn 2 turns',
       unlockLevel:8,
-      cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',burn:2}; } },
+      cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',logEn:'Judgment! '+d+' damage + burn!',burn:2}; } },
   ]
 };
 
@@ -5441,16 +5543,16 @@ var Combat = (function(){
   function tickStatuses() {
     // Appliquer et décrémenter
     statuses = statuses.filter(function(s){
-      if (s.type==='poison') { var pdmg=s.val; if(getPassive()==='poison_resist') pdmg=Math.ceil(pdmg*0.5); State.hp=Math.max(0,State.hp-pdmg); updatePlayerUI(); log('☠ Poison : -'+pdmg+' PV'+(pdmg<s.val?' (résistance naine)':''),'enemy'); }
-      if (s.type==='burn')   { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log('🔥 Brûlure : -'+s.val+' PV','enemy'); }
+      if (s.type==='poison') { var pdmg=s.val; if(getPassive()==='poison_resist') pdmg=Math.ceil(pdmg*0.5); State.hp=Math.max(0,State.hp-pdmg); updatePlayerUI(); log((CGE_LANG==='en'?'☠ Poison: -'+pdmg+' HP'+(pdmg<s.val?' (dwarven resistance)':''):'☠ Poison : -'+pdmg+' PV'+(pdmg<s.val?' (résistance naine)':'')),'enemy'); }
+      if (s.type==='burn')   { State.hp=Math.max(0,State.hp-s.val); updatePlayerUI(); log((CGE_LANG==='en'?'🔥 Burn: -'+s.val+' HP':'🔥 Brûlure : -'+s.val+' PV'),'enemy'); }
       s.turns--;
       // Fin d'un buff défensif → on rend la DEF empruntée
       if (s.turns <= 0 && (s.type==='shield' || s.type==='defend') && s.val) { State.def -= s.val; updatePlayerUI(); }
       return s.turns > 0;
     });
     enemyStatuses = enemyStatuses.filter(function(s){
-      if (s.type==='poison') { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log(enemy.name+' ☠ -'+s.val+' PV','player'); }
-      if (s.type==='burn')   { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log(enemy.name+' 🔥 -'+s.val+' PV','player'); }
+      if (s.type==='poison') { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+' ☠ -'+s.val+(CGE_LANG==='en'?' HP':' PV'),'player'); }
+      if (s.type==='burn')   { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+' 🔥 -'+s.val+(CGE_LANG==='en'?' HP':' PV'),'player'); }
       s.turns--;
       return s.turns > 0;
     });
@@ -5502,7 +5604,7 @@ var Combat = (function(){
       updateTimerUI(timerSeconds);
       if (timerSeconds <= 0) {
         clearTimer();
-        log('⏰ Trop lent ! Le monstre profite de ta lenteur...', 'enemy');
+        log(T('cl.tooslow'), 'enemy');
         enemyTurn();
       }
     }, 1000);
@@ -5604,9 +5706,9 @@ var Combat = (function(){
       // Soigner à 15% des PV max (presque mort mais vivant)
       State.hp = Math.max(1, Math.floor((State.hpMax||1) * 0.15));
       setTimeout(function(){
-        var lines = '⚔ ATQ et DEF réduits (-12%)\n✦ -' + xpLoss + ' XP\n❤ Soigné à 15% des PV';
-        document.getElementById('defeat-lines').innerHTML =
-          '⚔ ATQ et DEF réduits (-12%)<br>✦ -' + xpLoss + ' XP<br>❤ Soigné à 15% des PV';
+        document.getElementById('defeat-lines').innerHTML = (CGE_LANG==='en'
+          ? '⚔ ATK and DEF reduced (-12%)<br>✦ -' + xpLoss + ' XP<br>❤ Healed to 15% HP'
+          : '⚔ ATQ et DEF réduits (-12%)<br>✦ -' + xpLoss + ' XP<br>❤ Soigné à 15% des PV');
         var defeatAdWrap = document.getElementById('defeat-ad-wrap');
         if (defeatAdWrap) {
           defeatAdWrap.innerHTML = !State._adReviveUsed
@@ -5625,18 +5727,18 @@ var Combat = (function(){
     setTimeout(function(){
       // Tick statuts
       tickStatuses();
-      if (enemy.hp <= 0) { log(enemy.name+' succombe au poison !','system'); endCombat(true); return; }
+      if (enemy.hp <= 0) { log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' succumbs to poison!':' succombe au poison !'),'system'); endCombat(true); return; }
       if (State.hp <= 0) { endCombat(false); return; }
 
       // Étourdi ?
       var stunned = statuses.find(function(s){ return s.type==='stun'; });
-      if (stunned) { stunned.turns=0; tickStatuses(); log('Tu es étourdi et perds ton tour !','enemy'); turnLocked=false; setButtons(true); return; }
+      if (stunned) { stunned.turns=0; tickStatuses(); log(T('cl.stunned'),'enemy'); turnLocked=false; setButtons(true); return; }
 
       // IA ennemi simple
       var action = Math.random();
       // Esquive (meta bonus)
       if ((Meta.bonuses.dodge||0) > 0 && Math.random() < Meta.bonuses.dodge) {
-        log('💨 Tu esquives l\'attaque !','player');
+        log(T('cl.dodge'),'player');
         turnLocked=false; setButtons(true); return;
       }
       var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def, true);
@@ -5647,15 +5749,15 @@ var Combat = (function(){
         var spec = Math.random();
         if (spec < 0.33) {
           addStatus(statuses, 'poison', 3, 5);
-          log(enemy.name+' t\'empoisonne !','enemy');
+          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' poisons you!':' t\'empoisonne !'),'enemy');
           turnLocked=false; setButtons(true); return;
         } else if (spec < 0.66) {
           addStatus(statuses, 'burn', 2, 8);
-          log(enemy.name+' te brûle !','enemy');
+          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' burns you!':' te brûle !'),'enemy');
           turnLocked=false; setButtons(true); return;
         } else {
           addStatus(statuses, 'stun', 1, 0);
-          log(enemy.name+' t\'étourdit !','enemy');
+          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' stuns you!':' t\'étourdit !'),'enemy');
           turnLocked=false; setButtons(true); return;
         }
       }
@@ -5665,7 +5767,7 @@ var Combat = (function(){
         var heal = Math.round(enemy.hpMax * 0.15);
         enemy.hp = Math.min(enemy.hpMax, enemy.hp + heal);
         updateEnemyUI();
-        log(enemy.name+' se soigne de '+heal+' PV.','system');
+        log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' heals for '+heal+' HP.':' se soigne de '+heal+' PV.'),'system');
       } else {
         State.hp = Math.max(0, State.hp - dmgResult.dmg);
         updatePlayerUI();
@@ -5674,7 +5776,7 @@ var Combat = (function(){
         var ps = document.getElementById('phone-screen');
         if (ps) { ps.classList.add('shake'); setTimeout(function(){ ps.classList.remove('shake'); }, 350); }
         if (dmgResult.crit) Sfx.crit(); else Sfx.hit();
-        log(enemy.name+(dmgResult.crit?' inflige un COUP CRITIQUE ':' t\'inflige ')+dmgResult.dmg+' dégâts !','enemy');
+        log((CGE_LANG==='en'?((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(dmgResult.crit?' lands a CRITICAL HIT for ':' hits you for ')+dmgResult.dmg+' damage!'):(enemy.name+(dmgResult.crit?' inflige un COUP CRITIQUE ':' t\'inflige ')+dmgResult.dmg+' dégâts !')),'enemy');
         showDmg(dmgResult.dmg, true, dmgResult.crit);
       }
 
@@ -5717,22 +5819,22 @@ var Combat = (function(){
       document.getElementById('combat-result').classList.remove('show');
       statuses = (State.persistentStatuses||[]).map(function(s){ return Object.assign({},s); });
       enemyStatuses = []; renderStatuses();
-      if (statuses.length) log('⚠ Tu entres au combat affaibli ('+statuses.map(function(s){return s.type;}).join(', ')+') !','enemy');
+      if (statuses.length) log((CGE_LANG==='en'?'⚠ You enter combat weakened ('+statuses.map(function(s){return s.type;}).join(', ')+')!':'⚠ Tu entres au combat affaibli ('+statuses.map(function(s){return s.type;}).join(', ')+') !'),'enemy');
 
       updatePlayerUI();
       updateEnemyUI();
       updateSkillBtn();
       updatePotionBtn();
       setButtons(true);
-      log('⚔ '+enemy.name+' surgit de l\'ombre !'+(enemy.boss?' ☠':''),'system');
+      log((CGE_LANG==='en'?'⚔ '+(enemy.nameEn||enemy.name)+' emerges from the shadows!':'⚔ '+enemy.name+' surgit de l\'ombre !')+(enemy.boss?' ☠':''),'system');
       // Elfe : initiative — frappe en premier
       if (getPassive() === 'initiative') {
         setTimeout(function(){
           var res = calcDmg(State.atk, enemy.def);
           enemy.hp = Math.max(0, enemy.hp - res.dmg);
           enemyHitAnim(); showDmg(res.dmg, false, res.crit); updateEnemyUI();
-          log('🌿 Initiative elfique ! Tu frappes pour '+res.dmg+' dégâts avant l\'ennemi.','player');
-          if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); }
+          log((CGE_LANG==='en'?'🌿 Elven initiative! You strike for '+res.dmg+' damage before the enemy.':'🌿 Initiative elfique ! Tu frappes pour '+res.dmg+' dégâts avant l\'ennemi.'),'player');
+          if (enemy.hp <= 0) { log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' is defeated!':' est vaincu !'),'system'); endCombat(true); }
         }, 500);
       }
     },
@@ -5744,21 +5846,21 @@ var Combat = (function(){
       if (turnLocked) return;
       var atkBonus = (getPassive()==='rage' && State.hp < State.hpMax*0.3) ? 1.5 : 1;
       var res = calcDmg(Math.round(State.atk * atkBonus), enemy.def);
-      if (atkBonus > 1) log('🟠 Rage orcque ! ATQ ×1.5','player');
+      if (atkBonus > 1) log(T('cl.ragebonus'),'player');
       enemy.hp = Math.max(0, enemy.hp - res.dmg);
       enemyHitAnim();
       showDmg(res.dmg, false, res.crit);
       updateEnemyUI();
-      if (res.crit) { Sfx.crit(); log('CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !','player'); }
-      else          { Sfx.attack(); log('Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.','player'); }
+      if (res.crit) { Sfx.crit(); log((CGE_LANG==='en'?'CRITICAL HIT! You deal '+res.dmg+' damage to '+(enemy.nameEn||enemy.name)+'!':'CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !'),'player'); }
+      else          { Sfx.attack(); log((CGE_LANG==='en'?'You attack '+(enemy.nameEn||enemy.name)+' for '+res.dmg+' damage.':'Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.'),'player'); }
       // Vampirisme
       if ((Meta.bonuses.lifesteal||0) > 0) {
         var ls = Math.max(1, Math.round(res.dmg * Meta.bonuses.lifesteal));
         State.hp = Math.min(State.hpMax, State.hp + ls);
         showHeal(ls);
-        updatePlayerUI(); log('🩸 Vampirisme +'+ls+' PV','player');
+        updatePlayerUI(); log((CGE_LANG==='en'?'🩸 Lifesteal +'+ls+' HP':'🩸 Vampirisme +'+ls+' PV'),'player');
       }
-      if (enemy.hp <= 0) { log(enemy.name+' est vaincu !','system'); endCombat(true); return; }
+      if (enemy.hp <= 0) { log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' is defeated!':' est vaincu !'),'system'); endCombat(true); return; }
       enemyTurn();
     },
 
@@ -5766,7 +5868,7 @@ var Combat = (function(){
       if (turnLocked) return;
       playerDef = true;
       Sfx.defend();
-      log('Tu te mets en garde. (-50% dégâts ce tour)','player');
+      log(T('cl.defend'),'player');
       enemyTurn();
     },
 
@@ -5775,7 +5877,7 @@ var Combat = (function(){
       var c = CLASSES.find(function(x){ return x.id===State.cls; });
       // Mage & Prêtre : ouvrir le sélecteur de sorts
       if (hasMana()) {
-        if ((State.mana||0) <= 0) { log('Plus de mana !','system'); return; }
+        if ((State.mana||0) <= 0) { log(T('cl.nomana'),'system'); return; }
         Combat.openSpells();
         return;
       }
@@ -5786,21 +5888,21 @@ var Combat = (function(){
       Sfx.skill();
       if (c.id === 'Guerrier') {
         addStatus(statuses, 'defend', 2, 8); playerDef = true;
-        log('Bouclier de fer ! (+8 DEF)','player');
+        log(T('cl.shieldskill'),'player');
         enemyTurn();
       } else if (c.id === 'Chasseur') {
         var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
         var total = d1.dmg + d2.dmg;
         enemy.hp = Math.max(0, enemy.hp - total);
         enemyHitAnim(); showDmg(total, false, false); updateEnemyUI();
-        log('Double tir ! '+d1.dmg+' + '+d2.dmg+' = '+total+' dégâts.','player');
+        log((CGE_LANG==='en'?'Double shot! '+d1.dmg+' + '+d2.dmg+' = '+total+' damage.':'Double tir ! '+d1.dmg+' + '+d2.dmg+' = '+total+' dégâts.'),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Assassin') {
         var dmg = Math.round(State.atk * 2);
         enemy.hp = Math.max(0, enemy.hp - dmg);
         enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
-        log('Frappe critique garantie ! '+dmg+' dégâts.','player');
+        log((CGE_LANG==='en'?'Guaranteed critical strike! '+dmg+' damage.':'Frappe critique garantie ! '+dmg+' dégâts.'),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Barbare') {
@@ -5808,7 +5910,7 @@ var Combat = (function(){
         if (State.hp < State.hpMax * 0.3) dmg = Math.round(dmg * 1.5);
         enemy.hp = Math.max(0, enemy.hp - dmg);
         enemyHitAnim(); showDmg(dmg, false, State.hp < State.hpMax * 0.3); updateEnemyUI();
-        log('Frenésie barbare ! '+dmg+' dégâts sauvages.','player');
+        log((CGE_LANG==='en'?'Barbarian frenzy! '+dmg+' savage damage.':'Frenésie barbare ! '+dmg+' dégâts sauvages.'),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       }
@@ -5824,8 +5926,8 @@ var Combat = (function(){
         var btn = document.createElement('button');
         btn.className = 'spell-btn ripple-el' + ((!lvlOk || !mpOk) ? ' disabled' : '');
         btn.innerHTML = '<span class="sp-ico">'+sp.ico+'</span>'
-          + '<span class="sp-info"><div class="sp-name">'+sp.name+'</div>'
-          + '<div class="sp-desc">'+(lvlOk ? sp.desc : 'Débloqué niveau '+sp.unlockLevel)+'</div></span>'
+          + '<span class="sp-info"><div class="sp-name">'+(CGE_LANG==='en'&&sp.nameEn?sp.nameEn:sp.name)+'</div>'
+          + '<div class="sp-desc">'+(lvlOk ? (CGE_LANG==='en'&&sp.descEn?sp.descEn:sp.desc) : (CGE_LANG==='en'?'Unlocked at level '+sp.unlockLevel:'Débloqué niveau '+sp.unlockLevel))+'</div></span>'
           + '<span class="sp-cost">'+sp.cost+' MP</span>';
         if (lvlOk && mpOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
         list.appendChild(btn);
@@ -5840,7 +5942,7 @@ var Combat = (function(){
     castSpell: function(sp) {
       Combat.closeSpells();
       if (turnLocked) return;
-      if ((State.mana||0) < sp.cost) { log('Plus assez de mana !','system'); return; }
+      if ((State.mana||0) < sp.cost) { log(T('cl.notenoughmana'),'system'); return; }
       State.mana = Math.max(0, (State.mana||0) - sp.cost);
       updateManaBar();
       updateSkillBtn();
@@ -5852,14 +5954,14 @@ var Combat = (function(){
       if (res.stun) { addStatus(enemyStatuses, 'stun', res.stun, 0); }
       if (res.burn) { addStatus(enemyStatuses, 'burn', res.burn, Math.round(State.atk*0.3)); }
       if (res.shield) { addStatus(statuses, 'shield', res.shield, res.shieldDef || 12); }
-      log(res.log, res.heal ? 'heal' : 'player');
+      log((CGE_LANG==='en'&&res.logEn?res.logEn:res.log), res.heal ? 'heal' : 'player');
       if (enemy.hp <= 0) { endCombat(true); return; }
       enemyTurn();
     },
 
     usePotion: function() {
       if (turnLocked) return;
-      if ((State.potions||0) <= 0) { log('Plus de potions !','system'); return; }
+      if ((State.potions||0) <= 0) { log(T('cl.nopotions'),'system'); return; }
       clearTimer();
       State.potions--;
       var heal = Math.round(State.hpMax * 0.35);
@@ -5870,7 +5972,7 @@ var Combat = (function(){
       updatePlayerUI(); renderStatuses();
       updatePotionBtn();
       Sfx.potion();
-      log('🧪 Potion de soin ! +'+heal+' PV. Statuts négatifs dissipés.','heal');
+      log((CGE_LANG==='en'?'🧪 Healing potion! +'+heal+' HP. Negative statuses cleared.':'🧪 Potion de soin ! +'+heal+' PV. Statuts négatifs dissipés.'),'heal');
       enemyTurn();
     },
 
@@ -5885,7 +5987,7 @@ var Combat = (function(){
         hasItems = true;
         var div = document.createElement('div');
         div.className = 'item-row';
-        div.innerHTML = '<div class="ir-ico">🧪</div><div class="ir-info"><div class="ir-name">Potion de Soin</div><div class="ir-desc">Restaure 35% des PV</div></div><div class="ir-count">×'+(State.potions)+'</div>';
+        div.innerHTML = '<div class="ir-ico">🧪</div><div class="ir-info"><div class="ir-name">'+(CGE_LANG==='en'?'Healing Potion':'Potion de Soin')+'</div><div class="ir-desc">'+(CGE_LANG==='en'?'Restores 35% of HP':'Restaure 35% des PV')+'</div></div><div class="ir-count">×'+(State.potions)+'</div>';
         div.addEventListener('click', function(){
           Combat.closeItemMenu();
           State.potions--;
@@ -5894,7 +5996,7 @@ var Combat = (function(){
           showHeal(heal);
           updatePlayerUI();
           Sfx.potion();
-          log('Potion de soin ! +'+heal+' PV.','heal');
+          log((CGE_LANG==='en'?'Healing potion! +'+heal+' HP.':'Potion de soin ! +'+heal+' PV.'),'heal');
           enemyTurn();
         });
         rows.appendChild(div);
@@ -5905,13 +6007,13 @@ var Combat = (function(){
         hasItems = true;
         var div = document.createElement('div');
         div.className = 'item-row';
-        div.innerHTML = '<div class="ir-ico">'+item.ico+'</div><div class="ir-info"><div class="ir-name">'+item.name+'</div><div class="ir-desc">'+item.desc+'</div></div>';
+        div.innerHTML = '<div class="ir-ico">'+item.ico+'</div><div class="ir-info"><div class="ir-name">'+(CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name)+'</div><div class="ir-desc">'+(CGE_LANG==='en'&&item.descEn?item.descEn:item.desc)+'</div></div>';
         div.addEventListener('click', function(){
           Combat.closeItemMenu();
           if (item.effect) item.effect();
           State.inventory.splice(idx, 1);
           updatePlayerUI();
-          log(item.name+' utilisé !', 'heal');
+          log((CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name)+(CGE_LANG==='en'?' used!':' utilisé !'), 'heal');
           enemyTurn();
         });
         rows.appendChild(div);
@@ -5921,19 +6023,19 @@ var Combat = (function(){
         hasItems = true;
         var div = document.createElement('div');
         div.className = 'item-row';
-        var scrollDesc = scroll.dmg ? 'Inflige '+scroll.dmg+' dégâts' : (scroll.stun ? 'L\'ennemi passe son tour' : '');
-        div.innerHTML = '<div class="ir-ico">'+scroll.ico+'</div><div class="ir-info"><div class="ir-name">Parchemin '+scroll.name+'</div><div class="ir-desc">'+scrollDesc+'</div></div><div class="ir-count">×1</div>';
+        var scrollDesc = scroll.dmg ? (CGE_LANG==='en'?'Deals '+scroll.dmg+' damage':'Inflige '+scroll.dmg+' dégâts') : (scroll.stun ? (CGE_LANG==='en'?'The enemy skips its turn':'L\'ennemi passe son tour') : '');
+        div.innerHTML = '<div class="ir-ico">'+scroll.ico+'</div><div class="ir-info"><div class="ir-name">'+(CGE_LANG==='en'?'Scroll '+(scroll.nameEn||scroll.name):'Parchemin '+scroll.name)+'</div><div class="ir-desc">'+scrollDesc+'</div></div><div class="ir-count">×1</div>';
         div.addEventListener('click', function(){
           Combat.closeItemMenu();
           State.scrolls.splice(idx, 1);
           if (scroll.dmg) {
             enemy.hp = Math.max(0, enemy.hp - scroll.dmg);
             updateEnemyUI();
-            log(scroll.ico+' Parchemin '+scroll.name+' ! −'+scroll.dmg+' PV à l\'ennemi.','player');
+            log((CGE_LANG==='en'?scroll.ico+' Scroll '+(scroll.nameEn||scroll.name)+'! −'+scroll.dmg+' HP to the enemy.':scroll.ico+' Parchemin '+scroll.name+' ! −'+scroll.dmg+' PV à l\'ennemi.'),'player');
             if (enemy.hp <= 0) { endCombat(true); return; }
           }
           if (scroll.stun) {
-            log('🔮 Confusion ! L\'ennemi perd son tour.','system');
+            log(T('cl.confusion'),'system');
             // skip enemy turn
             startTimer();
             return;
@@ -5943,7 +6045,7 @@ var Combat = (function(){
         rows.appendChild(div);
       });
       if (!hasItems) {
-        rows.innerHTML = '<div style="font-family:\'Crimson Text\',serif;font-size:13px;font-style:italic;color:rgba(237,232,223,0.3);text-align:center;padding:10px">Aucun objet utilisable</div>';
+        rows.innerHTML = '<div style="font-family:\'Crimson Text\',serif;font-size:13px;font-style:italic;color:rgba(237,232,223,0.3);text-align:center;padding:10px">'+(CGE_LANG==='en'?'No usable items':'Aucun objet utilisable')+'</div>';
       }
       document.getElementById('item-overlay').classList.add('show');
     },
@@ -5965,10 +6067,10 @@ var Combat = (function(){
       var fleeChance = 0.35 + (State.fleeBonus||0);
       if (Math.random() < fleeChance) {
         Sfx.flee();
-        log('Tu t\'enfuis dans l\'obscurité !','system');
+        log(T('cl.flee'),'system');
         setTimeout(function(){ Nav.go('dungeon-map'); }, 700);
       } else {
-        log('Impossible de fuir !','system');
+        log(T('cl.fleefail'),'system');
         enemyTurn();
       }
     },
