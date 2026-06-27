@@ -1,7 +1,21 @@
 <!DOCTYPE html>
+<!--
+  Les Cryptes Éternelles
+  © 2026 Anthony Armand. Tous droits réservés. / All Rights Reserved.
+
+  Ce jeu, son code, ses textes, son scénario et ses ressources sont la
+  propriété exclusive de l'auteur. Toute copie, redistribution, revente,
+  réhébergement ou réutilisation, totale ou partielle, est interdite sans
+  autorisation écrite. / This game, its code, text, story and assets are the
+  exclusive property of the author. Any copying, redistribution, resale,
+  re-hosting or reuse, in whole or in part, is prohibited without written
+  permission.
+-->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="Anthony Armand">
+<meta name="copyright" content="© 2026 Anthony Armand — All Rights Reserved">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Les Cryptes Éternelles</title>
 <!-- PWA -->
@@ -2638,7 +2652,7 @@ canvas#particles {
         <div id="bag-overlay-box">
           <div id="bag-overlay-title">ÉQUIPEMENT · SAC</div>
           <div id="bag-rows"></div>
-          <button id="bag-overlay-cancel" onclick="BagManager.close()">Fermer</button>
+          <button id="bag-overlay-cancel" onclick="this.closest('#bag-overlay').classList.remove('show')">Fermer</button>
         </div>
       </div>
     </div>
@@ -4314,6 +4328,9 @@ var STRINGS = {
     'shop.free.title': 'Achat Gratuit !',
     'shop.free.desc': 'Cet achat est remboursé grâce à votre pub !',
     'shop.free.refund': 'Le dernier objet acheté vous est remboursé ! +{n} 🪙',
+    'ads.title': 'Publicité',
+    'ads.body': 'Une publicité va être diffusée. Confirme pour recevoir ta récompense.',
+    'ads.watch': 'Voir la pub',
     'passage.label': 'PASSAGE OBSCUR',
     'passage.sub': 'Le mur du fond a toujours été là.',
     'passage.text': 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.',
@@ -4589,6 +4606,9 @@ var STRINGS = {
     'shop.free.title': 'Free Purchase!',
     'shop.free.desc': 'This purchase is refunded thanks to your ad!',
     'shop.free.refund': 'Your last purchase is refunded! +{n} 🪙',
+    'ads.title': 'Advertisement',
+    'ads.body': 'An ad will be shown. Confirm to receive your reward.',
+    'ads.watch': 'Watch ad',
     'passage.label': 'HIDDEN PASSAGE',
     'passage.sub': 'The far wall has always been there.',
     'passage.text': 'You\'ve been here before. Dozens of times perhaps.\n\nBut today something has changed.\n\nThe far stone vibrates slightly. A crack. A finger\'s width long.\n\nYou touch it.\n\nAnd the wall opens.',
@@ -8509,11 +8529,51 @@ var InnRoom = {
   },
 };
 
+// ── ADS — couche d'abstraction publicité ─────────────────────────
+// API unique pour tout le jeu : Ads.showRewarded(onReward, onSkip).
+// - Web / itch.io : pas de vraie régie (iframe sandboxée) → simulation.
+// - Android (Capacitor + AdMob) : brancher l'appel natif dans _native().
+// Le code du jeu n'appelle JAMAIS de régie directement → passer au Play
+// Store ne demande de modifier QUE ce module.
+var Ads = (function(){
+  function _isNative(){
+    return typeof window !== 'undefined' && window.Capacitor &&
+           typeof window.Capacitor.isNativePlatform === 'function' &&
+           window.Capacitor.isNativePlatform();
+  }
+  // Backend web/itch : simulation via modale
+  function _web(onReward, onSkip){
+    CGEModal.show({
+      title: T('ads.title'),
+      text: T('ads.body'),
+      okLabel: T('ads.watch'),
+      cancelLabel: T('modal.cancel'),
+      onOk: function(){ setTimeout(function(){ onReward && onReward(); }, 500); },
+      onCancel: function(){ onSkip && onSkip(); }
+    });
+  }
+  // Backend natif AdMob — à brancher lors du wrap Capacitor.
+  // En attendant, repli sur la simulation pour ne jamais bloquer le joueur.
+  function _native(onReward, onSkip){
+    // TODO Play Store : AdMob.prepareRewardVideoAd({adId:'...'})
+    //   .then(function(){ return AdMob.showRewardVideoAd(); })
+    //   .then(function(){ onReward(); }).catch(function(){ onSkip && onSkip(); });
+    _web(onReward, onSkip);
+  }
+  return {
+    isNative: _isNative,
+    showRewarded: function(onReward, onSkip){
+      try { _isNative() ? _native(onReward, onSkip) : _web(onReward, onSkip); }
+      catch(e){ if (onSkip) onSkip(); }
+    }
+  };
+})();
+
 // ── REWARDED ADS ──────────────────────────────────────────────────
 var RewardedAds = (function(){
-  // Placeholder — remplacer par Google AdSense Rewarded quand le compte est approuvé
+  // Délègue à la couche Ads (web simulé aujourd'hui, AdMob natif demain)
   function _mockAd(callback) {
-    CGEModal.show({ title: 'Publicité', text: 'Une pub va être diffusée (5 secondes). Confirmer pour simuler le visionnage.', okLabel: 'Voir la pub', cancelLabel: 'Annuler', onOk: function(){ setTimeout(callback, 500); } });
+    Ads.showRewarded(callback);
   }
   return {
     showDoubleGold: function() {

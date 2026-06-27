@@ -1,0 +1,14 @@
+{
+  "name": "les-cryptes-eternelles",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Les Cryptes Éternelles — roguelike heroic fantasy (single-file HTML).",
+  "author": "Anthony Armand",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  }
+}
