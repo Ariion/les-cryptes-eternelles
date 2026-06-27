@@ -1232,7 +1232,7 @@ canvas#particles {
   color: rgba(201,165,80,0.55); display: none;
 }
 #gh-btns { display: flex; gap: 6px; }
-#gh-btn-menu, #gh-btn-quests {
+#gh-btn-menu, #gh-btn-quests, #gh-btn-carnet {
   display: flex; align-items: center; gap: 4px;
   background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.3);
   color: #C9A550; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
@@ -5180,6 +5180,8 @@ var Nav = {
       if (id === 'dungeon-map') {
         var dmEl = document.getElementById('dungeon-map');
         if (dmEl) { dmEl.className = dmEl.className.replace(/\bzone-\w+\b/g,'').trim(); if (State._currentZone) dmEl.classList.add('zone-'+State._currentZone); }
+        // Relancer le rendu de la carte (figé en quittant l'écran) sans régénérer les nœuds
+        if (typeof DungeonMap !== 'undefined' && DungeonMap.resume) DungeonMap.resume();
       }
       if (typeof Embers !== 'undefined') {
         if (id==='dungeon-map'||id==='inn-room'||id==='combat-screen') Embers.startFor(id);
@@ -8395,6 +8397,13 @@ var DungeonMap = (function() {
     _decors: null,
     get _rafRunning() { return _rafRunning; },
     set _rafRunning(v) { _rafRunning = v; },
+    // Relance la boucle de rendu en revenant sur la carte (ex. après un combat)
+    // sans régénérer les nœuds — préserve la progression de l'étage.
+    resume: function() {
+      if (!mc || !mctx || _rafRunning) return;
+      _rafRunning = true;
+      requestAnimationFrame(render);
+    },
     init: function(floor, hp, hpMax) {
       mc = document.getElementById('map-canvas');
       var wrap = document.getElementById('dm-canvas-wrap');
@@ -8796,14 +8805,11 @@ function goToMenu() {
   var metaEl = document.getElementById('menu-stats');
   if (metaEl) metaEl.textContent = Meta.totalRuns > 0
     ? 'Runs : '+Meta.totalRuns+'  ·  Meilleur étage : '+Meta.bestFloor : '';
+  // Toujours proposer le choix de la langue au lancement (la langue sauvegardée
+  // est pré-appliquée pour l'affichage)
   var savedLang = localStorage.getItem('cge_lang');
-  if (!savedLang) {
-    Nav.go('lang-screen');
-  } else {
-    CGE_LANG = savedLang;
-    LangSystem.applyAll();
-    Nav.go('main-menu');
-  }
+  if (savedLang) { CGE_LANG = savedLang; LangSystem.applyAll(); }
+  Nav.go('lang-screen');
   buildCharSelect();
 }
 
