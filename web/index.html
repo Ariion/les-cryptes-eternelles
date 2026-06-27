@@ -3398,7 +3398,8 @@ var State = {
   inventory: [],
   equipped: {
     heaume:null, arme:null, bouclier:null, gants:null,
-    bottes:null, ceinture:null, jambieres:null, collier:null, plastron:null
+    bottes:null, ceinture:null, jambieres:null, collier:null, plastron:null,
+    bague_gauche:null, bague_droite:null
   },
   _heroFrom: 'inn-room',
   _currentZone: null,
@@ -3859,7 +3860,12 @@ var ProfileManager = {
   deleteProfile: function(id) {
     var list = this.getAll().filter(function(p){ return p.id!==id; });
     this.saveAll(list);
-    if (this.getActiveId()===id) localStorage.removeItem(this.ACTIVE_KEY);
+    if (this.getActiveId()===id) {
+      // Profil actif supprimé : purger aussi son meta/run pour ne pas laisser de données orphelines
+      localStorage.removeItem(this.ACTIVE_KEY);
+      localStorage.removeItem('cge_meta');
+      localStorage.removeItem('cge_run');
+    }
   },
 
   exportCode: function(id) {
@@ -5518,6 +5524,7 @@ var Combat = (function(){
   function endCombat(victory) {
     clearTimer();
     setButtons(false);
+    State._inCombat = false;
     // Rendre toute DEF temporaire encore active avant de quitter le combat (sinon fuite permanente)
     statuses.forEach(function(s){ if ((s.type==='shield'||s.type==='defend') && s.val) State.def -= s.val; });
     State.persistentStatuses = statuses.filter(function(s){ return s.type==='poison'||s.type==='burn'; });
@@ -6167,7 +6174,7 @@ var Rooms = {
       function(){ State.hp=Math.max(1,State.hp-Math.round(State.hpMax*0.1)); State.atk+=8; return { ico:'🩸', label:'-10% PV / +8 ATQ', msg:'Un pacte de sang avec une entité sombre...' }; },
       function(){ State.potions=(State.potions||0)+1; State.hp=Math.min(State.hpMax,State.hp+Math.round(State.hpMax*0.2)); return { ico:'🌿', label:'+1 Potion +20% PV', msg:'Un sanctuaire de la nature t\'offre ses bienfaits.' }; },
       function(){ State.hpMax+=30; State.hp=Math.min(State.hpMax,State.hp+30); return { ico:'💎', label:'+30 PV max', msg:'Un cristal de vie amplifie ton essence vitale.' }; },
-      function(){ State.atk+=4; State.def-=2; return { ico:'⚔', label:'+4 ATQ -2 DEF', msg:'Un guerrier fantôme partage ses secrets offensifs... au prix de ta garde.' }; },
+      function(){ State.atk+=4; State.def=Math.max(0,(State.def||0)-2); return { ico:'⚔', label:'+4 ATQ -2 DEF', msg:'Un guerrier fantôme partage ses secrets offensifs... au prix de ta garde.' }; },
       function(){ if((State.persistentStatuses||[]).length){ State.persistentStatuses=[]; return { ico:'✨', label:'Statuts dissipés !', msg:'Une lumière dorée dissipe tous tes maux.' }; } else { State.gold=(State.gold||0)+floor*30; return { ico:'🪙', label:'+'+floor*30+' 🪙', msg:'L\'air de la salle sent l\'or et la fortune.' }; } },
     ];
     var ev = events[Math.floor(Math.random()*events.length)]();
@@ -7300,6 +7307,7 @@ var Meta = {
   rank: 0,
   passageFound: false,
   _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
+  achievements: {},
   chest: [],          // persistent cross-run storage (max 20 items)
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
@@ -8198,6 +8206,7 @@ var DungeonMap = (function() {
           boss: type==='boss',
           name: type==='boss' ? '☠ '+enemyData.name : (type==='elite' ? '★ '+enemyData.name : enemyData.name),
         });
+        State._inCombat = true;
         Nav.go('combat-screen');
         setTimeout(function(){ Combat.start(enemyData); }, 350);
     }
@@ -8618,10 +8627,6 @@ function goToMenu() {
   }
   buildCharSelect();
 }
-
-// ── SAVE ──────────────────────────────────────────────────────────
-function getSave(){ try{ return JSON.parse(localStorage.getItem('cge_save')); }catch(e){ return null; } }
-function setSave(d){ localStorage.setItem('cge_save', JSON.stringify(d)); }
 
 // ── APP ───────────────────────────────────────────────────────────
 // ── VOYAGE ───────────────────────────────────────────────────────
@@ -9661,8 +9666,7 @@ window.addEventListener('load', function(){
         var sw = reg.installing;
         sw.onstatechange = function() {
           if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('[CGE] Mise à jour disponible');
-            // Ne pas recharger en pleine partie - notifier seulement
+            // Ne pas recharger en pleine partie
             if (!State || !State._inCombat) {
               window.location.reload();
             }
