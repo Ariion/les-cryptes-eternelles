@@ -1093,39 +1093,43 @@ canvas#particles {
 
 /* ── GAME OVER ───────────────────────────────────────────────── */
 #gameover-screen {
-  background:#06050f;
-  background-image: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(80,10,10,0.5) 0%, transparent 60%);
+  background:#0a0712;
+  background-image: radial-gradient(ellipse 90% 55% at 50% 38%, rgba(201,165,80,0.22) 0%, transparent 62%);
   flex-direction:column; align-items:center; justify-content:center; gap:0;
 }
-#go-skull { font-size:80px; margin-bottom:16px; filter:drop-shadow(0 0 30px rgba(200,30,30,0.5)); }
-#go-title { font-family:'Cinzel Decorative',serif; font-size:30px; color:#c83030; text-shadow:0 0 40px rgba(200,30,30,0.4); margin-bottom:6px; }
-#go-quote { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(200,150,150,0.6); margin-bottom:36px; text-align:center; padding:0 32px; }
+#go-skull { font-size:80px; margin-bottom:16px; filter:drop-shadow(0 0 26px rgba(201,165,80,0.55)); }
+#go-title { font-family:'Cinzel Decorative',serif; font-size:30px; color:#EAD79A; text-shadow:0 0 36px rgba(201,165,80,0.45); margin-bottom:6px; }
+#go-quote { font-family:'Crimson Text',serif; font-style:italic; font-size:15px; color:rgba(237,232,223,0.8); margin-bottom:36px; text-align:center; padding:0 32px; }
 #go-stats {
   width:80%; max-width:280px; margin-bottom:32px;
   display:flex; flex-direction:column; gap:0;
   border-radius:10px; overflow:hidden;
-  border:1px solid rgba(200,80,80,0.2);
+  border:1px solid rgba(201,165,80,0.3);
+  background:rgba(201,165,80,0.05);
 }
 .go-stat-row {
   display:flex; justify-content:space-between; align-items:center;
-  padding:10px 18px; background:rgba(255,255,255,0.03);
-  border-bottom:1px solid rgba(255,255,255,0.04);
+  padding:11px 18px; background:rgba(201,165,80,0.04);
+  border-bottom:1px solid rgba(201,165,80,0.12);
 }
 .go-stat-row:last-child { border-bottom:none; }
-.go-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:rgba(200,150,150,0.5); text-transform:uppercase; }
-.go-stat-val { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#EDE8DF; }
-#btn-go-retry {
-  padding:16px 40px; border-radius:8px; margin-bottom:12px;
-  border:1px solid rgba(200,80,80,0.5);
-  background:rgba(180,30,30,0.15); color:rgba(240,140,140,0.9);
+.go-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; color:rgba(237,232,223,0.72); text-transform:uppercase; }
+.go-stat-val { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#EAD79A; }
+#btn-go-inn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:15px 40px; border-radius:9px; margin-bottom:12px;
+  border:1px solid rgba(201,165,80,0.6);
+  background:linear-gradient(135deg, rgba(201,165,80,0.22), rgba(201,165,80,0.08));
+  color:#EAD79A;
   font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
   cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+  box-shadow:0 0 22px rgba(201,165,80,0.12);
 }
-#btn-go-retry:active { transform:scale(0.97); }
+#btn-go-inn:active { transform:scale(0.97); box-shadow:0 0 30px rgba(201,165,80,0.25); }
 #btn-go-menu {
   padding:10px 28px; border-radius:8px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:transparent; color:rgba(200,190,180,0.4);
+  border:1px solid rgba(201,165,80,0.18);
+  background:transparent; color:rgba(237,232,223,0.6);
   font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; text-transform:uppercase;
   cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
@@ -2683,9 +2687,9 @@ canvas#particles {
 
     <!-- ── GAME OVER ── -->
     <div id="gameover-screen" class="screen">
-      <div id="go-skull">💀</div>
-      <div id="go-title" data-i18n="go.title">Défaite</div>
-      <div id="go-quote">"Les cryptes gardent leurs secrets pour l'éternité..."</div>
+      <div id="go-skull">🏆</div>
+      <div id="go-title">Victoire !</div>
+      <div id="go-quote"></div>
       <div id="go-stats">
         <div class="go-stat-row"><span class="go-stat-lbl" data-i18n="go.floor">Étage atteint</span><span class="go-stat-val" id="go-floor">1</span></div>
         <div class="go-stat-row"><span class="go-stat-lbl" data-i18n="go.gold">Or collecté</span><span class="go-stat-val" id="go-gold">0</span></div>
