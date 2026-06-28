@@ -203,13 +203,15 @@ canvas#particles {
 #menu-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 90% 55% at 50% 0%,rgba(80,20,100,0.55) 0%,transparent 65%),
-    radial-gradient(ellipse 70% 35% at 50% 100%,rgba(140,80,0,0.2) 0%,transparent 60%);
+    linear-gradient(to bottom, transparent 0%, transparent 48%, rgba(6,5,15,0.55) 78%, rgba(6,5,15,0.92) 100%),
+    url('images/menu-bg.jpg') center top / cover no-repeat,
+    #06050f;
 }
 #menu-hero {
   width:100%; flex:0 0 52%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   position:relative; z-index:2;
+  visibility:hidden; /* le visuel de fond porte déjà le titre — on garde l'espace */
   padding-top:clamp(28px,5vh,48px);
 }
 #menu-eyebrow { font-family:'Cinzel',serif; font-size:9px; letter-spacing:6px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-bottom:8px; }
