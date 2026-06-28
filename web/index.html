@@ -1131,19 +1131,31 @@ canvas#particles {
 .btn-rewarded-ad { background:linear-gradient(135deg,#1a1a2e,#16213e); border:2px solid #C9A550; color:#C9A550; border-radius:8px; padding:10px 18px; font-size:14px; cursor:pointer; margin-top:8px; width:100%; text-align:center; }
 .btn-rewarded-ad:hover { background:#C9A550; color:#000; }
 /* ── ACHIEVEMENTS ── */
-.achievement-toast { position:fixed; bottom:-80px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1a1208,#2a1f0a); border:1px solid #C9A550; border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; min-width:240px; max-width:320px; z-index:9999; transition:bottom 0.4s cubic-bezier(.34,1.56,.64,1); box-shadow:0 8px 32px rgba(0,0,0,0.6); }
-.achievement-toast.show { bottom:24px; }
-.at-ico { font-size:28px; flex-shrink:0; }
-.at-title { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#C9A550; letter-spacing:1px; }
-.at-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.7); margin-top:2px; }
-.ach-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(201,165,80,0.08); }
-.ach-row.ach-done .ach-title { color:#C9A550; }
-.ach-row:not(.ach-done) { opacity:0.4; }
-.ach-ico { font-size:22px; flex-shrink:0; width:28px; text-align:center; }
-.ach-info { flex:1; }
-.ach-title { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:rgba(237,232,223,0.5); }
-.ach-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.45); margin-top:1px; }
-.ach-check { color:#C9A550; font-size:16px; flex-shrink:0; }
+/* ── Popup "Félicitations" succès débloqué ── */
+.achievement-toast { position:fixed; top:-120px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#241a09,#120c04); border:1px solid #C9A550; border-radius:14px; padding:13px 20px; display:flex; align-items:center; gap:14px; min-width:250px; max-width:330px; z-index:99999; transition:top 0.45s cubic-bezier(.34,1.56,.64,1); box-shadow:0 10px 40px rgba(0,0,0,0.7),0 0 24px rgba(201,165,80,0.25); }
+.achievement-toast.show { top:24px; }
+.at-ico { font-size:32px; flex-shrink:0; filter:drop-shadow(0 0 6px rgba(201,165,80,0.5)); }
+.at-body { display:flex; flex-direction:column; gap:2px; }
+.at-header { font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(201,165,80,0.7); }
+.at-title { font-family:'Cinzel Decorative',serif; font-size:15px; font-weight:700; color:#EAD79A; letter-spacing:0.5px; }
+
+/* ── Panneau des succès ── */
+.ach-progress-wrap { margin-bottom:14px; }
+.ach-progress-label { text-align:center; font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:#C9A550; margin-bottom:8px; }
+.ach-progress-bar { height:7px; background:rgba(201,165,80,0.12); border-radius:4px; overflow:hidden; }
+.ach-progress-fill { height:100%; background:linear-gradient(90deg,#8a6d2f,#C9A550); border-radius:4px; transition:width 0.5s ease; }
+.ach-list { max-height:58vh; overflow-y:auto; -webkit-overflow-scrolling:touch; text-align:left; padding-right:4px; }
+.ach-list::-webkit-scrollbar { width:5px; }
+.ach-list::-webkit-scrollbar-thumb { background:rgba(201,165,80,0.35); border-radius:3px; }
+.ach-row { display:flex; align-items:center; gap:12px; padding:10px 8px; border-radius:8px; border-bottom:1px solid rgba(201,165,80,0.08); }
+.ach-row.ach-done { background:rgba(201,165,80,0.07); border-bottom-color:rgba(201,165,80,0.18); }
+.ach-row:not(.ach-done) { opacity:0.78; }
+.ach-ico { font-size:22px; flex-shrink:0; width:30px; text-align:center; }
+.ach-info { flex:1; min-width:0; }
+.ach-title { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:rgba(237,232,223,0.82); letter-spacing:0.5px; }
+.ach-row.ach-done .ach-title { color:#EAD79A; }
+.ach-desc { font-family:'Crimson Text',serif; font-size:13px; color:rgba(237,232,223,0.6); margin-top:1px; line-height:1.25; }
+.ach-check { color:#C9A550; font-size:18px; flex-shrink:0; }
 
 /* ── REST ROOM ───────────────────────────────────────────────── */
 #rest-screen {
@@ -2423,7 +2435,7 @@ canvas#particles {
       </div>
       <div id="menu-btns">
         <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span><span data-i18n="menu.play">Jouer</span></button>
-        <button id="btn-menu-achievements" onclick="Achievements.showAll()"><span data-i18n="menu.achievements">🏆 Succès</span></button>
+        <button id="btn-menu-achievements" class="btn btn-secondary" onclick="Achievements.showAll()"><span class="ico">🏆</span><span data-i18n="menu.achievements">Succès</span></button>
         <button id="btn-menu-settings" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
       </div>
       <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
@@ -4347,7 +4359,7 @@ var STRINGS = {
   fr: {
     // Main menu
     'menu.play': 'Jouer',
-    'menu.achievements': '🏆 Succès',
+    'menu.achievements': 'Succès',
     'menu.settings': '⚙ Paramètres',
     'menu.signin': 'Se connecter avec Google',
     // Settings
@@ -4658,6 +4670,7 @@ var STRINGS = {
     'ad.double_chest': '×2 Coffre',
     'ad.free_item': 'Objet gratuit',
     'ach.unlocked': 'Débloqué',
+    'ach.toast.congrats': 'Félicitations !',
     'ach.locked': 'Verrouillé',
     'quest.done': 'Tu as accompli ce qui t\'était demandé.',
     // Rewarded ad result popups
@@ -4726,7 +4739,7 @@ var STRINGS = {
   en: {
     // Main menu
     'menu.play': 'Play',
-    'menu.achievements': '🏆 Achievements',
+    'menu.achievements': 'Achievements',
     'menu.settings': '⚙ Settings',
     'menu.signin': 'Sign in with Google',
     // Settings
@@ -5037,6 +5050,7 @@ var STRINGS = {
     'ad.double_chest': '×2 Chest',
     'ad.free_item': 'Free Item',
     'ach.unlocked': 'Unlocked',
+    'ach.toast.congrats': 'Congratulations!',
     'ach.locked': 'Locked',
     'quest.done': 'You\'ve accomplished what was asked of you.',
     // Rewarded ad result popups
@@ -5658,6 +5672,7 @@ var Combat = (function(){
       State._adGoldUsed = false;
       if (typeof HUD !== 'undefined') HUD.updateGold();
       State.kills = (State.kills||0) + 1;
+      Meta.totalKills = (Meta.totalKills||0) + 1; // compté à CHAQUE victoire (succès)
       gainXP(enemy.xp||10);
       if (typeof Achievements !== 'undefined') Achievements.check('kill');
       if (Meta.bonuses.regenMeta) {
@@ -5684,7 +5699,7 @@ var Combat = (function(){
             if (Meta.clues.medallion && Meta.clues.carte && Meta.clues.journal_marin) { Meta.passageFound = true; }
             if (State._currentZone) Meta.clearZone(State._currentZone);
             // Mise à jour stats sans vider l'or (le perso continue sa progression)
-            Meta.totalKills += State.kills||0;
+            // (totalKills est déjà incrémenté à chaque victoire — pas de double comptage)
             Meta.totalRuns  += 1;
             Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
             Meta.save();
@@ -9089,7 +9104,7 @@ var ACHIEVEMENT_DEFS = [
   // Progression
   { id:'level_10',     ico:'✨', title:'Prometteur',        titleEn:'Promising',       desc:'Atteindre le niveau 10',                   descEn:'Reach level 10',                     check:function(){ return (State.level||1)>=10; } },
   { id:'level_30',     ico:'⚡', title:'Chevalier',         titleEn:'Knight',          desc:'Atteindre le niveau 30',                   descEn:'Reach level 30',                     check:function(){ return (State.level||1)>=30; } },
-  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=25; } },
+  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=60; } },
   { id:'level_100',    ico:'👑', title:'Légendaire',        titleEn:'Legendary',       desc:'Atteindre le niveau 100',                  descEn:'Reach level 100',                    check:function(){ return (State.level||1)>=100; } },
   // Histoire
   { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        titleEn:'The Awakened',   desc:'Compléter l\'Acte I de l\'histoire',       descEn:'Complete Act I of the story',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
@@ -9114,8 +9129,9 @@ var Achievements = (function(){
     if (newOnes.length) {
       Meta.achievements = done;
       Meta.save();
+      // Une popup « Félicitations » par succès, espacées pour ne pas se chevaucher
       newOnes.forEach(function(a, i) {
-        setTimeout(function(){ _toast(a); }, i * 2200);
+        setTimeout(function(){ _toast(a); }, i * 3600);
       });
     }
   }
@@ -9123,25 +9139,43 @@ var Achievements = (function(){
   function _toast(a) {
     var t = document.createElement('div');
     t.className = 'achievement-toast';
-    t.innerHTML = '<span class="at-ico">'+a.ico+'</span><div><div class="at-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div><div class="at-desc">'+(CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc)+'</div></div>';
+    t.innerHTML =
+      '<span class="at-ico">'+a.ico+'</span>'+
+      '<div class="at-body">'+
+        '<div class="at-header">'+T('ach.toast.congrats')+'</div>'+
+        '<div class="at-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div>'+
+      '</div>';
     document.body.appendChild(t);
+    try { if (typeof Sfx !== 'undefined' && Sfx.victory) Sfx.victory(); } catch(e) {}
     setTimeout(function(){ t.classList.add('show'); }, 50);
-    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 500); }, 3000);
+    setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 500); }, 3400);
   }
 
   function showAll() {
     var done = _unlocked();
     var total = ACHIEVEMENT_DEFS.length;
-    var count = Object.keys(done).length;
-    var html = '<div style="text-align:center;font-family:Cinzel,serif;font-size:11px;color:rgba(201,165,80,0.5);letter-spacing:2px;margin-bottom:12px">'+count+' / '+total+' '+T('ach.unlocked')+'</div>';
-    ACHIEVEMENT_DEFS.forEach(function(a) {
-      var unlocked = !!done[a.id];
-      html += '<div class="ach-row'+(unlocked?' ach-done':'')+'">'+
-        '<span class="ach-ico">'+(unlocked?a.ico:'🔒')+'</span>'+
-        '<div class="ach-info"><div class="ach-title">'+(CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title)+'</div><div class="ach-desc">'+(unlocked?(CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc):'???')+'</div></div>'+
-        (unlocked?'<span class="ach-check">✓</span>':'')+'</div>';
-    });
-    CGEModal.show({ title: T('ach.title'), text: '', html: html, okLabel: T('misc.close') });
+    var count = ACHIEVEMENT_DEFS.filter(function(a){ return !!done[a.id]; }).length;
+    var pct = total ? Math.round(count / total * 100) : 0;
+    var rows = ACHIEVEMENT_DEFS.map(function(a) {
+      var u = !!done[a.id];
+      var title = (CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title);
+      var desc  = (CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc);
+      return '<div class="ach-row'+(u?' ach-done':'')+'">'+
+        '<span class="ach-ico">'+(u ? a.ico : '🔒')+'</span>'+
+        '<div class="ach-info">'+
+          '<div class="ach-title">'+title+'</div>'+
+          '<div class="ach-desc">'+desc+'</div>'+
+        '</div>'+
+        (u ? '<span class="ach-check">✓</span>' : '')+
+      '</div>';
+    }).join('');
+    var html =
+      '<div class="ach-progress-wrap">'+
+        '<div class="ach-progress-label">'+count+' / '+total+' '+T('ach.unlocked')+'</div>'+
+        '<div class="ach-progress-bar"><div class="ach-progress-fill" style="width:'+pct+'%"></div></div>'+
+      '</div>'+
+      '<div class="ach-list">'+rows+'</div>';
+    CGEModal.show({ title: '🏆 '+T('ach.title'), text: '', html: html, okLabel: T('misc.close') });
   }
 
   return { check: check, showAll: showAll };
