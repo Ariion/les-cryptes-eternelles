@@ -1653,6 +1653,20 @@ canvas#particles {
   background: rgba(201,165,80,0.08); border: 1px solid rgba(201,165,80,0.2);
   font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #C9A550;
 }
+/* Comparaison vs équipement actuel */
+.eq-cmp-wrap { width: 100%; margin-top: 4px; }
+.eq-cmp-title {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(237,232,223,0.45); margin-bottom: 6px;
+}
+.eq-cmp-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.eq-cmp {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 7px;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+}
+.eq-cmp.cmp-up   { background: rgba(60,170,70,0.14);  border: 1px solid rgba(80,200,90,0.4);  color: #6ddc7a; }
+.eq-cmp.cmp-down { background: rgba(190,60,50,0.14);  border: 1px solid rgba(220,80,70,0.4);  color: #e88a80; }
 #eq-detail-btns { display: flex; gap: 10px; }
 #eq-detail-btns button {
   flex: 1; padding: 12px; border-radius: 10px;
@@ -4081,7 +4095,7 @@ var ProfilesScreen = {
     State.floor  = 1; State.gold = (b.startGold||0); State.kills = 0;
     State.xp = 0; State.level = 1;
     State.potions = 2 + (b.potions||0);
-    State.regenPerFight = 0; State.critBonus = b.crit||0;
+    State.regenPerFight = 0; State.critBonus = b.crit||0; State.dodgeBonus = 0; State.itemLifesteal = 0;
     State._zoneMod = { enemyMod:1, goldMod:1 }; State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
@@ -5771,8 +5785,9 @@ var Combat = (function(){
 
       // IA ennemi simple
       var action = Math.random();
-      // Esquive (meta bonus)
-      if ((Meta.bonuses.dodge||0) > 0 && Math.random() < Meta.bonuses.dodge) {
+      // Esquive (bonus méta + équipement)
+      var _dodge = (Meta.bonuses.dodge||0) + (State.dodgeBonus||0);
+      if (_dodge > 0 && Math.random() < _dodge) {
         log(T('cl.dodge'),'player');
         turnLocked=false; setButtons(true); return;
       }
@@ -5895,8 +5910,9 @@ var Combat = (function(){
       if (res.crit) { Sfx.crit(); log((CGE_LANG==='en'?'CRITICAL HIT! You deal '+res.dmg+' damage to '+(enemy.nameEn||enemy.name)+'!':'CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !'),'player'); }
       else          { Sfx.attack(); log((CGE_LANG==='en'?'You attack '+(enemy.nameEn||enemy.name)+' for '+res.dmg+' damage.':'Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.'),'player'); }
       // Vampirisme
-      if ((Meta.bonuses.lifesteal||0) > 0) {
-        var ls = Math.max(1, Math.round(res.dmg * Meta.bonuses.lifesteal));
+      var _lifesteal = (Meta.bonuses.lifesteal||0) + (State.itemLifesteal||0);
+      if (_lifesteal > 0) {
+        var ls = Math.max(1, Math.round(res.dmg * _lifesteal));
         State.hp = Math.min(State.hpMax, State.hp + ls);
         showHeal(ls);
         updatePlayerUI(); log((CGE_LANG==='en'?'🩸 Lifesteal +'+ls+' HP':'🩸 Vampirisme +'+ls+' PV'),'player');
@@ -6186,12 +6202,68 @@ var ITEMS = [
 ];
 
 // Appliquer les stats d'un item équipé
+// ── STATS D'ÉQUIPEMENT ────────────────────────────────────────────
+// Métadonnées : ordre d'affichage, icône, libellé FR/EN, valeur en %.
+var STAT_META = {
+  atk:       { ico:'⚔', fr:'ATQ',     en:'ATK',     pct:false },
+  def:       { ico:'🛡', fr:'DEF',     en:'DEF',     pct:false },
+  hp:        { ico:'❤', fr:'PV',      en:'HP',      pct:false },
+  crit:      { ico:'✨', fr:'CRIT',    en:'CRIT',    pct:true  },
+  dodge:     { ico:'💨', fr:'ESQ',     en:'DODGE',   pct:true  },
+  lifesteal: { ico:'🩸', fr:'VOL VIE', en:'LEECH',   pct:true  },
+  flee:      { ico:'🏃', fr:'FUITE',   en:'FLEE',    pct:true  },
+};
+var STAT_ORDER = ['atk','def','hp','crit','dodge','lifesteal','flee'];
+
+function fmtStatVal(k, v) {
+  var m = STAT_META[k]; if (!m) return '';
+  return m.pct ? '+'+Math.round(v*100)+'%' : '+'+Math.round(v);
+}
+function formatStats(stats, lang) {
+  lang = lang || CGE_LANG;
+  if (!stats) return '';
+  var parts = [];
+  STAT_ORDER.forEach(function(k){
+    if (!stats[k]) return;
+    var m = STAT_META[k];
+    parts.push(fmtStatVal(k, stats[k]) + ' ' + (lang==='en'?m.en:m.fr));
+  });
+  return parts.join(' · ');
+}
+
+// Stats secondaires « façon MMORPG » : à haut niveau, les objets gagnent des
+// bonus un peu partout (ATQ/DEF/PV/crit/esquive/vol de vie), selon niveau+rareté.
+// Retourne un NOUVEL objet stats — ne mute jamais le modèle d'origine.
+function rollSecondaryStats(template, level) {
+  var stats = {};
+  var base = template.stats || {};
+  for (var k in base) stats[k] = base[k];
+  level = level || 1;
+  if (level < 10) return stats; // bas niveau : objets simples (mono-stat)
+  var rarBonus = { common:0, uncommon:0, rare:1, epic:2, legendary:2 }[template.rarity||'common'] || 0;
+  var n = Math.min(4, Math.floor((level - 10) / 15) + 1 + rarBonus); // 1..4 stats en plus
+  var pool = ['atk','def','hp','crit','dodge','lifesteal'];
+  for (var i=0;i<n;i++){
+    var key = pool[(Math.random()*pool.length)|0];
+    var add;
+    if (key === 'hp') add = 6 + Math.round(level*1.0 + Math.random()*level*0.6);
+    else if (key === 'atk' || key === 'def') add = 1 + Math.round(level*0.18 + Math.random()*level*0.15);
+    else add = Math.round((0.015 + Math.random()*0.035) * 1000) / 1000; // 1.5%–5%
+    stats[key] = Math.round(((stats[key]||0) + add) * 1000) / 1000;
+  }
+  return stats;
+}
+
 function applyItemStats(item, sign) {
   if (!item || !item.stats) return;
-  if (item.stats.atk)  State.atk  = Math.max(0, (State.atk||0)  + sign*(item.stats.atk||0));
-  if (item.stats.def)  State.def  = Math.max(0, (State.def||0)  + sign*(item.stats.def||0));
-  if (item.stats.hp)  { State.hpMax = Math.max(1,(State.hpMax||1)+sign*(item.stats.hp||0)); State.hp=Math.min(State.hpMax,(State.hp||0)+sign*(item.stats.hp||0)); }
-  if (item.stats.flee) State.fleeBonus = Math.max(0,(State.fleeBonus||0)+sign*(item.stats.flee||0));
+  var s = item.stats;
+  if (s.atk)  State.atk  = Math.max(0, (State.atk||0)  + sign*(s.atk||0));
+  if (s.def)  State.def  = Math.max(0, (State.def||0)  + sign*(s.def||0));
+  if (s.hp)  { State.hpMax = Math.max(1,(State.hpMax||1)+sign*(s.hp||0)); State.hp=Math.min(State.hpMax,(State.hp||0)+sign*(s.hp||0)); }
+  if (s.crit)      State.critBonus     = Math.max(0,(State.critBonus||0)    +sign*(s.crit||0));
+  if (s.dodge)     State.dodgeBonus    = Math.max(0,(State.dodgeBonus||0)   +sign*(s.dodge||0));
+  if (s.lifesteal) State.itemLifesteal = Math.max(0,(State.itemLifesteal||0)+sign*(s.lifesteal||0));
+  if (s.flee)      State.fleeBonus     = Math.max(0,(State.fleeBonus||0)    +sign*(s.flee||0));
 }
 
 // ── ROOMS ─────────────────────────────────────────────────────────
@@ -6230,7 +6302,15 @@ var Rooms = {
       if (!pool.length) pool = equipItems;
       // Consommables rares (10%)
       if (Math.random() < 0.1) pool = ITEMS.filter(function(it){ return !it.slot; });
-      var item = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
+      var template = pool[Math.floor(Math.random()*pool.length)] || ITEMS[0];
+      // Cloner le modèle pour ne pas le muter, et générer des stats secondaires
+      // selon le niveau (objet d'équipement uniquement, pas les consommables).
+      var item = Object.assign({}, template);
+      if (item.slot) {
+        item.stats  = rollSecondaryStats(template, State.level||1);
+        item.desc   = formatStats(item.stats, 'fr');
+        item.descEn = formatStats(item.stats, 'en');
+      }
       document.getElementById('loot-item-ico').textContent  = item.ico;
       document.getElementById('loot-item-name').textContent = CGE_LANG === 'en' && item.nameEn ? item.nameEn : item.name;
       var rar = item.rarity||'common';
@@ -8509,14 +8589,27 @@ var EquipScreen = (function() {
   };
 
   function _statSummary(item) {
-    if (!item || !item.stats) return '';
-    var s = item.stats;
-    var parts = [];
-    if (s.atk)  parts.push('+'+s.atk+' ATQ');
-    if (s.def)  parts.push('+'+s.def+' DEF');
-    if (s.hp)   parts.push('+'+s.hp+' PV');
-    if (s.crit) parts.push('+'+s.crit+'% CRIT');
-    return parts.join(' · ');
+    return (item && item.stats) ? formatStats(item.stats) : '';
+  }
+
+  // Comparaison des stats d'un objet d'inventaire avec ce qui est équipé dans son slot.
+  function _comparisonHtml(item, slot) {
+    var equipped = (State.equipped||{})[slot];
+    var ns = item.stats||{}, es = (equipped && equipped.stats)||{};
+    var rows = [];
+    STAT_ORDER.forEach(function(k){
+      var m = STAT_META[k];
+      var d = (ns[k]||0) - (es[k]||0);
+      var num = m.pct ? Math.round(d*100) : Math.round(d);
+      if (num === 0) return;
+      var val = (num>0?'+':'') + num + (m.pct?'%':'');
+      rows.push('<span class="eq-cmp '+(num>0?'cmp-up':'cmp-down')+'">'+m.ico+' '+val+' '+(CGE_LANG==='en'?m.en:m.fr)+'</span>');
+    });
+    var title;
+    if (!equipped) title = (CGE_LANG==='en'?'vs empty slot':'vs emplacement vide');
+    else if (!rows.length) return '<div class="eq-cmp-title">'+(CGE_LANG==='en'?'Identical to equipped':'Identique à l\'équipé')+'</div>';
+    else title = (CGE_LANG==='en'?'vs equipped':'vs équipé');
+    return '<div class="eq-cmp-title">'+title+'</div><div class="eq-cmp-row">'+rows.join('')+'</div>';
   }
 
   function _refreshSlots() {
@@ -8603,19 +8696,25 @@ var EquipScreen = (function() {
     document.getElementById('eq-detail-slot').textContent = getSlotLabel(item.slot || ctx.slot);
     document.getElementById('eq-detail-desc').textContent = item.desc || '';
 
-    // Stats chips
+    // Stats chips (toutes les stats de l'objet)
     var statsDiv = document.getElementById('eq-detail-stats');
     statsDiv.innerHTML = '';
     if (item.stats) {
-      var s = item.stats;
-      [['⚔','atk','ATQ'],['🛡','def','DEF'],['❤','hp','PV'],['✨','crit','CRIT%']].forEach(function(t) {
-        if (s[t[1]]) {
-          var chip = document.createElement('div');
-          chip.className = 'eq-ds';
-          chip.innerHTML = t[0]+' <span>+'+s[t[1]]+'</span> <span style="font-size:9px;opacity:0.5">'+t[2]+'</span>';
-          statsDiv.appendChild(chip);
-        }
+      STAT_ORDER.forEach(function(k) {
+        if (!item.stats[k]) return;
+        var m = STAT_META[k];
+        var chip = document.createElement('div');
+        chip.className = 'eq-ds';
+        chip.innerHTML = m.ico+' <span>'+fmtStatVal(k, item.stats[k])+'</span> <span style="font-size:9px;opacity:0.5">'+(CGE_LANG==='en'?m.en:m.fr)+'</span>';
+        statsDiv.appendChild(chip);
       });
+      // Comparaison avec l'équipement actuel (objets d'inventaire uniquement)
+      if (ctx.src === 'inv' && (item.slot || ctx.slot)) {
+        var cmp = document.createElement('div');
+        cmp.className = 'eq-cmp-wrap';
+        cmp.innerHTML = _comparisonHtml(item, item.slot || ctx.slot);
+        statsDiv.appendChild(cmp);
+      }
     }
 
     var equipBtn  = document.getElementById('eq-detail-equip');
