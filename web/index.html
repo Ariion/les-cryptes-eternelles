@@ -8458,11 +8458,11 @@ var DungeonMap = (function() {
         var pMax = Math.max(1, State.hpMax||100);
         var eDef = Math.round(pAtk * 0.10 * (type==='boss'?1.3:1));
         var pDmg = Math.max(1, pAtk - eDef);            // dégâts par coup du joueur
-        var targetHits = type==='boss' ? 12 : (type==='elite' ? 7 : 4);
+        var targetHits = type==='boss' ? 15 : (type==='elite' ? 9 : 5);
         var hpRamp = 1 + (diff - 1) * 0.3;              // léger allongement en zone tardive
         var eHP  = Math.max(2, Math.round(pDmg * targetHits * hpRamp));
-        var dmgPct = type==='boss' ? 0.13 : (type==='elite' ? 0.15 : 0.11);
-        var eAtk = Math.min(Math.round(pMax * dmgPct * (1 + (diff-1)*0.15)), Math.round(pMax * 0.30));
+        var dmgPct = type==='boss' ? 0.18 : (type==='elite' ? 0.22 : 0.16);
+        var eAtk = Math.min(Math.round(pMax * dmgPct * (1 + (diff-1)*0.15)), Math.round(pMax * 0.36));
         eAtk = Math.max(1, eAtk);
         var eGold = Math.round((enemyData.gold||5) * diff * (type==='boss'?5:(type==='elite'?1.6:1)) * GOLD_FACTOR);
         enemyData = Object.assign({}, enemyData, {
