@@ -82,7 +82,9 @@ function copyAssets() {
 function main() {
   const html = fs.readFileSync(SRC, 'utf8');
   const { out, count, before, after } = obfuscateInlineScripts(html);
-  if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
+  // Build PROPRE : on vide dist/ pour ne pas embarquer d'anciens assets (ex. vieux .jpg lourds)
+  if (fs.existsSync(OUT_DIR)) fs.rmSync(OUT_DIR, { recursive: true, force: true });
+  fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(OUT, out, 'utf8');
   copyAssets();
   console.log('✓ Build obfusqué terminé');
