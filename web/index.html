@@ -3283,56 +3283,7 @@ canvas#particles {
     </div>
 
     <!-- ── ÉQUIPEMENT / INVENTAIRE ── -->
-    <div id="equip-screen" class="screen has-game-header">
-      <div id="eq-header">
-        <div id="eq-back" onclick="EquipScreen.close()">←</div>
-        <div id="eq-title">Équipement</div>
-        <div style="width:32px"></div>
-      </div>
-      <div id="eq-stats-bar">
-        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">⚔</div><div class="eq-stat-pill-val" id="eqs-atk">0</div><div class="eq-stat-pill-lbl">ATQ</div></div>
-        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">🛡</div><div class="eq-stat-pill-val" id="eqs-def">0</div><div class="eq-stat-pill-lbl">DEF</div></div>
-        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">❤</div><div class="eq-stat-pill-val" id="eqs-hp">0/0</div><div class="eq-stat-pill-lbl">PV</div></div>
-        <div class="eq-stat-pill" id="eqs-mana-pill" style="display:none"><div class="eq-stat-pill-ico">💧</div><div class="eq-stat-pill-val" id="eqs-mana">0/0</div><div class="eq-stat-pill-lbl">MANA</div></div>
-        <div class="eq-stat-pill"><div class="eq-stat-pill-ico">✨</div><div class="eq-stat-pill-val" id="eqs-lvl">1</div><div class="eq-stat-pill-lbl">NIV.</div></div>
-      </div>
-      <div id="eq-body">
-        <div class="eq-section-lbl">Armement</div>
-        <div class="eq-slot-row" id="eqr-arme"         onclick="EquipScreen.tapSlot('arme')">        <div class="eq-slot-cell-ico" id="eqi-arme">⚔</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Arme</div><div id="eqn-arme" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-arme"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-bouclier"     onclick="EquipScreen.tapSlot('bouclier')">    <div class="eq-slot-cell-ico" id="eqi-bouclier">🛡</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bouclier</div><div id="eqn-bouclier" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-bouclier"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-section-lbl">Armure</div>
-        <div class="eq-slot-row" id="eqr-heaume"       onclick="EquipScreen.tapSlot('heaume')">      <div class="eq-slot-cell-ico" id="eqi-heaume">🪖</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Heaume</div><div id="eqn-heaume" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-heaume"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-plastron"     onclick="EquipScreen.tapSlot('plastron')">    <div class="eq-slot-cell-ico" id="eqi-plastron">🥋</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Plastron</div><div id="eqn-plastron" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-plastron"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-gants"        onclick="EquipScreen.tapSlot('gants')">       <div class="eq-slot-cell-ico" id="eqi-gants">🧤</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Gantelets</div><div id="eqn-gants" class="eq-slot-cell-empty">Aucuns</div><div class="eq-slot-cell-stat" id="eqst-gants"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-ceinture"     onclick="EquipScreen.tapSlot('ceinture')">    <div class="eq-slot-cell-ico" id="eqi-ceinture">🪢</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Ceinture</div><div id="eqn-ceinture" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-ceinture"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-jambieres"    onclick="EquipScreen.tapSlot('jambieres')">   <div class="eq-slot-cell-ico" id="eqi-jambieres">🦵</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Jambières</div><div id="eqn-jambieres" class="eq-slot-cell-empty">Aucunes</div><div class="eq-slot-cell-stat" id="eqst-jambieres"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-bottes"       onclick="EquipScreen.tapSlot('bottes')">      <div class="eq-slot-cell-ico" id="eqi-bottes">👢</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bottes</div><div id="eqn-bottes" class="eq-slot-cell-empty">Aucunes</div><div class="eq-slot-cell-stat" id="eqst-bottes"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-section-lbl">Bijoux</div>
-        <div class="eq-slot-row" id="eqr-collier"      onclick="EquipScreen.tapSlot('collier')">     <div class="eq-slot-cell-ico" id="eqi-collier">📿</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Collier</div><div id="eqn-collier" class="eq-slot-cell-empty">Aucun</div><div class="eq-slot-cell-stat" id="eqst-collier"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-bague_gauche" onclick="EquipScreen.tapSlot('bague_gauche')"><div class="eq-slot-cell-ico" id="eqi-bague_gauche">💍</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bague gauche</div><div id="eqn-bague_gauche" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-bague_gauche"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-slot-row" id="eqr-bague_droite" onclick="EquipScreen.tapSlot('bague_droite')"><div class="eq-slot-cell-ico" id="eqi-bague_droite">💍</div><div class="eq-slot-cell-info"><div class="eq-slot-cell-name">Bague droite</div><div id="eqn-bague_droite" class="eq-slot-cell-empty">Aucune</div><div class="eq-slot-cell-stat" id="eqst-bague_droite"></div></div><div class="eq-slot-cell-arrow">›</div></div>
-        <div class="eq-section-lbl">Inventaire · <span id="eq-inv-count">0</span>/8</div>
-        <div id="eq-inv-grid"></div>
-      </div>
-      <!-- Bottom sheet détail -->
-      <div id="eq-detail-overlay" onclick="EquipScreen.closeDetail()"></div>
-      <div id="eq-detail-panel">
-        <div id="eq-detail-handle"></div>
-        <div id="eq-detail-top">
-          <div id="eq-detail-ico">?</div>
-          <div><div id="eq-detail-name">—</div><div id="eq-detail-slot-lbl">—</div></div>
-        </div>
-        <div id="eq-detail-desc"></div>
-        <div id="eq-detail-chips"></div>
-        <div id="eq-detail-btns">
-          <button id="eq-btn-close"  onclick="EquipScreen.closeDetail()">✕</button>
-          <button id="eq-btn-remove" onclick="EquipScreen.detailRemove()" style="display:none">Retirer</button>
-          <button id="eq-btn-equip"  onclick="EquipScreen.detailEquip()"  style="display:none">Équiper</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── COFFRE ── -->
+<!-- ── COFFRE ── -->
     <div id="chest-screen" class="screen has-game-header">
       <div id="chest-header">
         <div id="chest-back" onclick="ChestScreen.close()">←</div>
