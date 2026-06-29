@@ -1883,12 +1883,13 @@ canvas#particles {
   user-select:none;
 }
 .npc-hotspot:hover { transform:scale(1.15); }
-.npc-avatar { font-size:32px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+.npc-avatar { font-size:30px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.75)); }
 .npc-name-tag {
-  font-family:'Cinzel',serif; font-size:9px; font-weight:700;
-  color:#C9A550; letter-spacing:1px; text-transform:uppercase;
-  background:rgba(10,8,6,0.7); padding:1px 5px; border-radius:3px;
-  white-space:nowrap;
+  font-family:'Cinzel',serif; font-size:8px; font-weight:700;
+  color:#C9A550; letter-spacing:0.8px; text-transform:uppercase;
+  background:rgba(5,3,1,0.82); border:1px solid rgba(201,165,80,0.4);
+  padding:3px 8px; border-radius:4px; white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,0.8);
 }
 #npc-bertrand  { bottom:36%; left:10%; }
 #npc-oswin     { bottom:52%; left:42%; }
@@ -3042,7 +3043,8 @@ canvas#particles {
         <div id="inn-hp-text">-- / -- PV</div>
       </div>
       <!-- Marta NPC -->
-      <div class="npc-hotspot" id="npc-marta" onclick="Quests.openNpc('marta')" style="position:absolute;top:62%;left:6%">
+      <div class="npc-hotspot" id="npc-marta" onclick="Quests.openNpc('marta')" style="position:absolute;top:57%;left:13%">
+        <div class="npc-avatar">👩</div>
         <div class="npc-name-tag">Marta</div>
       </div>
       <!-- hotspot fenêtre → région -->
@@ -3086,10 +3088,12 @@ canvas#particles {
       <div class="tav-deco tav-sign">🍺</div>
       <!-- NPC: aubergiste -->
       <div class="npc-hotspot" id="npc-bertrand" onclick="Quests.openNpc('bertrand')">
+        <div class="npc-avatar">🧔</div>
         <div class="npc-name-tag">Bertrand</div>
       </div>
       <!-- NPC: barde -->
       <div class="npc-hotspot" id="npc-oswin" onclick="Quests.openNpc('oswin')">
+        <div class="npc-avatar">🎻</div>
         <div class="npc-name-tag">Oswin</div>
       </div>
       <!-- NPC: mage -->
@@ -3186,11 +3190,13 @@ canvas#particles {
         <div class="hs-lbl" data-i18n="town.chateau">🏰 Château</div>
       </div>
       <!-- NPC: Capitaine Aldric (devant le château) -->
-      <div class="npc-hotspot" id="npc-aldric" onclick="Quests.openNpc('aldric')" style="position:absolute;top:12%;left:54%">
+      <div class="npc-hotspot" id="npc-aldric" onclick="Quests.openNpc('aldric')" style="position:absolute;top:29%;left:33%">
+        <div class="npc-avatar">💂</div>
         <div class="npc-name-tag" data-i18n="npc.aldric">Capitaine Aldric</div>
       </div>
       <!-- NPC: Sœur Élise (devant l'église) -->
-      <div class="npc-hotspot" id="npc-elise" onclick="Quests.openNpc('elise')" style="position:absolute;top:38%;left:72%">
+      <div class="npc-hotspot" id="npc-elise" onclick="Quests.openNpc('elise')" style="position:absolute;top:44%;left:78%">
+        <div class="npc-avatar">🙏</div>
         <div class="npc-name-tag" data-i18n="npc.elise">Sœur Élise</div>
       </div>
       <!-- hotspot taverne -->
@@ -8784,7 +8790,9 @@ var EquipScreen = (function() {
     },
     close: function() {
       closeDetail();
-      Nav.go(_from || 'inn-room');
+      // Utiliser State._heroFrom (mis à jour par TOUTES les entrées : équipement,
+      // guilde, etc.) — _from seul pouvait être périmé (ex. 'dungeon-map').
+      Nav.go(State._heroFrom || _from || 'inn-room');
     },
     tapSlot: tapSlot,
     showDetail: showDetail,
