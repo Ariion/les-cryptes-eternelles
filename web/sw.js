@@ -1,13 +1,13 @@
 // Service Worker – Les Cryptes Éternelles
 // La version change à chaque déploiement → auto-update automatique
-const CACHE_NAME = 'cge-cache-v3';
+const CACHE_NAME = 'cge-cache-v4';
 
 const PRECACHE = [
   './index.html',
   './manifest.json',
-  './images/inn-room.png',
-  './images/town.png',
-  './images/region.png',
+  './images/inn-room.webp',
+  './images/town.webp',
+  './images/region.webp',
   './images/icon-192.png',
   './images/icon-512.png',
 ];
