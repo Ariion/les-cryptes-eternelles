@@ -3418,6 +3418,8 @@ var Integrity = {
     if (d.potions != null) d.potions = _clampNum(d.potions, 0, 99, 0);
     if (d.mana != null)    d.mana    = _clampNum(d.mana, 0, 1e4, 0);
     if (d.manaMax != null) d.manaMax = _clampNum(d.manaMax, 0, 1e4, 0);
+    if (d.dodgeBonus != null)    d.dodgeBonus    = _clampNum(d.dodgeBonus, 0, 1, 0);
+    if (d.itemLifesteal != null) d.itemLifesteal = _clampNum(d.itemLifesteal, 0, 1, 0);
     if (Array.isArray(d.inventory) && d.inventory.length > 8) d.inventory = d.inventory.slice(0,8);
     return d;
   }
@@ -3449,6 +3451,7 @@ State.saveRun = function() {
       kills: State.kills, xp: State.xp, level: State.level,
       potions: State.potions, regenPerFight: State.regenPerFight,
       critBonus: State.critBonus, fleeBonus: State.fleeBonus,
+      dodgeBonus: State.dodgeBonus, itemLifesteal: State.itemLifesteal,
       _zoneMod: State._zoneMod, _currentZone: State._currentZone,
       inventory: State.inventory || [],
       equipped: State.equipped || {},
@@ -5743,7 +5746,7 @@ var Combat = (function(){
       // IA ennemi simple
       var action = Math.random();
       // Esquive (bonus méta + équipement)
-      var _dodge = (Meta.bonuses.dodge||0) + (State.dodgeBonus||0);
+      var _dodge = Math.min(0.9, (Meta.bonuses.dodge||0) + (State.dodgeBonus||0)); // plafonné à 90%
       if (_dodge > 0 && Math.random() < _dodge) {
         log(T('cl.dodge'),'player');
         turnLocked=false; setButtons(true); return;
@@ -7834,6 +7837,7 @@ Rooms.shopBuy = function(idx) {
   // If item has a slot → add to inventory; otherwise apply effect
   if (item.slot) {
     State.inventory = State.inventory || [];
+    item = Object.assign({}, item); // cloner pour éviter les références partagées entre achats
     if (State.inventory.length < 8) {
       State.inventory.push(item);
     } else {
@@ -9916,10 +9920,9 @@ var App = {
     State.bag = []; State.inventory = [];
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
-    State.fleeBonus = 0;
+    State.fleeBonus = 0; State.dodgeBonus = 0; State.itemLifesteal = 0;
     State._adReviveUsed = false;
     State._adGoldUsed = false;
-    State._adReviveUsed = false;
     State._adChestUsed = false;
     State._adShopUsed = false;
     State._adShopFreeNext = false;
