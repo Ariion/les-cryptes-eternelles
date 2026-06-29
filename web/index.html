@@ -7974,6 +7974,13 @@ function updateMapHpBar() {
 // ── DUNGEON MAP ───────────────────────────────────────────────────
 // Facteur global d'or gagné en combat (ajuster pour l'équilibrage économique)
 var GOLD_FACTOR = 0.5;
+// Difficulté de zone — rampe DOUCE (remplace l'ancienne courbe explosive de PV).
+// Sert au scaling relatif au joueur dans startCombat (TTK borné).
+var ZONE_DIFF = {
+  grottes:1.0, foret:1.12, ruines:1.24, port:1.36, marais:1.48, pics:1.6,
+  volcan:1.74, cryptes:1.9, chateau_maudit:2.05, cite_oubliee:2.2,
+  gouffre_astral:2.4, cryptes_profondes:2.6,
+};
 var DungeonMap = (function() {
   var mc, mctx, W, H;
   var torchT = 0;
@@ -8440,14 +8447,29 @@ var DungeonMap = (function() {
         if (!pool.length) pool = ENEMIES.filter(function(e){ return !e.boss; });
         var enemyData = pool[Math.floor(Math.random()*pool.length)];
         var zm = State._zoneMod || { hpMult:1, atkMult:1, defMult:1, goldMult:1 };
-        var floorBonus = 1 + ((State.floor||1)-1) * 0.2; // +20% par étage
-        var bossBonus  = type === 'boss'  ? 3.5 : 1;  // boss = ×3.5 en plus du scaling
-        var eliteBonus = type === 'elite' ? 1.8 : 1;
+        // ── ÉQUILIBRAGE RELATIF AU JOUEUR (TTK borné) ──────────────────
+        // L'ancienne courbe de PV était exponentielle (×1 → ×15000) alors que les
+        // dégâts du joueur n'augmentent qu'additivement → ennemis-éponges injouables.
+        // On dimensionne désormais PV/dégâts ennemis PAR RAPPORT au joueur : un
+        // nombre de coups cible (TTK) + des dégâts en % des PV max. Combats nerveux
+        // quel que soit le niveau/équipement, et plus jamais de boss à 200 coups.
+        var diff = (ZONE_DIFF[zone] || 1) * (1 + ((State.floor||1)-1) * 0.06);
+        var pAtk = Math.max(1, State.atk||1);
+        var pMax = Math.max(1, State.hpMax||100);
+        var eDef = Math.round(pAtk * 0.10 * (type==='boss'?1.3:1));
+        var pDmg = Math.max(1, pAtk - eDef);            // dégâts par coup du joueur
+        var targetHits = type==='boss' ? 12 : (type==='elite' ? 7 : 4);
+        var hpRamp = 1 + (diff - 1) * 0.3;              // léger allongement en zone tardive
+        var eHP  = Math.max(2, Math.round(pDmg * targetHits * hpRamp));
+        var dmgPct = type==='boss' ? 0.13 : (type==='elite' ? 0.15 : 0.11);
+        var eAtk = Math.min(Math.round(pMax * dmgPct * (1 + (diff-1)*0.15)), Math.round(pMax * 0.30));
+        eAtk = Math.max(1, eAtk);
+        var eGold = Math.round((enemyData.gold||5) * diff * (type==='boss'?5:(type==='elite'?1.6:1)) * GOLD_FACTOR);
         enemyData = Object.assign({}, enemyData, {
-          hp:   Math.round(enemyData.hp   * (zm.hpMult||1)  * floorBonus * bossBonus * eliteBonus),
-          atk:  Math.round(enemyData.atk  * (zm.atkMult||1) * floorBonus * (type==='boss'?2:1) * eliteBonus),
-          def:  Math.round(enemyData.def  * (zm.defMult||1) * floorBonus * (type==='boss'?1.5:1)),
-          gold: Math.round(enemyData.gold * (zm.goldMult||1) * floorBonus * (type==='boss'?5:eliteBonus) * GOLD_FACTOR),
+          hp:   eHP,
+          atk:  eAtk,
+          def:  eDef,
+          gold: eGold,
           boss: type==='boss',
           name: type==='boss' ? '☠ '+enemyData.name : (type==='elite' ? '★ '+enemyData.name : enemyData.name),
         });
