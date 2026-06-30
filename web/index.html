@@ -2343,6 +2343,55 @@ canvas#particles {
   background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(237,232,223,0.5);
 }
 #cge-modal-cancel:active { background:rgba(255,255,255,0.1); }
+
+/* ── MARCHÉ ─────────────────────────────────────────────────── */
+#market-screen { display:flex; flex-direction:column; overflow:hidden; }
+#market-header { display:flex; align-items:center; padding:10px 14px 6px; flex-shrink:0; border-bottom:1px solid rgba(201,165,80,0.12); gap:8px; }
+#market-back { font-size:20px; color:#C9A550; cursor:pointer; padding:4px 8px; }
+#market-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#C9A550; flex:1; text-align:center; }
+#market-gems-badge { font-size:13px; color:#7ecfff; display:flex; align-items:center; gap:4px; }
+#market-timer-bar { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(201,165,80,0.08); flex-shrink:0; gap:8px; }
+#market-timer-label { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(126,207,255,0.7); }
+#market-refresh-btn { font-size:11px; padding:5px 10px; border-radius:8px; background:rgba(126,207,255,0.1); border:1px solid rgba(126,207,255,0.3); color:#7ecfff; cursor:pointer; white-space:nowrap; }
+#market-refresh-btn:active { background:rgba(126,207,255,0.25); }
+#market-items { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 14px 20px; display:flex; flex-direction:column; gap:10px; }
+.market-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.1); cursor:pointer; transition:background .15s; }
+.market-item:active { background:rgba(201,165,80,0.08); }
+.market-item.sold { opacity:.3; pointer-events:none; }
+.market-item .mi-ico { font-size:28px; flex-shrink:0; }
+.market-item .mi-info { flex:1; }
+.market-item .mi-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
+.market-item .mi-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:2px; }
+.market-item .mi-price { font-size:13px; color:#C9A550; display:flex; align-items:center; gap:3px; white-space:nowrap; flex-shrink:0; }
+.market-item .mi-price::before { content:'🪙'; font-size:13px; }
+.market-item.cant-afford .mi-price { color:rgba(200,80,80,0.7); }
+
+/* ── GEM STORE overlay ───────────────────────────────────────── */
+#gem-store-overlay { display:none; position:absolute; inset:0; background:rgba(5,3,10,0.92); z-index:200; flex-direction:column; align-items:stretch; }
+#gem-store-overlay.show { display:flex; }
+#gem-store-header { display:flex; align-items:center; padding:12px 14px 8px; gap:8px; border-bottom:1px solid rgba(126,207,255,0.15); flex-shrink:0; }
+#gem-store-close { font-size:20px; color:#7ecfff; cursor:pointer; padding:4px 8px; }
+#gem-store-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#7ecfff; flex:1; text-align:center; }
+#gem-store-current { font-size:13px; color:#7ecfff; }
+#gem-store-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; overflow-y:auto; }
+.gem-pkg { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px; border-radius:12px; background:rgba(126,207,255,0.06); border:1px solid rgba(126,207,255,0.2); cursor:pointer; }
+.gem-pkg:active { background:rgba(126,207,255,0.16); }
+.gem-pkg .gp-amount { font-size:22px; font-family:'Cinzel',serif; color:#7ecfff; }
+.gem-pkg .gp-bonus { font-size:11px; color:#50c870; min-height:14px; }
+.gem-pkg .gp-price { font-size:13px; padding:5px 14px; border-radius:6px; background:rgba(126,207,255,0.12); border:1px solid rgba(126,207,255,0.25); color:#7ecfff; }
+#gem-store-debug { font-family:'Crimson Text',serif; font-style:italic; font-size:11px; color:rgba(255,200,80,0.5); text-align:center; padding:8px 16px; }
+
+/* ── QUÊTES QUOTIDIENNES (section dans le modal quêtes) ──────── */
+#dq-section { margin-top:12px; border-top:1px solid rgba(201,165,80,0.15); padding-top:10px; }
+#dq-section-title { font-family:'Cinzel',serif; font-size:12px; color:rgba(126,207,255,0.7); margin-bottom:8px; letter-spacing:.05em; }
+.dq-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.dq-info { flex:1; }
+.dq-label { font-family:'Crimson Text',serif; font-size:13px; color:#EDE8DF; }
+.dq-prog { font-size:11px; color:rgba(201,165,80,0.55); }
+.dq-bar-outer { height:4px; background:rgba(255,255,255,0.08); border-radius:2px; margin-top:3px; }
+.dq-bar-inner { height:4px; background:#7ecfff; border-radius:2px; transition:width .3s; }
+.dq-claim-btn { font-size:11px; padding:4px 9px; border-radius:6px; background:rgba(126,207,255,0.12); border:1px solid rgba(126,207,255,0.3); color:#7ecfff; cursor:pointer; white-space:nowrap; }
+.dq-claim-btn:disabled { opacity:.35; cursor:default; }
 </style>
 </head>
 <body>
@@ -2369,6 +2418,7 @@ canvas#particles {
         <div id="gh-hp-bar-outer"><div id="gh-hp-bar-inner" style="width:100%"></div></div>
         <div id="gh-hp-text">100/100</div>
         <div id="gh-gold">🪙 <span id="hud-gold-val">0</span></div>
+        <div id="gh-gems" onclick="GemStore.open()" style="cursor:pointer;font-size:12px;color:#7ecfff;padding:2px 6px;border-radius:6px;background:rgba(126,207,255,0.08);border:1px solid rgba(126,207,255,0.2)">💎 <span id="hud-gems-val">0</span></div>
       </div>
       <div id="gh-row3">
         <div id="gh-xp-bar-outer"><div id="gh-xp-bar-inner" style="width:0%"></div></div>
@@ -2385,6 +2435,11 @@ canvas#particles {
       <div id="gh-quest-content">
         <div id="gh-quest-title">📜 Quêtes en cours</div>
         <div id="gh-quest-list"></div>
+        <div id="dq-section">
+          <div id="dq-section-title">💎 QUÊTES QUOTIDIENNES</div>
+          <div id="dq-list"></div>
+          <div style="font-size:11px;color:rgba(126,207,255,0.4);font-style:italic;text-align:center;margin-top:6px" id="dq-reset-label"></div>
+        </div>
         <button id="gh-quest-close" onclick="document.getElementById('gh-quest-modal').classList.remove('show')">Fermer</button>
       </div>
     </div>
@@ -3204,6 +3259,11 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="town.taverne">🍺 Taverne</div>
       </div>
+      <!-- hotspot marché -->
+      <div class="hotspot" id="hs-town-market" onclick="Market.show('town-screen')" style="position:absolute;top:62%;left:50%;transform:translateX(-50%)">
+        <div class="hs-ring"></div>
+        <div class="hs-lbl" style="color:#7ecfff">🏺 Marché · 💎</div>
+      </div>
     </div>
 
     <!-- ── WORLD MAP (région) ── -->
@@ -3305,6 +3365,31 @@ canvas#particles {
         <div id="chest-grid"></div>
         <div id="chest-inv-grid" style="display:none"></div>
       </div>
+    </div>
+
+    <!-- ── MARCHÉ ── -->
+    <div id="market-screen" class="screen has-game-header">
+      <div id="market-header">
+        <div id="market-back" onclick="Market.leave()">←</div>
+        <div id="market-title">🏺 Marché des Ombres</div>
+        <div id="market-gems-badge">💎 <span id="market-gems-val">0</span></div>
+      </div>
+      <div id="market-timer-bar">
+        <span id="market-timer-label">Recharge dans 05:00:00</span>
+        <button id="market-refresh-btn" onclick="Market.forceRefresh()">🔄 Rafraîchir (💎 5)</button>
+      </div>
+      <div id="market-items"></div>
+    </div>
+
+    <!-- ── GEM STORE overlay (global, inside phone-screen) ── -->
+    <div id="gem-store-overlay">
+      <div id="gem-store-header">
+        <div id="gem-store-close" onclick="GemStore.close()">←</div>
+        <div id="gem-store-title">💎 Boutique de Gemmes</div>
+        <div id="gem-store-current">💎 <span id="gs-gems-val">0</span></div>
+      </div>
+      <div id="gem-store-debug">⚠ Mode test — les achats sont simulés</div>
+      <div id="gem-store-grid"></div>
     </div>
 
     <!-- Transition étage (overlay) -->
@@ -5659,6 +5744,7 @@ var Combat = (function(){
       if (typeof HUD !== 'undefined') HUD.updateGold();
       State.kills = (State.kills||0) + 1;
       Meta.totalKills = (Meta.totalKills||0) + 1; // compté à CHAQUE victoire (succès)
+      document.dispatchEvent(new CustomEvent('cge:kill'));
       gainXP(enemy.xp||10);
       if (typeof Achievements !== 'undefined') Achievements.check('kill');
       if (Meta.bonuses.regenMeta) {
@@ -6292,6 +6378,7 @@ var Rooms = {
     var goldGain = e.gold || 0;
     State.gold = (State.gold||0) + goldGain;
     Meta.totalGold = (Meta.totalGold||0) + goldGain;
+    if (goldGain > 0) document.dispatchEvent(new CustomEvent('cge:gold', {detail: goldGain}));
     State._lastCombatGold = goldGain; // base pour la pub ×2
     if (typeof HUD !== 'undefined') HUD.updateGold();
     document.getElementById('loot-gold-val').textContent = '+'+goldGain;
@@ -7556,6 +7643,9 @@ var Meta = {
   tutoMap: false,
   tutoCombat: false,
   chest: [],          // persistent cross-run storage (max 20 items)
+  gems: 0,
+  market: null,       // { stock:[{idx,price,sold}], lastRefresh:timestamp }
+  dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
   load: function() {
@@ -7579,6 +7669,9 @@ var Meta = {
       Meta.achievements    = d.achievements||{};
       Meta.tutoMap         = d.tutoMap||false;
       Meta.tutoCombat      = d.tutoCombat||false;
+      Meta.gems            = d.gems||0;
+      Meta.market          = d.market||null;
+      Meta.dailyQuests     = d.dailyQuests||{};
     } catch(e){}
   },
 
@@ -7601,6 +7694,9 @@ var Meta = {
       achievements:   Meta.achievements,
       tutoMap:        Meta.tutoMap,
       tutoCombat:     Meta.tutoCombat,
+      gems:           Meta.gems,
+      market:         Meta.market,
+      dailyQuests:    Meta.dailyQuests,
     };
     localStorage.setItem('cge_meta', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
@@ -8032,6 +8128,7 @@ var MEMORY_FRAGMENTS = [
 
 function advanceFloor() {
   State.floor = (State.floor||1) + 1;
+  document.dispatchEvent(new CustomEvent('cge:floor', {detail: State.floor}));
   var labels = ['I','II','III','IV','V','VI'];
   var ft = document.getElementById('floor-transition');
   document.getElementById('ft-num').textContent = labels[State.floor-1]||String(State.floor);
@@ -10071,6 +10168,277 @@ window.addEventListener('load', function(){
   CloudSync.init();
   runIntro();
 });
+
+// ── MARKET ────────────────────────────────────────────────────
+var Market = (function(){
+  var REFRESH_INTERVAL = 18000; // 5h en secondes
+  var FORCE_COST = 5;
+  var STOCK_SIZE = 6;
+  var _from = 'town-screen';
+  var _timerInterval = null;
+
+  function _today() { var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+  function _generate() {
+    var pool = SHOP_POOL.slice();
+    // Mélange Fisher-Yates
+    for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
+    var stock = pool.slice(0, STOCK_SIZE).map(function(item, i){
+      // Prix marché : +20% à +50% vs shop (stock limité = prime)
+      var mult = 1.2 + Math.random()*0.3;
+      return { idx: SHOP_POOL.indexOf(item), price: Math.round(item.cost * mult), sold: false };
+    });
+    Meta.market = { stock: stock, lastRefresh: Math.floor(Date.now()/1000) };
+    Meta.save();
+  }
+
+  function _secondsLeft() {
+    if (!Meta.market) return 0;
+    var elapsed = Math.floor(Date.now()/1000) - (Meta.market.lastRefresh||0);
+    return Math.max(0, REFRESH_INTERVAL - elapsed);
+  }
+
+  function _fmtTime(s) {
+    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+  }
+
+  function _updateTimer() {
+    var s = _secondsLeft();
+    var lbl = document.getElementById('market-timer-label');
+    if (!lbl) return;
+    if (s === 0) {
+      lbl.textContent = '✨ Stock actualisé !';
+      _generate();
+      _render();
+    } else {
+      lbl.textContent = 'Recharge dans ' + _fmtTime(s);
+    }
+  }
+
+  function _render() {
+    var cont = document.getElementById('market-items');
+    if (!cont) return;
+    cont.innerHTML = '';
+    var stock = (Meta.market && Meta.market.stock) || [];
+    stock.forEach(function(entry, i) {
+      var item = SHOP_POOL[entry.idx];
+      if (!item) return;
+      var canAfford = (State.gold||0) >= entry.price;
+      var div = document.createElement('div');
+      div.className = 'market-item rarity-'+(item.rarity||'common') +
+        (entry.sold ? ' sold' : (!canAfford ? ' cant-afford' : ''));
+      div.innerHTML =
+        '<span class="mi-ico">'+item.ico+'</span>'+
+        '<div class="mi-info">'+
+          '<div class="mi-name">'+item.name+'</div>'+
+          '<div class="mi-desc">'+item.desc+'</div>'+
+        '</div>'+
+        '<div class="mi-price">'+(entry.sold ? '<span style="color:rgba(255,255,255,0.25)">Vendu</span>' : entry.price)+'</div>';
+      if (!entry.sold) div.addEventListener('click', function(){ Market.buy(i); });
+      cont.appendChild(div);
+    });
+    // Gems display
+    var gv = document.getElementById('market-gems-val'); if(gv) gv.textContent = Meta.gems||0;
+  }
+
+  return {
+    show: function(from) {
+      _from = from || 'town-screen';
+      if (!Meta.market || _secondsLeft() === 0) _generate();
+      _render();
+      _updateTimer();
+      Nav.go('market-screen');
+      _timerInterval = setInterval(_updateTimer, 1000);
+    },
+    leave: function() {
+      clearInterval(_timerInterval);
+      Nav.go(_from);
+    },
+    buy: function(i) {
+      var stock = Meta.market && Meta.market.stock;
+      if (!stock || !stock[i] || stock[i].sold) return;
+      var entry = stock[i];
+      var item = SHOP_POOL[entry.idx];
+      if (!item) return;
+      if ((State.gold||0) < entry.price) return;
+      State.gold -= entry.price;
+      if (item.effect) { try { item.effect(); } catch(e){} }
+      else if (item.slot && item.stats) {
+        // Équipement : va dans l'inventaire
+        var newItem = { ico:item.ico, name:item.name, desc:item.desc, rarity:item.rarity, slot:item.slot, stats:item.stats };
+        State.inventory = State.inventory || [];
+        State.inventory.push(newItem);
+      }
+      entry.sold = true;
+      Meta.save();
+      State.saveRun();
+      if (typeof HUD !== 'undefined') HUD.updateGold();
+      if (typeof Sfx !== 'undefined' && Sfx.gold) Sfx.gold();
+      _render();
+    },
+    forceRefresh: function() {
+      if ((Meta.gems||0) < FORCE_COST) {
+        var lbl = document.getElementById('market-timer-label');
+        if (lbl) { lbl.style.color='#f87'; setTimeout(function(){lbl.style.color='';},600); }
+        return;
+      }
+      Meta.gems -= FORCE_COST;
+      Meta.save();
+      var gv = document.getElementById('hud-gems-val'); if(gv) gv.textContent = Meta.gems;
+      _generate();
+      _render();
+      _updateTimer();
+    },
+    updateGemsDisplay: function() {
+      var gv = document.getElementById('hud-gems-val'); if(gv) gv.textContent = Meta.gems||0;
+      var mgv = document.getElementById('market-gems-val'); if(mgv) mgv.textContent = Meta.gems||0;
+    },
+  };
+})();
+
+// ── DAILY QUESTS ──────────────────────────────────────────────
+var DailyQuests = (function(){
+  var DEFS = [
+    { id:'kills', label:'Tuer 10 ennemis',       target:10,  gems:3, icon:'⚔️' },
+    { id:'floor', label:'Atteindre l\'étage 5',  target:5,   gems:5, icon:'🗺️' },
+    { id:'gold',  label:'Gagner 150 pièces d\'or',target:150, gems:3, icon:'🪙' },
+  ];
+
+  function _today() {
+    var d = new Date();
+    return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  }
+
+  function _ensure() {
+    var dq = Meta.dailyQuests;
+    if (!dq || dq.date !== _today()) {
+      Meta.dailyQuests = { date: _today(), kills:{prog:0,claimed:false}, floor:{prog:0,claimed:false}, gold:{prog:0,claimed:false} };
+      Meta.save();
+    }
+  }
+
+  function _resetLabel() {
+    var now = new Date();
+    var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+    var diff = Math.floor((tomorrow - now)/1000);
+    var h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60);
+    return 'Réinitialisation dans ' + h + 'h ' + (m<10?'0':'')+m+'m';
+  }
+
+  return {
+    notify: function(event, value) {
+      _ensure();
+      var dq = Meta.dailyQuests;
+      var changed = false;
+      if (event === 'kill')  { if (!dq.kills.claimed) { dq.kills.prog = Math.min(10, (dq.kills.prog||0)+1); changed=true; } }
+      if (event === 'floor') { if (!dq.floor.claimed) { dq.floor.prog = Math.max(dq.floor.prog||0, value||0); changed=true; } }
+      if (event === 'gold')  { if (!dq.gold.claimed)  { dq.gold.prog  = Math.min(150,(dq.gold.prog||0)+(value||0)); changed=true; } }
+      if (changed) Meta.save();
+    },
+    claim: function(id) {
+      _ensure();
+      var dq = Meta.dailyQuests;
+      var def = DEFS.filter(function(d){ return d.id===id; })[0];
+      if (!def || !dq[id] || dq[id].claimed) return;
+      if ((dq[id].prog||0) < def.target) return;
+      dq[id].claimed = true;
+      Meta.gems = (Meta.gems||0) + def.gems;
+      Meta.save();
+      Market.updateGemsDisplay();
+      DailyQuests.renderInModal();
+    },
+    renderInModal: function() {
+      _ensure();
+      var cont = document.getElementById('dq-list');
+      var resetLbl = document.getElementById('dq-reset-label');
+      if (!cont) return;
+      var dq = Meta.dailyQuests;
+      cont.innerHTML = '';
+      DEFS.forEach(function(def) {
+        var entry = dq[def.id] || { prog:0, claimed:false };
+        var pct = Math.min(100, Math.round((entry.prog||0)/def.target*100));
+        var ready = (entry.prog||0) >= def.target && !entry.claimed;
+        var row = document.createElement('div');
+        row.className = 'dq-row';
+        row.innerHTML =
+          '<div class="dq-info">'+
+            '<div class="dq-label">'+def.icon+' '+def.label+'</div>'+
+            '<div class="dq-prog">'+(entry.prog||0)+' / '+def.target+(entry.claimed?' — ✓ Réclamé':'')+'</div>'+
+            '<div class="dq-bar-outer"><div class="dq-bar-inner" style="width:'+pct+'%"></div></div>'+
+          '</div>'+
+          '<button class="dq-claim-btn" '+(ready?'':'disabled')+' data-id="'+def.id+'">'+
+            (entry.claimed ? '✓' : '💎 +'+def.gems)+
+          '</button>';
+        if (ready) {
+          row.querySelector('.dq-claim-btn').addEventListener('click', function(){ DailyQuests.claim(def.id); });
+        }
+        cont.appendChild(row);
+      });
+      if (resetLbl) resetLbl.textContent = _resetLabel();
+    },
+  };
+})();
+
+// ── GEM STORE ─────────────────────────────────────────────────
+var GemStore = (function(){
+  var PKGS = [
+    { id:'g100',  gems:100,  price:'0,99 €', bonus:'' },
+    { id:'g500',  gems:500,  price:'3,99 €', bonus:'' },
+    { id:'g1200', gems:1200, price:'8,99 €', bonus:'+200 bonus' },
+    { id:'g2500', gems:2500, price:'16,99 €',bonus:'+500 bonus' },
+  ];
+
+  function _buildGrid() {
+    var grid = document.getElementById('gem-store-grid');
+    if (!grid || grid.dataset.built) return;
+    grid.dataset.built = '1';
+    PKGS.forEach(function(pkg){
+      var card = document.createElement('div');
+      card.className = 'gem-pkg';
+      card.innerHTML =
+        '<div class="gp-amount">💎 '+pkg.gems+'</div>'+
+        '<div class="gp-bonus">'+pkg.bonus+'</div>'+
+        '<div class="gp-price">'+pkg.price+'</div>';
+      card.addEventListener('click', function(){ GemStore._buy(pkg); });
+      grid.appendChild(card);
+    });
+  }
+
+  return {
+    open: function() {
+      _buildGrid();
+      var gv = document.getElementById('gs-gems-val'); if(gv) gv.textContent = Meta.gems||0;
+      document.getElementById('gem-store-overlay').classList.add('show');
+    },
+    close: function() {
+      document.getElementById('gem-store-overlay').classList.remove('show');
+    },
+    _buy: function(pkg) {
+      // TODO production : intégrer Google Play Billing / Stripe
+      Meta.gems = (Meta.gems||0) + pkg.gems;
+      Meta.save();
+      Market.updateGemsDisplay();
+      var gv = document.getElementById('gs-gems-val'); if(gv) gv.textContent = Meta.gems;
+      if (typeof Sfx !== 'undefined' && Sfx.gold) Sfx.gold();
+    },
+  };
+})();
+
+// ── Wiring quêtes quotidiennes dans le flux de jeu ────────────
+// Injection dans HUD.showQuests pour afficher les quêtes daily
+(function(){
+  var _orig = typeof HUD !== 'undefined' && HUD.showQuests;
+  if (_orig) {
+    HUD.showQuests = function() {
+      _orig.call(HUD);
+      DailyQuests.renderInModal();
+    };
+  }
+  document.addEventListener('cge:kill', function(){ DailyQuests.notify('kill'); });
+  document.addEventListener('cge:gold', function(e){ DailyQuests.notify('gold', e.detail||0); });
+  document.addEventListener('cge:floor', function(e){ DailyQuests.notify('floor', e.detail||0); });
+})();
 </script>
 
 <!-- Custom Modal -->
