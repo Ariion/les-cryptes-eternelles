@@ -6166,7 +6166,7 @@ var ITEMS = [
   // ── Légendaires rares (drop boss uniquement) ──────────────────────
   { ico:'⚔', name:'Lame de l\'Aube', nameEn:'Blade of Dawn',    slot:'arme',      stats:{atk:28},        desc:'+28 ATQ', descEn:'+28 ATK',          tier:3, rarity:'legendary' },
   { ico:'🥋', name:'Armure des Cryptes', nameEn:'Crypt Armour', slot:'plastron',  stats:{def:30,atk:8},  desc:'+30 DEF +8 ATQ', descEn:'+30 DEF +8 ATK', tier:3, rarity:'legendary' },
-  { ico:'💍', name:'Anneau du Chaos', nameEn:'Ring of Chaos',    slot:'collier',   stats:{atk:18,def:12}, desc:'+18 ATQ +12 DEF', descEn:'+18 ATK +12 DEF', tier:3, rarity:'mythic' },
+  { ico:'💍', name:'Anneau du Chaos', nameEn:'Ring of Chaos',    slot:'bague',     stats:{atk:18,def:12}, desc:'+18 ATQ +12 DEF', descEn:'+18 ATK +12 DEF', tier:3, rarity:'mythic' },
   // ── Consommables ─────────────────────────────────────────────────
   { ico:'🧪', name:'Potion de Force', nameEn:'Strength Potion',    combat:true, stats:{atk:6}, desc:'+6 ATQ (ce combat)', descEn:'+6 ATK (this combat)', rarity:'common', effect:function(){ State.atk+=6; setTimeout(function(){ State.atk=Math.max(0,State.atk-6); },30000); } },
   { ico:'💊', name:'Herbes Médicinales', nameEn:'Medicinal Herbs', combat:true, desc:'+25% PV', descEn:'+25% HP', rarity:'common', effect:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); } },
@@ -7747,7 +7747,7 @@ var SHOP_POOL = [
   { ico:'🔮', name:'Anneau de Puissance',desc:'+10 ATQ +30 PV · Épique',   cost:290, rarity:'epic',      slot:'bague', stats:{atk:10,hp:30} },
   { ico:'⭐', name:'Anneau Légendaire',  desc:'+12/+12/+50 · Légendaire',  cost:650, rarity:'legendary', slot:'bague', stats:{atk:12,def:12,hp:50} },
   // ── Mythique ──────────────────────────────────────────────────────
-  { ico:'💍', name:'Anneau du Chaos',     desc:'+15 ATQ +15 DEF · Mythique', cost:999, rarity:'mythic', slot:'collier', stats:{atk:15,def:15} },
+  { ico:'💍', name:'Anneau du Chaos',     desc:'+15 ATQ +15 DEF · Mythique', cost:999, rarity:'mythic', slot:'bague', stats:{atk:15,def:15} },
   // ── Église : potions, sorts, parchemins ──────────────────────────
   { ico:'🧴', name:'Petite Potion',       desc:'+1 Potion',         cost:12,  rarity:'common',    slot:'eglise', effect:function(){ State.potions=(State.potions||0)+1; } },
   { ico:'💊', name:'Grande Potion',       desc:'+2 Potions',        cost:22,  rarity:'uncommon',  slot:'eglise', effect:function(){ State.potions=(State.potions||0)+2; } },
