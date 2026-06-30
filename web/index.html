@@ -198,7 +198,9 @@ canvas#particles {
 @keyframes breathe { 0%,100%{opacity:0.15;} 50%{opacity:0.65;} }
 
 /* ── MAIN MENU ───────────────────────────────────────────────── */
-#main-menu { background:#06050f; justify-content:flex-start; }
+#main-menu { background:#06050f; justify-content:flex-start; align-items:center; }
+
+/* ── MENU HERO — visible + restructuré ─────────────────────── */
 .lang-screen-layout { flex-direction:column; align-items:center; justify-content:center; background:#0a0608; gap:32px; }
 #menu-bg {
   position:absolute; inset:0;
@@ -208,29 +210,72 @@ canvas#particles {
     #06050f;
 }
 #menu-hero {
-  width:100%; flex:0 0 52%;
+  width:100%; flex:0 0 54%;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   position:relative; z-index:2;
-  visibility:hidden; /* le visuel de fond porte déjà le titre — on garde l'espace */
-  padding-top:clamp(28px,5vh,48px);
+  visibility:visible;
+  padding-top:clamp(32px,6vh,56px);
 }
-#menu-eyebrow { font-family:'Cinzel',serif; font-size:9px; letter-spacing:6px; color:rgba(201,165,80,0.4); text-transform:uppercase; margin-bottom:8px; }
-#menu-t-cryptes { font-family:'Cinzel Decorative',serif; font-size:clamp(36px,9vw,48px); font-weight:700; color:#C9A550; text-shadow:0 0 50px rgba(201,165,80,0.3); line-height:1; }
-#menu-t-eternelles { font-family:'Cinzel',serif; font-size:clamp(15px,4vw,20px); font-weight:400; letter-spacing:6px; color:#EDE8DF; margin-top:3px; text-transform:uppercase; }
-.menu-deco { display:flex; align-items:center; gap:12px; margin:14px 0 0; }
-.menu-deco .bar { width:44px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.3)); }
-.menu-deco .bar.r { background:linear-gradient(270deg,transparent,rgba(201,165,80,0.3)); }
-.menu-deco .gem { color:rgba(201,165,80,0.5); font-size:10px; }
+#menu-eyebrow {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:5px;
+  color:rgba(201,165,80,0.55); text-transform:uppercase; margin-bottom:14px;
+}
+/* ornement ❖ ❖ ❖ au-dessus du titre */
+#menu-ornament-top {
+  display:flex; align-items:center; gap:8px; margin-bottom:10px;
+}
+#menu-ornament-top span { color:#00D4E8; font-size:9px; opacity:0.8; }
+/* titre principal */
+#menu-t-cryptes {
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(30px,8vw,42px); font-weight:700;
+  color:#EDE8DF;
+  text-shadow:0 2px 24px rgba(0,212,232,0.08);
+  line-height:1.1; text-align:center;
+}
+#menu-t-eternelles {
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(30px,8vw,42px); font-weight:700;
+  color:#EDE8DF;
+  text-shadow:0 2px 24px rgba(0,212,232,0.08);
+  line-height:1.1; text-align:center; margin-top:0;
+}
+/* ornement ✦ ✦ ✦ en-dessous */
+.menu-deco {
+  display:flex; align-items:center; gap:10px; margin:16px 0 0;
+}
+.menu-deco .bar { width:36px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.25)); }
+.menu-deco .bar.r { background:linear-gradient(270deg,transparent,rgba(201,165,80,0.25)); }
+.menu-deco .gem { color:rgba(201,165,80,0.6); font-size:9px; }
 #menu-stats { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.3); margin-top:8px; min-height:18px; }
 #menu-btns {
-  width:100%; flex:0 0 48%;
+  width:100%; flex:0 0 46%;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  padding:0 28px clamp(16px,4vh,36px); gap:10px;
+  padding:0 32px clamp(16px,4vh,32px); gap:12px;
   position:relative; z-index:2;
 }
-#menu-footer { position:absolute; bottom:9px; font-family:'Cinzel',serif; font-size:8px; letter-spacing:2px; color:rgba(201,165,80,0.15); z-index:2; }
-#menu-aar-logo { position:absolute; top:12px; right:12px; z-index:3; opacity:0.6; }
-#menu-aar-img { height:clamp(26px,5vh,34px); width:auto; }
+/* JOUER — cyan glow (bouton primaire menu) */
+#menu-btns .btn:first-child {
+  background:transparent;
+  border:1px solid #00D4E8;
+  color:#00D4E8;
+  box-shadow:0 0 16px rgba(0,212,232,0.18), inset 0 0 12px rgba(0,212,232,0.04);
+  justify-content:center;
+}
+#menu-btns .btn:first-child:active { box-shadow:0 0 28px rgba(0,212,232,0.35); }
+/* PARAMÈTRES & SUCCÈS — sombre discret */
+#menu-btns .btn:not(:first-child) {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(237,232,223,0.18);
+  color:rgba(237,232,223,0.75);
+  justify-content:center;
+}
+#menu-btns .btn:not(:first-child):active { border-color:rgba(237,232,223,0.4); }
+/* cache les icones dans le menu principal */
+#menu-btns .btn .ico { display:none; }
+#menu-footer { position:absolute; bottom:9px; font-family:'Cinzel',serif; font-size:8px; letter-spacing:3px; color:rgba(201,165,80,0.2); z-index:2; }
+#menu-aar-logo { position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:3; }
+#menu-aar-img { display:none; } /* remplacé par le texte eyebrow */
 
 /* ── BOUTONS COMMUNS ─────────────────────────────────────────── */
 .btn {
@@ -1728,7 +1773,7 @@ canvas#particles {
   background:rgba(255,255,255,0.08); position:relative; transition:background 0.25s;
   -webkit-tap-highlight-color:transparent; flex-shrink:0;
 }
-.st-toggle.on { background:linear-gradient(90deg,#7B3FA0,#C9A550); }
+.st-toggle.on { background:linear-gradient(90deg,#007fa8,#00D4E8); box-shadow:0 0 10px rgba(0,212,232,0.3); }
 .st-toggle::after {
   content:''; position:absolute; top:3px; left:3px;
   width:22px; height:22px; border-radius:50%;
@@ -1736,12 +1781,71 @@ canvas#particles {
 }
 .st-toggle.on::after { transform:translateX(24px); }
 .st-reset-btn {
-  width:100%; padding:14px; border-radius:10px; border:none; cursor:pointer;
-  background:rgba(180,30,30,0.15); border:1px solid rgba(200,50,50,0.3);
-  font-family:'Cinzel',serif; font-size:12px; color:rgba(220,100,100,0.8);
-  transition:all 0.15s; -webkit-tap-highlight-color:transparent; letter-spacing:1px;
+  width:100%; padding:16px; border-radius:10px; border:none; cursor:pointer;
+  background:rgba(160,20,20,0.2); border:1px solid rgba(200,50,50,0.5);
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:2px;
+  color:rgba(240,120,120,0.95); text-transform:uppercase;
+  transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+  box-shadow:0 0 16px rgba(200,30,30,0.12);
 }
-.st-reset-btn:active { transform:scale(0.98); }
+.st-reset-btn:active { transform:scale(0.98); background:rgba(180,30,30,0.3); }
+
+/* ── SETTINGS — back text style ─────────────────────────────── */
+#st-back { font-family:'Cinzel',serif; font-size:11px; letter-spacing:1px; color:#C9A550;
+  background:none; border:none; width:auto; padding:4px 0; gap:4px; display:flex; align-items:center; }
+
+/* ── SUCCÈS SCREEN ───────────────────────────────────────────── */
+#achievements-screen { background:#06050f; flex-direction:column; align-items:stretch; justify-content:flex-start; }
+#ach-screen-header {
+  display:flex; align-items:center; padding:18px 20px 10px; gap:14px;
+  flex-shrink:0; border-bottom:1px solid rgba(201,165,80,0.1);
+}
+#ach-back-btn {
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:1px;
+  color:#C9A550; background:none; border:none; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; padding:4px 0;
+}
+#ach-back-btn:active { opacity:0.6; }
+#ach-screen-title {
+  font-family:'Cinzel',serif; font-size:15px; font-weight:700;
+  letter-spacing:3px; color:#EDE8DF; text-transform:uppercase; flex:1; text-align:center;
+}
+#ach-screen-progress-wrap {
+  padding:14px 20px 8px; flex-shrink:0;
+}
+#ach-screen-progress-label {
+  font-family:'Crimson Text',serif; font-style:italic;
+  font-size:12px; color:rgba(201,165,80,0.45); text-align:center; margin-bottom:6px;
+}
+#ach-screen-progress-bar {
+  height:3px; background:rgba(201,165,80,0.12); border-radius:2px; overflow:hidden;
+}
+#ach-screen-progress-fill {
+  height:100%; background:linear-gradient(90deg,#C9A550,#f0cc70); border-radius:2px; transition:width .4s;
+}
+#ach-screen-list {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:12px 16px 30px; display:flex; flex-direction:column; gap:8px;
+  scrollbar-width:none;
+}
+#ach-screen-list::-webkit-scrollbar { display:none; }
+.ach-srow {
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+  border-radius:10px; background:rgba(255,255,255,0.025);
+  border:1px solid rgba(201,165,80,0.08);
+  border-left:3px solid rgba(201,165,80,0.5);
+  transition:border-color .2s;
+}
+.ach-srow.ach-srow-done { border-left-color:#C9A550; }
+.ach-srow.ach-srow-locked { opacity:0.4; }
+.ach-srow-ico { font-size:24px; flex-shrink:0; width:32px; text-align:center; }
+.ach-srow-info { flex:1; }
+.ach-srow-title {
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700;
+  color:#EDE8DF; letter-spacing:.5px; text-transform:uppercase;
+}
+.ach-srow-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:2px; }
+.ach-srow-check { color:#C9A550; font-size:14px; flex-shrink:0; }
 .st-version { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.2); text-align:center; margin-top:auto; padding-bottom:20px; }
 
 /* critiques visuels */
@@ -2489,11 +2593,14 @@ canvas#particles {
         <img src="images/aardesign-logo.png" id="menu-aar-img" alt="aardesign" onerror="this.style.display='none'">
       </div>
       <div id="menu-hero">
-        <div id="menu-eyebrow">Présente</div>
-        <div id="menu-t-cryptes">Cryptes</div>
-        <div id="menu-t-eternelles">Éternelles</div>
+        <div id="menu-eyebrow" data-i18n="menu.studio">Atelier Aardesign</div>
+        <div id="menu-ornament-top">
+          <span>❖</span><span>❖</span><span>❖</span>
+        </div>
+        <div id="menu-t-cryptes" data-i18n="menu.title1">Les Cryptes</div>
+        <div id="menu-t-eternelles" data-i18n="menu.title2">Éternelles</div>
         <div class="menu-deco">
-          <div class="bar"></div><div class="gem">✦</div><div class="bar r"></div>
+          <div class="bar"></div><div class="gem">✦</div><div class="gem">✦</div><div class="gem">✦</div><div class="bar r"></div>
         </div>
         <div id="menu-stats"></div>
       </div>
@@ -2514,7 +2621,7 @@ canvas#particles {
         <button id="btn-menu-achievements" class="btn btn-secondary" onclick="Achievements.showAll()"><span class="ico">🏆</span><span data-i18n="menu.achievements">Succès</span></button>
         <button id="btn-menu-settings" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
       </div>
-      <div id="menu-footer">AARDESIGN · LES CRYPTES ÉTERNELLES · V1</div>
+      <div id="menu-footer">V0.1-INDIE-ALPHA</div>
     </div>
 
     <!-- ── PROFILS ── -->
@@ -3365,6 +3472,19 @@ canvas#particles {
         <div id="chest-grid"></div>
         <div id="chest-inv-grid" style="display:none"></div>
       </div>
+    </div>
+
+    <!-- ── SUCCÈS ── -->
+    <div id="achievements-screen" class="screen">
+      <div id="ach-screen-header">
+        <button id="ach-back-btn" onclick="Nav.go('main-menu')">&larr; <span data-i18n="misc.back">Retour</span></button>
+        <div id="ach-screen-title">🏆 <span data-i18n="ach.title">Succès</span></div>
+      </div>
+      <div id="ach-screen-progress-wrap">
+        <div id="ach-screen-progress-label"></div>
+        <div id="ach-screen-progress-bar"><div id="ach-screen-progress-fill"></div></div>
+      </div>
+      <div id="ach-screen-list"></div>
     </div>
 
     <!-- ── MARCHÉ ── -->
@@ -9423,22 +9543,22 @@ var Achievements = (function(){
       var u = !!done[a.id];
       var title = (CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title);
       var desc  = (CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc);
-      return '<div class="ach-row'+(u?' ach-done':'')+'">'+
-        '<span class="ach-ico">'+(u ? a.ico : '🔒')+'</span>'+
-        '<div class="ach-info">'+
-          '<div class="ach-title">'+title+'</div>'+
-          '<div class="ach-desc">'+desc+'</div>'+
+      return '<div class="ach-srow'+(u?' ach-srow--done':'')+'">'+
+        '<span class="ach-srow-ico">'+(u ? a.ico : '🔒')+'</span>'+
+        '<div class="ach-srow-info">'+
+          '<div class="ach-srow-title">'+title+'</div>'+
+          '<div class="ach-srow-desc">'+desc+'</div>'+
         '</div>'+
-        (u ? '<span class="ach-check">✓</span>' : '')+
+        (u ? '<span class="ach-srow-check">✓</span>' : '')+
       '</div>';
     }).join('');
-    var html =
-      '<div class="ach-progress-wrap">'+
-        '<div class="ach-progress-label">'+count+' / '+total+' '+T('ach.unlocked')+'</div>'+
-        '<div class="ach-progress-bar"><div class="ach-progress-fill" style="width:'+pct+'%"></div></div>'+
-      '</div>'+
-      '<div class="ach-list">'+rows+'</div>';
-    CGEModal.show({ title: '🏆 '+T('ach.title'), text: '', html: html, okLabel: T('misc.close') });
+    var labelEl = document.getElementById('ach-screen-progress-label');
+    var fillEl  = document.getElementById('ach-screen-progress-fill');
+    var listEl  = document.getElementById('ach-screen-list');
+    if (labelEl) labelEl.textContent = count + ' / ' + total + ' ' + T('ach.unlocked');
+    if (fillEl)  fillEl.style.width = pct + '%';
+    if (listEl)  listEl.innerHTML = rows;
+    Nav.go('achievements-screen');
   }
 
   return { check: check, showAll: showAll };
