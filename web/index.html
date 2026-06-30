@@ -5177,6 +5177,12 @@ var Nav = {
         // Relancer le rendu de la carte (figé en quittant l'écran) sans régénérer les nœuds
         if (typeof DungeonMap !== 'undefined' && DungeonMap.resume) DungeonMap.resume();
       }
+      // hero-screen = équipement + guilde combinés : toujours rafraîchir les DEUX
+      // (sinon entrer par la guilde affichait un équipement vide / périmé).
+      if (id === 'hero-screen') {
+        if (typeof EquipScreen !== 'undefined' && EquipScreen.refresh) EquipScreen.refresh();
+        if (typeof Meta !== 'undefined' && Meta.buildScreen) Meta.buildScreen();
+      }
       if (typeof Embers !== 'undefined') {
         if (id==='dungeon-map'||id==='inn-room'||id==='combat-screen') Embers.startFor(id);
         else Embers.stop();
@@ -6212,10 +6218,9 @@ function getSlotLabel(slot) {
   return (CGE_LANG==='en' ? SLOT_LABELS_EN[slot] : SLOT_LABELS[slot]) || slot;
 }
 
-// Compare les stats d'un objet avec ce qui est équipé dans son slot.
-// Renvoie un HTML (titre + pastilles vert/rouge). Partagé inventaire + boutique.
-function buildCompareHtml(item, slot) {
-  var equipped = (State.equipped||{})[slot];
+// Compare les stats d'un objet vs UN slot équipé précis. Renvoie un bloc HTML.
+function _compareOne(item, equipSlot, title) {
+  var equipped = (State.equipped||{})[equipSlot];
   var ns = item.stats||{}, es = (equipped && equipped.stats)||{};
   var rows = [];
   STAT_ORDER.forEach(function(k){
@@ -6226,11 +6231,20 @@ function buildCompareHtml(item, slot) {
     var val = (num>0?'+':'') + num + (m.pct?'%':'');
     rows.push('<span class="eq-cmp '+(num>0?'cmp-up':'cmp-down')+'">'+m.ico+' '+val+' '+(CGE_LANG==='en'?m.en:m.fr)+'</span>');
   });
-  var title;
-  if (!equipped) title = (CGE_LANG==='en'?'vs empty slot':'vs emplacement vide');
-  else if (!rows.length) return '<div class="eq-cmp-title">'+(CGE_LANG==='en'?'Identical to equipped':'Identique à l\'équipé')+'</div>';
-  else title = (CGE_LANG==='en'?'vs equipped':'vs équipé');
-  return '<div class="eq-cmp-title">'+title+'</div><div class="eq-cmp-row">'+rows.join('')+'</div>';
+  var lbl = title || (equipped ? (CGE_LANG==='en'?'vs equipped':'vs équipé')
+                               : (CGE_LANG==='en'?'vs empty slot':'vs emplacement vide'));
+  if (equipped && !rows.length) return '<div class="eq-cmp-title">'+lbl+' · '+(CGE_LANG==='en'?'identical':'identique')+'</div>';
+  return '<div class="eq-cmp-title">'+lbl+'</div><div class="eq-cmp-row">'+rows.join('')+'</div>';
+}
+
+// Compare un objet avec l'équipement actuel. Les anneaux (slot 'bague') sont
+// comparés aux DEUX bagues équipées (gauche + droite). Partagé inventaire + boutique.
+function buildCompareHtml(item, slot) {
+  if (slot === 'bague') {
+    return _compareOne(item, 'bague_gauche', CGE_LANG==='en'?'vs left ring':'vs bague gauche')
+         + _compareOne(item, 'bague_droite', CGE_LANG==='en'?'vs right ring':'vs bague droite');
+  }
+  return _compareOne(item, slot, null);
 }
 
 // Stats secondaires « façon MMORPG » : à haut niveau, les objets gagnent des
@@ -8771,17 +8785,11 @@ var EquipScreen = (function() {
     document.getElementById('eq-detail-overlay').classList.remove('open');
   }
 
-  function detailEquip() {
-    if (!_detail || _detail.src !== 'inv') return;
+  // Équipe réellement l'objet courant (_detail) dans un slot précis.
+  function _doEquip(targetSlot) {
     var item = _detail.item;
     var inv  = State.inventory || [];
-    // Determine target slot
-    var targetSlot = item.slot;
-    if (targetSlot === 'bague') {
-      targetSlot = (!State.equipped.bague_gauche) ? 'bague_gauche' : 'bague_droite';
-    }
-    // If slot occupied, swap to inventory
-    if (State.equipped[targetSlot]) {
+    if (State.equipped[targetSlot]) {           // slot occupé → renvoyer l'ancien au sac
       var old = State.equipped[targetSlot];
       applyItemStats(old, -1);
       inv.splice(_detail.idx, 1, old);
@@ -8795,6 +8803,31 @@ var EquipScreen = (function() {
     closeDetail();
     _refreshSlots();
     if (typeof State.saveRun === 'function') State.saveRun();
+  }
+
+  function detailEquip() {
+    if (!_detail || _detail.src !== 'inv') return;
+    var item = _detail.item;
+    // Anneaux : choisir quelle bague remplacer si les DEUX sont occupées
+    if (item.slot === 'bague') {
+      var lg = State.equipped.bague_gauche, rd = State.equipped.bague_droite;
+      if (!lg) { _doEquip('bague_gauche'); return; }
+      if (!rd) { _doEquip('bague_droite'); return; }
+      // les deux occupées → demander
+      var en = CGE_LANG === 'en';
+      CGEModal.show({
+        title: en ? 'Replace which ring?' : 'Remplacer quelle bague ?',
+        html: '<div style="text-align:left;font-size:12px;color:rgba(237,232,223,0.7)">'+
+              '💍 '+(en?'Left':'Gauche')+' : <b>'+lg.name+'</b> <span style="opacity:.6">'+_statSummary(lg)+'</span><br>'+
+              '💍 '+(en?'Right':'Droite')+' : <b>'+rd.name+'</b> <span style="opacity:.6">'+_statSummary(rd)+'</span></div>',
+        okLabel: '💍 '+(en?'Replace Left':'Remplacer gauche'),
+        cancelLabel: '💍 '+(en?'Replace Right':'Remplacer droite'),
+        onOk:     function(){ _doEquip('bague_gauche'); },
+        onCancel: function(){ _doEquip('bague_droite'); }
+      });
+      return;
+    }
+    _doEquip(item.slot);
   }
 
   function detailRemove() {
