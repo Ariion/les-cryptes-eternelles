@@ -211,43 +211,12 @@ canvas#particles {
 }
 #menu-hero {
   width:100%; flex:0 0 54%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
   position:relative; z-index:2;
   visibility:visible;
-  padding-top:clamp(32px,6vh,56px);
+  padding-bottom:clamp(16px,3vh,28px);
 }
-#menu-eyebrow {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:5px;
-  color:rgba(201,165,80,0.55); text-transform:uppercase; margin-bottom:14px;
-}
-/* ornement ❖ ❖ ❖ au-dessus du titre */
-#menu-ornament-top {
-  display:flex; align-items:center; gap:8px; margin-bottom:10px;
-}
-#menu-ornament-top span { color:#00D4E8; font-size:9px; opacity:0.8; }
-/* titre principal */
-#menu-t-cryptes {
-  font-family:'Cinzel Decorative',serif;
-  font-size:clamp(30px,8vw,42px); font-weight:700;
-  color:#EDE8DF;
-  text-shadow:0 2px 24px rgba(0,212,232,0.08);
-  line-height:1.1; text-align:center;
-}
-#menu-t-eternelles {
-  font-family:'Cinzel Decorative',serif;
-  font-size:clamp(30px,8vw,42px); font-weight:700;
-  color:#EDE8DF;
-  text-shadow:0 2px 24px rgba(0,212,232,0.08);
-  line-height:1.1; text-align:center; margin-top:0;
-}
-/* ornement ✦ ✦ ✦ en-dessous */
-.menu-deco {
-  display:flex; align-items:center; gap:10px; margin:16px 0 0;
-}
-.menu-deco .bar { width:36px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.25)); }
-.menu-deco .bar.r { background:linear-gradient(270deg,transparent,rgba(201,165,80,0.25)); }
-.menu-deco .gem { color:rgba(201,165,80,0.6); font-size:9px; }
-#menu-stats { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.3); margin-top:8px; min-height:18px; }
+#menu-stats { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.3); min-height:18px; }
 #menu-btns {
   width:100%; flex:0 0 46%;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
@@ -2574,15 +2543,6 @@ canvas#particles {
         <img src="images/aardesign-logo.png" id="menu-aar-img" alt="aardesign" onerror="this.style.display='none'">
       </div>
       <div id="menu-hero">
-        <div id="menu-eyebrow" data-i18n="menu.studio">Atelier Aardesign</div>
-        <div id="menu-ornament-top">
-          <span>❖</span><span>❖</span><span>❖</span>
-        </div>
-        <div id="menu-t-cryptes" data-i18n="menu.title1">Les Cryptes</div>
-        <div id="menu-t-eternelles" data-i18n="menu.title2">Éternelles</div>
-        <div class="menu-deco">
-          <div class="bar"></div><div class="gem">✦</div><div class="gem">✦</div><div class="gem">✦</div><div class="bar r"></div>
-        </div>
         <div id="menu-stats"></div>
       </div>
       <!-- Google Account -->
@@ -7971,14 +7931,24 @@ Rooms._generateShopStock = function(category) {
   var pool = Rooms._shopPool(category).slice();
   for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
   Meta.shopStock = Meta.shopStock || {};
-  Meta.shopStock[category] = pool.slice(0, Rooms.SHOP_STOCK_SIZE).map(function(it){ return SHOP_POOL.indexOf(it); });
+  Meta.shopStock[category] = pool.slice(0, Rooms.SHOP_STOCK_SIZE).map(function(it){ return { idx: SHOP_POOL.indexOf(it), sold:false }; });
   Meta.save();
 };
 
+// Renvoie les objets du stock (clonés) avec _stockPos/_stockSold pour que
+// Rooms.shopBuy puisse marquer l'entrée vendue de façon persistante.
 Rooms._shopStockItems = function(category) {
   Meta.shopStock = Meta.shopStock || {};
   if (!Meta.shopStock[category] || !Meta.shopStock[category].length) Rooms._generateShopStock(category);
-  return Meta.shopStock[category].map(function(idx){ return SHOP_POOL[idx]; }).filter(function(it){ return !!it; });
+  return Meta.shopStock[category].map(function(entry, pos){
+    var it = entry && SHOP_POOL[entry.idx];
+    if (!it) return null;
+    var clone = Object.assign({}, it);
+    clone._stockCategory = category;
+    clone._stockPos = pos;
+    clone._stockSold = !!entry.sold;
+    return clone;
+  }).filter(function(it){ return !!it; });
 };
 
 Rooms.showShop = function(fromScreen, category) {
