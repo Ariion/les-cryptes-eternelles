@@ -1771,6 +1771,8 @@ canvas#particles {
 }
 #gld-back { font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer; padding: 4px 10px; -webkit-tap-highlight-color: transparent; }
 #gld-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550; letter-spacing: 1px; }
+#gld-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,165,80,0.1); margin: 0 16px 8px; flex-shrink: 0; }
+#gld-panel-records, #gld-panel-leaderboard { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 #gld-card {
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: 20px 16px; flex-shrink: 0; border-bottom: 1px solid rgba(201,165,80,0.1);
@@ -1795,6 +1797,64 @@ canvas#particles {
 .gld-row-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; }
 .gld-row-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5px; color: rgba(237,232,223,0.6); flex: 1; }
 .gld-row-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #C9A550; }
+
+/* Classement mondial */
+#gld-lb-sort { display: flex; gap: 8px; padding: 12px 16px 4px; flex-shrink: 0; }
+.gld-sort-btn {
+  flex: 1; padding: 8px; border-radius: 8px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15); color: rgba(237,232,223,0.5);
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+.gld-sort-btn.active { background: rgba(0,212,232,0.1); border-color: rgba(0,212,232,0.5); color: #00D4E8; }
+#gld-lb-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 10px 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+.gld-lb-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15); transition: background 0.15s;
+}
+.gld-lb-row:active { background: rgba(201,165,80,0.1); }
+.gld-lb-rank { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: rgba(201,165,80,0.5); width: 24px; flex-shrink: 0; text-align: center; }
+.gld-lb-ico { font-size: 20px; flex-shrink: 0; }
+.gld-lb-info { flex: 1; min-width: 0; }
+.gld-lb-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #EDE8DF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gld-lb-sub { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.5); }
+.gld-lb-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #00D4E8; flex-shrink: 0; }
+.gld-lb-msg { text-align: center; padding: 30px 16px; font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px; color: rgba(201,165,80,0.4); }
+
+/* Fiche détaillée d'un joueur du classement */
+#gld-detail-overlay {
+  display: none; position: absolute; inset: 0; z-index: 999; background: rgba(4,3,8,0.88);
+  align-items: flex-end; justify-content: center;
+}
+#gld-detail-overlay.show { display: flex; }
+#gld-detail-panel {
+  width: 100%; max-height: 82%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: linear-gradient(180deg, #100c1a, #07060f);
+  border-top: 1px solid rgba(201,165,80,0.3); border-radius: 18px 18px 0 0;
+  padding: 20px 20px 30px; position: relative;
+}
+#gld-detail-close {
+  position: absolute; top: 14px; right: 16px; font-size: 16px; color: rgba(237,232,223,0.5); cursor: pointer;
+}
+#gld-detail-avatar {
+  width: 56px; height: 56px; border-radius: 50%; font-size: 26px; margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.4);
+}
+#gld-detail-name { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #EDE8DF; text-align: center; }
+#gld-detail-sub { font-family: 'Crimson Text', serif; font-style: italic; font-size: 12px; color: rgba(201,165,80,0.55); text-align: center; margin-top: 2px; }
+#gld-detail-level { font-family: 'Cinzel', serif; font-size: 11px; color: #00D4E8; text-align: center; margin-top: 6px; }
+.gld-detail-section-lbl {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(201,165,80,0.5); margin: 16px 0 8px;
+}
+.gld-detail-item, .gld-detail-talent {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.12);
+  font-family: 'Cinzel', serif; font-size: 11px; color: #EDE8DF;
+}
+.gld-detail-item-ico { font-size: 18px; flex-shrink: 0; }
+.gld-detail-item-name { font-weight: 700; }
+.gld-detail-item-desc { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.5); margin-top: 1px; }
 
 /* ── SETTINGS ── */
 #settings-screen {
@@ -3132,13 +3192,42 @@ canvas#particles {
         <div id="gld-title">🏛 <span data-i18n="gld.title">Guilde</span></div>
         <div style="width:40px"></div>
       </div>
-      <div id="gld-card">
-        <div id="gld-avatar">🧑</div>
-        <div id="gld-name">Aventurier</div>
-        <div id="gld-sub"></div>
-        <div id="gld-level"></div>
+      <div id="gld-tabs">
+        <div class="chest-tab active" id="gld-tab-records" onclick="GuildScreen.tab('records')" data-i18n="gld.tab.records">Mes Records</div>
+        <div class="chest-tab" id="gld-tab-leaderboard" onclick="GuildScreen.tab('leaderboard')" data-i18n="gld.tab.leaderboard">Classement</div>
       </div>
-      <div id="gld-records"></div>
+
+      <div id="gld-panel-records">
+        <div id="gld-card">
+          <div id="gld-avatar">🧑</div>
+          <div id="gld-name">Aventurier</div>
+          <div id="gld-sub"></div>
+          <div id="gld-level"></div>
+        </div>
+        <div id="gld-records"></div>
+      </div>
+
+      <div id="gld-panel-leaderboard" style="display:none">
+        <div id="gld-lb-sort">
+          <button class="gld-sort-btn active" id="gld-sort-level" onclick="GuildScreen.sortLb('level')" data-i18n="gld.sort.level">Niveau</button>
+          <button class="gld-sort-btn" id="gld-sort-floor" onclick="GuildScreen.sortLb('bestFloor')" data-i18n="gld.sort.floor">Étage</button>
+        </div>
+        <div id="gld-lb-list"></div>
+      </div>
+
+      <div id="gld-detail-overlay" onclick="GuildScreen.closeDetail()">
+        <div id="gld-detail-panel" onclick="event.stopPropagation()">
+          <div id="gld-detail-close" onclick="GuildScreen.closeDetail()">✕</div>
+          <div id="gld-detail-avatar">🧑</div>
+          <div id="gld-detail-name"></div>
+          <div id="gld-detail-sub"></div>
+          <div id="gld-detail-level"></div>
+          <div class="gld-detail-section-lbl" data-i18n="gld.detail.equip">Équipement</div>
+          <div id="gld-detail-equip"></div>
+          <div class="gld-detail-section-lbl" data-i18n="gld.detail.talents">Talents</div>
+          <div id="gld-detail-talents"></div>
+        </div>
+      </div>
     </div>
 
     <!-- ── PARAMÈTRES ── -->
@@ -3650,6 +3739,7 @@ var Integrity = {
     d.totalKills = _clampNum(d.totalKills, 0, 1e7, 0);
     d.totalRuns  = _clampNum(d.totalRuns, 0, 1e5, 0);
     d.bestFloor  = _clampNum(d.bestFloor, 0, 6, 0);
+    d.bestLevel  = _clampNum(d.bestLevel, 1, 30, 1);
     d.rank       = _clampNum(d.rank, 0, 20, 0);
     d._align     = _clampNum(d._align, -5, 5, 0);
     var b = d.bonuses;
@@ -3835,7 +3925,7 @@ var Sfx = (function(){
     confirmReset: function() {
       CGEModal.confirm(T('reset.confirm.title'), T('reset.confirm.body'), function() {
         ['cge_meta','cge_run','cge_sfx','cge_vib','cge_par','cge_mus','cge_profiles','cge_active'].forEach(function(k){ localStorage.removeItem(k); });
-        Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0;
+        Meta.totalGold=0; Meta.totalKills=0; Meta.totalRuns=0; Meta.bestFloor=0; Meta.bestLevel=1;
         Meta.levels={}; Meta.bonuses={atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0};
         Meta.clearedZones={}; Meta.chest=[]; Meta.achievements={};
         State.hp=0; State.hpMax=0; State.name='Aventurier';
@@ -4841,10 +4931,21 @@ var STRINGS = {
     'gld.title': 'Guilde',
     'gld.rank': 'Rang Social',
     'gld.ach': 'Succès débloqués',
+    'gld.bestlevel': 'Meilleur niveau',
     'gld.best': 'Meilleur étage',
     'gld.kills': 'Ennemis vaincus',
     'gld.runs': 'Runs jouées',
     'gld.gold': 'Or amassé',
+    'gld.tab.records': 'Mes Records',
+    'gld.tab.leaderboard': 'Classement',
+    'gld.sort.level': 'Niveau',
+    'gld.sort.floor': 'Étage',
+    'gld.loading': 'Chargement...',
+    'gld.lb.empty': 'Aucun aventurier n\'a encore rejoint le classement.',
+    'gld.detail.equip': 'Équipement',
+    'gld.detail.talents': 'Talents',
+    'gld.detail.noequip': 'Aucun équipement.',
+    'gld.detail.notalents': 'Aucun talent débloqué.',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
     'misc.available': 'Disponible',
@@ -5237,10 +5338,21 @@ var STRINGS = {
     'gld.title': 'Guild',
     'gld.rank': 'Social Rank',
     'gld.ach': 'Achievements unlocked',
+    'gld.bestlevel': 'Best level',
     'gld.best': 'Best floor',
     'gld.kills': 'Enemies defeated',
     'gld.runs': 'Runs played',
     'gld.gold': 'Gold amassed',
+    'gld.tab.records': 'My Records',
+    'gld.tab.leaderboard': 'Leaderboard',
+    'gld.sort.level': 'Level',
+    'gld.sort.floor': 'Floor',
+    'gld.loading': 'Loading...',
+    'gld.lb.empty': 'No adventurer has joined the leaderboard yet.',
+    'gld.detail.equip': 'Equipment',
+    'gld.detail.talents': 'Talents',
+    'gld.detail.noequip': 'No equipment.',
+    'gld.detail.notalents': 'No talent unlocked.',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
     'misc.available': 'Available',
@@ -6000,7 +6112,9 @@ var Combat = (function(){
             // (totalKills est déjà incrémenté à chaque victoire — pas de double comptage)
             Meta.totalRuns  += 1;
             Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
+            Meta.bestLevel   = Math.max(Meta.bestLevel||1, State.level||1);
             Meta.save();
+            if (typeof CloudSync !== 'undefined' && CloudSync.pushLeaderboardEntry) CloudSync.pushLeaderboardEntry();
             if (typeof Achievements !== 'undefined') Achievements.check('zone');
             // Réinitialiser le floor pour le prochain donjon
             State._currentZone = null;
@@ -8161,6 +8275,7 @@ var Meta = {
   totalKills: 0,
   totalRuns: 0,
   bestFloor: 0,
+  bestLevel: 1,
   levels: {},
   bonuses: { atk:0, def:0, hp:0, potions:0, goldPct:0, crit:0, dodge:0, timerBonus:0, lifesteal:0, regenMeta:0, xpPct:0, startGold:0 },
   clearedZones: {},
@@ -8186,6 +8301,7 @@ var Meta = {
       Meta.totalKills  = d.totalKills||0;
       Meta.totalRuns   = d.totalRuns||0;
       Meta.bestFloor   = d.bestFloor||0;
+      Meta.bestLevel   = d.bestLevel||1;
       Meta.levels      = d.levels||{};
       var db = d.bonuses||{};
       Meta.bonuses = { atk:db.atk||0, def:db.def||0, hp:db.hp||0, potions:db.potions||0, goldPct:db.goldPct||0, crit:db.crit||0, dodge:db.dodge||0, timerBonus:db.timerBonus||0, lifesteal:db.lifesteal||0, regenMeta:db.regenMeta||0, xpPct:db.xpPct||0, startGold:db.startGold||0 };
@@ -8212,6 +8328,7 @@ var Meta = {
       totalKills:   Meta.totalKills,
       totalRuns:    Meta.totalRuns,
       bestFloor:    Meta.bestFloor,
+      bestLevel:    Meta.bestLevel,
       levels:       Meta.levels,
       bonuses:        Meta.bonuses,
       clearedZones:   Meta.clearedZones,
@@ -8287,6 +8404,9 @@ var Meta = {
 var GuildScreen = (function(){
   var RANK_NAMES = ['Inconnu','Connu','Respecté','Honoré','Légendaire'];
   var RANK_NAMES_EN = ['Unknown','Known','Respected','Honoured','Legendary'];
+  var EQUIP_SLOTS = ['arme','bouclier','heaume','plastron','gants','ceinture','jambieres','bottes','collier','bague_gauche','bague_droite'];
+  var _sort = 'level';
+  var _lbRows = [];
 
   function render() {
     var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
@@ -8304,6 +8424,7 @@ var GuildScreen = (function(){
     var rows = [
       { ico:'🏅', label:T('gld.rank'),    val: rankName },
       { ico:'🏆', label:T('gld.ach'),     val: achDone+' / '+achTotal },
+      { ico:'✨', label:T('gld.bestlevel'), val: Meta.bestLevel||1 },
       { ico:'🗻', label:T('gld.best'),    val: Meta.bestFloor||0 },
       { ico:'⚔',  label:T('gld.kills'),   val: Meta.totalKills||0 },
       { ico:'🔄', label:T('gld.runs'),    val: Meta.totalRuns||0 },
@@ -8319,14 +8440,113 @@ var GuildScreen = (function(){
     }
   }
 
+  function _nodeInfo(scope, nodeId) {
+    var trees = (typeof TALENT_TREES !== 'undefined' && TALENT_TREES[scope]) || {};
+    for (var key in trees) {
+      var branches = trees[key];
+      for (var b=0; b<branches.length; b++) {
+        for (var t=0; t<branches[b].nodes.length; t++) {
+          if (branches[b].nodes[t].id === nodeId) return branches[b].nodes[t];
+        }
+      }
+    }
+    return null;
+  }
+
+  function tab(t) {
+    var recTab = document.getElementById('gld-tab-records'), lbTab = document.getElementById('gld-tab-leaderboard');
+    var recPanel = document.getElementById('gld-panel-records'), lbPanel = document.getElementById('gld-panel-leaderboard');
+    if (recTab) recTab.classList.toggle('active', t==='records');
+    if (lbTab) lbTab.classList.toggle('active', t==='leaderboard');
+    if (recPanel) recPanel.style.display = t==='records' ? '' : 'none';
+    if (lbPanel) lbPanel.style.display = t==='leaderboard' ? '' : 'none';
+    if (t === 'leaderboard') loadLeaderboard();
+  }
+
+  function sortLb(key) {
+    _sort = key;
+    var lvlBtn = document.getElementById('gld-sort-level'), floorBtn = document.getElementById('gld-sort-floor');
+    if (lvlBtn) lvlBtn.classList.toggle('active', key==='level');
+    if (floorBtn) floorBtn.classList.toggle('active', key==='bestFloor');
+    loadLeaderboard();
+  }
+
+  function loadLeaderboard() {
+    var list = document.getElementById('gld-lb-list');
+    if (!list) return;
+    list.innerHTML = '<div class="gld-lb-msg">'+T('gld.loading')+'</div>';
+    if (typeof CloudSync === 'undefined' || !CloudSync.fetchLeaderboard) { list.innerHTML = '<div class="gld-lb-msg">'+T('gld.lb.empty')+'</div>'; return; }
+    CloudSync.fetchLeaderboard(_sort, function(rows){
+      _lbRows = rows || [];
+      if (!_lbRows.length) { list.innerHTML = '<div class="gld-lb-msg">'+T('gld.lb.empty')+'</div>'; return; }
+      list.innerHTML = _lbRows.map(function(row, i){
+        var r = RACES.find(function(x){ return x.id===row.race; });
+        var val = _sort === 'bestFloor' ? (row.bestFloor||0) : (row.level||1);
+        return '<div class="gld-lb-row" data-idx="'+i+'">'
+          + '<span class="gld-lb-rank">#'+(i+1)+'</span>'
+          + '<span class="gld-lb-ico">'+((r&&r.icon)||'🧑')+'</span>'
+          + '<div class="gld-lb-info"><div class="gld-lb-name">'+(row.name||'?').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</div>'
+          + '<div class="gld-lb-sub">'+(row.race||'?')+' · '+(row.cls||'?')+'</div></div>'
+          + '<span class="gld-lb-val">'+val+'</span>'
+          + '</div>';
+      }).join('');
+      list.querySelectorAll('.gld-lb-row').forEach(function(el){
+        el.addEventListener('click', function(){ openDetail(_lbRows[+el.dataset.idx]); });
+      });
+    });
+  }
+
+  function openDetail(entry) {
+    if (!entry) return;
+    var r = RACES.find(function(x){ return x.id===entry.race; });
+    var c = CLASSES.find(function(x){ return x.id===entry.cls; });
+    var avatarEl = document.getElementById('gld-detail-avatar'); if (avatarEl) avatarEl.textContent = (r&&r.icon)||'🧑';
+    var nameEl = document.getElementById('gld-detail-name'); if (nameEl) nameEl.textContent = entry.name||'?';
+    var subEl = document.getElementById('gld-detail-sub');
+    if (subEl) subEl.textContent = (r?(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name):(entry.race||'?')) + ' · ' + (c?(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name):(entry.cls||'?'));
+    var lvlEl = document.getElementById('gld-detail-level');
+    if (lvlEl) lvlEl.textContent = T('hud.level')+' '+(entry.level||1)+' · '+T('gld.best')+' '+(entry.bestFloor||0);
+
+    var eq = entry.equipped || {};
+    var eqHtml = EQUIP_SLOTS.map(function(s){ return eq[s]; }).filter(Boolean).map(function(it){
+      return '<div class="gld-detail-item"><span class="gld-detail-item-ico">'+(it.ico||'❔')+'</span>'
+        + '<div class="gld-detail-item-info"><div class="gld-detail-item-name">'+(CGE_LANG==='en'&&it.nameEn?it.nameEn:it.name)+'</div>'
+        + '<div class="gld-detail-item-desc">'+(CGE_LANG==='en'&&it.descEn?it.descEn:(it.desc||''))+'</div></div></div>';
+    }).join('');
+    var eqEl = document.getElementById('gld-detail-equip');
+    if (eqEl) eqEl.innerHTML = eqHtml || '<div class="gld-lb-msg">'+T('gld.detail.noequip')+'</div>';
+
+    var talents = entry.talents || { class:{}, race:{} };
+    function talentList(scope) {
+      var ids = Object.keys(talents[scope]||{}).filter(function(id){ return talents[scope][id]; });
+      return ids.map(function(id){
+        var n = _nodeInfo(scope, id);
+        if (!n) return '';
+        return '<div class="gld-detail-talent"><span>'+n.ico+'</span> '+(CGE_LANG==='en'&&n.nameEn?n.nameEn:n.name)+'</div>';
+      }).join('');
+    }
+    var talentsHtml = talentList('class') + talentList('race');
+    var talEl = document.getElementById('gld-detail-talents');
+    if (talEl) talEl.innerHTML = talentsHtml || '<div class="gld-lb-msg">'+T('gld.detail.notalents')+'</div>';
+
+    var overlay = document.getElementById('gld-detail-overlay');
+    if (overlay) overlay.classList.add('show');
+  }
+
+  function closeDetail() {
+    var overlay = document.getElementById('gld-detail-overlay');
+    if (overlay) overlay.classList.remove('show');
+  }
+
   function open(from) {
     State._heroFrom = from || 'town-screen';
+    tab('records');
     Nav.go('guild-screen');
   }
 
   function close() { Nav.go(State._heroFrom || 'town-screen'); }
 
-  return { render:render, open:open, close:close };
+  return { render:render, open:open, close:close, tab:tab, sortLb:sortLb, openDetail:openDetail, closeDetail:closeDetail };
 })();
 
 // ── BOUTIQUE ──────────────────────────────────────────────────────
@@ -10560,6 +10780,38 @@ var CloudSync = (function() {
     }).catch(function(e){ console.warn('[CGE] Firestore sync error:', e); });
   }
 
+  // Pousse un instantané public (nom, classe/race, meilleur niveau/étage,
+  // talents + équipement du run courant) vers la collection publique
+  // "leaderboard" — un seul document par joueur (écrasé à chaque appel).
+  function pushLeaderboardEntry() {
+    if (!_user || !_db) return;
+    try {
+      var entry = {
+        name: (State.name || 'Aventurier').toString().slice(0, 24),
+        race: State.race || 'Humain',
+        cls: State.cls || 'Guerrier',
+        level: Meta.bestLevel || 1,
+        bestFloor: Meta.bestFloor || 0,
+        talents: State.talents || { class:{}, race:{} },
+        equipped: State.equipped || {},
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      _db.collection('leaderboard').doc(_user.uid).set(entry)
+        .catch(function(e){ console.warn('[CGE] Leaderboard push error:', e); });
+    } catch(e) { console.warn('[CGE] Leaderboard push error:', e); }
+  }
+
+  // sortKey: 'level' ou 'bestFloor'. cb(rows) toujours appelé (même liste vide en cas d'échec).
+  function fetchLeaderboard(sortKey, cb) {
+    if (!_db) { cb([]); return; }
+    var key = sortKey === 'bestFloor' ? 'bestFloor' : 'level';
+    _db.collection('leaderboard').orderBy(key, 'desc').limit(50).get().then(function(snap){
+      var rows = [];
+      snap.forEach(function(doc){ rows.push(Object.assign({ id: doc.id }, doc.data())); });
+      cb(rows);
+    }).catch(function(e){ console.warn('[CGE] Leaderboard fetch error:', e); cb([]); });
+  }
+
   function _renderAccountUI() {
     var btn = document.getElementById('btn-google-signin');
     var info = document.getElementById('google-user-info');
@@ -10577,7 +10829,10 @@ var CloudSync = (function() {
     }
   }
 
-  return { init:init, signIn:signIn, signOut:signOut, getUser:getUser, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI };
+  return {
+    init:init, signIn:signIn, signOut:signOut, getUser:getUser, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI,
+    pushLeaderboardEntry:pushLeaderboardEntry, fetchLeaderboard:fetchLeaderboard,
+  };
 })();
 
 // ── CUSTOM MODAL ──────────────────────────────────────────────────────────
@@ -10646,7 +10901,7 @@ var App = {
       // Réinitialiser la méta pour ce nouveau perso (pas de donjons déjà nettoyés)
       Meta.clearedZones = {};
       Meta.chest = [];
-      Meta.totalGold = 0; Meta.totalKills = 0; Meta.totalRuns = 0; Meta.bestFloor = 0;
+      Meta.totalGold = 0; Meta.totalKills = 0; Meta.totalRuns = 0; Meta.bestFloor = 0; Meta.bestLevel = 1;
       Meta.levels = {}; Meta.bonuses = {atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0,dodge:0,timerBonus:0,lifesteal:0,regenMeta:0,xpPct:0,startGold:0};
       Meta.activeQuests = {}; Meta.completedQuests = {};
       Meta.save();

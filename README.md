@@ -52,6 +52,29 @@ Si un jour tu es sur ta propre machine et que tu préfères déployer à la
 main : `npm install -g firebase-tools`, `firebase login`, puis
 `npm run deploy` (build + déploiement en une commande).
 
+## Classement mondial
+
+Le bouton **Classement** de l'écran Guilde liste les joueurs connectés avec
+Google (CloudSync), triable par niveau ou par étage, avec une fiche
+cliquable montrant l'équipement et les talents du run où ils ont fait leur
+meilleur score. Stocké dans une collection Firestore **publique**
+(`leaderboard/{uid}`, un document par joueur), distincte de la sauvegarde
+privée (`users/{uid}/data/...`).
+
+Étape à faire une fois (dans un navigateur, sur la
+[console Firebase](https://console.firebase.google.com/project/cryptes/firestore/rules)) :
+copier le contenu de `firestore.rules` dans l'onglet *Règles* de Firestore
+Database puis **Publier**. Sans ça, Firestore refuse par défaut toute
+lecture/écriture en dehors des règles déjà en place — le classement
+resterait vide (silencieusement, aucune erreur visible en jeu).
+
+Les règles bornent les écritures (nom ≤ 24 caractères, niveau 1-30, étage
+0-6) pour filtrer les valeurs aberrantes, mais restent — comme `Vault` et
+`Integrity` — une protection côté client : rien n'empêche un joueur motivé
+d'inspecter le réseau et d'écrire directement dans Firestore avec des
+valeurs à l'intérieur de ces bornes. Un classement inviolable demanderait
+une vraie validation serveur (voir feuille de route).
+
 ### Pourquoi obfusquer ?
 
 Tout jeu web est techniquement copiable (le navigateur reçoit le code). On ne
@@ -65,8 +88,8 @@ reste privé dans `web/` ; seul `dist/` (chiffré) est distribué.
 Le module `Vault` signe et obfusque les données du localStorage ; le module
 `Integrity` borne les valeurs chargées (anti-triche). Voir le code dans
 `web/index.html`. Limite assumée d'un jeu 100 % client : protection forte
-contre l'édition naïve, pas inviolable face à un expert. Un classement en
-ligne nécessiterait une validation côté serveur.
+contre l'édition naïve, pas inviolable face à un expert (voir aussi
+« Classement mondial » ci-dessous pour la même limite côté Firestore).
 
 ## Publicité
 
@@ -80,4 +103,5 @@ module.
 1. Lancement **itch.io** (vitrine + tests).
 2. Wrap **Capacitor** → app Android.
 3. **Play Store** : AdMob + achats intégrés Google Play.
-4. Backend serveur *uniquement si* classement en ligne / sauvegarde cloud.
+4. Backend serveur *uniquement si* le classement mondial doit devenir
+   inviolable (validation des scores côté serveur).

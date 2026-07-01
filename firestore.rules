@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Sauvegarde privée (profils/persos) — uniquement le propriétaire.
+    match /users/{userId}/data/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Classement mondial — lecture publique (même sans connexion),
+    // écriture uniquement par le joueur concerné, avec des bornes
+    // cohérentes avec Integrity côté client (niveau 1-30, étage 0-6).
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 24
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1 && request.resource.data.level <= 30
+        && request.resource.data.bestFloor is int
+        && request.resource.data.bestFloor >= 0 && request.resource.data.bestFloor <= 6;
+    }
+  }
+}
