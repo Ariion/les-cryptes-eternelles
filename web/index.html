@@ -7999,12 +7999,14 @@ Rooms._renderShopBuy = function() {
     var div = document.createElement('div');
     var rar2 = item.rarity||'common';
     var displayCost = Rooms._racePriceMod(item.cost);
-    div.className = 'shop-item rarity-'+rar2 + ((State.gold||0) < displayCost ? ' cant-afford' : '');
+    div.className = 'shop-item rarity-'+rar2 + (item._stockSold ? ' sold' : ((State.gold||0) < displayCost ? ' cant-afford' : ''));
     div.dataset.idx = idx;
     var rarLabel2 = (RARITY_LABELS||{})[rar2]||rar2;
-    var priceHtml = displayCost !== item.cost
-      ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
-      : '<div class="si-price">'+displayCost+'</div>';
+    var priceHtml = item._stockSold
+      ? '<div class="si-price"><span style="color:rgba(255,255,255,0.25)">'+(CGE_LANG==='en'?'Sold':'Vendu')+'</span></div>'
+      : (displayCost !== item.cost
+        ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
+        : '<div class="si-price">'+displayCost+'</div>');
     div.innerHTML =
       '<span class="si-ico">'+item.ico+'</span>'+
       '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
@@ -8124,6 +8126,8 @@ Rooms.shopBuy = function(idx) {
   if (!item) return;
   var cost = Rooms._racePriceMod(item.cost);
   if ((State.gold||0) < cost) return;
+  if (item._stockSold) return; // déjà vendu — reste vendu tant que le stock n'est pas réassorti
+  var stockCategory = item._stockCategory, stockPos = item._stockPos;
   State.gold -= cost;
   // If item has a slot → add to inventory; otherwise apply effect
   if (item.slot) {
@@ -8146,6 +8150,12 @@ Rooms.shopBuy = function(idx) {
   }
   State._lastShopCost = cost;
   Sfx.buy && Sfx.buy();
+  // Stock nommé (Forge/Armurerie/...) : la vente est persistée, pas juste visuelle.
+  if (stockCategory && stockPos != null && Meta.shopStock && Meta.shopStock[stockCategory] && Meta.shopStock[stockCategory][stockPos]) {
+    Meta.shopStock[stockCategory][stockPos].sold = true;
+    Meta.save();
+    State._shopItems[idx]._stockSold = true;
+  }
   var _sgv2 = document.getElementById('shop-gold-val'); if (_sgv2) _sgv2.textContent = State.gold;
   if (typeof HUD !== 'undefined') HUD.updateGold();
   var cards = document.querySelectorAll('.shop-item');
