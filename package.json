@@ -6,7 +6,8 @@
   "author": "Anthony Armand",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "deploy": "node build.js && firebase deploy --only hosting"
   },
   "devDependencies": {
     "javascript-obfuscator": "^4.1.1"

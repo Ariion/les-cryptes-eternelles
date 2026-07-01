@@ -27,6 +27,26 @@ npm run build    # génère dist/index.html (scripts du jeu obfusqués)
 On envoie le contenu de **`dist/`** sur itch.io (jamais `web/`), en mode
 « jouable dans le navigateur » plutôt qu'en téléchargement.
 
+## Tester avec des amis/collègues (Firebase Hosting)
+
+En attendant itch.io, `firebase.json`/`.firebaserc` pointent déjà sur le
+projet Firebase existant (`cryptes`, celui du cloud-sync). Une seule fois :
+
+```bash
+npm install -g firebase-tools   # une seule fois sur ta machine
+firebase login                  # connexion à ton compte Google
+```
+
+Puis à chaque nouvelle version à partager :
+
+```bash
+npm run deploy   # build obfusqué + déploiement
+```
+
+Le jeu est en ligne sur **https://cryptes.web.app** (URL fixe, pas de compte
+GitHub visible). Contrairement à GitHub Pages (qui sert `web/` en clair), ce
+déploiement sert la version obfusquée de `dist/`.
+
 ### Pourquoi obfusquer ?
 
 Tout jeu web est techniquement copiable (le navigateur reçoit le code). On ne
