@@ -4281,6 +4281,13 @@ var ProfilesScreen = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
+    State.skillPoints = 0;
+    State.talents = { class:{}, race:{} };
+    State._talentFlags = {};
+    State._talentXpPct = 0;
+    if (State.cls === 'Mage')   { State.manaMax = 60; State.mana = 60; }
+    else if (State.cls === 'Prêtre') { State.manaMax = 50; State.mana = 50; }
+    else { State.manaMax = 0; State.mana = 0; }
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
@@ -6934,7 +6941,7 @@ var Talents = (function(){
     if (d.lifesteal) State.itemLifesteal = Math.max(0, (State.itemLifesteal||0) + sign*d.lifesteal);
     if (d.flee)      State.fleeBonus     = Math.max(0, (State.fleeBonus||0)     + sign*d.flee);
     if (d.regen)     State.regenPerFight = Math.max(0, (State.regenPerFight||0) + sign*d.regen);
-    if (d.mana)      State.manaMax       = Math.max(0, (State.manaMax||0)       + sign*d.mana);
+    if (d.mana)      { State.manaMax = Math.max(0, (State.manaMax||0) + sign*d.mana); State.mana = sign>0 ? Math.min(State.manaMax,(State.mana||0)+d.mana) : Math.min(State.mana||0, State.manaMax); }
     if (d.xpPct)     State._talentXpPct  = Math.max(0, (State._talentXpPct||0)  + sign*d.xpPct);
   }
 
@@ -10608,6 +10615,8 @@ var App = {
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0;
     State.critBonus = b.crit||0;
+    State.dodgeBonus = 0;
+    State.itemLifesteal = 0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
     State.persistentStatuses = [];
