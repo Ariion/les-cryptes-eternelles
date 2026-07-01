@@ -940,6 +940,15 @@ canvas#particles {
 #cb-enemy-hp-wrap { width:100%; max-width:220px; display:flex; align-items:center; gap:8px; }
 #cb-enemy-hp-inner { background:linear-gradient(90deg,#1a6a1a,#2db82d,#50d050); }
 #cb-enemy-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(140,220,140,0.8); white-space:nowrap; }
+#cb-enemy-telegraph {
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:0.5px;
+  color:#ff5050; background:rgba(200,40,40,0.15); border:1px solid rgba(255,80,80,0.5);
+  border-radius:8px; padding:4px 10px; margin-top:4px; text-align:center;
+  animation: telegraphPulse 1s infinite;
+}
+@keyframes telegraphPulse {
+  0%,100% { opacity:1; } 50% { opacity:0.55; }
+}
 
 /* Nombre de dégâts flottant */
 #dmg-float {
@@ -2888,6 +2897,7 @@ canvas#particles {
       <div id="cb-enemy-zone">
         <div id="cb-enemy-sprite">👹</div>
         <div id="cb-enemy-name">Ennemi</div>
+        <div id="cb-enemy-telegraph" style="display:none"></div>
         <div id="cb-enemy-hp-wrap">
           <div class="hp-bar-outer" style="flex:1">
             <div class="hp-bar-inner" id="cb-enemy-hp-inner" style="width:100%"></div>
@@ -6035,7 +6045,105 @@ var SPELLS = {
     { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent', heal:true,
       unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_redemption'); },
       cast:function(){ var h=Math.round(State.hpMax*0.9); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Rédemption ! +'+h+' PV !',logEn:'Redemption! +'+h+' HP!'}; } },
-  ]
+  ],
+  // Classes physiques : "cost" = tours de recharge partagés entre les 3 compétences
+  // (pas de mana). Une compétence utilisée verrouille les deux autres pour ce temps —
+  // le choix est de savoir laquelle vaut le coup dans l'instant.
+  Guerrier: [
+    { id:'bouclier', ico:'🛡', name:'Bouclier', nameEn:'Shield Stance', cost:2, desc:'+8 DEF pendant 2 tours (+16/3 tours avec le talent)', descEn:'+8 DEF for 2 turns (+16/3 turns with the talent)',
+      cast:function(){
+        var rempart = typeof Talents!=='undefined' && Talents.hasFlag('guerrier_rempart');
+        var turns = rempart?3:2, val = rempart?16:8;
+        return { log:'Posture défensive ! +'+val+' DEF pour '+turns+' tours.', logEn:'Defensive stance! +'+val+' DEF for '+turns+' turns.', shield:turns, shieldDef:val };
+      } },
+    { id:'sunder', ico:'💥', name:'Frappe Brisante', nameEn:'Sundering Blow', cost:3, desc:'1.8× ATQ + réduit la DEF ennemie de 20% (2 tours)', descEn:'1.8× ATK + reduces enemy DEF by 20% (2 turns)',
+      cast:function(enemy){
+        var d = Math.round(State.atk*1.8);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        var sunderVal = Math.round(enemy.def*0.2);
+        return { dmg:d, log:'Frappe brisante ! '+d+' dégâts, DEF ennemie affaiblie.', logEn:'Sundering blow! '+d+' damage, enemy DEF weakened.', crit:false, sunder:2, sunderVal:sunderVal };
+      } },
+    { id:'grace', ico:'⚔', name:'Coup de Grâce', nameEn:'Coup de Grace', cost:4, desc:'1.3× ATQ (2.5× si l\'ennemi est sous 30% PV)', descEn:'1.3× ATK (2.5× if the enemy is below 30% HP)',
+      cast:function(enemy){
+        var low = enemy.hp < enemy.hpMax*0.3;
+        var d = Math.round(State.atk*(low?2.5:1.3));
+        enemy.hp = Math.max(0, enemy.hp-d);
+        return { dmg:d, log:(low?'Coup de grâce ! '+d+' dégâts fatals !':'Coup de grâce ! '+d+' dégâts.'), logEn:(low?'Coup de grace! '+d+' fatal damage!':'Coup de grace! '+d+' damage.'), crit:low };
+      } },
+  ],
+  Chasseur: [
+    { id:'multitir', ico:'🏹', name:'Tir Multiple', nameEn:'Multi-Shot', cost:2, desc:'2-3 tirs rapides (3ᵉ tir débloqué par talent)', descEn:'2-3 rapid shots (3rd shot unlocked by talent)',
+      cast:function(enemy){
+        var triple = typeof Talents!=='undefined' && Talents.hasFlag('chasseur_triple');
+        var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
+        var d3 = triple ? calcDmg(State.atk, enemy.def) : null;
+        var total = d1.dmg + d2.dmg + (d3?d3.dmg:0);
+        enemy.hp = Math.max(0, enemy.hp-total);
+        return { dmg: total, log:(triple?'Triple tir ! ':'Double tir ! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' dégâts.', logEn:(triple?'Triple shot! ':'Double shot! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' damage.', crit:false };
+      } },
+    { id:'percant', ico:'🎯', name:'Tir Perçant', nameEn:'Piercing Shot', cost:3, desc:'2.2× ATQ — ignore la défense ennemie', descEn:'2.2× ATK — ignores enemy defense',
+      cast:function(enemy){
+        var d = Math.round(State.atk*2.2);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        return { dmg:d, log:'Tir perçant ! '+d+' dégâts qui ignorent l\'armure !', logEn:'Piercing shot! '+d+' damage bypassing armor!', crit:true };
+      } },
+    { id:'immobilisant', ico:'🪤', name:'Tir Immobilisant', nameEn:'Pinning Shot', cost:4, desc:'1.0× ATQ + Étourdi 1 tour', descEn:'1.0× ATK + Stun 1 turn',
+      cast:function(enemy){
+        var d = Math.round(State.atk*1.0);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        return { dmg:d, log:'Tir immobilisant ! '+d+' dégâts, ennemi étourdi.', logEn:'Pinning shot! '+d+' damage, enemy stunned.', stun:1 };
+      } },
+  ],
+  Assassin: [
+    { id:'critique', ico:'🗡', name:'Frappe Critique', nameEn:'Critical Strike', cost:3, desc:'Coup critique garanti (2×/2.4× ATQ avec talent + vol de vie)', descEn:'Guaranteed critical (2×/2.4× ATK with talent + lifesteal)',
+      cast:function(enemy){
+        var lethal = typeof Talents!=='undefined' && Talents.hasFlag('assassin_lethal');
+        var d = Math.round(State.atk*(lethal?2.4:2));
+        enemy.hp = Math.max(0, enemy.hp-d);
+        if (lethal) { var h = Math.round(d*0.2); State.hp = Math.min(State.hpMax, State.hp+h); }
+        return { dmg:d, log:'Frappe critique garantie ! '+d+' dégâts.'+(lethal?' (+'+Math.round(d*0.2)+' PV volés)':''), logEn:'Guaranteed critical strike! '+d+' damage.'+(lethal?' (+'+Math.round(d*0.2)+' HP lifesteal)':''), crit:true };
+      } },
+    { id:'poison', ico:'☠', name:'Poison Mortel', nameEn:'Deadly Poison', cost:3, desc:'1.0× ATQ + Poison puissant (3 tours)', descEn:'1.0× ATK + Strong poison (3 turns)',
+      cast:function(enemy){
+        var d = Math.round(State.atk*1.0);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        var pv = Math.round(State.atk*0.4);
+        return { dmg:d, log:'Poison mortel ! '+d+' dégâts + empoisonné.', logEn:'Deadly poison! '+d+' damage + poisoned.', poison:3, poisonVal:pv };
+      } },
+    { id:'evanouissement', ico:'💨', name:'Évanouissement', nameEn:'Vanishing Strike', cost:4, desc:'1.2× ATQ + esquive garantie de la prochaine attaque', descEn:'1.2× ATK + guarantees a dodge of the next attack',
+      cast:function(enemy){
+        var d = Math.round(State.atk*1.2);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        State._guaranteedDodge = true;
+        return { dmg:d, log:'Évanouissement ! '+d+' dégâts, tu deviens intouchable.', logEn:'Vanishing strike! '+d+' damage, you become untouchable.', crit:false };
+      } },
+  ],
+  Barbare: [
+    { id:'frenesie', ico:'🪓', name:'Frénésie', nameEn:'Frenzy', cost:3, desc:'1.6×/2.0× ATQ (bonus si PV < 30%/40%, talent)', descEn:'1.6×/2.0× ATK (bonus if HP < 30%/40%, talent)',
+      cast:function(enemy){
+        var rageTotale = typeof Talents!=='undefined' && Talents.hasFlag('barbare_rage_totale');
+        var rageSeuil  = (typeof Talents!=='undefined' && Talents.hasFlag('barbare_rage_seuil')) ? 0.4 : 0.3;
+        var enraged = State.hp < State.hpMax*rageSeuil;
+        var d = Math.round(State.atk*(rageTotale?2.0:1.6));
+        if (enraged) d = Math.round(d*(rageTotale?1.8:1.5));
+        enemy.hp = Math.max(0, enemy.hp-d);
+        return { dmg:d, log:'Frénésie barbare ! '+d+' dégâts sauvages.', logEn:'Barbarian frenzy! '+d+' savage damage.', crit:enraged };
+      } },
+    { id:'provocation', ico:'📣', name:'Provocation', nameEn:'Reckless Taunt', cost:3, desc:'-5% PV actuels, +40% ATQ pendant 2 tours', descEn:'-5% current HP, +40% ATK for 2 turns',
+      cast:function(){
+        var selfDmg = Math.round(State.hp*0.05);
+        State.hp = Math.max(1, State.hp-selfDmg);
+        var atkBuff = Math.round(State.atk*0.4);
+        return { log:'Provocation ! -'+selfDmg+' PV, +'+atkBuff+' ATQ pour 2 tours.', logEn:'Reckless taunt! -'+selfDmg+' HP, +'+atkBuff+' ATK for 2 turns.', atkbuff:2, atkbuffVal:atkBuff, selfDmg:selfDmg };
+      } },
+    { id:'assommoir', ico:'💫', name:'Coup d\'Assommoir', nameEn:'Skullcracker', cost:4, desc:'1.4× ATQ + 40% de chance d\'étourdir', descEn:'1.4× ATK + 40% chance to stun',
+      cast:function(enemy){
+        var d = Math.round(State.atk*1.4);
+        enemy.hp = Math.max(0, enemy.hp-d);
+        var stunned = Math.random() < 0.4;
+        return { dmg:d, log:'Coup d\'assommoir ! '+d+' dégâts.'+(stunned?' Ennemi étourdi !':''), logEn:'Skullcracker! '+d+' damage.'+(stunned?' Enemy stunned!':''), stun: stunned?1:0, crit:false };
+      } },
+  ],
 };
 
 // ── COMBAT ────────────────────────────────────────────────────────
@@ -6095,6 +6203,21 @@ var Combat = (function(){
     if (pct > 60)      bar.style.background = 'linear-gradient(90deg,#1a6a1a,#2db82d,#50d050)';
     else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#6a6a10,#b8b820,#d0d040)';
     else               bar.style.background = 'linear-gradient(90deg,#6a1a10,#b83020,#d05040)';
+  }
+
+  function showTelegraphUI(type) {
+    var el = document.getElementById('cb-enemy-telegraph');
+    if (!el) return;
+    var icons = { poison:'☠', burn:'🔥', stun:'⚡' };
+    var labelFr = { poison:'Attaque empoisonnée imminente', burn:'Attaque brûlante imminente', stun:'Attaque étourdissante imminente' };
+    var labelEn = { poison:'Poison attack incoming', burn:'Burning attack incoming', stun:'Stunning attack incoming' };
+    el.textContent = '⚠ '+(icons[type]||'')+' '+(CGE_LANG==='en'?labelEn[type]:labelFr[type]);
+    el.style.display = '';
+  }
+
+  function hideTelegraphUI() {
+    var el = document.getElementById('cb-enemy-telegraph');
+    if (el) el.style.display = 'none';
   }
 
   function showHeal(amount) {
@@ -6157,6 +6280,9 @@ var Combat = (function(){
       list.push({ type:type, turns:turns, val:val||0 });
       // Buff défensif temporaire du joueur : on applique la DEF ici, retirée à l'expiration
       if (list === statuses && (type==='shield' || type==='defend') && val) { State.def += val; }
+      if (list === statuses && type==='atkbuff' && val) { State.atk += val; }
+      // Frappe Brisante (Guerrier) : réduit la DEF ennemie le temps du statut
+      if (list === enemyStatuses && type==='sunder' && val) { enemy.def = Math.max(0, enemy.def - val); }
     }
     renderStatuses();
   }
@@ -6167,7 +6293,7 @@ var Combat = (function(){
     statuses.forEach(function(s){
       var d = document.createElement('div');
       d.className = 'status-badge status-'+s.type;
-      var icons = { poison:'☠ Poison', burn:'🔥 Brûlure', stun:'⚡ Étourdi', shield:'🛡 Bouclier', defend:'🛡 Garde' };
+      var icons = { poison:'☠ Poison', burn:'🔥 Brûlure', stun:'⚡ Étourdi', shield:'🛡 Bouclier', defend:'🛡 Garde', atkbuff:'📣 Rage' };
       d.textContent = (icons[s.type]||s.type)+' ×'+s.turns;
       row.appendChild(d);
     });
@@ -6181,12 +6307,15 @@ var Combat = (function(){
       s.turns--;
       // Fin d'un buff défensif → on rend la DEF empruntée
       if (s.turns <= 0 && (s.type==='shield' || s.type==='defend') && s.val) { State.def -= s.val; updatePlayerUI(); }
+      if (s.turns <= 0 && s.type==='atkbuff' && s.val) { State.atk -= s.val; }
       return s.turns > 0;
     });
     enemyStatuses = enemyStatuses.filter(function(s){
       if (s.type==='poison') { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+' ☠ -'+s.val+(CGE_LANG==='en'?' HP':' PV'),'player'); }
       if (s.type==='burn')   { enemy.hp=Math.max(0,enemy.hp-s.val); updateEnemyUI(); log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+' 🔥 -'+s.val+(CGE_LANG==='en'?' HP':' PV'),'player'); }
       s.turns--;
+      // Fin de la Frappe Brisante (Guerrier) → on rend la DEF ennemie
+      if (s.turns <= 0 && s.type==='sunder' && s.val) { enemy.def += s.val; updateEnemyUI(); }
       return s.turns > 0;
     });
     renderStatuses();
@@ -6225,12 +6354,12 @@ var Combat = (function(){
 
   // ── COMBAT TIMER ──────────────────────────────────────────────────
   var timerInterval = null;
-  var timerSeconds = 5;
+  var timerSeconds = 12;
 
-  var timerMax = 5;
+  var timerMax = 12;
   function startTimer() {
     clearTimer();
-    timerMax = 5 + (Meta.bonuses.timerBonus||0);
+    timerMax = 12 + (Meta.bonuses.timerBonus||0);
     timerSeconds = timerMax;
     updateTimerUI(timerMax);
     timerInterval = setInterval(function() {
@@ -6246,7 +6375,26 @@ var Combat = (function(){
 
   function clearTimer() {
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-    updateTimerUI(5);
+    updateTimerUI(timerMax);
+  }
+
+  // Suspend le décompte pendant qu'un menu (sorts/compétences) est ouvert,
+  // sans le réinitialiser — reprend exactement où il en était à la fermeture.
+  function pauseTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function resumeTimer() {
+    if (timerInterval || timerSeconds <= 0) return;
+    timerInterval = setInterval(function() {
+      timerSeconds--;
+      updateTimerUI(timerSeconds);
+      if (timerSeconds <= 0) {
+        clearTimer();
+        log(T('cl.tooslow'), 'enemy');
+        enemyTurn();
+      }
+    }, 1000);
   }
 
   function updateTimerUI(s) {
@@ -6390,6 +6538,44 @@ var Combat = (function(){
       var stunned = statuses.find(function(s){ return s.type==='stun'; });
       if (stunned) { stunned.turns=0; tickStatuses(); log(T('cl.stunned'),'enemy'); turnLocked=false; setButtons(true); return; }
 
+      // Esquive garantie (Assassin, "Évanouissement")
+      if (State._guaranteedDodge) {
+        State._guaranteedDodge = false;
+        log(T('cl.dodge'),'player');
+        turnLocked=false; setButtons(true); return;
+      }
+
+      // Attaque de boss télégraphiée le tour précédent : elle se résout maintenant.
+      // Se défendre (bouton Défense ou compétence défensive) l'atténue nettement.
+      if (enemy._telegraph) {
+        var tg = enemy._telegraph;
+        enemy._telegraph = null;
+        hideTelegraphUI();
+        var mitigated = playerDef || statuses.some(function(s){ return s.type==='shield'||s.type==='defend'; });
+        playerDef = false;
+        var ename = (CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name);
+        if (tg.type === 'stun') {
+          if (mitigated) {
+            log((CGE_LANG==='en'?'You brace and shrug off the stun!':'Tu te prépares et résistes à l\'étourdissement !'),'player');
+          } else {
+            addStatus(statuses, 'stun', 1, 0);
+            log(ename+(CGE_LANG==='en'?' unleashes a stunning blow!':' déchaîne un coup étourdissant !'),'enemy');
+          }
+        } else {
+          var val = tg.type==='poison' ? 7 : 10;
+          if (mitigated) val = Math.ceil(val/2);
+          addStatus(statuses, tg.type, 3, val);
+          var verbFr = tg.type==='poison' ? 'empoisonne' : 'brûle';
+          var verbEn = tg.type==='poison' ? 'poisons' : 'burns';
+          log(ename+(CGE_LANG==='en'?' '+verbEn+' you'+(mitigated?' (reduced by your guard)':'')+'!':' te '+verbFr+(mitigated?' (atténué par ta garde)':'')+' !'),'enemy');
+        }
+        if (!hasMana() && skillCd > 0) skillCd--;
+        regenMana();
+        updateSkillBtn();
+        turnLocked=false; setButtons(true);
+        return;
+      }
+
       // IA ennemi simple
       var action = Math.random();
       // Esquive (bonus méta + équipement)
@@ -6401,22 +6587,21 @@ var Combat = (function(){
       var dmgResult = calcDmg(enemy.atk, playerDef ? State.def + 5 : State.def, true);
       playerDef = false;
 
-      // Boss : capacités spéciales
+      // Boss : télégraphie une capacité spéciale (se résoudra au tour suivant)
       if (enemy.boss && action < 0.25) {
         var spec = Math.random();
-        if (spec < 0.33) {
-          addStatus(statuses, 'poison', 3, 5);
-          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' poisons you!':' t\'empoisonne !'),'enemy');
-          turnLocked=false; setButtons(true); return;
-        } else if (spec < 0.66) {
-          addStatus(statuses, 'burn', 2, 8);
-          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' burns you!':' te brûle !'),'enemy');
-          turnLocked=false; setButtons(true); return;
-        } else {
-          addStatus(statuses, 'stun', 1, 0);
-          log((CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name)+(CGE_LANG==='en'?' stuns you!':' t\'étourdit !'),'enemy');
-          turnLocked=false; setButtons(true); return;
-        }
+        var tgType = spec < 0.33 ? 'poison' : spec < 0.66 ? 'burn' : 'stun';
+        enemy._telegraph = { type: tgType };
+        showTelegraphUI(tgType);
+        var enameTg = (CGE_LANG==='en'&&enemy.nameEn?enemy.nameEn:enemy.name);
+        var warnFr = { poison:'prépare une attaque empoisonnée', burn:'prépare une attaque brûlante', stun:'prépare une attaque étourdissante' };
+        var warnEn = { poison:'is preparing a poisonous attack', burn:'is preparing a scorching attack', stun:'is preparing a stunning attack' };
+        log('⚠ '+enameTg+' '+(CGE_LANG==='en'?warnEn[tgType]:warnFr[tgType])+' !','enemy');
+        if (!hasMana() && skillCd > 0) skillCd--;
+        regenMana();
+        updateSkillBtn();
+        turnLocked=false; setButtons(true);
+        return;
       }
 
       if (action < 0.15 && enemy.hp < enemy.hpMax * 0.4) {
@@ -6451,7 +6636,9 @@ var Combat = (function(){
 
   return {
     start: function(enemyData) {
-      enemy = Object.assign({}, enemyData, { hpMax: enemyData.hp });
+      enemy = Object.assign({}, enemyData, { hpMax: enemyData.hp, _telegraph: null });
+      hideTelegraphUI();
+      State._guaranteedDodge = false;
       playerDef = false;
       skillCd = 0;
       turnLocked = false;
@@ -6546,72 +6733,33 @@ var Combat = (function(){
 
     playerSkill: function() {
       if (turnLocked) return;
-      var c = CLASSES.find(function(x){ return x.id===State.cls; });
-      // Mage & Prêtre : ouvrir le sélecteur de sorts
+      // Toutes les classes utilisent désormais le même sélecteur de compétences —
+      // Mage/Prêtre dépensent du mana, les autres partagent un seul cooldown (skillCd)
+      // entre leurs 3 compétences : le choix est de savoir laquelle vaut le coup.
       if (hasMana()) {
         if ((State.mana||0) <= 0) { log(T('cl.nomana'),'system'); return; }
-        Combat.openSpells();
-        return;
+      } else {
+        if (skillCd > 0) return;
       }
-      // Autres classes : cooldown classique
-      if (skillCd > 0) return;
-      skillCd = 3;
-      updateSkillBtn();
-      Sfx.skill();
-      if (c.id === 'Guerrier') {
-        var rempart = typeof Talents !== 'undefined' && Talents.hasFlag('guerrier_rempart');
-        addStatus(statuses, 'defend', rempart?3:2, rempart?16:8); playerDef = true;
-        log(T('cl.shieldskill'),'player');
-        enemyTurn();
-      } else if (c.id === 'Chasseur') {
-        var triple = typeof Talents !== 'undefined' && Talents.hasFlag('chasseur_triple');
-        var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
-        var d3 = triple ? calcDmg(State.atk, enemy.def) : null;
-        var total = d1.dmg + d2.dmg + (d3?d3.dmg:0);
-        enemy.hp = Math.max(0, enemy.hp - total);
-        enemyHitAnim(); showDmg(total, false, false); updateEnemyUI();
-        log((CGE_LANG==='en'
-          ? (triple?'Triple shot! ':'Double shot! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' damage.'
-          : (triple?'Triple tir ! ':'Double tir ! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' dégâts.'),'player');
-        if (enemy.hp <= 0) { endCombat(true); return; }
-        enemyTurn();
-      } else if (c.id === 'Assassin') {
-        var lethal = typeof Talents !== 'undefined' && Talents.hasFlag('assassin_lethal');
-        var dmg = Math.round(State.atk * (lethal?2.4:2));
-        enemy.hp = Math.max(0, enemy.hp - dmg);
-        if (lethal) { var _heal = Math.round(dmg*0.2); State.hp = Math.min(State.hpMax, State.hp+_heal); }
-        enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
-        log((CGE_LANG==='en'?'Guaranteed critical strike! '+dmg+' damage.'+(lethal?' (+'+Math.round(dmg*0.2)+' HP lifesteal)':''):'Frappe critique garantie ! '+dmg+' dégâts.'+(lethal?' (+'+Math.round(dmg*0.2)+' PV volés)':'')),'player');
-        if (enemy.hp <= 0) { endCombat(true); return; }
-        enemyTurn();
-      } else if (c.id === 'Barbare') {
-        var rageTotale = typeof Talents !== 'undefined' && Talents.hasFlag('barbare_rage_totale');
-        var rageSeuil  = (typeof Talents !== 'undefined' && Talents.hasFlag('barbare_rage_seuil')) ? 0.4 : 0.3;
-        var enraged = State.hp < State.hpMax * rageSeuil;
-        var dmg = Math.round(State.atk * (rageTotale?2.0:1.6));
-        if (enraged) dmg = Math.round(dmg * (rageTotale?1.8:1.5));
-        enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false, enraged); updateEnemyUI();
-        log((CGE_LANG==='en'?'Barbarian frenzy! '+dmg+' savage damage.':'Frenésie barbare ! '+dmg+' dégâts sauvages.'),'player');
-        if (enemy.hp <= 0) { endCombat(true); return; }
-        enemyTurn();
-      }
+      Combat.openSpells();
     },
 
     openSpells: function() {
+      pauseTimer();
       var list = document.getElementById('spell-list');
       list.innerHTML = '';
+      var withMana = hasMana();
       var spells = (SPELLS[State.cls]||[]).filter(function(s){ return (!s.unlockCheck || s.unlockCheck()) && !(State._gauntletTrial && s.heal); });
       spells.forEach(function(sp) {
         var lvlOk = !sp.unlockLevel || (State.level||1) >= sp.unlockLevel;
-        var mpOk  = (State.mana||0) >= sp.cost;
+        var resOk = withMana ? (State.mana||0) >= sp.cost : skillCd <= 0;
         var btn = document.createElement('button');
-        btn.className = 'spell-btn ripple-el' + ((!lvlOk || !mpOk) ? ' disabled' : '');
+        btn.className = 'spell-btn ripple-el' + ((!lvlOk || !resOk) ? ' disabled' : '');
         btn.innerHTML = '<span class="sp-ico">'+sp.ico+'</span>'
           + '<span class="sp-info"><div class="sp-name">'+(CGE_LANG==='en'&&sp.nameEn?sp.nameEn:sp.name)+'</div>'
           + '<div class="sp-desc">'+(lvlOk ? (CGE_LANG==='en'&&sp.descEn?sp.descEn:sp.desc) : (CGE_LANG==='en'?'Unlocked at level '+sp.unlockLevel:'Débloqué niveau '+sp.unlockLevel))+'</div></span>'
-          + '<span class="sp-cost">'+sp.cost+' MP</span>';
-        if (lvlOk && mpOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
+          + '<span class="sp-cost">'+(withMana ? sp.cost+' MP' : (CGE_LANG==='en'?sp.cost+' turn'+(sp.cost>1?'s':''):sp.cost+' tour'+(sp.cost>1?'s':'')))+'</span>';
+        if (lvlOk && resOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
         list.appendChild(btn);
       });
       document.getElementById('spell-overlay').classList.add('show');
@@ -6619,24 +6767,34 @@ var Combat = (function(){
 
     closeSpells: function() {
       document.getElementById('spell-overlay').classList.remove('show');
+      resumeTimer();
     },
 
     castSpell: function(sp) {
       Combat.closeSpells();
       if (turnLocked) return;
       if (sp.heal && State._gauntletTrial) { log(T('gauntlet.nopotion'),'system'); return; }
-      if ((State.mana||0) < sp.cost) { log(T('cl.notenoughmana'),'system'); return; }
-      State.mana = Math.max(0, (State.mana||0) - sp.cost);
-      updateManaBar();
+      if (hasMana()) {
+        if ((State.mana||0) < sp.cost) { log(T('cl.notenoughmana'),'system'); return; }
+        State.mana = Math.max(0, (State.mana||0) - sp.cost);
+        updateManaBar();
+      } else {
+        if (skillCd > 0) return;
+        skillCd = sp.cost;
+      }
       updateSkillBtn();
       Sfx.skill();
       clearTimer();
       var res = sp.cast(enemy);
       if (res.dmg) { enemyHitAnim(); showDmg(res.dmg, false, res.crit); updateEnemyUI(); }
       if (res.heal) { showHeal(res.heal); updatePlayerUI(); Sfx.heal(); }
+      if (res.selfDmg) { updatePlayerUI(); }
       if (res.stun) { addStatus(enemyStatuses, 'stun', res.stun, 0); }
       if (res.burn) { addStatus(enemyStatuses, 'burn', res.burn, Math.round(State.atk*0.3)); }
+      if (res.poison) { addStatus(enemyStatuses, 'poison', res.poison, res.poisonVal || Math.round(State.atk*0.3)); }
+      if (res.sunder) { addStatus(enemyStatuses, 'sunder', res.sunder, res.sunderVal || 0); }
       if (res.shield) { addStatus(statuses, 'shield', res.shield, res.shieldDef || 12); }
+      if (res.atkbuff) { addStatus(statuses, 'atkbuff', res.atkbuff, res.atkbuffVal || 0); }
       log((CGE_LANG==='en'&&res.logEn?res.logEn:res.log), res.heal ? 'heal' : 'player');
       if (enemy.hp <= 0) { endCombat(true); return; }
       enemyTurn();
