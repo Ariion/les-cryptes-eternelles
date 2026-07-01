@@ -29,23 +29,28 @@ On envoie le contenu de **`dist/`** sur itch.io (jamais `web/`), en mode
 
 ## Tester avec des amis/collègues (Firebase Hosting)
 
-En attendant itch.io, `firebase.json`/`.firebaserc` pointent déjà sur le
-projet Firebase existant (`cryptes`, celui du cloud-sync). Une seule fois :
+En attendant itch.io, chaque push sur `main` déploie automatiquement (via
+GitHub Actions, voir `.github/workflows/firebase-hosting.yml`) sur
+**https://cryptes.web.app** — URL fixe, sans mention GitHub, et contrairement
+à GitHub Pages (qui sert `web/` en clair) ça sert la version **obfusquée**
+de `dist/`. Rien à installer ni lancer en local.
 
-```bash
-npm install -g firebase-tools   # une seule fois sur ta machine
-firebase login                  # connexion à ton compte Google
-```
+Seule étape à faire une fois (dans un navigateur, aucun terminal requis) :
 
-Puis à chaque nouvelle version à partager :
+1. [Console Firebase](https://console.firebase.google.com/project/cryptes/settings/serviceaccounts/adminsdk)
+   → *Comptes de service* → **Générer une nouvelle clé privée** (télécharge un
+   fichier `.json`).
+2. Sur GitHub : `Settings` → `Secrets and variables` → `Actions` →
+   **New repository secret** → nom `FIREBASE_SERVICE_ACCOUNT_CRYPTES` →
+   colle tout le contenu du fichier `.json` téléchargé → *Add secret*.
 
-```bash
-npm run deploy   # build obfusqué + déploiement
-```
+Une fois ce secret ajouté, tout push sur `main` republie automatiquement.
+Le workflow peut aussi être relancé manuellement depuis l'onglet *Actions*
+du repo (`Deploy to Firebase Hosting` → *Run workflow*).
 
-Le jeu est en ligne sur **https://cryptes.web.app** (URL fixe, pas de compte
-GitHub visible). Contrairement à GitHub Pages (qui sert `web/` en clair), ce
-déploiement sert la version obfusquée de `dist/`.
+Si un jour tu es sur ta propre machine et que tu préfères déployer à la
+main : `npm install -g firebase-tools`, `firebase login`, puis
+`npm run deploy` (build + déploiement en une commande).
 
 ### Pourquoi obfusquer ?
 
