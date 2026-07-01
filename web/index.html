@@ -1503,6 +1503,14 @@ canvas#particles {
 .lu-card .lu-ico { font-size:28px; flex-shrink:0; }
 .lu-card .lu-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
 .lu-card .lu-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.55); margin-top:2px; }
+.lu-continue-btn {
+  width:100%; height:50px; border-radius:10px; cursor:pointer;
+  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
+  border:1px solid rgba(201,165,80,0.65); color:#C9A550;
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent; transition:all 0.15s;
+}
+.lu-continue-btn:active { transform:scale(0.97); background:rgba(201,165,80,0.28); }
 
 /* ── XP BAR (combat) ─────────────────────────────────────────── */
 #cb-xp-wrap {
@@ -1713,6 +1721,58 @@ canvas#particles {
   position: absolute; inset: 0; z-index: 19; display: none;
 }
 #eq-detail-overlay.open { display: block; }
+
+#eq-talents-btn {
+  position: relative; font-size: 18px; cursor: pointer; padding: 4px 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+#eq-talents-badge {
+  position: absolute; top: -2px; right:2px; min-width: 14px; height: 14px; padding: 0 3px;
+  border-radius: 7px; background: #00D4E8; color: #05030a;
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; line-height: 14px; text-align: center;
+  display: none;
+}
+#eq-talents-badge.show { display: block; }
+
+/* ── TALENTS SCREEN ─────────────────────────────────────────── */
+#talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; }
+#tal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px; border-bottom: 1px solid rgba(201,165,80,0.15);
+  flex-shrink: 0;
+}
+#tal-back { font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer; padding: 4px 10px; -webkit-tap-highlight-color: transparent; }
+#tal-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550; letter-spacing: 1px; }
+#tal-points { font-family:'Cinzel',serif; font-size: 13px; font-weight: 700; color: #00D4E8; display:flex; align-items:center; gap:4px; }
+#tal-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,165,80,0.1); margin: 0 16px 8px; flex-shrink: 0; }
+#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 16px 16px; }
+.tal-branch { margin-bottom: 18px; }
+.tal-branch-head {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px; color: rgba(201,165,80,0.6);
+  text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.tal-branch-ico { font-size: 16px; }
+.tal-node {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15);
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.tal-node.available { cursor: pointer; border-color: rgba(0,212,232,0.5); background: rgba(0,212,232,0.06); }
+.tal-node.available:active { background: rgba(0,212,232,0.15); transform: scale(0.98); }
+.tal-node.unlocked { border-color: rgba(201,165,80,0.55); background: rgba(201,165,80,0.08); }
+.tal-node.locked { opacity: 0.45; }
+.tal-node-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; }
+.tal-node-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #EDE8DF; }
+.tal-node-desc { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.55); margin-top: 2px; }
+.tal-node-cost { font-family: 'Cinzel', serif; font-size: 12px; color: #00D4E8; flex-shrink: 0; white-space: nowrap; }
+.tal-node.unlocked .tal-node-cost { color: #C9A550; }
+.tal-connector { text-align: center; color: rgba(201,165,80,0.3); font-size: 13px; padding: 2px 0; }
+#tal-respec-btn {
+  margin: 0 16px 16px; padding: 12px; border-radius: 10px; cursor: pointer; flex-shrink: 0;
+  background: rgba(200,60,60,0.1); border: 1px solid rgba(200,60,60,0.3); color: rgba(220,100,100,0.85);
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+}
+#tal-respec-btn:active { background: rgba(200,60,60,0.22); }
 
 /* ── SETTINGS ── */
 #settings-screen {
@@ -2863,7 +2923,7 @@ canvas#particles {
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
         <div id="eq-title">Équipement</div>
-        <div style="width:40px"></div>
+        <div id="eq-talents-btn" onclick="TalentsScreen.open('hero-screen')">🌟<span id="eq-talents-badge"></span></div>
       </div>
       <!-- Stats bar -->
       <div id="eq-stats-bar">
@@ -3019,6 +3079,21 @@ canvas#particles {
           <button id="eq-detail-equip"  onclick="EquipScreen.detailEquip()"  style="display:none">Équiper</button>
         </div>
       </div>
+    </div>
+
+    <!-- ── ARBRES DE TALENTS ── -->
+    <div id="talents-screen" class="screen has-game-header">
+      <div id="tal-header">
+        <div id="tal-back" onclick="TalentsScreen.close()">←</div>
+        <div id="tal-title">🌟 <span data-i18n="tal.title">Talents</span></div>
+        <div id="tal-points">✦ <span id="tal-points-val">0</span></div>
+      </div>
+      <div id="tal-tabs">
+        <div class="chest-tab active" id="tal-tab-class" onclick="TalentsScreen.tab('class')" data-i18n="tal.tab.class">Classe</div>
+        <div class="chest-tab" id="tal-tab-race" onclick="TalentsScreen.tab('race')" data-i18n="tal.tab.race">Race</div>
+      </div>
+      <div id="tal-body"></div>
+      <button id="tal-respec-btn" onclick="TalentsScreen.respec()">↺ <span data-i18n="tal.respec.btn">Réinitialiser l'arbre</span></button>
     </div>
 
     <!-- ── PARAMÈTRES ── -->
@@ -3551,6 +3626,12 @@ var Integrity = {
     if (d.dodgeBonus != null)    d.dodgeBonus    = _clampNum(d.dodgeBonus, 0, 1, 0);
     if (d.itemLifesteal != null) d.itemLifesteal = _clampNum(d.itemLifesteal, 0, 1, 0);
     if (Array.isArray(d.inventory) && d.inventory.length > 8) d.inventory = d.inventory.slice(0,8);
+    d.skillPoints = _clampNum(d.skillPoints, 0, 29, 0);
+    if (!d.talents || typeof d.talents !== 'object') d.talents = { class:{}, race:{} };
+    if (!d.talents.class || typeof d.talents.class !== 'object') d.talents.class = {};
+    if (!d.talents.race  || typeof d.talents.race  !== 'object') d.talents.race  = {};
+    if (!d._talentFlags || typeof d._talentFlags !== 'object') d._talentFlags = {};
+    d._talentXpPct = _clampNum(d._talentXpPct, 0, 1, 0);
     return d;
   }
 };
@@ -3568,6 +3649,10 @@ var State = {
   },
   _heroFrom: 'inn-room',
   _currentZone: null,
+  skillPoints: 0,
+  talents: { class:{}, race:{} },
+  _talentFlags: {},
+  _talentXpPct: 0,
 };
 
 // ── SAVE / LOAD RUN ─────────────────────────────────────────────
@@ -3590,6 +3675,10 @@ State.saveRun = function() {
       mana: State.mana || 0, manaMax: State.manaMax || 0,
       _introChoices: State._introChoices || null,
       _finalChoice: State._finalChoice || null,
+      skillPoints: State.skillPoints || 0,
+      talents: State.talents || { class:{}, race:{} },
+      _talentFlags: State._talentFlags || {},
+      _talentXpPct: State._talentXpPct || 0,
     };
     localStorage.setItem('cge_run', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
@@ -4685,6 +4774,12 @@ var STRINGS = {
     // Misc
     'misc.close': 'Fermer',
     'misc.back': 'Retour',
+    'tal.title': 'Talents',
+    'tal.tab.class': 'Classe',
+    'tal.tab.race': 'Race',
+    'tal.respec.btn': 'Réinitialiser l\'arbre',
+    'tal.respec.title': 'Réinitialiser l\'arbre ?',
+    'tal.respec.body': 'Tous les talents débloqués (classe et race) seront annulés et tes points remboursés.',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
     'misc.available': 'Disponible',
@@ -4824,6 +4919,7 @@ var STRINGS = {
     'levelup.title': '✦ Montée de Niveau ✦',
     'levelup.level': 'Niveau',
     'levelup.sub': 'Choisis ton amélioration',
+    'levelup.point': '+1 Point de Compétence · {n} disponible(s)',
     // Travel cards
     'travel.ruins.name': 'Ruines Maudites',
     'travel.ruins.desc': 'Difficile · Ennemis d\'élite, trésors rares',
@@ -5066,6 +5162,12 @@ var STRINGS = {
     // Misc
     'misc.close': 'Close',
     'misc.back': 'Back',
+    'tal.title': 'Talents',
+    'tal.tab.class': 'Class',
+    'tal.tab.race': 'Race',
+    'tal.respec.btn': 'Reset tree',
+    'tal.respec.title': 'Reset the tree?',
+    'tal.respec.body': 'All unlocked talents (class and race) will be undone and your points refunded.',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
     'misc.available': 'Available',
@@ -5205,6 +5307,7 @@ var STRINGS = {
     'levelup.title': '✦ Level Up ✦',
     'levelup.level': 'Level',
     'levelup.sub': 'Choose your upgrade',
+    'levelup.point': '+1 Skill Point · {n} available',
     // Travel cards
     'travel.ruins.name': 'Cursed Ruins',
     'travel.ruins.desc': 'Hard · Elite enemies, rare treasures',
@@ -5308,6 +5411,7 @@ var Nav = {
       if (id === 'hero-screen') {
         if (typeof EquipScreen !== 'undefined' && EquipScreen.refresh) EquipScreen.refresh();
         if (typeof Meta !== 'undefined' && Meta.buildScreen) Meta.buildScreen();
+        if (typeof TalentsScreen !== 'undefined' && TalentsScreen.updateBadge) TalentsScreen.updateBadge();
       }
       if (typeof Embers !== 'undefined') {
         if (id==='dungeon-map'||id==='inn-room'||id==='combat-screen') Embers.startFor(id);
@@ -5542,6 +5646,9 @@ var SPELLS = {
     { id:'arcane',    ico:'🔮', name:'Tempête Arcane',  nameEn:'Arcane Storm', cost:45, desc:'3.0× ATQ — dégâts purs',    descEn:'3.0× ATK — pure damage',
       unlockLevel:15,
       cast:function(enemy){ var d=Math.round(State.atk*3.0); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tempête arcane ! '+d+' dégâts purs !',logEn:'Arcane storm! '+d+' pure damage!',crit:true}; } },
+    { id:'meteor',    ico:'☄', name:'Météore',  nameEn:'Meteor', cost:50, desc:'3.6× ATQ — dégâts purs · Talent',    descEn:'3.6× ATK — pure damage · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('mage_meteor'); },
+      cast:function(enemy){ var d=Math.round(State.atk*3.6); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Météore ! '+d+' dégâts purs !',logEn:'Meteor! '+d+' pure damage!',crit:true}; } },
   ],
   Prêtre: [
     { id:'heal_sm',   ico:'💚', name:'Soin Léger',      nameEn:'Minor Heal',   cost:12, desc:'Récup 25% PV max',          descEn:'Restore 25% max HP',
@@ -5553,6 +5660,9 @@ var SPELLS = {
     { id:'smite',     ico:'⚡', name:'Jugement',        nameEn:'Judgment',     cost:22, desc:'1.2× ATQ + Brûlure 2 tours', descEn:'1.2× ATK + Burn 2 turns',
       unlockLevel:8,
       cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',logEn:'Judgment! '+d+' damage + burn!',burn:2}; } },
+    { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_redemption'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.9); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Rédemption ! +'+h+' PV !',logEn:'Redemption! +'+h+' HP!'}; } },
   ]
 };
 
@@ -5719,7 +5829,7 @@ var Combat = (function(){
     var btn = document.getElementById('btn-skill');
     if (hasMana()) {
       // Pour Mage/Prêtre : afficher le mana minimum requis
-      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return !s.unlockLevel || (State.level||1)>=s.unlockLevel; });
+      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return (!s.unlockLevel || (State.level||1)>=s.unlockLevel) && (!s.unlockCheck || s.unlockCheck()); });
       var minCost = spells.length ? spells.reduce(function(m,s){ return Math.min(m,s.cost); }, 999) : 99;
       var hasMp = (State.mana||0) >= minCost;
       if (cd) cd.textContent = (State.mana||0)+' MP';
@@ -6043,29 +6153,39 @@ var Combat = (function(){
       updateSkillBtn();
       Sfx.skill();
       if (c.id === 'Guerrier') {
-        addStatus(statuses, 'defend', 2, 8); playerDef = true;
+        var rempart = typeof Talents !== 'undefined' && Talents.hasFlag('guerrier_rempart');
+        addStatus(statuses, 'defend', rempart?3:2, rempart?16:8); playerDef = true;
         log(T('cl.shieldskill'),'player');
         enemyTurn();
       } else if (c.id === 'Chasseur') {
+        var triple = typeof Talents !== 'undefined' && Talents.hasFlag('chasseur_triple');
         var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
-        var total = d1.dmg + d2.dmg;
+        var d3 = triple ? calcDmg(State.atk, enemy.def) : null;
+        var total = d1.dmg + d2.dmg + (d3?d3.dmg:0);
         enemy.hp = Math.max(0, enemy.hp - total);
         enemyHitAnim(); showDmg(total, false, false); updateEnemyUI();
-        log((CGE_LANG==='en'?'Double shot! '+d1.dmg+' + '+d2.dmg+' = '+total+' damage.':'Double tir ! '+d1.dmg+' + '+d2.dmg+' = '+total+' dégâts.'),'player');
+        log((CGE_LANG==='en'
+          ? (triple?'Triple shot! ':'Double shot! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' damage.'
+          : (triple?'Triple tir ! ':'Double tir ! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' dégâts.'),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Assassin') {
-        var dmg = Math.round(State.atk * 2);
+        var lethal = typeof Talents !== 'undefined' && Talents.hasFlag('assassin_lethal');
+        var dmg = Math.round(State.atk * (lethal?2.4:2));
         enemy.hp = Math.max(0, enemy.hp - dmg);
+        if (lethal) { var _heal = Math.round(dmg*0.2); State.hp = Math.min(State.hpMax, State.hp+_heal); }
         enemyHitAnim(); showDmg(dmg, false, true); updateEnemyUI();
-        log((CGE_LANG==='en'?'Guaranteed critical strike! '+dmg+' damage.':'Frappe critique garantie ! '+dmg+' dégâts.'),'player');
+        log((CGE_LANG==='en'?'Guaranteed critical strike! '+dmg+' damage.'+(lethal?' (+'+Math.round(dmg*0.2)+' HP lifesteal)':''):'Frappe critique garantie ! '+dmg+' dégâts.'+(lethal?' (+'+Math.round(dmg*0.2)+' PV volés)':'')),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
       } else if (c.id === 'Barbare') {
-        var dmg = Math.round(State.atk * 1.6);
-        if (State.hp < State.hpMax * 0.3) dmg = Math.round(dmg * 1.5);
+        var rageTotale = typeof Talents !== 'undefined' && Talents.hasFlag('barbare_rage_totale');
+        var rageSeuil  = (typeof Talents !== 'undefined' && Talents.hasFlag('barbare_rage_seuil')) ? 0.4 : 0.3;
+        var enraged = State.hp < State.hpMax * rageSeuil;
+        var dmg = Math.round(State.atk * (rageTotale?2.0:1.6));
+        if (enraged) dmg = Math.round(dmg * (rageTotale?1.8:1.5));
         enemy.hp = Math.max(0, enemy.hp - dmg);
-        enemyHitAnim(); showDmg(dmg, false, State.hp < State.hpMax * 0.3); updateEnemyUI();
+        enemyHitAnim(); showDmg(dmg, false, enraged); updateEnemyUI();
         log((CGE_LANG==='en'?'Barbarian frenzy! '+dmg+' savage damage.':'Frenésie barbare ! '+dmg+' dégâts sauvages.'),'player');
         if (enemy.hp <= 0) { endCombat(true); return; }
         enemyTurn();
@@ -6075,7 +6195,7 @@ var Combat = (function(){
     openSpells: function() {
       var list = document.getElementById('spell-list');
       list.innerHTML = '';
-      var spells = (SPELLS[State.cls]||[]);
+      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return !s.unlockCheck || s.unlockCheck(); });
       spells.forEach(function(sp) {
         var lvlOk = !sp.unlockLevel || (State.level||1) >= sp.unlockLevel;
         var mpOk  = (State.mana||0) >= sp.cost;
@@ -6626,29 +6746,340 @@ var XP_PER_LEVEL = [
   24000 // niveau 30
 ];
 
-var LEVEL_UP_CHOICES = [
-  { ico:'⚔', name:'Tranchant',       nameEn:'Sharpened',        desc:'+4 ATQ',           descEn:'+4 ATK',           effect:function(){ State.atk+=4; } },
-  { ico:'🛡', name:'Endurci',        nameEn:'Hardened',         desc:'+5 DEF',           descEn:'+5 DEF',           effect:function(){ State.def+=5; } },
-  { ico:'❤', name:'Vigueur',         nameEn:'Vigor',            desc:'+25 PV max + soin',descEn:'+25 max HP + heal',effect:function(){ State.hpMax+=25; State.hp=Math.min(State.hpMax, State.hp+25); } },
-  { ico:'⚡', name:'Rapidité',       nameEn:'Quickness',        desc:'+3 ATQ +2 DEF',    descEn:'+3 ATK +2 DEF',    effect:function(){ State.atk+=3; State.def+=2; } },
-  { ico:'🧪', name:'Alchimiste',     nameEn:'Alchemist',        desc:'+2 Potions',       descEn:'+2 Potions',       effect:function(){ State.potions=(State.potions||0)+2; } },
-  { ico:'🩸', name:'Soif de sang',   nameEn:'Bloodthirst',      desc:'+6 ATQ −3 DEF',    descEn:'+6 ATK −3 DEF',    effect:function(){ State.atk+=6; State.def=Math.max(0,State.def-3); } },
-  { ico:'🔮', name:'Arcane',         nameEn:'Arcane',           desc:'+8 ATQ (fragile)', descEn:'+8 ATK (fragile)', effect:function(){ State.atk+=8; State.hpMax=Math.max(10,State.hpMax-10); } },
-  { ico:'🌿', name:'Régénération',   nameEn:'Regeneration',     desc:'+3 PV après chaque combat', descEn:'+3 HP after each fight', effect:function(){ State.regenPerFight=(State.regenPerFight||0)+3; } },
-  { ico:'🎯', name:'Précision',      nameEn:'Precision',        desc:'Crit +10%',        descEn:'Crit +10%',        effect:function(){ State.critBonus=(State.critBonus||0)+0.1; } },
-  { ico:'💪', name:'Force brute',     nameEn:'Brute Force',      desc:'+6 ATQ',              descEn:'+6 ATK',            effect:function(){ State.atk+=6; } },
-  { ico:'🏰', name:'Fortifié',        nameEn:'Fortified',        desc:'+8 DEF',              descEn:'+8 DEF',            effect:function(){ State.def+=8; } },
-  { ico:'🌊', name:'Flux vital',      nameEn:'Life Flow',        desc:'+40 PV max',          descEn:'+40 max HP',        effect:function(){ State.hpMax+=40; State.hp=Math.min(State.hpMax,State.hp+20); } },
-  { ico:'⚗', name:'Grand Alchimiste',nameEn:'Grand Alchemist',  desc:'+3 Potions',          descEn:'+3 Potions',        effect:function(){ State.potions=(State.potions||0)+3; } },
-  { ico:'🔥', name:'Embrasement',     nameEn:'Conflagration',    desc:'+10 ATQ −10 PV max',  descEn:'+10 ATK −10 max HP', effect:function(){ State.atk+=10; State.hpMax=Math.max(20,State.hpMax-10); } },
-  { ico:'🧿', name:'Œil du destin',  nameEn:'Eye of Fate',      desc:'Crit +15%',           descEn:'Crit +15%',         effect:function(){ State.critBonus=(State.critBonus||0)+0.15; } },
-  { ico:'🩸', name:'Vampirisme',      nameEn:'Vampirism',        desc:'Vol de vie +15%',     descEn:'Lifesteal +15%',    effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.15; } },
-  { ico:'🌑', name:'Ombre',           nameEn:'Shadow',           desc:'+5 ATQ +5 DEF +30 PV',descEn:'+5 ATK +5 DEF +30 HP',effect:function(){ State.atk+=5;State.def+=5;State.hpMax+=30; } },
-];
-
-function refreshCombatHp() {
-  if (typeof HUD !== 'undefined') HUD.updateHP();
+// ── ARBRES DE TALENTS ──────────────────────────────────────────────
+// 1 point de compétence par niveau (dès le niveau 2). Dépensable dans
+// l'arbre de la classe ET celui de la race (State.talents.class / .race).
+// Chaque arbre : 3 branches × 2 rangs (rang 1 coûte 1 point, rang 2 coûte
+// 2 points — il faut avoir débloqué le rang 1 de la branche pour accéder
+// au rang 2). Reset à chaque run, comme le niveau et l'équipement.
+// `deltas` : bonus passifs simples (mêmes clés que applyItemStats).
+// `flag`   : certains nœuds (un par arbre de classe) posent un flag dans
+// State._talentFlags, lu par Combat.playerSkill / les sorts Mage-Prêtre
+// pour débloquer/renforcer une capacité active existante.
+function _talentBranch(id, label, labelEn, ico, nodes) {
+  return { id:id, label:label, labelEn:labelEn, ico:ico, nodes:nodes };
 }
+var TALENT_TREES = {
+  class: {
+    Guerrier: [
+      _talentBranch('atk','Attaque','Attack','⚔',[
+        { id:'guerrier_atk_1', cost:1, ico:'⚔', name:'Frappe Lourde',  nameEn:'Heavy Strike',   desc:'+5 ATQ',  descEn:'+5 ATK',  deltas:{atk:5} },
+        { id:'guerrier_atk_2', cost:2, ico:'⚔', name:'Pourfendeur',    nameEn:'Cleaver',        desc:'+10 ATQ', descEn:'+10 ATK', deltas:{atk:10} },
+      ]),
+      _talentBranch('def','Défense','Defense','🛡',[
+        { id:'guerrier_def_1', cost:1, ico:'🛡', name:'Armure Renforcée', nameEn:'Reinforced Armor', desc:'+6 DEF', descEn:'+6 DEF', deltas:{def:6} },
+        { id:'guerrier_def_2', cost:2, ico:'🛡', name:'Rempart',          nameEn:'Bulwark',          desc:'+10 DEF · Bouclier renforcé (+16 DEF, 3 tours)', descEn:'+10 DEF · Shield skill empowered (+16 DEF, 3 turns)', deltas:{def:10}, flag:'guerrier_rempart' },
+      ]),
+      _talentBranch('vit','Vitalité','Vitality','❤',[
+        { id:'guerrier_vit_1', cost:1, ico:'❤', name:'Robustesse', nameEn:'Sturdiness', desc:'+30 PV max', descEn:'+30 max HP', deltas:{hp:30} },
+        { id:'guerrier_vit_2', cost:2, ico:'❤', name:'Increvable', nameEn:'Unbreakable', desc:'+50 PV max, +2 PV/combat', descEn:'+50 max HP, +2 HP/fight', deltas:{hp:50,regen:2} },
+      ]),
+    ],
+    Mage: [
+      _talentBranch('destr','Destruction','Destruction','🔥',[
+        { id:'mage_destr_1', cost:1, ico:'🔥', name:'Focalisation', nameEn:'Focus',        desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
+        { id:'mage_destr_2', cost:2, ico:'🔥', name:'Puissance Arcanique', nameEn:'Arcane Power', desc:'+10 ATQ · débloque le sort Météore', descEn:'+10 ATK · unlocks the Meteor spell', deltas:{atk:10}, flag:'mage_meteor' },
+      ]),
+      _talentBranch('arc','Arcane','Arcane','🔮',[
+        { id:'mage_arc_1', cost:1, ico:'🔷', name:'Réserve de Mana', nameEn:'Mana Reserve', desc:'+15 Mana max', descEn:'+15 max Mana', deltas:{mana:15} },
+        { id:'mage_arc_2', cost:2, ico:'🔷', name:'Puits Arcanique', nameEn:'Arcane Well',  desc:'+25 Mana max', descEn:'+25 max Mana', deltas:{mana:25} },
+      ]),
+      _talentBranch('surv','Survie','Survival','🌿',[
+        { id:'mage_surv_1', cost:1, ico:'🌿', name:'Robustesse Mineure', nameEn:'Minor Sturdiness', desc:'+20 PV max', descEn:'+20 max HP', deltas:{hp:20} },
+        { id:'mage_surv_2', cost:2, ico:'🌿', name:'Sang-Froid',         nameEn:'Cold Blood',       desc:'+35 PV max, Crit +5%', descEn:'+35 max HP, Crit +5%', deltas:{hp:35,crit:0.05} },
+      ]),
+    ],
+    Chasseur: [
+      _talentBranch('prec','Précision','Precision','🎯',[
+        { id:'chasseur_prec_1', cost:1, ico:'🎯', name:'Œil de Lynx', nameEn:'Lynx Eye', desc:'Crit +8%', descEn:'Crit +8%', deltas:{crit:0.08} },
+        { id:'chasseur_prec_2', cost:2, ico:'🎯', name:'Tir Perçant', nameEn:'Piercing Shot', desc:'Crit +7% · Double tir devient Triple tir', descEn:'Crit +7% · Double shot becomes Triple shot', deltas:{crit:0.07}, flag:'chasseur_triple' },
+      ]),
+      _talentBranch('cel','Célérité','Swiftness','💨',[
+        { id:'chasseur_cel_1', cost:1, ico:'💨', name:'Pas Léger',      nameEn:'Light Step',    desc:'Esquive +5%',            descEn:'Dodge +5%',            deltas:{dodge:0.05} },
+        { id:'chasseur_cel_2', cost:2, ico:'💨', name:'Ombre des Bois', nameEn:'Forest Shadow', desc:'Esquive +8%, Fuite +10%', descEn:'Dodge +8%, Flee +10%', deltas:{dodge:0.08,flee:0.10} },
+      ]),
+      _talentBranch('inst','Instinct','Instinct','🏹',[
+        { id:'chasseur_inst_1', cost:1, ico:'🏹', name:'Instinct du Chasseur', nameEn:'Hunter\'s Instinct', desc:'+6 ATQ',     descEn:'+6 ATK',     deltas:{atk:6} },
+        { id:'chasseur_inst_2', cost:2, ico:'🏹', name:'Endurance Sauvage',    nameEn:'Wild Endurance',     desc:'+40 PV max', descEn:'+40 max HP', deltas:{hp:40} },
+      ]),
+    ],
+    Assassin: [
+      _talentBranch('lame','Lames','Blades','🗡',[
+        { id:'assassin_lame_1', cost:1, ico:'🗡', name:'Lames Affûtées', nameEn:'Honed Blades', desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
+        { id:'assassin_lame_2', cost:2, ico:'🗡', name:'Frappe Mortelle', nameEn:'Deadly Strike', desc:'+8 ATQ · Crit. garanti vole 20% des dégâts', descEn:'+8 ATK · Guaranteed crit lifesteals 20%', deltas:{atk:8}, flag:'assassin_lethal' },
+      ]),
+      _talentBranch('ombre','Ombre','Shadow','🌑',[
+        { id:'assassin_ombre_1', cost:1, ico:'🌑', name:'Célérité',        nameEn:'Celerity',       desc:'Esquive +6%',             descEn:'Dodge +6%',             deltas:{dodge:0.06} },
+        { id:'assassin_ombre_2', cost:2, ico:'🌑', name:'Maître de l\'Ombre', nameEn:'Shadow Master', desc:'Esquive +10%, Fuite +15%', descEn:'Dodge +10%, Flee +15%', deltas:{dodge:0.10,flee:0.15} },
+      ]),
+      _talentBranch('sang','Sang-Froid','Cold Blood','🩸',[
+        { id:'assassin_sang_1', cost:1, ico:'🩸', name:'Sang-Froid',       nameEn:'Cold Blood',    desc:'Vol de vie +8%',            descEn:'Lifesteal +8%',           deltas:{lifesteal:0.08} },
+        { id:'assassin_sang_2', cost:2, ico:'🩸', name:'Soif Insatiable',  nameEn:'Insatiable Thirst', desc:'Vol de vie +12%, +20 PV max', descEn:'Lifesteal +12%, +20 max HP', deltas:{lifesteal:0.12,hp:20} },
+      ]),
+    ],
+    Prêtre: [
+      _talentBranch('lum','Lumière','Light','✨',[
+        { id:'pretre_lum_1', cost:1, ico:'✨', name:'Lumière Sacrée', nameEn:'Sacred Light', desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
+        { id:'pretre_lum_2', cost:2, ico:'✨', name:'Châtiment Divin', nameEn:'Divine Punishment', desc:'+8 ATQ · débloque le sort Rédemption', descEn:'+8 ATK · unlocks the Redemption spell', deltas:{atk:8}, flag:'pretre_redemption' },
+      ]),
+      _talentBranch('prot','Protection','Protection','🛡',[
+        { id:'pretre_prot_1', cost:1, ico:'🛡', name:'Bénédiction',      nameEn:'Blessing',        desc:'+6 DEF',            descEn:'+6 DEF',            deltas:{def:6} },
+        { id:'pretre_prot_2', cost:2, ico:'🛡', name:'Aura Protectrice', nameEn:'Protective Aura', desc:'+10 DEF, +30 PV max', descEn:'+10 DEF, +30 max HP', deltas:{def:10,hp:30} },
+      ]),
+      _talentBranch('soin','Soin','Healing','💚',[
+        { id:'pretre_soin_1', cost:1, ico:'💚', name:'Ferveur',       nameEn:'Fervor',       desc:'+15 Mana max', descEn:'+15 max Mana', deltas:{mana:15} },
+        { id:'pretre_soin_2', cost:2, ico:'💚', name:'Grâce Divine',  nameEn:'Divine Grace', desc:'+25 Mana max, +3 PV/combat', descEn:'+25 max Mana, +3 HP/fight', deltas:{mana:25,regen:3} },
+      ]),
+    ],
+    Barbare: [
+      _talentBranch('rage','Rage','Rage','🩸',[
+        { id:'barbare_rage_1', cost:1, ico:'🩸', name:'Sang Bouillonnant', nameEn:'Boiling Blood', desc:'Frenésie s\'active dès 40% PV (au lieu de 30%)', descEn:'Frenzy triggers below 40% HP (was 30%)', deltas:{}, flag:'barbare_rage_seuil' },
+        { id:'barbare_rage_2', cost:2, ico:'🩸', name:'Rage Éternelle',    nameEn:'Eternal Rage',  desc:'+8 ATQ · Frenésie inflige bien plus de dégâts', descEn:'+8 ATK · Frenzy deals much more damage', deltas:{atk:8}, flag:'barbare_rage_totale' },
+      ]),
+      _talentBranch('end','Endurance','Endurance','🏰',[
+        { id:'barbare_end_1', cost:1, ico:'🏰', name:'Peau Épaisse', nameEn:'Thick Skin', desc:'+35 PV max',         descEn:'+35 max HP',         deltas:{hp:35} },
+        { id:'barbare_end_2', cost:2, ico:'🏰', name:'Increvable',   nameEn:'Unbreakable', desc:'+60 PV max, +5 DEF', descEn:'+60 max HP, +5 DEF', deltas:{hp:60,def:5} },
+      ]),
+      _talentBranch('brut','Brutalité','Brutality','💪',[
+        { id:'barbare_brut_1', cost:1, ico:'💪', name:'Force Brute', nameEn:'Brute Force', desc:'+8 ATQ',  descEn:'+8 ATK',  deltas:{atk:8} },
+        { id:'barbare_brut_2', cost:2, ico:'💪', name:'Colosse',     nameEn:'Colossus',    desc:'+14 ATQ', descEn:'+14 ATK', deltas:{atk:14} },
+      ]),
+    ],
+  },
+  race: {
+    Humain: [
+      _talentBranch('savoir','Savoir','Knowledge','📖',[
+        { id:'humain_savoir_1', cost:1, ico:'📖', name:'Curiosité', nameEn:'Curiosity', desc:'+8% XP',  descEn:'+8% XP',  deltas:{xpPct:0.08} },
+        { id:'humain_savoir_2', cost:2, ico:'📖', name:'Érudition', nameEn:'Erudition', desc:'+12% XP', descEn:'+12% XP', deltas:{xpPct:0.12} },
+      ]),
+      _talentBranch('poly','Polyvalence','Versatility','⚖',[
+        { id:'humain_poly_1', cost:1, ico:'⚖', name:'Équilibre',    nameEn:'Balance',      desc:'+3 ATQ +3 DEF',           descEn:'+3 ATK +3 DEF',           deltas:{atk:3,def:3} },
+        { id:'humain_poly_2', cost:2, ico:'⚖', name:'Adaptabilité', nameEn:'Adaptability', desc:'+3 ATQ +3 DEF +20 PV max', descEn:'+3 ATK +3 DEF +20 max HP', deltas:{atk:3,def:3,hp:20} },
+      ]),
+      _talentBranch('chance','Chance','Luck','🍀',[
+        { id:'humain_chance_1', cost:1, ico:'🍀', name:'Bonne Étoile',       nameEn:'Lucky Star',     desc:'Crit +5%',    descEn:'Crit +5%',    deltas:{crit:0.05} },
+        { id:'humain_chance_2', cost:2, ico:'🍀', name:'Chance du Novice',   nameEn:'Novice\'s Luck', desc:'Esquive +5%', descEn:'Dodge +5%', deltas:{dodge:0.05} },
+      ]),
+    ],
+    Elfe: [
+      _talentBranch('agil','Agilité','Agility','🍃',[
+        { id:'elfe_agil_1', cost:1, ico:'🍃', name:'Grâce Elfique',  nameEn:'Elven Grace',  desc:'Esquive +6%',             descEn:'Dodge +6%',             deltas:{dodge:0.06} },
+        { id:'elfe_agil_2', cost:2, ico:'🍃', name:'Danse des Feuilles', nameEn:'Leaf Dance', desc:'Esquive +8%, Fuite +10%', descEn:'Dodge +8%, Flee +10%', deltas:{dodge:0.08,flee:0.10} },
+      ]),
+      _talentBranch('prec','Précision','Precision','🏹',[
+        { id:'elfe_prec_1', cost:1, ico:'🏹', name:'Œil Elfique',        nameEn:'Elven Eye',       desc:'Crit +6%',           descEn:'Crit +6%',           deltas:{crit:0.06} },
+        { id:'elfe_prec_2', cost:2, ico:'🏹', name:'Précision Ancestrale', nameEn:'Ancestral Precision', desc:'+6 ATQ, Crit +4%', descEn:'+6 ATK, Crit +4%', deltas:{atk:6,crit:0.04} },
+      ]),
+      _talentBranch('grace','Grâce','Grace','🌸',[
+        { id:'elfe_grace_1', cost:1, ico:'🌸', name:'Sérénité',            nameEn:'Serenity',           desc:'+2 PV/combat',   descEn:'+2 HP/fight', deltas:{regen:2} },
+        { id:'elfe_grace_2', cost:2, ico:'🌸', name:'Communion Sylvestre', nameEn:'Sylvan Communion',   desc:'Vol de vie +8%', descEn:'Lifesteal +8%', deltas:{lifesteal:0.08} },
+      ]),
+    ],
+    Nain: [
+      _talentBranch('robu','Robustesse','Sturdiness','⛰',[
+        { id:'nain_robu_1', cost:1, ico:'⛰', name:'Sang de Pierre', nameEn:'Stone Blood', desc:'+30 PV max',          descEn:'+30 max HP',         deltas:{hp:30} },
+        { id:'nain_robu_2', cost:2, ico:'⛰', name:'Peau de Granit', nameEn:'Granite Skin', desc:'+50 PV max, +5 DEF', descEn:'+50 max HP, +5 DEF', deltas:{hp:50,def:5} },
+      ]),
+      _talentBranch('tena','Ténacité','Tenacity','🛡',[
+        { id:'nain_tena_1', cost:1, ico:'🛡', name:'Ténacité',    nameEn:'Tenacity',   desc:'+6 DEF',            descEn:'+6 DEF',            deltas:{def:6} },
+        { id:'nain_tena_2', cost:2, ico:'🛡', name:'Inébranlable', nameEn:'Unshakable', desc:'+10 DEF, +2 PV/combat', descEn:'+10 DEF, +2 HP/fight', deltas:{def:10,regen:2} },
+      ]),
+      _talentBranch('forge','Forge','Forge','⚒',[
+        { id:'nain_forge_1', cost:1, ico:'⚒', name:'Bras de Forgeron', nameEn:'Smith\'s Arm', desc:'+5 ATQ', descEn:'+5 ATK', deltas:{atk:5} },
+        { id:'nain_forge_2', cost:2, ico:'⚒', name:'Marteau de Guerre', nameEn:'War Hammer',  desc:'+8 ATQ', descEn:'+8 ATK', deltas:{atk:8} },
+      ]),
+    ],
+    Orc: [
+      _talentBranch('brut','Brutalité','Brutality','💪',[
+        { id:'orc_brut_1', cost:1, ico:'💪', name:'Muscle',      nameEn:'Muscle',    desc:'+6 ATQ',  descEn:'+6 ATK',  deltas:{atk:6} },
+        { id:'orc_brut_2', cost:2, ico:'💪', name:'Écrasement',  nameEn:'Crushing',  desc:'+10 ATQ', descEn:'+10 ATK', deltas:{atk:10} },
+      ]),
+      _talentBranch('sauv','Sauvagerie','Savagery','🐗',[
+        { id:'orc_sauv_1', cost:1, ico:'🐗', name:'Instinct Sauvage', nameEn:'Wild Instinct', desc:'Crit +6%',          descEn:'Crit +6%',          deltas:{crit:0.06} },
+        { id:'orc_sauv_2', cost:2, ico:'🐗', name:'Fureur Primale',   nameEn:'Primal Fury',   desc:'Crit +8%, +6 ATQ', descEn:'Crit +8%, +6 ATK', deltas:{crit:0.08,atk:6} },
+      ]),
+      _talentBranch('resil','Résilience','Resilience','🩸',[
+        { id:'orc_resil_1', cost:1, ico:'🩸', name:'Cuir Épais',  nameEn:'Thick Hide', desc:'+25 PV max',             descEn:'+25 max HP',            deltas:{hp:25} },
+        { id:'orc_resil_2', cost:2, ico:'🩸', name:'Sang Vorace', nameEn:'Ravenous Blood', desc:'+40 PV max, Vol de vie +6%', descEn:'+40 max HP, Lifesteal +6%', deltas:{hp:40,lifesteal:0.06} },
+      ]),
+    ],
+  },
+};
+
+var Talents = (function(){
+  function _tree(scope, key) { return (TALENT_TREES[scope] && TALENT_TREES[scope][key]) || []; }
+  function classTree() { return _tree('class', State.cls); }
+  function raceTree()  { return _tree('race', State.race); }
+
+  function _findNode(scope, id) {
+    var trees = TALENT_TREES[scope] || {};
+    for (var key in trees) {
+      var branches = trees[key];
+      for (var b=0;b<branches.length;b++) {
+        for (var t=0;t<branches[b].nodes.length;t++) {
+          if (branches[b].nodes[t].id === id) return { node:branches[b].nodes[t], branch:branches[b], tier:t };
+        }
+      }
+    }
+    return null;
+  }
+
+  function _applyDeltas(d, sign) {
+    if (!d) return;
+    if (d.atk)       State.atk = Math.max(0, (State.atk||0) + sign*d.atk);
+    if (d.def)       State.def = Math.max(0, (State.def||0) + sign*d.def);
+    if (d.hp)        { State.hpMax = Math.max(1,(State.hpMax||1)+sign*d.hp); State.hp = sign>0 ? Math.min(State.hpMax,(State.hp||0)+d.hp) : Math.min(State.hp||0, State.hpMax); }
+    if (d.crit)      State.critBonus     = Math.max(0, (State.critBonus||0)     + sign*d.crit);
+    if (d.dodge)     State.dodgeBonus    = Math.max(0, (State.dodgeBonus||0)    + sign*d.dodge);
+    if (d.lifesteal) State.itemLifesteal = Math.max(0, (State.itemLifesteal||0) + sign*d.lifesteal);
+    if (d.flee)      State.fleeBonus     = Math.max(0, (State.fleeBonus||0)     + sign*d.flee);
+    if (d.regen)     State.regenPerFight = Math.max(0, (State.regenPerFight||0) + sign*d.regen);
+    if (d.mana)      State.manaMax       = Math.max(0, (State.manaMax||0)       + sign*d.mana);
+    if (d.xpPct)     State._talentXpPct  = Math.max(0, (State._talentXpPct||0)  + sign*d.xpPct);
+  }
+
+  // Rang 1 d'une branche : toujours accessible. Rang 2 : rang 1 requis.
+  function canUnlock(scope, node, tier) {
+    State.talents = State.talents || { class:{}, race:{} };
+    if (State.talents[scope][node.id]) return false; // déjà débloqué
+    if ((State.skillPoints||0) < node.cost) return false;
+    if (tier > 0) {
+      var found = _findNode(scope, node.id);
+      if (!found) return false;
+      var prev = found.branch.nodes[tier-1];
+      if (!State.talents[scope][prev.id]) return false;
+    }
+    return true;
+  }
+
+  function isUnlocked(scope, nodeId) {
+    State.talents = State.talents || { class:{}, race:{} };
+    return !!State.talents[scope][nodeId];
+  }
+
+  function unlock(scope, nodeId) {
+    var found = _findNode(scope, nodeId);
+    if (!found) return false;
+    if (!canUnlock(scope, found.node, found.tier)) return false;
+    _applyDeltas(found.node.deltas, 1);
+    if (found.node.flag) { State._talentFlags = State._talentFlags || {}; State._talentFlags[found.node.flag] = true; }
+    State.talents[scope][nodeId] = true;
+    State.skillPoints -= found.node.cost;
+    if (typeof HUD !== 'undefined') { HUD.updateHP(); }
+    State.saveRun();
+    return true;
+  }
+
+  // Réinitialise l'arbre courant (classe + race) et rembourse tous les points.
+  function respec() {
+    ['class','race'].forEach(function(scope){
+      var key = scope === 'class' ? State.cls : State.race;
+      var branches = _tree(scope, key);
+      branches.forEach(function(branch){
+        branch.nodes.slice().reverse().forEach(function(node){
+          if (isUnlocked(scope, node.id)) {
+            _applyDeltas(node.deltas, -1);
+            if (node.flag) State._talentFlags[node.flag] = false;
+            State.skillPoints += node.cost;
+            delete State.talents[scope][node.id];
+          }
+        });
+      });
+    });
+    if (typeof HUD !== 'undefined') HUD.updateHP();
+    State.saveRun();
+  }
+
+  function hasFlag(flag) { return !!(State._talentFlags && State._talentFlags[flag]); }
+
+  return {
+    classTree: classTree, raceTree: raceTree,
+    canUnlock: canUnlock, isUnlocked: isUnlocked, unlock: unlock,
+    respec: respec, hasFlag: hasFlag,
+  };
+})();
+
+var TalentsScreen = (function(){
+  var _tab = 'class';
+  var _from = 'hero-screen';
+
+  function _nodeState(scope, node, tier) {
+    if (Talents.isUnlocked(scope, node.id)) return 'unlocked';
+    if (Talents.canUnlock(scope, node, tier)) return 'available';
+    return 'locked';
+  }
+
+  function render() {
+    var pv = document.getElementById('tal-points-val');
+    if (pv) pv.textContent = State.skillPoints||0;
+    var body = document.getElementById('tal-body');
+    if (!body) return;
+    body.innerHTML = '';
+    var branches = _tab === 'class' ? Talents.classTree() : Talents.raceTree();
+    branches.forEach(function(branch){
+      var wrap = document.createElement('div');
+      wrap.className = 'tal-branch';
+      var label = (CGE_LANG==='en' && branch.labelEn) ? branch.labelEn : branch.label;
+      var html = '<div class="tal-branch-head"><span class="tal-branch-ico">'+branch.ico+'</span>'+label+'</div>';
+      branch.nodes.forEach(function(node, tier){
+        var st = _nodeState(_tab, node, tier);
+        var name = (CGE_LANG==='en' && node.nameEn) ? node.nameEn : node.name;
+        var desc = (CGE_LANG==='en' && node.descEn) ? node.descEn : node.desc;
+        html += '<div class="tal-node '+st+'" data-scope="'+_tab+'" data-id="'+node.id+'">'
+          + '<span class="tal-node-ico">'+(st==='locked' ? '🔒' : node.ico)+'</span>'
+          + '<div class="tal-node-info"><div class="tal-node-name">'+name+'</div><div class="tal-node-desc">'+desc+'</div></div>'
+          + '<div class="tal-node-cost">'+(st==='unlocked' ? '✓' : ('✦'+node.cost))+'</div>'
+          + '</div>';
+        if (tier < branch.nodes.length-1) html += '<div class="tal-connector">↓</div>';
+      });
+      wrap.innerHTML = html;
+      body.appendChild(wrap);
+    });
+    body.querySelectorAll('.tal-node.available').forEach(function(el){
+      el.addEventListener('click', function(){
+        Talents.unlock(el.dataset.scope, el.dataset.id);
+        render();
+        updateBadge();
+      });
+    });
+  }
+
+  function updateBadge() {
+    var badge = document.getElementById('eq-talents-badge');
+    if (!badge) return;
+    var n = State.skillPoints||0;
+    badge.textContent = n;
+    badge.classList.toggle('show', n > 0);
+  }
+
+  function open(from) {
+    _from = from || 'hero-screen';
+    _tab = 'class';
+    document.getElementById('tal-tab-class').classList.add('active');
+    document.getElementById('tal-tab-race').classList.remove('active');
+    Nav.go('talents-screen');
+    render();
+  }
+
+  function close() { Nav.go(_from); }
+
+  function tab(t) {
+    _tab = t;
+    document.getElementById('tal-tab-class').classList.toggle('active', t==='class');
+    document.getElementById('tal-tab-race').classList.toggle('active', t==='race');
+    render();
+  }
+
+  function respec() {
+    CGEModal.confirm(T('tal.respec.title'), T('tal.respec.body'), function(){
+      Talents.respec();
+      render();
+      updateBadge();
+    });
+  }
+
+  return { open:open, close:close, tab:tab, render:render, respec:respec, updateBadge:updateBadge };
+})();
 
 function getPassive() {
   var r = RACES.find(function(x){ return x.id===State.race; });
@@ -6660,6 +7091,8 @@ function gainXP(amount) {
   if (getPassive() === 'xp_boost') amount = Math.round(amount * 1.1);
   // Meta bonus XP
   if (Meta.bonuses.xpPct) amount = Math.round(amount * (1 + Meta.bonuses.xpPct));
+  // Talent (arbre de race/classe) : bonus XP additionnel
+  if (State._talentXpPct) amount = Math.round(amount * (1 + State._talentXpPct));
   State.xp = (State.xp||0) + amount;
   State.level = State.level||1;
   var threshold = XP_PER_LEVEL[Math.min(State.level, XP_PER_LEVEL.length-1)];
@@ -6667,6 +7100,7 @@ function gainXP(amount) {
   if (State.xp >= threshold && State.level < 30) {
     State.xp -= threshold;
     State.level++;
+    State.skillPoints = (State.skillPoints||0) + 1;
     triggerLevelUp();
     if (typeof Achievements !== 'undefined') Achievements.check('level');
   }
@@ -6678,22 +7112,19 @@ function updateXPBar() {
 
 function triggerLevelUp() {
   Sfx.levelup();
-  var pool = LEVEL_UP_CHOICES.slice().sort(function(){ return Math.random()-0.5; }).slice(0,3);
   document.getElementById('lu-level-num').textContent = State.level;
+  var sub = document.getElementById('lu-sub');
+  if (sub) sub.textContent = T('levelup.point').replace('{n}', State.skillPoints||0);
   var cards = document.getElementById('lu-cards');
   cards.innerHTML = '';
-  pool.forEach(function(choice) {
-    var d = document.createElement('div');
-    d.className = 'lu-card';
-    d.innerHTML = '<span class="lu-ico">'+choice.ico+'</span><div><div class="lu-name">'+(CGE_LANG==='en'&&choice.nameEn?choice.nameEn:choice.name)+'</div><div class="lu-desc">'+(CGE_LANG==='en'&&choice.descEn?choice.descEn:choice.desc)+'</div></div>';
-    d.addEventListener('click', function(){
-      try { choice.effect(); } catch(e){}
-      try { refreshCombatHp(); } catch(e){}
-      document.getElementById('levelup-overlay').classList.remove('show');
-      updateXPBar();
-    });
-    cards.appendChild(d);
+  var btn = document.createElement('button');
+  btn.className = 'lu-continue-btn';
+  btn.textContent = T('misc.continue');
+  btn.addEventListener('click', function(){
+    document.getElementById('levelup-overlay').classList.remove('show');
+    updateXPBar();
   });
+  cards.appendChild(btn);
   // Particle burst
   var overlay = document.getElementById('levelup-overlay');
   for (var _i=0; _i<22; _i++) {
@@ -9781,7 +10212,7 @@ var HUD = (function(){
     'dungeon-map':1,'combat-screen':1,'shop-screen':1,
     'inn-room':1,'town-screen':1,'world-map':1,'world-map-2':1,
     'taverne-screen':1,'equip-screen':1,'chest-screen':1,
-    'hero-screen':1,'rest-screen':1,'loot-screen':1
+    'hero-screen':1,'rest-screen':1,'loot-screen':1,'talents-screen':1
   };
   var FLOOR_LABELS = ['I','II','III','IV','V','VI'];
 
@@ -10184,6 +10615,10 @@ var App = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
+    State.skillPoints = 0;
+    State.talents = { class:{}, race:{} };
+    State._talentFlags = {};
+    State._talentXpPct = 0;
     // Mana (Mage & Prêtre uniquement)
     if (State.cls === 'Mage')   { State.manaMax = 60; State.mana = 60; }
     else if (State.cls === 'Prêtre') { State.manaMax = 50; State.mana = 50; }
@@ -10234,6 +10669,10 @@ var App = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0; State.dodgeBonus = 0; State.itemLifesteal = 0;
+    State.skillPoints = 0;
+    State.talents = { class:{}, race:{} };
+    State._talentFlags = {};
+    State._talentXpPct = 0;
     State._adReviveUsed = false;
     State._adGoldUsed = false;
     State._adChestUsed = false;
