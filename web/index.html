@@ -3638,7 +3638,7 @@ canvas#particles {
       </div>
       <div id="wm2-sub">Au-delà du passage — coupé du monde</div>
       <!-- Château Maudit -->
-      <div class="hotspot" id="hs2-chateau" onclick="WorldMap.enter('chateau_maudit')">
+      <div class="hotspot" id="hs2-chateau" onclick="ChateauHub.open('world-map-2')">
         <div class="hs-ring"></div>
         <div class="hs-lbl extreme">🏰 Château Maudit · Légendaire</div>
       </div>
@@ -7320,10 +7320,30 @@ var Talents = (function(){
 
   function hasFlag(flag) { return !!(State._talentFlags && State._talentFlags[flag]); }
 
+  // Rattrape les personnages déjà avancés (créés avant l'arbre de talents, ou
+  // montés de niveau ailleurs) : le total de points jamais gagnés est toujours
+  // niveau-1 (1 point par montée de niveau). On ne fait que compléter, jamais
+  // retirer, pour ne pas retirer des points déjà dépensés.
+  function syncSkillPoints() {
+    State.talents = State.talents || { class:{}, race:{} };
+    var spent = 0;
+    ['class','race'].forEach(function(scope){
+      var key = scope === 'class' ? State.cls : State.race;
+      _tree(scope, key).forEach(function(branch){
+        branch.nodes.forEach(function(node){
+          if (isUnlocked(scope, node.id)) spent += node.cost;
+        });
+      });
+    });
+    var totalEarned = Math.max(0, (State.level||1) - 1);
+    var shouldHave = Math.max(0, totalEarned - spent);
+    if (shouldHave > (State.skillPoints||0)) State.skillPoints = shouldHave;
+  }
+
   return {
     classTree: classTree, raceTree: raceTree,
     canUnlock: canUnlock, isUnlocked: isUnlocked, unlock: unlock,
-    respec: respec, hasFlag: hasFlag,
+    respec: respec, hasFlag: hasFlag, syncSkillPoints: syncSkillPoints,
   };
 })();
 
@@ -7375,6 +7395,7 @@ var TalentsScreen = (function(){
   function updateBadge() {
     var badge = document.getElementById('inn-talents-badge');
     if (!badge) return;
+    Talents.syncSkillPoints();
     var n = State.skillPoints||0;
     badge.textContent = n;
     badge.classList.toggle('show', n > 0);
@@ -7385,6 +7406,7 @@ var TalentsScreen = (function(){
     _tab = 'class';
     document.getElementById('tal-tab-class').classList.add('active');
     document.getElementById('tal-tab-race').classList.remove('active');
+    Talents.syncSkillPoints();
     Nav.go('talents-screen');
     render();
   }
@@ -8574,8 +8596,8 @@ var ChateauHub = (function(){
     WorldMap.enter('chateau_maudit');
   }
 
-  function open() {
-    State._heroFrom = 'town-screen';
+  function open(from) {
+    State._heroFrom = from || 'town-screen';
     Nav.go('chateau-hub-screen');
     render();
   }
@@ -10759,7 +10781,7 @@ var TownScreen = {
     var lvl2 = State.level||1;
     var rank2 = Meta.rank||0;
     if (lvl2 >= 10 && rank2 >= 1) {
-      ChateauHub.open();
+      ChateauHub.open('town-screen');
       return;
     }
     if (rank2 < 1) {
