@@ -4397,6 +4397,13 @@ var ProfilesScreen = {
     if (p.run && p.run.hp) {
       // déjà chargé dans localStorage par activateProfile
       if (State.loadRun()) {
+        // Rattrape un perso déjà créé avant l'ajout du classement (ou qui
+        // n'a pas terminé de donjon depuis) : on recalcule les records avec
+        // le run en cours et on pousse tout de suite au classement.
+        Meta.bestLevel = Math.max(Meta.bestLevel||1, State.level||1);
+        Meta.bestFloor = Math.max(Meta.bestFloor||0, State.floor||1);
+        Meta.save();
+        if (typeof CloudSync !== 'undefined' && CloudSync.pushLeaderboardEntry) CloudSync.pushLeaderboardEntry();
         Nav.go('inn-room');
         setTimeout(function(){ InnRoom.enter(); }, 300);
         return;
@@ -8547,6 +8554,15 @@ var GuildScreen = (function(){
 
   function open(from) {
     State._heroFrom = from || 'town-screen';
+    // Filet de sécurité : si un perso déjà avancé n'a jamais déclenché de
+    // push (créé avant l'ajout du classement, ou pas de donjon terminé
+    // depuis), on synchronise ses records dès qu'il ouvre la Guilde.
+    if (State.name) {
+      Meta.bestLevel = Math.max(Meta.bestLevel||1, State.level||1);
+      Meta.bestFloor = Math.max(Meta.bestFloor||0, State.floor||1);
+      Meta.save();
+      if (typeof CloudSync !== 'undefined' && CloudSync.pushLeaderboardEntry) CloudSync.pushLeaderboardEntry();
+    }
     tab('records');
     Nav.go('guild-screen');
   }
