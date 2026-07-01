@@ -1798,6 +1798,23 @@ canvas#particles {
 .gld-row-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5px; color: rgba(237,232,223,0.6); flex: 1; }
 .gld-row-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #C9A550; }
 
+/* Château — hub narratif */
+#ch-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px; border-bottom: 1px solid rgba(201,165,80,0.15);
+  flex-shrink: 0;
+}
+#ch-back { font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer; padding: 4px 10px; -webkit-tap-highlight-color: transparent; }
+#ch-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550; letter-spacing: 1px; }
+#ch-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 20px 16px; flex-shrink: 0; border-bottom: 1px solid rgba(201,165,80,0.1);
+}
+#ch-rank-ico { font-size: 30px; margin-bottom: 6px; }
+#ch-rank-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5px; color: rgba(237,232,223,0.6); }
+#ch-rank-val { font-family: 'Cinzel Decorative', serif; font-size: 18px; color: #EDE8DF; margin-top: 4px; }
+#ch-actions { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
 /* Classement mondial */
 #gld-lb-sort { display: flex; gap: 8px; padding: 12px 16px 4px; flex-shrink: 0; }
 .gld-sort-btn {
@@ -3519,6 +3536,47 @@ canvas#particles {
       </div>
     </div>
 
+    <!-- ── CHÂTEAU : HUB NARRATIF ── -->
+    <div id="chateau-hub-screen" class="screen has-game-header">
+      <div id="ch-header">
+        <div id="ch-back" onclick="ChateauHub.close()">←</div>
+        <div id="ch-title">🏰 <span data-i18n="chateau.hub.title">Le Château</span></div>
+        <div style="width:40px"></div>
+      </div>
+      <div id="ch-card">
+        <div id="ch-rank-ico">🎖</div>
+        <div id="ch-rank-label" data-i18n="chateau.rank.label">Rang au Château</div>
+        <div id="ch-rank-val">—</div>
+      </div>
+      <div id="ch-actions">
+        <div class="gld-row" style="cursor:pointer" onclick="Quests.openNpc('corvin')">
+          <span class="gld-row-ico">🪓</span>
+          <span class="gld-row-label" data-i18n="npc.corvin">Maître Corvin</span>
+          <span class="gld-row-val">›</span>
+        </div>
+        <div class="gld-row" style="cursor:pointer" onclick="Quests.openNpc('conseiller')">
+          <span class="gld-row-ico">📜</span>
+          <span class="gld-row-label" data-i18n="npc.conseiller">Le Conseiller</span>
+          <span class="gld-row-val">›</span>
+        </div>
+        <div class="gld-row" style="cursor:pointer" onclick="Quests.openNpc('duc')">
+          <span class="gld-row-ico">👑</span>
+          <span class="gld-row-label" data-i18n="npc.duc">Duc Wulfric</span>
+          <span class="gld-row-val">›</span>
+        </div>
+        <div class="gld-row" style="cursor:pointer" onclick="ChateauHub.openTrials()">
+          <span class="gld-row-ico">⚔</span>
+          <span class="gld-row-label" data-i18n="chateau.training">Salle d'Entraînement</span>
+          <span class="gld-row-val">›</span>
+        </div>
+        <div class="gld-row" style="cursor:pointer" onclick="ChateauHub.goDungeon()">
+          <span class="gld-row-ico">⚰</span>
+          <span class="gld-row-label" data-i18n="chateau.dungeon">Donjon : Château Maudit</span>
+          <span class="gld-row-val">›</span>
+        </div>
+      </div>
+    </div>
+
     <!-- ── WORLD MAP (région) ── -->
     <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
@@ -3580,7 +3638,7 @@ canvas#particles {
       </div>
       <div id="wm2-sub">Au-delà du passage — coupé du monde</div>
       <!-- Château Maudit -->
-      <div class="hotspot" id="hs2-chateau" onclick="WorldMap.enter('chateau_maudit')">
+      <div class="hotspot" id="hs2-chateau" onclick="ChateauHub.open('world-map-2')">
         <div class="hs-ring"></div>
         <div class="hs-lbl extreme">🏰 Château Maudit · Légendaire</div>
       </div>
@@ -3741,6 +3799,7 @@ var Integrity = {
     d.bestFloor  = _clampNum(d.bestFloor, 0, 10, 0);
     d.bestLevel  = _clampNum(d.bestLevel, 1, 30, 1);
     d.rank       = _clampNum(d.rank, 0, 20, 0);
+    d.chateauRank = _clampNum(d.chateauRank, 0, 3, 0);
     d._align     = _clampNum(d._align, -5, 5, 0);
     var b = d.bonuses;
     if (b && typeof b === 'object') {
@@ -4397,6 +4456,13 @@ var ProfilesScreen = {
     if (p.run && p.run.hp) {
       // déjà chargé dans localStorage par activateProfile
       if (State.loadRun()) {
+        // Rattrape un perso déjà créé avant l'ajout du classement (ou qui
+        // n'a pas terminé de donjon depuis) : on recalcule les records avec
+        // le run en cours et on pousse tout de suite au classement.
+        Meta.bestLevel = Math.max(Meta.bestLevel||1, State.level||1);
+        Meta.bestFloor = Math.max(Meta.bestFloor||0, State.floor||1);
+        Meta.save();
+        if (typeof CloudSync !== 'undefined' && CloudSync.pushLeaderboardEntry) CloudSync.pushLeaderboardEntry();
         Nav.go('inn-room');
         setTimeout(function(){ InnRoom.enter(); }, 300);
         return;
@@ -4896,6 +4962,9 @@ var STRINGS = {
     'npc.marta': 'Marta',
     'npc.aldric': 'Capitaine Aldric',
     'npc.elise': 'Sœur Élise',
+    'npc.corvin': 'Maître Corvin',
+    'npc.conseiller': 'Le Conseiller',
+    'npc.duc': 'Duc Wulfric',
     // Quest UI
     'quest.accept': 'Accepter la quête',
     'quest.claim': 'Réclamer la récompense',
@@ -4946,6 +5015,20 @@ var STRINGS = {
     'gld.detail.talents': 'Talents',
     'gld.detail.noequip': 'Aucun équipement.',
     'gld.detail.notalents': 'Aucun talent débloqué.',
+    'gld.chateaurank': 'Rang au Château',
+    'chateau.hub.title': 'Le Château',
+    'chateau.rank.label': 'Rang au Château',
+    'chateau.training': 'Salle d\'Entraînement',
+    'chateau.dungeon': 'Donjon : Château Maudit',
+    'gauntlet.notready.title': 'Pas encore prêt',
+    'gauntlet.notready.body': 'Aucune épreuve n\'est disponible pour l\'instant. Parle aux PNJ du Château pour progresser.',
+    'gauntlet.confirm.title': 'Entrer dans l\'épreuve ?',
+    'gauntlet.confirm.body': '{n} combats d\'affilée, sans repos ni soin entre chaque. Prêt ?',
+    'gauntlet.win.title': 'Épreuve réussie !',
+    'gauntlet.win.body.ecuyer': 'Tu tiens ton rang face à trois adversaires d\'affilée, sans un instant de repos.\n\nCorvin hoche la tête.\n"Écuyer. C\'est mérité."',
+    'gauntlet.win.body.chevalier': 'Quatre combats. Aucun répit. Le Conseiller referme son registre.\n\n"Chevalier. Le Château te reconnaît."',
+    'gauntlet.win.body.guerre': 'Cinq combats sans faiblir. Le Duc Wulfric se lève de son trône.\n\n"Chef de Guerre. Cette ville est désormais sous ta garde."',
+    'gauntlet.nopotion': 'Aucun soin autorisé pendant l\'épreuve !',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
     'misc.available': 'Disponible',
@@ -5303,6 +5386,9 @@ var STRINGS = {
     'npc.marta': 'Marta',
     'npc.aldric': 'Captain Aldric',
     'npc.elise': 'Sister Elise',
+    'npc.corvin': 'Master-at-Arms Corvin',
+    'npc.conseiller': 'The Counsellor',
+    'npc.duc': 'Duke Wulfric',
     // Quest UI
     'quest.accept': 'Accept quest',
     'quest.claim': 'Claim reward',
@@ -5353,6 +5439,20 @@ var STRINGS = {
     'gld.detail.talents': 'Talents',
     'gld.detail.noequip': 'No equipment.',
     'gld.detail.notalents': 'No talent unlocked.',
+    'gld.chateaurank': 'Castle Rank',
+    'chateau.hub.title': 'The Castle',
+    'chateau.rank.label': 'Castle Rank',
+    'chateau.training': 'Training Hall',
+    'chateau.dungeon': 'Dungeon: The Cursed Castle',
+    'gauntlet.notready.title': 'Not ready yet',
+    'gauntlet.notready.body': 'No trial is available right now. Talk to the Castle\'s NPCs to progress.',
+    'gauntlet.confirm.title': 'Enter the trial?',
+    'gauntlet.confirm.body': '{n} fights in a row, with no rest or healing between them. Ready?',
+    'gauntlet.win.title': 'Trial complete!',
+    'gauntlet.win.body.ecuyer': 'You held your ground against three opponents in a row, without a moment\'s rest.\n\nCorvin nods.\n"Squire. Well earned."',
+    'gauntlet.win.body.chevalier': 'Four fights. No respite. The Counsellor closes his ledger.\n\n"Knight. The Castle recognises you."',
+    'gauntlet.win.body.guerre': 'Five fights without faltering. Duke Wulfric rises from his throne.\n\n"Warlord. This town is now under your watch."',
+    'gauntlet.nopotion': 'No healing allowed during the trial!',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
     'misc.available': 'Available',
@@ -5957,6 +6057,11 @@ var Combat = (function(){
     document.querySelectorAll('.cb-btn').forEach(function(b){
       if (!b.classList.contains('cb-btn-flee')) b.disabled = !enabled;
     });
+    // Salle d'Entraînement : le bouton potion reste bloqué en permanence (aucun soin autorisé)
+    if (State._gauntletTrial) {
+      var pBtn = document.getElementById('btn-potion');
+      if (pBtn) { pBtn.disabled = true; pBtn.style.opacity = '0.4'; }
+    }
     if (enabled) startTimer(); else clearTimer();
   }
 
@@ -6007,8 +6112,9 @@ var Combat = (function(){
     var cnt = document.getElementById('cb-potion-count');
     var n = State.potions||0;
     if (cnt) cnt.textContent = '×'+n;
-    if (btn) btn.disabled = (n <= 0);
-    if (btn) btn.style.opacity = n <= 0 ? '0.4' : '1';
+    var disabled = (n <= 0) || !!State._gauntletTrial;
+    if (btn) btn.disabled = disabled;
+    if (btn) btn.style.opacity = disabled ? '0.4' : '1';
   }
 
   function updateSkillBtn() {
@@ -6074,6 +6180,24 @@ var Combat = (function(){
     statuses.forEach(function(s){ if ((s.type==='shield'||s.type==='defend') && s.val) State.def -= s.val; });
     State.persistentStatuses = statuses.filter(function(s){ return s.type==='poison'||s.type==='burn'; });
     statuses = []; enemyStatuses = []; renderStatuses();
+
+    // ── Salle d'Entraînement (Château) : combats enchaînés, sans loot/heal ──
+    if (State._gauntletTrial) {
+      if (victory) {
+        var sprElG = document.getElementById('cb-enemy-sprite');
+        if (sprElG) { sprElG.classList.remove('hit'); sprElG.classList.add('dead'); }
+        State.kills = (State.kills||0) + 1;
+        Meta.totalKills = (Meta.totalKills||0) + 1;
+        document.dispatchEvent(new CustomEvent('cge:kill'));
+        gainXP(enemy.xp||10);
+        if (typeof Achievements !== 'undefined') Achievements.check('kill');
+        Sfx.gold();
+        setTimeout(function(){ Gauntlet.advance(); }, 700);
+        return;
+      }
+      Gauntlet.abort(); // défaite : on quitte l'épreuve, la pénalité normale s'applique ci-dessous
+    }
+
     if (victory) {
       var sprEl = document.getElementById('cb-enemy-sprite');
       if (sprEl) { sprEl.classList.remove('hit'); sprEl.classList.add('dead'); }
@@ -6247,8 +6371,8 @@ var Combat = (function(){
       skillCd = 0;
       turnLocked = false;
       logLines = [];
-      // Regen mana partielle entre les combats (50% récupéré)
-      if (hasMana() && State.manaMax > 0) {
+      // Regen mana partielle entre les combats (50% récupéré) — désactivée pendant une épreuve (aucun repos)
+      if (hasMana() && State.manaMax > 0 && !State._gauntletTrial) {
         State.mana = Math.min(State.manaMax, (State.mana||0) + Math.round(State.manaMax * 0.5));
       }
       updateManaBar();
@@ -6262,7 +6386,15 @@ var Combat = (function(){
       sprEl2.classList.remove('hit','dead');
       sprEl2.textContent = enemy.sprite;
       document.getElementById('cb-enemy-name').textContent   = CGE_LANG === 'en' && enemy.nameEn ? enemy.nameEn : enemy.name;
-      document.getElementById('cb-floor-num').textContent    = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
+      var floorBadgeEl = document.getElementById('cb-floor-badge');
+      if (State._gauntletTrial) {
+        var gTrial = GAUNTLET_TRIALS[State._gauntletTrial];
+        if (floorBadgeEl) floorBadgeEl.textContent = CGE_LANG==='en' ? 'Trial' : 'Épreuve';
+        document.getElementById('cb-floor-num').textContent = ((State._gauntletIdx||0)+1) + ' / ' + (gTrial ? gTrial.count : '?');
+      } else {
+        if (floorBadgeEl) floorBadgeEl.textContent = CGE_LANG==='en' ? 'Floor' : 'Étage';
+        document.getElementById('cb-floor-num').textContent = ['I','II','III','IV','V','VI'][(State.floor||1)-1]||'I';
+      }
       document.getElementById('btn-skill').querySelector('.cb-ico').textContent = c ? ({'Guerrier':'🛡','Mage':'🔥','Chasseur':'🏹','Assassin':'🗡','Prêtre':'💚','Barbare':'🪓'}[c.id]||'✨') : '✨';
       document.getElementById('combat-result').classList.remove('show');
       statuses = (State.persistentStatuses||[]).map(function(s){ return Object.assign({},s); });
@@ -6272,8 +6404,8 @@ var Combat = (function(){
       updatePlayerUI();
       updateEnemyUI();
       updateSkillBtn();
-      updatePotionBtn();
       setButtons(true);
+      updatePotionBtn();
       log((CGE_LANG==='en'?'⚔ '+(enemy.nameEn||enemy.name)+' emerges from the shadows!':'⚔ '+enemy.name+' surgit de l\'ombre !')+(enemy.boss?' ☠':''),'system');
       // Tutoriel combat — une seule fois
       if (!Meta.tutoCombat) {
@@ -6426,6 +6558,7 @@ var Combat = (function(){
 
     usePotion: function() {
       if (turnLocked) return;
+      if (State._gauntletTrial) { log(T('gauntlet.nopotion'),'system'); return; }
       if ((State.potions||0) <= 0) { log(T('cl.nopotions'),'system'); return; }
       clearTimer();
       State.potions--;
@@ -6443,6 +6576,7 @@ var Combat = (function(){
 
     showItemMenu: function() {
       if (turnLocked) return;
+      if (State._gauntletTrial) { log(T('gauntlet.nopotion'),'system'); return; }
       clearTimer();
       var rows = document.getElementById('item-rows');
       rows.innerHTML = '';
@@ -6533,7 +6667,12 @@ var Combat = (function(){
       if (Math.random() < fleeChance) {
         Sfx.flee();
         log(T('cl.flee'),'system');
-        setTimeout(function(){ Nav.go('dungeon-map'); }, 700);
+        if (State._gauntletTrial) {
+          Gauntlet.abort();
+          setTimeout(function(){ Nav.go('chateau-hub-screen'); }, 700);
+        } else {
+          setTimeout(function(){ Nav.go('dungeon-map'); }, 700);
+        }
       } else {
         log(T('cl.fleefail'),'system');
         enemyTurn();
@@ -7181,10 +7320,30 @@ var Talents = (function(){
 
   function hasFlag(flag) { return !!(State._talentFlags && State._talentFlags[flag]); }
 
+  // Rattrape les personnages déjà avancés (créés avant l'arbre de talents, ou
+  // montés de niveau ailleurs) : le total de points jamais gagnés est toujours
+  // niveau-1 (1 point par montée de niveau). On ne fait que compléter, jamais
+  // retirer, pour ne pas retirer des points déjà dépensés.
+  function syncSkillPoints() {
+    State.talents = State.talents || { class:{}, race:{} };
+    var spent = 0;
+    ['class','race'].forEach(function(scope){
+      var key = scope === 'class' ? State.cls : State.race;
+      _tree(scope, key).forEach(function(branch){
+        branch.nodes.forEach(function(node){
+          if (isUnlocked(scope, node.id)) spent += node.cost;
+        });
+      });
+    });
+    var totalEarned = Math.max(0, (State.level||1) - 1);
+    var shouldHave = Math.max(0, totalEarned - spent);
+    if (shouldHave > (State.skillPoints||0)) State.skillPoints = shouldHave;
+  }
+
   return {
     classTree: classTree, raceTree: raceTree,
     canUnlock: canUnlock, isUnlocked: isUnlocked, unlock: unlock,
-    respec: respec, hasFlag: hasFlag,
+    respec: respec, hasFlag: hasFlag, syncSkillPoints: syncSkillPoints,
   };
 })();
 
@@ -7236,6 +7395,7 @@ var TalentsScreen = (function(){
   function updateBadge() {
     var badge = document.getElementById('inn-talents-badge');
     if (!badge) return;
+    Talents.syncSkillPoints();
     var n = State.skillPoints||0;
     badge.textContent = n;
     badge.classList.toggle('show', n > 0);
@@ -7246,6 +7406,7 @@ var TalentsScreen = (function(){
     _tab = 'class';
     document.getElementById('tal-tab-class').classList.add('active');
     document.getElementById('tal-tab-race').classList.remove('active');
+    Talents.syncSkillPoints();
     Nav.go('talents-screen');
     render();
   }
@@ -7738,6 +7899,81 @@ var QUEST_DEFS = [
       return '— Le Dieu de la Mémoire incline légèrement la tête.\n\n"Tu n\'es pas venu pour protéger. Tu es venu pour ouvrir."\n\nIl sourit — pas comme un dieu. Comme quelqu\'un qui attendait depuis longtemps.\n\n"J\'ai passé cent ans dans cette prison. J\'ai eu le temps de réfléchir à ce que j\'avais fait."\n\n"Peut-être que je suis différent maintenant. Peut-être pas. Mais toi... tu as choisi de ne pas décider à ma place."\n\n"Brise le cristal. Et on verra ensemble ce qui arrive."\n\nBertrand lève son verre lentement.\n\n'+libRace+'\n\n"À l\'Éveillé. Celui qui a choisi l\'inconnu."';
     }
   },
+
+  // ── Campagne du Château (Écuyer → Chevalier → Chef de Guerre) ──────
+  { id:'chateau_corvin_1', npc:'corvin', act:5,
+    title:'Le Serment de l\'Écuyer', titleEn:'The Squire\'s Oath',
+    desc:'Maître Corvin t\'a vu franchir les grilles. Il veut savoir si tu tiens vraiment une arme, ou si tu as eu de la chance.\n→ Porte tes victoires à 150.',
+    descEn:'Master-at-Arms Corvin saw you pass the gates. He wants to know if you truly hold a weapon, or if you\'ve just been lucky.\n→ Bring your victories to 150.',
+    check:function(){ return (Meta.totalKills||0)>=150; },
+    reward:{ gold:150 },
+    rewardTxt:'150 🪙 + le Serment de l\'Écuyer',
+    rewardTxtEn:'150 🪙 + the Squire\'s Oath',
+    claimText:'Corvin pose sa hache d\'entraînement.\n\n"150 ennemis. Ce n\'est pas rien."\n\nIl te tend un brassard de cuir frappé du blason du Château.\n\n"Porte ça. À partir d\'aujourd\'hui, tu es écuyer. Ce que tu feras de ce titre... ne dépend que de toi."',
+    claimTextEn:'Corvin sets down his training axe.\n\n"150 enemies. That\'s no small thing."\n\nHe hands you a leather armband stamped with the Castle\'s crest.\n\n"Wear that. As of today, you\'re a squire. What you do with that title... is up to you."'
+  },
+  { id:'chateau_corvin_2', npc:'corvin', act:5,
+    unlockAfter:'chateau_corvin_1',
+    title:'Le Carnet des Recrues', titleEn:'The Recruit\'s Ledger',
+    desc:'Corvin veut voir si tu sais survivre à répétition, sans jamais te reposer entre deux campagnes.\n→ Termine 8 expéditions.',
+    descEn:'Corvin wants to see if you can survive again and again, without ever resting between campaigns.\n→ Complete 8 expeditions.',
+    check:function(){ return (Meta.totalRuns||0)>=8; },
+    reward:{ gold:200 },
+    rewardTxt:'200 🪙 + accès à la Salle d\'Entraînement',
+    rewardTxtEn:'200 🪙 + access to the Training Hall',
+    claimText:'"Bien. Tu reviens, encore et encore. C\'est ça, être un soldat du Château — pas la force. La constance."\n\nIl désigne une porte de pierre au fond de la cour.\n\n"La Salle d\'Entraînement est ouverte pour toi. Prouve que tu peux tenir plusieurs combats d\'affilée, sans un instant de répit. Réussis, et je te présenterai au Conseiller."',
+    claimTextEn:'"Good. You keep coming back, again and again. That\'s what being a soldier of the Castle means — not strength. Consistency."\n\nHe points to a stone door at the far end of the courtyard.\n\n"The Training Hall is open to you. Prove you can hold through several fights in a row, without a moment\'s rest. Succeed, and I\'ll present you to the Counsellor."'
+  },
+
+  { id:'chateau_conseiller_1', npc:'conseiller', act:5,
+    condition:function(){ return !!(Meta.completedQuests||{})['chateau_trial_ecuyer']; },
+    title:'L\'Audience du Conseiller', titleEn:'The Counsellor\'s Audience',
+    desc:'Le Conseiller t\'a fait mander. Il ne reçoit que ceux dont Corvin garantit la valeur.\n→ Porte tes victoires à 250.',
+    descEn:'The Counsellor has summoned you. He only receives those Corvin vouches for.\n→ Bring your victories to 250.',
+    check:function(){ return (Meta.totalKills||0)>=250; },
+    reward:{ gold:300 },
+    rewardTxt:'300 🪙 + la confiance du Conseiller',
+    rewardTxtEn:'300 🪙 + the Counsellor\'s trust',
+    claimText:'Le Conseiller referme un épais registre relié de cuir.\n\n"Corvin ne se trompe presque jamais sur les hommes. J\'espère qu\'il ne se trompe pas sur toi."\n\nIl te fixe un instant de trop.\n\n"Sais-tu pourquoi ce Château existe, aventurier ? Pas pour la couronne. Pas pour l\'or. Pour surveiller ce qui dort sous cette région depuis mille ans."',
+    claimTextEn:'The Counsellor closes a thick leather-bound ledger.\n\n"Corvin is almost never wrong about men. I hope he isn\'t wrong about you."\n\nHe stares at you a moment too long.\n\n"Do you know why this Castle exists, adventurer? Not for the crown. Not for gold. To watch over what has slept beneath this land for a thousand years."'
+  },
+  { id:'chateau_conseiller_2', npc:'conseiller', act:5,
+    unlockAfter:'chateau_conseiller_1',
+    title:'Le Registre Scellé', titleEn:'The Sealed Registry',
+    desc:'Le Conseiller veut s\'assurer que tu tiendras la distance avant de te révéler la vérité complète.\n→ Termine 15 expéditions.',
+    descEn:'The Counsellor wants to be sure you\'ll go the distance before revealing the whole truth.\n→ Complete 15 expeditions.',
+    check:function(){ return (Meta.totalRuns||0)>=15; },
+    reward:{ gold:400 },
+    rewardTxt:'400 🪙 + le rang de Chevalier',
+    rewardTxtEn:'400 🪙 + the rank of Knight',
+    claimText:'"Chaque génération de chevaliers protège un secret qu\'elle ne comprend qu\'à moitié."\n\nIl pose une main sur le registre.\n\n"Les Cryptes ne sont pas qu\'un donjon à piller. Elles sont une prison. Et ce Château a été bâti pour la même raison que ton épée existe : au cas où le sceau céderait."\n\nIl se lève.\n\n"Tu es prêt pour le rang de Chevalier. La Salle d\'Entraînement t\'attend — une épreuve plus dure que la précédente. Réussis, et le Duc voudra te rencontrer."',
+    claimTextEn:'"Every generation of knights protects a secret it only half understands."\n\nHe rests a hand on the ledger.\n\n"The Crypts aren\'t just a dungeon to loot. They are a prison. And this Castle was built for the same reason your sword exists: in case the seal ever gives way."\n\nHe stands.\n\n"You\'re ready for the rank of Knight. The Training Hall awaits — a harder trial than the last. Succeed, and the Duke will want to meet you."'
+  },
+
+  { id:'chateau_duc_1', npc:'duc', act:5,
+    condition:function(){ return !!(Meta.completedQuests||{})['chateau_trial_chevalier']; },
+    title:'Devant le Duc', titleEn:'Before the Duke',
+    desc:'Le Duc Wulfric veut juger lui-même de ta valeur avant de te confier le commandement.\n→ Porte tes victoires à 400.',
+    descEn:'Duke Wulfric wants to judge your worth himself before entrusting you with command.\n→ Bring your victories to 400.',
+    check:function(){ return (Meta.totalKills||0)>=400; },
+    reward:{ gold:500 },
+    rewardTxt:'500 🪙 + l\'attention du Duc',
+    rewardTxtEn:'500 🪙 + the Duke\'s attention',
+    claimText:'Le Duc Wulfric t\'observe depuis son trône de pierre, sans un mot pendant un long moment.\n\n"Le Conseiller m\'a parlé de toi. Corvin aussi. Deux hommes qui ne s\'accordent jamais — sauf sur ton compte."\n\nIl se penche.\n\n"Sais-tu combien de Chefs de Guerre ce Château a connu en cent ans ? Trois. Parce que ce rang n\'est pas un titre. C\'est un serment : si le sceau des Cryptes cède un jour, c\'est toi qui devras rassembler cette ville et la défendre."',
+    claimTextEn:'Duke Wulfric watches you from his stone throne, silent for a long moment.\n\n"The Counsellor spoke of you. So did Corvin. Two men who never agree — except about you."\n\nHe leans forward.\n\n"Do you know how many Warlords this Castle has known in a hundred years? Three. Because this rank isn\'t a title. It\'s an oath: if the Crypts\' seal ever breaks, you will be the one to rally this town and defend it."'
+  },
+  { id:'chateau_duc_2', npc:'duc', act:5,
+    unlockAfter:'chateau_duc_1',
+    title:'Le Serment du Chef de Guerre', titleEn:'The Warlord\'s Oath',
+    desc:'Le Duc attend une dernière preuve avant de te confier ce fardeau.\n→ Niveau 25 et 25 expéditions accomplies.',
+    descEn:'The Duke awaits one last proof before entrusting you with this burden.\n→ Level 25 and 25 expeditions completed.',
+    check:function(){ return (State.level||1)>=25 && (Meta.totalRuns||0)>=25; },
+    reward:{ gold:800 },
+    rewardTxt:'800 🪙 + le rang de Chef de Guerre',
+    rewardTxtEn:'800 🪙 + the rank of Warlord',
+    claimText:'"Niveau 25. Vingt-cinq expéditions. Tu ne t\'es jamais arrêté."\n\nIl se lève de son trône — la première fois que quiconque l\'a vu faire, dit-on.\n\n"Alors va, à la Salle d\'Entraînement, une dernière fois. Si tu en ressors debout, ce Château — et cette ville — seront sous ta garde autant que sous la mienne."',
+    claimTextEn:'"Level 25. Twenty-five expeditions. You never stopped."\n\nHe rises from his throne — the first time anyone has ever seen him do so, they say.\n\n"Then go, to the Training Hall, one last time. If you walk out standing, this Castle — and this town — will be under your watch as much as mine."'
+  },
 ];
 
 // English claimText for quests (kept separate to avoid bloating QUEST_DEFS)
@@ -8104,6 +8340,65 @@ var NPC_DATA = {
       return '"Every soul can find its path. Perhaps not here. Not yet."';
     }
   },
+  corvin: {
+    name:'Maître Corvin',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['chateau_corvin_1']) return '"*t\'évalue de haut en bas*\nUn autre aventurier qui pense pouvoir franchir ces grilles.\n\nMontre-moi ce que tu vaux avant de perdre mon temps."';
+      if (!done['chateau_corvin_2']) return '"L\'écuyer revient. Bien."\n\nIl frappe le sol de sa hache d\'entraînement.\n\n"Une victoire ne prouve rien. La constance, si."';
+      if (!(Meta.completedQuests||{})['chateau_trial_ecuyer']) return '"La Salle d\'Entraînement t\'attend. Plusieurs combats, sans repos entre chaque."\n\nIl te regarde durement.\n\n"Ne t\'attends pas à ce que je te plaigne si tu échoues."';
+      if (!done['chateau_conseiller_1']) return '"Tu as tenu la Salle d\'Entraînement. J\'ai prévenu le Conseiller."\n\nIl te tend la main, ce qui semble rare chez lui.\n\n"Va le voir. La suite ne me regarde plus."';
+      return '"Tu es allé plus loin que la plupart des recrues que j\'ai formées."\n\nIl hoche la tête, presque un sourire.\n\n"Le Château te doit du respect, écuyer. Ou devrais-je dire... autre chose, maintenant."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      if (!done['chateau_corvin_1']) return '"*sizes you up*\nAnother adventurer who thinks they can walk through these gates.\n\nShow me what you\'re worth before you waste my time."';
+      if (!done['chateau_corvin_2']) return '"The squire returns. Good."\n\nHe strikes the ground with his training axe.\n\n"One victory proves nothing. Consistency does."';
+      if (!(Meta.completedQuests||{})['chateau_trial_ecuyer']) return '"The Training Hall awaits you. Several fights, no rest between them."\n\nHe looks at you sternly.\n\n"Don\'t expect any pity from me if you fail."';
+      if (!done['chateau_conseiller_1']) return '"You held the Training Hall. I told the Counsellor."\n\nHe offers his hand — rare for him, it seems.\n\n"Go see him. What comes next isn\'t mine to give."';
+      return '"You went further than most recruits I\'ve trained."\n\nHe nods, almost a smile.\n\n"The Castle owes you respect, squire. Or should I say... something else, now."';
+    }
+  },
+  conseiller: {
+    name:'Le Conseiller',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!(Meta.completedQuests||{})['chateau_trial_ecuyer']) return '"*sans lever les yeux de ses parchemins*\nJe ne reçois pas les recrues. Revenez quand Corvin vous en jugera digne."';
+      if (!done['chateau_conseiller_1']) return '"Corvin m\'a parlé de vous."\n\nIl repose sa plume.\n\n"Voyons si ses éloges étaient mérités."';
+      if (!done['chateau_conseiller_2']) return '"Vous progressez. Bien."\n\nIl feuillette son registre sans le refermer.\n\n"Il reste une chose à établir avant que je vous dise tout."';
+      if (!(Meta.completedQuests||{})['chateau_trial_chevalier']) return '"La Salle d\'Entraînement, une fois de plus — plus dure, cette fois."\n\nIl vous regarde par-dessus ses lunettes.\n\n"Le Duc n\'accorde pas d\'audience aux imprudents."';
+      if (!done['chateau_duc_1']) return '"Vous avez tenu. Le Duc est informé."\n\nIl referme enfin son registre.\n\n"Ce qui vous attend maintenant dépasse ce que je peux vous enseigner."';
+      return '"Chevalier de ce Château."\n\nIl incline légèrement la tête — un geste qu\'on ne lui a presque jamais vu faire.\n\n"Le reste appartient au Duc et à vous."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      if (!(Meta.completedQuests||{})['chateau_trial_ecuyer']) return '"*without looking up from his scrolls*\nI don\'t receive recruits. Come back once Corvin deems you worthy."';
+      if (!done['chateau_conseiller_1']) return '"Corvin spoke of you."\n\nHe sets down his quill.\n\n"Let\'s see if his praise was earned."';
+      if (!done['chateau_conseiller_2']) return '"You\'re progressing. Good."\n\nHe leafs through his ledger without closing it.\n\n"One thing remains to be established before I tell you everything."';
+      if (!(Meta.completedQuests||{})['chateau_trial_chevalier']) return '"The Training Hall, once more — harder, this time."\n\nHe looks at you over his glasses.\n\n"The Duke grants no audience to the reckless."';
+      if (!done['chateau_duc_1']) return '"You held on. The Duke has been informed."\n\nHe finally closes his ledger.\n\n"What awaits you now is beyond what I can teach."';
+      return '"Knight of this Castle."\n\nHe tilts his head slightly — a gesture almost no one has ever seen him make.\n\n"The rest belongs to the Duke, and to you."';
+    }
+  },
+  duc: {
+    name:'Duc Wulfric',
+    dialogue: function() {
+      var done = Meta.completedQuests||{};
+      if (!(Meta.completedQuests||{})['chateau_trial_chevalier']) return '"*depuis son trône, sans même te regarder*\nLe Conseiller m\'informe quand il juge que quelqu\'un mérite mon temps. Ce n\'est pas encore le cas."';
+      if (!done['chateau_duc_1']) return '"Ainsi c\'est vous, dont le Conseiller parle."\n\nIl vous étudie longuement.\n\n"Voyons si vous êtes à la hauteur de ce qu\'il prétend."';
+      if (!done['chateau_duc_2']) return '"Vous portez bien le rang de Chevalier."\n\nIl se penche depuis son trône.\n\n"Mais commander cette ville est un fardeau différent. Prouvez que vous pouvez le porter."';
+      if (!(Meta.completedQuests||{})['chateau_trial_guerre']) return '"La Salle d\'Entraînement, une dernière fois."\n\nSa voix est grave.\n\n"Ce que vous affronterez là-bas ne pardonne pas la faiblesse."';
+      return '"Chef de Guerre."\n\nIl se lève de son trône.\n\n"Cette ville — et ce Château — sont désormais sous votre garde autant que sous la mienne. Portez ce titre avec le poids qu\'il mérite."';
+    },
+    dialogueEn: function() {
+      var done = Meta.completedQuests||{};
+      if (!(Meta.completedQuests||{})['chateau_trial_chevalier']) return '"*from his throne, not even looking at you*\nThe Counsellor informs me when he judges someone worth my time. That isn\'t the case yet."';
+      if (!done['chateau_duc_1']) return '"So this is you, the one the Counsellor speaks of."\n\nHe studies you at length.\n\n"Let\'s see if you live up to his claims."';
+      if (!done['chateau_duc_2']) return '"You wear the rank of Knight well."\n\nHe leans forward on his throne.\n\n"But commanding this town is a different burden. Prove you can carry it."';
+      if (!(Meta.completedQuests||{})['chateau_trial_guerre']) return '"The Training Hall, one last time."\n\nHis voice is grave.\n\n"What you\'ll face there does not forgive weakness."';
+      return '"Warlord."\n\nHe rises from his throne.\n\n"This town — and this Castle — are now under your watch as much as mine. Carry that title with the weight it deserves."';
+    }
+  },
 };
 
 var Quests = (function(){
@@ -8128,7 +8423,7 @@ var Quests = (function(){
       var nd = NPC_DATA[npc];
       // Portrait : juste le nom, plus d'icône emoji
       var portIco = document.getElementById('npc-portrait-ico');
-      var _npcIcons = {bertrand:'🍺',oswin:'🎵',marta:'🏠',seraphine:'🔮',aldric:'⚔',elise:'✨'};
+      var _npcIcons = {bertrand:'🍺',oswin:'🎵',marta:'🏠',seraphine:'🔮',aldric:'⚔',elise:'✨',corvin:'🪓',conseiller:'📜',duc:'👑'};
       if (portIco) portIco.textContent = _npcIcons[npc] || '👤';
       document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
@@ -8270,6 +8565,124 @@ var Quests = (function(){
   };
 })();
 
+// ── CHÂTEAU : hub narratif (Écuyer → Chevalier → Chef de Guerre) ─────
+var ChateauHub = (function(){
+  function render() {
+    var names = CGE_LANG==='en' ? ['—','Squire','Knight','Warlord'] : ['—','Écuyer','Chevalier','Chef de Guerre'];
+    var rankVal = document.getElementById('ch-rank-val');
+    if (rankVal) rankVal.textContent = names[Math.min(Meta.chateauRank||0, names.length-1)];
+  }
+
+  function availableTrial() {
+    var done = Meta.completedQuests||{};
+    if (done['chateau_corvin_2'] && !done['chateau_trial_ecuyer']) return 'ecuyer';
+    if (done['chateau_conseiller_2'] && !done['chateau_trial_chevalier']) return 'chevalier';
+    if (done['chateau_duc_2'] && !done['chateau_trial_guerre']) return 'guerre';
+    return null;
+  }
+
+  function openTrials() {
+    var id = availableTrial();
+    if (!id || typeof Gauntlet === 'undefined') {
+      CGEModal.alert(T('gauntlet.notready.title'), T('gauntlet.notready.body'));
+      return;
+    }
+    var trial = GAUNTLET_TRIALS[id];
+    var body = T('gauntlet.confirm.body').replace('{n}', trial.count);
+    CGEModal.confirm(T('gauntlet.confirm.title'), body, function(){ Gauntlet.start(id); });
+  }
+
+  function goDungeon() {
+    WorldMap.enter('chateau_maudit');
+  }
+
+  function open(from) {
+    State._heroFrom = from || 'town-screen';
+    Nav.go('chateau-hub-screen');
+    render();
+  }
+
+  function close() { Nav.go(State._heroFrom || 'town-screen'); }
+
+  return { open:open, close:close, render:render, openTrials:openTrials, goDungeon:goDungeon };
+})();
+
+// ── SALLE D'ENTRAÎNEMENT : combats enchaînés, sans soin entre chaque ─
+var GAUNTLET_TRIALS = {
+  ecuyer:    { count:3, targetHits:4, dmgPct:0.15, goldReward:150, rank:1, doneFlag:'chateau_trial_ecuyer' },
+  chevalier: { count:4, targetHits:5, dmgPct:0.18, goldReward:350, rank:2, doneFlag:'chateau_trial_chevalier' },
+  guerre:    { count:5, targetHits:6, dmgPct:0.21, goldReward:700, rank:3, doneFlag:'chateau_trial_guerre' },
+};
+
+var Gauntlet = (function(){
+  function _buildEnemy(trial, idx) {
+    var pool = ENEMIES.filter(function(e){ return !e.boss; });
+    var base = pool[Math.floor(Math.random()*pool.length)] || ENEMIES[0];
+    var pAtk = Math.max(1, State.atk||1);
+    var pMax = Math.max(1, State.hpMax||100);
+    var eDef = Math.round(pAtk * 0.10);
+    var pDmg = Math.max(1, pAtk - eDef);
+    var hpRamp = 1 + idx * 0.12; // légère montée en puissance au fil de l'épreuve
+    var eHP  = Math.max(2, Math.round(pDmg * trial.targetHits * hpRamp));
+    var eAtk = Math.max(1, Math.min(Math.round(pMax * trial.dmgPct), Math.round(pMax * 0.4)));
+    return Object.assign({}, base, {
+      hp: eHP, atk: eAtk, def: eDef, gold: 0, boss: false,
+      name: '🎖 ' + base.name, nameEn: '🎖 ' + (base.nameEn || base.name)
+    });
+  }
+
+  function start(id) {
+    var trial = GAUNTLET_TRIALS[id];
+    if (!trial) return;
+    var queue = [];
+    for (var i=0; i<trial.count; i++) queue.push(_buildEnemy(trial, i));
+    State._gauntletTrial = id;
+    State._gauntletQueue = queue;
+    State._gauntletIdx = 0;
+    State._inCombat = true;
+    Nav.go('combat-screen');
+    setTimeout(function(){ Combat.start(queue[0]); }, 350);
+  }
+
+  function advance() {
+    var trial = GAUNTLET_TRIALS[State._gauntletTrial];
+    if (!trial) return;
+    State._gauntletIdx = (State._gauntletIdx||0) + 1;
+    if (State._gauntletIdx < State._gauntletQueue.length) {
+      State._inCombat = true;
+      Combat.start(State._gauntletQueue[State._gauntletIdx]);
+    } else {
+      finish(trial);
+    }
+  }
+
+  function finish(trial) {
+    var id = State._gauntletTrial;
+    abort();
+    State._inCombat = false;
+    Meta.totalGold = (Meta.totalGold||0) + trial.goldReward;
+    State.gold = (State.gold||0) + trial.goldReward;
+    Meta.chateauRank = Math.max(Meta.chateauRank||0, trial.rank);
+    if (!Meta.completedQuests) Meta.completedQuests = {};
+    Meta.completedQuests[trial.doneFlag] = true;
+    Meta.save(); State.saveRun();
+    if (typeof HUD !== 'undefined') HUD.updateGold();
+    Nav.go('chateau-hub-screen');
+    if (typeof ChateauHub !== 'undefined') ChateauHub.render();
+    setTimeout(function(){
+      CGEModal.alert(T('gauntlet.win.title'), T('gauntlet.win.body.'+id) + '\n\n+' + trial.goldReward + ' 🪙');
+    }, 300);
+  }
+
+  function abort() {
+    State._gauntletTrial = null;
+    State._gauntletQueue = null;
+    State._gauntletIdx = 0;
+  }
+
+  return { start:start, advance:advance, abort:abort, TRIALS:GAUNTLET_TRIALS };
+})();
+
 var Meta = {
   totalGold: 0,
   totalKills: 0,
@@ -8283,6 +8696,7 @@ var Meta = {
   completedQuests: {},
   clues: {},
   rank: 0,
+  chateauRank: 0,   // 0=civil, 1=Écuyer, 2=Chevalier, 3=Chef de Guerre (campagne du Château)
   passageFound: false,
   _align: 0,   // hidden: <0=Vide, 0±1=Libérateur, >=2=Gardien
   achievements: {},
@@ -8310,6 +8724,7 @@ var Meta = {
       Meta.completedQuests = d.completedQuests||{};
       Meta.clues           = d.clues||{};
       Meta.rank            = d.rank||0;
+      Meta.chateauRank     = d.chateauRank||0;
       Meta.passageFound    = d.passageFound||false;
       Meta._align          = d._align||0;
       Meta.chest           = d.chest||[];
@@ -8336,6 +8751,7 @@ var Meta = {
       completedQuests:Meta.completedQuests,
       clues:          Meta.clues,
       rank:           Meta.rank,
+      chateauRank:    Meta.chateauRank,
       passageFound:   Meta.passageFound,
       _align:         Meta._align,
       chest:          Meta.chest,
@@ -8437,6 +8853,10 @@ var GuildScreen = (function(){
       { ico:'🔄', label:T('gld.runs'),    val: Meta.totalRuns||0 },
       { ico:'🪙', label:T('gld.gold'),    val: (Meta.totalGold||0) + (State.gold||0) },
     ];
+    if (Meta.chateauRank) {
+      var chNames = CGE_LANG==='en' ? ['—','Squire','Knight','Warlord'] : ['—','Écuyer','Chevalier','Chef de Guerre'];
+      rows.splice(1, 0, { ico:'🏰', label:T('gld.chateaurank'), val: chNames[Math.min(Meta.chateauRank,3)] });
+    }
     var cont = document.getElementById('gld-records');
     if (cont) {
       cont.innerHTML = rows.map(function(row){
@@ -8547,6 +8967,15 @@ var GuildScreen = (function(){
 
   function open(from) {
     State._heroFrom = from || 'town-screen';
+    // Filet de sécurité : si un perso déjà avancé n'a jamais déclenché de
+    // push (créé avant l'ajout du classement, ou pas de donjon terminé
+    // depuis), on synchronise ses records dès qu'il ouvre la Guilde.
+    if (State.name) {
+      Meta.bestLevel = Math.max(Meta.bestLevel||1, State.level||1);
+      Meta.bestFloor = Math.max(Meta.bestFloor||0, State.floor||1);
+      Meta.save();
+      if (typeof CloudSync !== 'undefined' && CloudSync.pushLeaderboardEntry) CloudSync.pushLeaderboardEntry();
+    }
     tab('records');
     Nav.go('guild-screen');
   }
@@ -10352,7 +10781,7 @@ var TownScreen = {
     var lvl2 = State.level||1;
     var rank2 = Meta.rank||0;
     if (lvl2 >= 10 && rank2 >= 1) {
-      WorldMap.enter('chateau_maudit');
+      ChateauHub.open('town-screen');
       return;
     }
     if (rank2 < 1) {
