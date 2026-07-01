@@ -3836,6 +3836,13 @@ function _clampNum(v, lo, hi, dflt){
   return v;
 }
 
+// Échappement HTML partagé — les objets (nom/description/icône) peuvent provenir
+// d'un profil importé (code de partage) qui n'est pas garanti conforme au pool
+// ITEMS réel : ne jamais les injecter en innerHTML sans passer par cette fonction.
+function _escHtml(s) {
+  return (s==null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 // ── INTEGRITY — borne les données chargées à des valeurs plausibles ─
 // Dernier rempart : même signature cassée, les valeurs aberrantes
 // (or:99999, niveau:999) sont ramenées dans des limites légitimes.
@@ -3849,6 +3856,7 @@ var Integrity = {
     d.bestLevel  = _clampNum(d.bestLevel, 1, 30, 1);
     d.rank       = _clampNum(d.rank, 0, 20, 0);
     d.chateauRank = _clampNum(d.chateauRank, 0, 3, 0);
+    d.gems       = _clampNum(d.gems, 0, 1e5, 0);
     d._align     = _clampNum(d._align, -5, 5, 0);
     var b = d.bonuses;
     if (b && typeof b === 'object') {
@@ -6015,16 +6023,16 @@ var SPELLS = {
       cast:function(enemy){ var d=Math.round(State.atk*3.6); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Météore ! '+d+' dégâts purs !',logEn:'Meteor! '+d+' pure damage!',crit:true}; } },
   ],
   Prêtre: [
-    { id:'heal_sm',   ico:'💚', name:'Soin Léger',      nameEn:'Minor Heal',   cost:12, desc:'Récup 25% PV max',          descEn:'Restore 25% max HP',
+    { id:'heal_sm',   ico:'💚', name:'Soin Léger',      nameEn:'Minor Heal',   cost:12, desc:'Récup 25% PV max',          descEn:'Restore 25% max HP', heal:true,
       cast:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin léger ! +'+h+' PV.',logEn:'Minor heal! +'+h+' HP.'}; } },
-    { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     nameEn:'Major Heal',   cost:28, desc:'Récup 55% PV max',          descEn:'Restore 55% max HP',
+    { id:'heal_lg',   ico:'💖', name:'Soin Majeur',     nameEn:'Major Heal',   cost:28, desc:'Récup 55% PV max',          descEn:'Restore 55% max HP', heal:true,
       cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !',logEn:'Major heal! +'+h+' HP!'}; } },
     { id:'shield',    ico:'✨', name:'Bouclier Divin',  nameEn:'Divine Shield', cost:18, desc:'+12 DEF pendant 2 tours',  descEn:'+12 DEF for 2 turns',
       cast:function(){ return {log:'Bouclier divin ! +12 DEF pour 2 tours.',logEn:'Divine shield! +12 DEF for 2 turns.',shield:2,shieldDef:12}; } },
     { id:'smite',     ico:'⚡', name:'Jugement',        nameEn:'Judgment',     cost:22, desc:'1.2× ATQ + Brûlure 2 tours', descEn:'1.2× ATK + Burn 2 turns',
       unlockLevel:8,
       cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',logEn:'Judgment! '+d+' damage + burn!',burn:2}; } },
-    { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent',
+    { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent', heal:true,
       unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_redemption'); },
       cast:function(){ var h=Math.round(State.hpMax*0.9); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Rédemption ! +'+h+' PV !',logEn:'Redemption! +'+h+' HP!'}; } },
   ]
@@ -6593,7 +6601,7 @@ var Combat = (function(){
     openSpells: function() {
       var list = document.getElementById('spell-list');
       list.innerHTML = '';
-      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return !s.unlockCheck || s.unlockCheck(); });
+      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return (!s.unlockCheck || s.unlockCheck()) && !(State._gauntletTrial && s.heal); });
       spells.forEach(function(sp) {
         var lvlOk = !sp.unlockLevel || (State.level||1) >= sp.unlockLevel;
         var mpOk  = (State.mana||0) >= sp.cost;
@@ -6616,6 +6624,7 @@ var Combat = (function(){
     castSpell: function(sp) {
       Combat.closeSpells();
       if (turnLocked) return;
+      if (sp.heal && State._gauntletTrial) { log(T('gauntlet.nopotion'),'system'); return; }
       if ((State.mana||0) < sp.cost) { log(T('cl.notenoughmana'),'system'); return; }
       State.mana = Math.max(0, (State.mana||0) - sp.cost);
       updateManaBar();
@@ -6683,7 +6692,7 @@ var Combat = (function(){
         hasItems = true;
         var div = document.createElement('div');
         div.className = 'item-row';
-        div.innerHTML = '<div class="ir-ico">'+item.ico+'</div><div class="ir-info"><div class="ir-name">'+(CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name)+'</div><div class="ir-desc">'+(CGE_LANG==='en'&&item.descEn?item.descEn:item.desc)+'</div></div>';
+        div.innerHTML = '<div class="ir-ico">'+_escHtml(item.ico)+'</div><div class="ir-info"><div class="ir-name">'+_escHtml(CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name)+'</div><div class="ir-desc">'+_escHtml(CGE_LANG==='en'&&item.descEn?item.descEn:item.desc)+'</div></div>';
         div.addEventListener('click', function(){
           Combat.closeItemMenu();
           if (item.effect) item.effect();
@@ -6986,11 +6995,11 @@ var Rooms = {
       var rarLabel = (RARITY_LABELS||{})[rar]||rar;
       wrap.className = wrap.className.replace(/rarity-\w+/g,'').trim() + ' rarity-'+rar;
       if (item.equip) {
-        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc) + ' · ' + T('loot.tobag') + '<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
+        document.getElementById('loot-item-desc').innerHTML = _escHtml(CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc) + ' · ' + T('loot.tobag') + '<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = T('misc.pickup_arrow');
       } else {
-        document.getElementById('loot-item-desc').innerHTML = (CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc)+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
+        document.getElementById('loot-item-desc').innerHTML = _escHtml(CGE_LANG === 'en' && item.descEn ? item.descEn : item.desc)+'<br><span class="rarity-badge '+rar+'">'+rarLabel+'</span>';
         Rooms._pendingItem = item;
         if (btn) btn.textContent = T('misc.continue_arrow');
       }
@@ -8724,10 +8733,14 @@ var Quests = (function(){
   };
 })();
 
+// Partagé entre ChateauHub et GuildScreen — un seul endroit à modifier.
+var CHATEAU_RANK_NAMES    = ['—','Écuyer','Chevalier','Chef de Guerre'];
+var CHATEAU_RANK_NAMES_EN = ['—','Squire','Knight','Warlord'];
+
 // ── CHÂTEAU : hub narratif (Écuyer → Chevalier → Chef de Guerre) ─────
 var ChateauHub = (function(){
   function render() {
-    var names = CGE_LANG==='en' ? ['—','Squire','Knight','Warlord'] : ['—','Écuyer','Chevalier','Chef de Guerre'];
+    var names = CGE_LANG==='en' ? CHATEAU_RANK_NAMES_EN : CHATEAU_RANK_NAMES;
     var rankVal = document.getElementById('ch-rank-val');
     if (rankVal) rankVal.textContent = names[Math.min(Meta.chateauRank||0, names.length-1)];
   }
@@ -8768,10 +8781,15 @@ var ChateauHub = (function(){
 })();
 
 // ── SALLE D'ENTRAÎNEMENT : combats enchaînés, sans soin entre chaque ─
+// dmgPct calibré pour un plein clear (tous les ennemis, sans esquive/def/crit
+// favorables) autour de 50 % (Écuyer) → 65 % (Chevalier) → 85 % (Chef de Guerre)
+// des PV max cumulés — l'épreuve est un test d'endurance (aucun soin entre les
+// combats), pas une mort certaine dès le premier ennemi. Voir Gauntlet._buildEnemy
+// pour le détail du calcul (dégâts dimensionnés en % des PV max du joueur).
 var GAUNTLET_TRIALS = {
-  ecuyer:    { count:3, targetHits:4, dmgPct:0.15, goldReward:150, rank:1, doneFlag:'chateau_trial_ecuyer' },
-  chevalier: { count:4, targetHits:5, dmgPct:0.18, goldReward:350, rank:2, doneFlag:'chateau_trial_chevalier' },
-  guerre:    { count:5, targetHits:6, dmgPct:0.21, goldReward:700, rank:3, doneFlag:'chateau_trial_guerre' },
+  ecuyer:    { count:3, targetHits:4, dmgPct:0.04,  goldReward:150, rank:1, doneFlag:'chateau_trial_ecuyer' },
+  chevalier: { count:4, targetHits:5, dmgPct:0.03,  goldReward:350, rank:2, doneFlag:'chateau_trial_chevalier' },
+  guerre:    { count:5, targetHits:6, dmgPct:0.025, goldReward:700, rank:3, doneFlag:'chateau_trial_guerre' },
 };
 
 var Gauntlet = (function(){
@@ -8782,7 +8800,7 @@ var Gauntlet = (function(){
     var pMax = Math.max(1, State.hpMax||100);
     var eDef = Math.round(pAtk * 0.10);
     var pDmg = Math.max(1, pAtk - eDef);
-    var hpRamp = 1 + idx * 0.12; // légère montée en puissance au fil de l'épreuve
+    var hpRamp = 1 + idx * 0.06; // légère montée en puissance au fil de l'épreuve
     var eHP  = Math.max(2, Math.round(pDmg * trial.targetHits * hpRamp));
     var eAtk = Math.max(1, Math.min(Math.round(pMax * trial.dmgPct), Math.round(pMax * 0.4)));
     return Object.assign({}, base, {
@@ -9014,7 +9032,7 @@ var GuildScreen = (function(){
       { ico:'🪙', label:T('gld.gold'),    val: (Meta.totalGold||0) + (State.gold||0) },
     ];
     if (Meta.chateauRank) {
-      var chNames = CGE_LANG==='en' ? ['—','Squire','Knight','Warlord'] : ['—','Écuyer','Chevalier','Chef de Guerre'];
+      var chNames = CGE_LANG==='en' ? CHATEAU_RANK_NAMES_EN : CHATEAU_RANK_NAMES;
       rows.splice(1, 0, { ico:'🏰', label:T('gld.chateaurank'), val: chNames[Math.min(Meta.chateauRank,3)] });
     }
     var cont = document.getElementById('gld-records');
@@ -9068,12 +9086,15 @@ var GuildScreen = (function(){
       if (!_lbRows.length) { list.innerHTML = '<div class="gld-lb-msg">'+T('gld.lb.empty')+'</div>'; return; }
       list.innerHTML = _lbRows.map(function(row, i){
         var r = RACES.find(function(x){ return x.id===row.race; });
+        var c = CLASSES.find(function(x){ return x.id===row.cls; });
+        var raceLabel = r ? (CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name) : (row.race||'?');
+        var clsLabel  = c ? (CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name) : (row.cls||'?');
         var val = _sort === 'bestFloor' ? (row.bestFloor||0) : (row.level||1);
         return '<div class="gld-lb-row" data-idx="'+i+'">'
           + '<span class="gld-lb-rank">#'+(i+1)+'</span>'
           + '<span class="gld-lb-ico">'+((r&&r.icon)||'🧑')+'</span>'
           + '<div class="gld-lb-info"><div class="gld-lb-name">'+_esc(row.name||'?')+'</div>'
-          + '<div class="gld-lb-sub">'+_esc(row.race||'?')+' · '+_esc(row.cls||'?')+'</div></div>'
+          + '<div class="gld-lb-sub">'+_esc(raceLabel)+' · '+_esc(clsLabel)+'</div></div>'
           + '<span class="gld-lb-val">'+val+'</span>'
           + '</div>';
       }).join('');
@@ -9310,8 +9331,8 @@ Rooms._renderShopBuy = function() {
         ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
         : '<div class="si-price">'+displayCost+'</div>');
     div.innerHTML =
-      '<span class="si-ico">'+item.ico+'</span>'+
-      '<div class="si-info"><div class="si-name">'+item.name+'</div><div class="si-desc">'+item.desc+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
+      '<span class="si-ico">'+_escHtml(item.ico)+'</span>'+
+      '<div class="si-info"><div class="si-name">'+_escHtml(item.name)+'</div><div class="si-desc">'+_escHtml(item.desc)+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
       priceHtml;
     div.addEventListener('click', function(){ Rooms.shopItemDetail(idx); });
     cont.appendChild(div);
@@ -9338,8 +9359,8 @@ Rooms._renderShopSell = function() {
     var div = document.createElement('div');
     div.className = 'shop-item';
     div.innerHTML =
-      '<span class="si-ico">'+it.ico+'</span>'+
-      '<div class="si-info"><div class="si-name">'+it.name+(entry.src==='slot'?' [équipé]':'')+'</div><div class="si-desc">'+it.desc+'</div></div>'+
+      '<span class="si-ico">'+_escHtml(it.ico)+'</span>'+
+      '<div class="si-info"><div class="si-name">'+_escHtml(it.name)+(entry.src==='slot'?' [équipé]':'')+'</div><div class="si-desc">'+_escHtml(it.desc)+'</div></div>'+
       '<div class="si-price" style="color:#50c870">+'+sellPrice+'</div>';
     div.addEventListener('click', function(){
       State.gold = (State.gold||0) + sellPrice;
@@ -9392,10 +9413,10 @@ Rooms.shopItemDetail = function(idx) {
   var cost = Rooms._racePriceMod(item.cost);
   var rar = item.rarity||'common';
   var rarLabel = (RARITY_LABELS||{})[rar]||rar;
-  var name = (CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name);
+  var name = _escHtml(CGE_LANG==='en'&&item.nameEn?item.nameEn:item.name);
   var html = '<div style="text-align:left">'+
     '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'+
-      '<span style="font-size:34px">'+item.ico+'</span>'+
+      '<span style="font-size:34px">'+_escHtml(item.ico)+'</span>'+
       '<div><div style="font-family:\'Cinzel\',serif;font-size:14px;font-weight:700;color:#EAD79A">'+name+'</div>'+
       '<div style="font-size:10px;color:rgba(237,232,223,0.55);letter-spacing:1px;text-transform:uppercase">'+
         (item.slot?getSlotLabel(item.slot)+' · ':'')+'<span class="rarity-badge '+rar+'">'+rarLabel+'</span></div></div>'+
@@ -9407,7 +9428,7 @@ Rooms.shopItemDetail = function(idx) {
     html += '</div>';
     if (item.slot) html += '<div class="eq-cmp-wrap">'+buildCompareHtml(item, item.slot)+'</div>';
   } else {
-    html += '<div style="font-family:\'Crimson Text\',serif;font-size:14px;color:rgba(237,232,223,0.7);margin-top:4px">'+(CGE_LANG==='en'&&item.descEn?item.descEn:item.desc)+'</div>';
+    html += '<div style="font-family:\'Crimson Text\',serif;font-size:14px;color:rgba(237,232,223,0.7);margin-top:4px">'+_escHtml(CGE_LANG==='en'&&item.descEn?item.descEn:item.desc)+'</div>';
   }
   html += '</div>';
   var afford = (State.gold||0) >= cost;
@@ -10224,8 +10245,8 @@ var EquipScreen = (function() {
         var idx = i;
         card.className = 'eq-inv-card rarity-'+(it.rarity||'common');
         card.innerHTML =
-          '<div class="card-ico">'+it.ico+'</div>'+
-          '<div class="card-name">'+it.name+'</div>'+
+          '<div class="card-ico">'+_escHtml(it.ico)+'</div>'+
+          '<div class="card-name">'+_escHtml(it.name)+'</div>'+
           '<div class="card-stat">'+_statSummary(it)+'</div>';
         (function(item, ii) {
           card.addEventListener('click', function() {
@@ -10328,8 +10349,8 @@ var EquipScreen = (function() {
       CGEModal.show({
         title: en ? 'Replace which ring?' : 'Remplacer quelle bague ?',
         html: '<div style="text-align:left;font-size:12px;color:rgba(237,232,223,0.7)">'+
-              '💍 '+(en?'Left':'Gauche')+' : <b>'+lg.name+'</b> <span style="opacity:.6">'+_statSummary(lg)+'</span><br>'+
-              '💍 '+(en?'Right':'Droite')+' : <b>'+rd.name+'</b> <span style="opacity:.6">'+_statSummary(rd)+'</span></div>',
+              '💍 '+(en?'Left':'Gauche')+' : <b>'+_escHtml(lg.name)+'</b> <span style="opacity:.6">'+_statSummary(lg)+'</span><br>'+
+              '💍 '+(en?'Right':'Droite')+' : <b>'+_escHtml(rd.name)+'</b> <span style="opacity:.6">'+_statSummary(rd)+'</span></div>',
         okLabel: '💍 '+(en?'Replace Left':'Remplacer gauche'),
         cancelLabel: '💍 '+(en?'Replace Right':'Remplacer droite'),
         onOk:     function(){ _doEquip('bague_gauche'); },
@@ -10427,7 +10448,7 @@ var ChestScreen = {
         div.className = 'chest-slot' + (chest[i] ? ' occupied' : '');
         if (chest[i]) {
           var it = chest[i];
-          div.innerHTML = '<div class="cs-ico">'+it.ico+'</div><div class="cs-name">'+it.name+'</div><div class="cs-stat">'+it.desc+'</div>';
+          div.innerHTML = '<div class="cs-ico">'+_escHtml(it.ico)+'</div><div class="cs-name">'+_escHtml(it.name)+'</div><div class="cs-stat">'+_escHtml(it.desc)+'</div>';
           (function(idx){
             div.addEventListener('click', function(){
               // Move chest → inventory
@@ -10453,7 +10474,7 @@ var ChestScreen = {
         div2.className = 'chest-slot' + (inv[j] ? ' occupied' : '');
         if (inv[j]) {
           var it2 = inv[j];
-          div2.innerHTML = '<div class="cs-ico">'+it2.ico+'</div><div class="cs-name">'+it2.name+'</div><div class="cs-stat">'+it2.desc+'</div>';
+          div2.innerHTML = '<div class="cs-ico">'+_escHtml(it2.ico)+'</div><div class="cs-name">'+_escHtml(it2.name)+'</div><div class="cs-stat">'+_escHtml(it2.desc)+'</div>';
           (function(jdx){
             div2.addEventListener('click', function(){
               // Move inv → chest

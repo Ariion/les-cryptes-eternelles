@@ -12,16 +12,26 @@ service cloud.firestore {
     // cohérentes avec Integrity côté client (niveau 1-30, étage 0-10 :
     // certaines zones tardives — Château Maudit, Cité Oubliée, Gouffre
     // Astral, Cryptes Profondes — comptent jusqu'à 10 étages).
+    // hasOnly() interdit tout champ hors schéma (anti-bloat/anti-abus) ;
+    // race/cls sont bornés en taille ; talents/equipped doivent rester
+    // des maps (pas de chaîne arbitraire géante).
     match /leaderboard/{userId} {
       allow read: if true;
       allow write: if request.auth != null
         && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['name','race','cls','level','bestFloor','talents','equipped','updatedAt'])
         && request.resource.data.name is string
         && request.resource.data.name.size() <= 24
+        && request.resource.data.race is string
+        && request.resource.data.race.size() <= 20
+        && request.resource.data.cls is string
+        && request.resource.data.cls.size() <= 20
         && request.resource.data.level is int
         && request.resource.data.level >= 1 && request.resource.data.level <= 30
         && request.resource.data.bestFloor is int
-        && request.resource.data.bestFloor >= 0 && request.resource.data.bestFloor <= 10;
+        && request.resource.data.bestFloor >= 0 && request.resource.data.bestFloor <= 10
+        && (!('talents' in request.resource.data) || request.resource.data.talents is map)
+        && (!('equipped' in request.resource.data) || request.resource.data.equipped is map);
     }
   }
 }
