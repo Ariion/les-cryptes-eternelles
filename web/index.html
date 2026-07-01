@@ -385,17 +385,19 @@ canvas#particles {
   display:flex; flex-direction:column; gap:8px;
   position:relative; z-index:2; flex-shrink:0;
 }
+/* Même traitement cyan que le bouton JOUER du menu principal : c'est le même
+   type d'action (lancer la partie/le prochain run), donc le même accent. */
 #btn-start-run {
   width:100%; height:60px; border-radius:10px;
-  background:linear-gradient(135deg,rgba(201,165,80,0.22),rgba(201,165,80,0.1));
-  border:1px solid rgba(201,165,80,0.7);
-  color:#C9A550; cursor:pointer;
+  background:linear-gradient(135deg,rgba(0,212,232,0.16),rgba(0,212,232,0.05));
+  border:1px solid #00D4E8;
+  color:#00D4E8; cursor:pointer;
   font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
   display:flex; align-items:center; justify-content:center; gap:14px;
-  box-shadow:0 0 30px rgba(201,165,80,0.1),inset 0 1px 0 rgba(201,165,80,0.15);
+  box-shadow:0 0 30px rgba(0,212,232,0.15),inset 0 1px 0 rgba(0,212,232,0.15);
   transition:all 0.18s; -webkit-tap-highlight-color:transparent;
 }
-#btn-start-run:active { transform:scale(0.97); box-shadow:0 0 50px rgba(201,165,80,0.25); }
+#btn-start-run:active { transform:scale(0.97); box-shadow:0 0 50px rgba(0,212,232,0.3); }
 #btn-start-run .ico { font-size:20px; }
 
 /* ── NOM HÉROS ───────────────────────────────────────────────── */
@@ -482,8 +484,8 @@ canvas#particles {
 .prof-card-btns { display:flex; gap:8px; margin-top:2px; }
 .prof-btn-play {
   flex:1; height:36px; border-radius:8px;
-  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
-  border:1px solid rgba(201,165,80,0.5); color:#C9A550;
+  background:linear-gradient(135deg,rgba(0,212,232,0.16),rgba(0,212,232,0.05));
+  border:1px solid rgba(0,212,232,0.6); color:#00D4E8;
   font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1px;
   cursor:pointer; transition:all 0.15s;
 }
@@ -1514,12 +1516,12 @@ canvas#particles {
 .lu-card .lu-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.55); margin-top:2px; }
 .lu-continue-btn {
   width:100%; height:50px; border-radius:10px; cursor:pointer;
-  background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08));
-  border:1px solid rgba(201,165,80,0.65); color:#C9A550;
+  background:linear-gradient(135deg,rgba(0,212,232,0.16),rgba(0,212,232,0.05));
+  border:1px solid rgba(0,212,232,0.7); color:#00D4E8;
   font-family:'Cinzel',serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
   -webkit-tap-highlight-color:transparent; transition:all 0.15s;
 }
-.lu-continue-btn:active { transform:scale(0.97); background:rgba(201,165,80,0.28); }
+.lu-continue-btn:active { transform:scale(0.97); background:rgba(0,212,232,0.25); }
 
 /* ── XP BAR (combat) ─────────────────────────────────────────── */
 #cb-xp-wrap {
