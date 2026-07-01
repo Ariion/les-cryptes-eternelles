@@ -225,21 +225,22 @@ canvas#particles {
 }
 /* JOUER — cyan glow (bouton primaire menu) */
 #menu-btns .btn:first-child {
-  background:transparent;
+  background:linear-gradient(135deg,rgba(0,212,232,0.14),rgba(0,212,232,0.04));
   border:1px solid #00D4E8;
   color:#00D4E8;
-  box-shadow:0 0 16px rgba(0,212,232,0.18), inset 0 0 12px rgba(0,212,232,0.04);
+  box-shadow:0 0 16px rgba(0,212,232,0.22), inset 0 0 12px rgba(0,212,232,0.06);
   justify-content:center;
 }
 #menu-btns .btn:first-child:active { box-shadow:0 0 28px rgba(0,212,232,0.35); }
-/* PARAMÈTRES & SUCCÈS — sombre discret */
+/* PARAMÈTRES & SUCCÈS — doré, lisible, cohérent avec le reste du jeu */
 #menu-btns .btn:not(:first-child) {
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(237,232,223,0.18);
-  color:rgba(237,232,223,0.75);
+  background:linear-gradient(135deg,rgba(201,165,80,0.16),rgba(201,165,80,0.06));
+  border:1px solid rgba(201,165,80,0.55);
+  color:#EAD9A8;
+  box-shadow:0 0 14px rgba(201,165,80,0.1), inset 0 1px 0 rgba(201,165,80,0.1);
   justify-content:center;
 }
-#menu-btns .btn:not(:first-child):active { border-color:rgba(237,232,223,0.4); }
+#menu-btns .btn:not(:first-child):active { border-color:#C9A550; box-shadow:0 0 20px rgba(201,165,80,0.22); }
 /* cache les icones dans le menu principal */
 #menu-btns .btn .ico { display:none; }
 #menu-footer { position:absolute; bottom:9px; font-family:'Cinzel',serif; font-size:8px; letter-spacing:3px; color:rgba(201,165,80,0.2); z-index:2; }
@@ -519,7 +520,7 @@ canvas#particles {
 
 /* Modal code import/export */
 #code-modal {
-  position:absolute; inset:0; z-index:100;
+  position:absolute; inset:0; z-index:999;
   background:rgba(4,2,10,0.95);
   display:none; flex-direction:column; align-items:center; justify-content:center;
   padding:24px;
@@ -694,7 +695,7 @@ canvas#particles {
 .rarity-badge.mythic    { color:#ffc820; }
 /* ── MODIFICATEURS DE RUN ────────────────────────────────────── */
 #runmod-overlay {
-  position:absolute; inset:0; background:rgba(5,3,2,0.92); z-index:90;
+  position:absolute; inset:0; background:rgba(5,3,2,0.92); z-index:999;
   display:flex; align-items:center; justify-content:center; transition:opacity 0.3s;
 }
 #runmod-box {
@@ -1881,14 +1882,6 @@ canvas#particles {
 #dm-camp-btn:active { transform:scale(0.95); }
 
 /* ── MENU SETTINGS BTN ── */
-#btn-menu-settings {
-  background:none; border:none; cursor:pointer;
-  font-family:'Cinzel',serif; font-size:11px; color:rgba(237,232,223,0.45);
-  letter-spacing:1px; padding:6px 12px; margin-top:8px;
-  transition:color 0.2s;
-}
-#btn-menu-settings:active { color:rgba(201,165,80,0.8); }
-
 /* ── INN ROOM ── */
 #inn-room {
   background:#0e0a05 url('images/inn-room.webp') center/cover no-repeat;
@@ -2421,7 +2414,7 @@ canvas#particles {
 #cge-modal-cancel:active { background:rgba(255,255,255,0.1); }
 
 /* ── GEM STORE overlay ───────────────────────────────────────── */
-#gem-store-overlay { display:none; position:absolute; inset:0; background:rgba(5,3,10,0.92); z-index:200; flex-direction:column; align-items:stretch; }
+#gem-store-overlay { display:none; position:absolute; inset:0; background:rgba(5,3,10,0.92); z-index:999; flex-direction:column; align-items:stretch; }
 #gem-store-overlay.show { display:flex; }
 #gem-store-header { display:flex; align-items:center; padding:12px 14px 8px; gap:8px; border-bottom:1px solid rgba(126,207,255,0.15); flex-shrink:0; }
 #gem-store-close { font-size:20px; color:#7ecfff; cursor:pointer; padding:4px 8px; }
@@ -2560,7 +2553,7 @@ canvas#particles {
       <div id="menu-btns">
         <button class="btn btn-primary" onclick="ProfilesScreen.open()"><span class="ico">⚔</span><span data-i18n="menu.play">Jouer</span></button>
         <button id="btn-menu-achievements" class="btn btn-secondary" onclick="Achievements.showAll()"><span class="ico">🏆</span><span data-i18n="menu.achievements">Succès</span></button>
-        <button id="btn-menu-settings" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
+        <button id="btn-menu-settings" class="btn btn-secondary" onclick="App.showSettings()"><span data-i18n="menu.settings">⚙ Paramètres</span></button>
       </div>
       <div id="menu-footer">V0.1-INDIE-ALPHA</div>
     </div>
@@ -3212,7 +3205,7 @@ canvas#particles {
 
     <!-- ── NPC DIALOGUE OVERLAY ── -->
     <!-- ── MODIFICATEURS DE RUN ── -->
-    <div id="runmod-overlay" style="display:none;opacity:0;position:absolute;inset:0;z-index:90;display:none;align-items:center;justify-content:center">
+    <div id="runmod-overlay" style="display:none;opacity:0;position:absolute;inset:0;z-index:999;display:none;align-items:center;justify-content:center">
       <div id="runmod-box">
         <div id="runmod-title">⚠ Présages du Destin</div>
         <div id="runmod-subtitle">Les forces occultes ont façonné cette expédition...</div>
@@ -4691,6 +4684,7 @@ var STRINGS = {
     'dm.carnet': '🔍 Enquête',
     // Misc
     'misc.close': 'Fermer',
+    'misc.back': 'Retour',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
     'misc.available': 'Disponible',
@@ -5071,6 +5065,7 @@ var STRINGS = {
     'dm.carnet': '🔍 Journal',
     // Misc
     'misc.close': 'Close',
+    'misc.back': 'Back',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
     'misc.available': 'Available',
