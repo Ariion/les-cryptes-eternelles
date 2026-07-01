@@ -1246,6 +1246,9 @@ canvas#particles {
   background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
   font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550;
 }
+#shop-restock-bar { width:100%; padding:0 16px 10px; flex-shrink:0; text-align:right; }
+#shop-restock-btn { font-size:11px; padding:5px 10px; border-radius:8px; background:rgba(126,207,255,0.1); border:1px solid rgba(126,207,255,0.3); color:#7ecfff; cursor:pointer; white-space:nowrap; }
+#shop-restock-btn:active { background:rgba(126,207,255,0.25); }
 #shop-items { width:100%; padding:0 16px 20px; display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .shop-item {
   display:flex; align-items:center; gap:14px; padding:14px 16px;
@@ -2448,28 +2451,6 @@ canvas#particles {
 }
 #cge-modal-cancel:active { background:rgba(255,255,255,0.1); }
 
-/* ── MARCHÉ ─────────────────────────────────────────────────── */
-#market-screen { display:flex; flex-direction:column; overflow:hidden; }
-#market-header { display:flex; align-items:center; padding:10px 14px 6px; flex-shrink:0; border-bottom:1px solid rgba(201,165,80,0.12); gap:8px; }
-#market-back { font-size:20px; color:#C9A550; cursor:pointer; padding:4px 8px; }
-#market-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#C9A550; flex:1; text-align:center; }
-#market-gems-badge { font-size:13px; color:#7ecfff; display:flex; align-items:center; gap:4px; }
-#market-timer-bar { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(201,165,80,0.08); flex-shrink:0; gap:8px; }
-#market-timer-label { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(126,207,255,0.7); }
-#market-refresh-btn { font-size:11px; padding:5px 10px; border-radius:8px; background:rgba(126,207,255,0.1); border:1px solid rgba(126,207,255,0.3); color:#7ecfff; cursor:pointer; white-space:nowrap; }
-#market-refresh-btn:active { background:rgba(126,207,255,0.25); }
-#market-items { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 14px 20px; display:flex; flex-direction:column; gap:10px; }
-.market-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.1); cursor:pointer; transition:background .15s; }
-.market-item:active { background:rgba(201,165,80,0.08); }
-.market-item.sold { opacity:.3; pointer-events:none; }
-.market-item .mi-ico { font-size:28px; flex-shrink:0; }
-.market-item .mi-info { flex:1; }
-.market-item .mi-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
-.market-item .mi-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:2px; }
-.market-item .mi-price { font-size:13px; color:#C9A550; display:flex; align-items:center; gap:3px; white-space:nowrap; flex-shrink:0; }
-.market-item .mi-price::before { content:'🪙'; font-size:13px; }
-.market-item.cant-afford .mi-price { color:rgba(200,80,80,0.7); }
-
 /* ── GEM STORE overlay ───────────────────────────────────────── */
 #gem-store-overlay { display:none; position:absolute; inset:0; background:rgba(5,3,10,0.92); z-index:200; flex-direction:column; align-items:stretch; }
 #gem-store-overlay.show { display:flex; }
@@ -2885,6 +2866,9 @@ canvas#particles {
       <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
         <div class="chest-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
         <div class="chest-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
+      </div>
+      <div id="shop-restock-bar" style="display:none">
+        <button id="shop-restock-btn" onclick="Rooms.restockShop()">🔄 Nouvel arrivage (💎 5)</button>
       </div>
       <div id="shop-items"></div>
       <div id="shop-ad-wrap" style="padding:0 16px 16px"></div>
@@ -3366,11 +3350,6 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="town.taverne">🍺 Taverne</div>
       </div>
-      <!-- hotspot marché -->
-      <div class="hotspot" id="hs-town-market" onclick="Market.show('town-screen')" style="position:absolute;top:62%;left:50%;transform:translateX(-50%)">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl" style="color:#7ecfff">🏺 Marché · 💎</div>
-      </div>
     </div>
 
     <!-- ── WORLD MAP (région) ── -->
@@ -3487,19 +3466,6 @@ canvas#particles {
       <div id="ach-screen-list"></div>
     </div>
 
-    <!-- ── MARCHÉ ── -->
-    <div id="market-screen" class="screen has-game-header">
-      <div id="market-header">
-        <div id="market-back" onclick="Market.leave()">←</div>
-        <div id="market-title">🏺 Marché des Ombres</div>
-        <div id="market-gems-badge">💎 <span id="market-gems-val">0</span></div>
-      </div>
-      <div id="market-timer-bar">
-        <span id="market-timer-label">Recharge dans 05:00:00</span>
-        <button id="market-refresh-btn" onclick="Market.forceRefresh()">🔄 Rafraîchir (💎 5)</button>
-      </div>
-      <div id="market-items"></div>
-    </div>
 
     <!-- ── GEM STORE overlay (global, inside phone-screen) ── -->
     <div id="gem-store-overlay">
@@ -7764,7 +7730,7 @@ var Meta = {
   tutoCombat: false,
   chest: [],          // persistent cross-run storage (max 20 items)
   gems: 0,
-  market: null,       // { stock:[{idx,price,sold}], lastRefresh:timestamp }
+  shopStock: {},      // { forge:[SHOP_POOL indices], armurerie:[...], couturier:[...], bijoutier:[...], eglise:[...] }
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
@@ -7790,7 +7756,7 @@ var Meta = {
       Meta.tutoMap         = d.tutoMap||false;
       Meta.tutoCombat      = d.tutoCombat||false;
       Meta.gems            = d.gems||0;
-      Meta.market          = d.market||null;
+      Meta.shopStock       = d.shopStock||{};
       Meta.dailyQuests     = d.dailyQuests||{};
     } catch(e){}
   },
@@ -7815,7 +7781,7 @@ var Meta = {
       tutoMap:        Meta.tutoMap,
       tutoCombat:     Meta.tutoCombat,
       gems:           Meta.gems,
-      market:         Meta.market,
+      shopStock:      Meta.shopStock,
       dailyQuests:    Meta.dailyQuests,
     };
     localStorage.setItem('cge_meta', Vault.pack(data));
@@ -7977,36 +7943,81 @@ var SHOP_POOL = [
 
 Rooms._shopTab = 'buy';
 
+// Boutiques nommées (forge, armurerie, couturier, bijoutier, église) : stock
+// limité et persistant, réassortable manuellement contre des gemmes.
+Rooms.SHOP_SLOT_MAP = {
+  forge:     ['arme'],
+  armurerie: ['plastron','bouclier','heaume'],
+  couturier: ['ceinture','jambieres','bottes','gants'],
+  bijoutier: ['collier','bague','bague_gauche','bague_droite'],
+  eglise:    ['eglise']
+};
+Rooms.SHOP_TITLE_MAP = {
+  forge:     '⚒ Forge',
+  armurerie: '🛡 Armurerie',
+  couturier: '🧵 Couturier',
+  bijoutier: '💍 Bijoutier',
+  eglise:    '⛪ Église · Boutique'
+};
+Rooms.SHOP_STOCK_SIZE = 6;
+Rooms.SHOP_RESTOCK_COST = 5;
+
+Rooms._shopPool = function(category) {
+  var slots = Rooms.SHOP_SLOT_MAP[category];
+  return slots ? SHOP_POOL.filter(function(it){ return slots.indexOf(it.slot)!==-1; }) : [];
+};
+
+Rooms._generateShopStock = function(category) {
+  var pool = Rooms._shopPool(category).slice();
+  for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
+  Meta.shopStock = Meta.shopStock || {};
+  Meta.shopStock[category] = pool.slice(0, Rooms.SHOP_STOCK_SIZE).map(function(it){ return SHOP_POOL.indexOf(it); });
+  Meta.save();
+};
+
+Rooms._shopStockItems = function(category) {
+  Meta.shopStock = Meta.shopStock || {};
+  if (!Meta.shopStock[category] || !Meta.shopStock[category].length) Rooms._generateShopStock(category);
+  return Meta.shopStock[category].map(function(idx){ return SHOP_POOL[idx]; }).filter(function(it){ return !!it; });
+};
+
 Rooms.showShop = function(fromScreen, category) {
   State._shopFrom = fromScreen || 'dungeon-map';
   State._shopCategory = category || null;
   Rooms._shopTab = 'buy';
   document.getElementById('stab-buy').classList.add('active');
   document.getElementById('stab-sell').classList.remove('active');
-  // Filtrer par catégorie si spécifiée
-  var SLOT_MAP = {
-    forge:     ['arme'],
-    armurerie: ['plastron','bouclier','heaume'],
-    couturier: ['ceinture','jambieres','bottes','gants'],
-    bijoutier: ['collier','bague','bague_gauche','bague_droite'],
-    eglise:    ['eglise']
-  };
-  var TITLE_MAP = {
-    forge:     '⚒ Forge',
-    armurerie: '🛡 Armurerie',
-    couturier: '🧵 Couturier',
-    bijoutier: '💍 Bijoutier',
-    eglise:    '⛪ Église · Boutique'
-  };
-  var slots = category && SLOT_MAP[category];
-  var pool = slots ? SHOP_POOL.filter(function(i){ return slots.indexOf(i.slot)!==-1; }) : SHOP_POOL.slice();
-  pool.sort(function(){ return Math.random()-0.5; });
-  var items = pool.slice(0, slots ? pool.length : 4);
+  var stocked = category && Rooms.SHOP_SLOT_MAP[category];
+  var items;
+  if (stocked) {
+    items = Rooms._shopStockItems(category);
+  } else {
+    var pool = SHOP_POOL.slice();
+    pool.sort(function(){ return Math.random()-0.5; });
+    items = pool.slice(0, 4);
+  }
   State._shopItems = items;
-  document.getElementById('shop-title').textContent = (category && TITLE_MAP[category]) || '🏪 Marchand Obscur';
+  document.getElementById('shop-title').textContent = (category && Rooms.SHOP_TITLE_MAP[category]) || '🏪 Marchand Obscur';
   var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold||0;
+  var restockBar = document.getElementById('shop-restock-bar');
+  if (restockBar) restockBar.style.display = stocked ? '' : 'none';
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
+};
+
+Rooms.restockShop = function() {
+  var category = State._shopCategory;
+  if (!category || !Rooms.SHOP_SLOT_MAP[category]) return;
+  if ((Meta.gems||0) < Rooms.SHOP_RESTOCK_COST) {
+    var btn = document.getElementById('shop-restock-btn');
+    if (btn) { btn.style.color='#f87'; setTimeout(function(){ btn.style.color=''; }, 600); }
+    return;
+  }
+  Meta.gems -= Rooms.SHOP_RESTOCK_COST;
+  Rooms._generateShopStock(category);
+  if (typeof HUD !== 'undefined') HUD.updateGems();
+  State._shopItems = Rooms._shopStockItems(category);
+  Rooms._renderShopBuy();
 };
 
 Rooms._renderShopBuy = function() {
@@ -9875,6 +9886,10 @@ var HUD = (function(){
       var gv = document.getElementById('hud-gold-val');
       if (gv) { gv.textContent = (State && State.gold) ? State.gold : 0; gv.classList.remove('hdr-val-flash'); void gv.offsetWidth; gv.classList.add('hdr-val-flash'); }
     },
+    updateGems: function() {
+      var gv = document.getElementById('hud-gems-val');
+      if (gv) gv.textContent = (typeof Meta !== 'undefined' && Meta.gems) ? Meta.gems : 0;
+    },
     updateHP: function() {
       var pct = (State && State.hpMax) ? Math.max(0, Math.min(100, Math.round((State.hp / State.hpMax) * 100))) : 100;
       var bar = document.getElementById('gh-hp-bar-inner');
@@ -10289,134 +10304,6 @@ window.addEventListener('load', function(){
   runIntro();
 });
 
-// ── MARKET ────────────────────────────────────────────────────
-var Market = (function(){
-  var REFRESH_INTERVAL = 18000; // 5h en secondes
-  var FORCE_COST = 5;
-  var STOCK_SIZE = 6;
-  var _from = 'town-screen';
-  var _timerInterval = null;
-
-  function _today() { var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-
-  function _generate() {
-    var pool = SHOP_POOL.slice();
-    // Mélange Fisher-Yates
-    for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
-    var stock = pool.slice(0, STOCK_SIZE).map(function(item, i){
-      // Prix marché : +20% à +50% vs shop (stock limité = prime)
-      var mult = 1.2 + Math.random()*0.3;
-      return { idx: SHOP_POOL.indexOf(item), price: Math.round(item.cost * mult), sold: false };
-    });
-    Meta.market = { stock: stock, lastRefresh: Math.floor(Date.now()/1000) };
-    Meta.save();
-  }
-
-  function _secondsLeft() {
-    if (!Meta.market) return 0;
-    var elapsed = Math.floor(Date.now()/1000) - (Meta.market.lastRefresh||0);
-    return Math.max(0, REFRESH_INTERVAL - elapsed);
-  }
-
-  function _fmtTime(s) {
-    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
-    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
-  }
-
-  function _updateTimer() {
-    var s = _secondsLeft();
-    var lbl = document.getElementById('market-timer-label');
-    if (!lbl) return;
-    if (s === 0) {
-      lbl.textContent = '✨ Stock actualisé !';
-      _generate();
-      _render();
-    } else {
-      lbl.textContent = 'Recharge dans ' + _fmtTime(s);
-    }
-  }
-
-  function _render() {
-    var cont = document.getElementById('market-items');
-    if (!cont) return;
-    cont.innerHTML = '';
-    var stock = (Meta.market && Meta.market.stock) || [];
-    stock.forEach(function(entry, i) {
-      var item = SHOP_POOL[entry.idx];
-      if (!item) return;
-      var canAfford = (State.gold||0) >= entry.price;
-      var div = document.createElement('div');
-      div.className = 'market-item rarity-'+(item.rarity||'common') +
-        (entry.sold ? ' sold' : (!canAfford ? ' cant-afford' : ''));
-      div.innerHTML =
-        '<span class="mi-ico">'+item.ico+'</span>'+
-        '<div class="mi-info">'+
-          '<div class="mi-name">'+item.name+'</div>'+
-          '<div class="mi-desc">'+item.desc+'</div>'+
-        '</div>'+
-        '<div class="mi-price">'+(entry.sold ? '<span style="color:rgba(255,255,255,0.25)">Vendu</span>' : entry.price)+'</div>';
-      if (!entry.sold) div.addEventListener('click', function(){ Market.buy(i); });
-      cont.appendChild(div);
-    });
-    // Gems display
-    var gv = document.getElementById('market-gems-val'); if(gv) gv.textContent = Meta.gems||0;
-  }
-
-  return {
-    show: function(from) {
-      _from = from || 'town-screen';
-      if (!Meta.market || _secondsLeft() === 0) _generate();
-      _render();
-      _updateTimer();
-      Nav.go('market-screen');
-      _timerInterval = setInterval(_updateTimer, 1000);
-    },
-    leave: function() {
-      clearInterval(_timerInterval);
-      Nav.go(_from);
-    },
-    buy: function(i) {
-      var stock = Meta.market && Meta.market.stock;
-      if (!stock || !stock[i] || stock[i].sold) return;
-      var entry = stock[i];
-      var item = SHOP_POOL[entry.idx];
-      if (!item) return;
-      if ((State.gold||0) < entry.price) return;
-      State.gold -= entry.price;
-      if (item.effect) { try { item.effect(); } catch(e){} }
-      else if (item.slot && item.stats) {
-        // Équipement : va dans l'inventaire
-        var newItem = { ico:item.ico, name:item.name, desc:item.desc, rarity:item.rarity, slot:item.slot, stats:item.stats };
-        State.inventory = State.inventory || [];
-        State.inventory.push(newItem);
-      }
-      entry.sold = true;
-      Meta.save();
-      State.saveRun();
-      if (typeof HUD !== 'undefined') HUD.updateGold();
-      if (typeof Sfx !== 'undefined' && Sfx.gold) Sfx.gold();
-      _render();
-    },
-    forceRefresh: function() {
-      if ((Meta.gems||0) < FORCE_COST) {
-        var lbl = document.getElementById('market-timer-label');
-        if (lbl) { lbl.style.color='#f87'; setTimeout(function(){lbl.style.color='';},600); }
-        return;
-      }
-      Meta.gems -= FORCE_COST;
-      Meta.save();
-      var gv = document.getElementById('hud-gems-val'); if(gv) gv.textContent = Meta.gems;
-      _generate();
-      _render();
-      _updateTimer();
-    },
-    updateGemsDisplay: function() {
-      var gv = document.getElementById('hud-gems-val'); if(gv) gv.textContent = Meta.gems||0;
-      var mgv = document.getElementById('market-gems-val'); if(mgv) mgv.textContent = Meta.gems||0;
-    },
-  };
-})();
-
 // ── DAILY QUESTS ──────────────────────────────────────────────
 var DailyQuests = (function(){
   var DEFS = [
@@ -10465,7 +10352,7 @@ var DailyQuests = (function(){
       dq[id].claimed = true;
       Meta.gems = (Meta.gems||0) + def.gems;
       Meta.save();
-      Market.updateGemsDisplay();
+      if (typeof HUD !== 'undefined') HUD.updateGems();
       DailyQuests.renderInModal();
     },
     renderInModal: function() {
@@ -10538,7 +10425,7 @@ var GemStore = (function(){
       // TODO production : intégrer Google Play Billing / Stripe
       Meta.gems = (Meta.gems||0) + pkg.gems;
       Meta.save();
-      Market.updateGemsDisplay();
+      if (typeof HUD !== 'undefined') HUD.updateGems();
       var gv = document.getElementById('gs-gems-val'); if(gv) gv.textContent = Meta.gems;
       if (typeof Sfx !== 'undefined' && Sfx.gold) Sfx.gold();
     },
