@@ -1722,18 +1722,6 @@ canvas#particles {
 }
 #eq-detail-overlay.open { display: block; }
 
-#eq-talents-btn {
-  position: relative; font-size: 18px; cursor: pointer; padding: 4px 10px;
-  -webkit-tap-highlight-color: transparent;
-}
-#eq-talents-badge {
-  position: absolute; top: -2px; right:2px; min-width: 14px; height: 14px; padding: 0 3px;
-  border-radius: 7px; background: #00D4E8; color: #05030a;
-  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; line-height: 14px; text-align: center;
-  display: none;
-}
-#eq-talents-badge.show { display: block; }
-
 /* ── TALENTS SCREEN ─────────────────────────────────────────── */
 #talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; }
 #tal-header {
@@ -1773,6 +1761,40 @@ canvas#particles {
   font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 1px;
 }
 #tal-respec-btn:active { background: rgba(200,60,60,0.22); }
+
+/* ── GUILD SCREEN (tableau de records) ─────────────────────── */
+#guild-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; }
+#gld-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px; border-bottom: 1px solid rgba(201,165,80,0.15);
+  flex-shrink: 0;
+}
+#gld-back { font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer; padding: 4px 10px; -webkit-tap-highlight-color: transparent; }
+#gld-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550; letter-spacing: 1px; }
+#gld-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 20px 16px; flex-shrink: 0; border-bottom: 1px solid rgba(201,165,80,0.1);
+}
+#gld-avatar {
+  width: 64px; height: 64px; border-radius: 50%; font-size: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.4); margin-bottom: 10px;
+}
+#gld-name { font-family: 'Cinzel Decorative', serif; font-size: 18px; color: #EDE8DF; }
+#gld-sub { font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px; color: rgba(201,165,80,0.55); margin-top: 2px; }
+#gld-level {
+  margin-top: 8px; padding: 3px 12px; border-radius: 10px;
+  background: rgba(0,212,232,0.1); border: 1px solid rgba(0,212,232,0.4); color: #00D4E8;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+}
+#gld-records { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.gld-row {
+  display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15);
+}
+.gld-row-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; }
+.gld-row-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5px; color: rgba(237,232,223,0.6); flex: 1; }
+.gld-row-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #C9A550; }
 
 /* ── SETTINGS ── */
 #settings-screen {
@@ -2001,6 +2023,14 @@ canvas#particles {
 /* positions hotspots chambre */
 #hs-inn-window  { top:40%;  left:50%; transform:translateX(-50%); }
 #hs-inn-armoire { top:22%;  left:12%; }
+#hs-inn-talents { top:22%;  left:82%; }
+.hs-badge {
+  position: absolute; top: -4px; right: -4px; min-width: 15px; height: 15px; padding: 0 3px;
+  border-radius: 8px; background: #00D4E8; color: #05030a;
+  font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; line-height: 15px; text-align: center;
+  display: none;
+}
+.hs-badge.show { display: block; }
 #hs-inn-chest   { top:65%;  left:10%; }
 #hs-inn-bed     { top:55%;  left:68%; }
 #hs-inn-town    { bottom:6%; left:50%; transform:translateX(-50%); }
@@ -2923,7 +2953,7 @@ canvas#particles {
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
         <div id="eq-title">Équipement</div>
-        <div id="eq-talents-btn" onclick="TalentsScreen.open('hero-screen')">🌟<span id="eq-talents-badge"></span></div>
+        <div style="width:40px"></div>
       </div>
       <!-- Stats bar -->
       <div id="eq-stats-bar">
@@ -2950,7 +2980,6 @@ canvas#particles {
       </div>
       <!-- Scrollable body -->
       <div id="eq-body">
-        <div id="hs-rank-row" style="font-family:'Crimson Text',serif;font-size:13px;color:#C9A550;text-align:center;padding:6px 0 2px;letter-spacing:1px;">Rang Social : <span id="hs-rank-val">Inconnu</span></div>
         <div class="eq-section-lbl">Armement</div>
         <div class="eq-slot-row" id="eq-row-arme"      onclick="EquipScreen.tapSlot('arme')">
           <div class="eq-slot-ico" id="eq-ico-arme">⚔</div>
@@ -3096,6 +3125,22 @@ canvas#particles {
       <button id="tal-respec-btn" onclick="TalentsScreen.respec()">↺ <span data-i18n="tal.respec.btn">Réinitialiser l'arbre</span></button>
     </div>
 
+    <!-- ── GUILDE (tableau de records) ── -->
+    <div id="guild-screen" class="screen has-game-header">
+      <div id="gld-header">
+        <div id="gld-back" onclick="GuildScreen.close()">←</div>
+        <div id="gld-title">🏛 <span data-i18n="gld.title">Guilde</span></div>
+        <div style="width:40px"></div>
+      </div>
+      <div id="gld-card">
+        <div id="gld-avatar">🧑</div>
+        <div id="gld-name">Aventurier</div>
+        <div id="gld-sub"></div>
+        <div id="gld-level"></div>
+      </div>
+      <div id="gld-records"></div>
+    </div>
+
     <!-- ── PARAMÈTRES ── -->
     <div id="settings-screen" class="screen">
       <div id="st-header">
@@ -3231,6 +3276,11 @@ canvas#particles {
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="inn.equip">Équipement</div>
       </div>
+      <!-- hotspot grimoire → Talents -->
+      <div class="hotspot" id="hs-inn-talents" onclick="TalentsScreen.open('inn-room')">
+        <div class="hs-ring"><div id="inn-talents-badge" class="hs-badge"></div></div>
+        <div class="hs-lbl" data-i18n="inn.talents">🌟 Talents</div>
+      </div>
       <!-- hotspot coffre → Coffre stockage -->
       <div class="hotspot" id="hs-inn-chest" onclick="ChestScreen.open()">
         <div class="hs-ring"></div>
@@ -3349,7 +3399,7 @@ canvas#particles {
         <div class="hs-lbl" data-i18n="town.temple">⛪ Église · Boutique</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
-      <div class="hotspot" id="hs-town-guild" onclick="State._heroFrom='town-screen';Meta.buildScreen();Nav.go('hero-screen')">
+      <div class="hotspot" id="hs-town-guild" onclick="GuildScreen.open('town-screen')">
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="town.guild">Guilde</div>
       </div>
@@ -4680,6 +4730,7 @@ var STRINGS = {
     // Inn
     'inn.window': 'Partir à l\'aventure',
     'inn.equip': 'Équipement',
+    'inn.talents': '🌟 Talents',
     'inn.chest': 'Coffre',
     'inn.rest': 'Repos (15 🪙)',
     'inn.town': 'Aller en ville',
@@ -4787,6 +4838,13 @@ var STRINGS = {
     'tal.respec.btn': 'Réinitialiser l\'arbre',
     'tal.respec.title': 'Réinitialiser l\'arbre ?',
     'tal.respec.body': 'Tous les talents débloqués (classe et race) seront annulés et tes points remboursés.',
+    'gld.title': 'Guilde',
+    'gld.rank': 'Rang Social',
+    'gld.ach': 'Succès débloqués',
+    'gld.best': 'Meilleur étage',
+    'gld.kills': 'Ennemis vaincus',
+    'gld.runs': 'Runs jouées',
+    'gld.gold': 'Or amassé',
     'misc.ok': 'OK',
     'misc.cancel': 'Annuler',
     'misc.available': 'Disponible',
@@ -5068,6 +5126,7 @@ var STRINGS = {
     // Inn
     'inn.window': 'Go adventuring',
     'inn.equip': 'Equipment',
+    'inn.talents': '🌟 Talents',
     'inn.chest': 'Chest',
     'inn.rest': 'Rest (15 🪙)',
     'inn.town': 'Go to town',
@@ -5175,6 +5234,13 @@ var STRINGS = {
     'tal.respec.btn': 'Reset tree',
     'tal.respec.title': 'Reset the tree?',
     'tal.respec.body': 'All unlocked talents (class and race) will be undone and your points refunded.',
+    'gld.title': 'Guild',
+    'gld.rank': 'Social Rank',
+    'gld.ach': 'Achievements unlocked',
+    'gld.best': 'Best floor',
+    'gld.kills': 'Enemies defeated',
+    'gld.runs': 'Runs played',
+    'gld.gold': 'Gold amassed',
     'misc.ok': 'OK',
     'misc.cancel': 'Cancel',
     'misc.available': 'Available',
@@ -5413,11 +5479,13 @@ var Nav = {
         // Relancer le rendu de la carte (figé en quittant l'écran) sans régénérer les nœuds
         if (typeof DungeonMap !== 'undefined' && DungeonMap.resume) DungeonMap.resume();
       }
-      // hero-screen = équipement + guilde combinés : toujours rafraîchir les DEUX
-      // (sinon entrer par la guilde affichait un équipement vide / périmé).
       if (id === 'hero-screen') {
         if (typeof EquipScreen !== 'undefined' && EquipScreen.refresh) EquipScreen.refresh();
-        if (typeof Meta !== 'undefined' && Meta.buildScreen) Meta.buildScreen();
+      }
+      if (id === 'guild-screen') {
+        if (typeof GuildScreen !== 'undefined' && GuildScreen.render) GuildScreen.render();
+      }
+      if (id === 'inn-room') {
         if (typeof TalentsScreen !== 'undefined' && TalentsScreen.updateBadge) TalentsScreen.updateBadge();
       }
       if (typeof Embers !== 'undefined') {
@@ -7008,7 +7076,7 @@ var Talents = (function(){
 
 var TalentsScreen = (function(){
   var _tab = 'class';
-  var _from = 'hero-screen';
+  var _from = 'inn-room';
 
   function _nodeState(scope, node, tier) {
     if (Talents.isUnlocked(scope, node.id)) return 'unlocked';
@@ -7052,7 +7120,7 @@ var TalentsScreen = (function(){
   }
 
   function updateBadge() {
-    var badge = document.getElementById('eq-talents-badge');
+    var badge = document.getElementById('inn-talents-badge');
     if (!badge) return;
     var n = State.skillPoints||0;
     badge.textContent = n;
@@ -7060,7 +7128,7 @@ var TalentsScreen = (function(){
   }
 
   function open(from) {
-    _from = from || 'hero-screen';
+    _from = from || 'inn-room';
     _tab = 'class';
     document.getElementById('tal-tab-class').classList.add('active');
     document.getElementById('tal-tab-race').classList.remove('active');
@@ -7151,22 +7219,6 @@ function triggerLevelUp() {
   }
   overlay.classList.add('show');
 }
-
-// ── MÉTA-PROGRESSION ─────────────────────────────────────────────
-var META_UPGRADES = [
-  { id:'atk',    ico:'⚔', name:'Forge du Héros',   nameEn:'Hero\'s Forge',      desc:'+2 ATQ de base',       descEn:'+2 base ATK',        max:5, cost:60,  effect:function(){ Meta.bonuses.atk+=2; } },
-  { id:'def',    ico:'🛡', name:'Armure Ancestrale',nameEn:'Ancestral Armor',    desc:'+3 DEF de base',       descEn:'+3 base DEF',        max:5, cost:60,  effect:function(){ Meta.bonuses.def+=3; } },
-  { id:'hp',     ico:'❤', name:'Constitution',     nameEn:'Constitution',       desc:'+20 PV de base',       descEn:'+20 base HP',        max:5, cost:50,  effect:function(){ Meta.bonuses.hp+=20; } },
-  { id:'potion', ico:'🧪', name:'Alchimie',         nameEn:'Alchemy',            desc:'+1 Potion de départ',  descEn:'+1 starting Potion', max:3, cost:80,  effect:function(){ Meta.bonuses.potions+=1; } },
-  { id:'gold',   ico:'🪙', name:'Commerce',         nameEn:'Commerce',           desc:'+20% or gagné',        descEn:'+20% gold earned',   max:3, cost:100, effect:function(){ Meta.bonuses.goldPct+=0.2; } },
-  { id:'crit',   ico:'🎯', name:'Instinct Meurtrier',nameEn:'Killer Instinct',   desc:'+5% chance critique',  descEn:'+5% crit chance',    max:4, cost:90,  effect:function(){ Meta.bonuses.crit+=0.05; } },
-  { id:'dodge',  ico:'💨', name:'Esquive',           nameEn:'Evasion',           desc:'+5% esquiver une attaque', descEn:'+5% chance to dodge an attack', max:3, cost:100, effect:function(){ Meta.bonuses.dodge=(Meta.bonuses.dodge||0)+0.05; } },
-  { id:'timer',  ico:'⏱', name:'Réflexes',          nameEn:'Reflexes',          desc:'+1s au chrono de combat',  descEn:'+1s on the combat timer', max:3, cost:80,  effect:function(){ Meta.bonuses.timerBonus=(Meta.bonuses.timerBonus||0)+1; } },
-  { id:'lifesteal',ico:'🩸',name:'Vampirisme',       nameEn:'Vampirism',         desc:'Récupère 10% des dégâts infligés', descEn:'Recover 10% of damage dealt', max:3, cost:120, effect:function(){ Meta.bonuses.lifesteal=(Meta.bonuses.lifesteal||0)+0.10; } },
-  { id:'regen',  ico:'🌿', name:'Régénération',      nameEn:'Regeneration',      desc:'+3 PV après chaque victoire', descEn:'+3 HP after each victory', max:5, cost:60, effect:function(){ Meta.bonuses.regenMeta=(Meta.bonuses.regenMeta||0)+3; } },
-  { id:'xpBoost',ico:'✨', name:'Sagesse',           nameEn:'Wisdom',            desc:'+10% XP par combat',       descEn:'+10% XP per fight',  max:3, cost:90,  effect:function(){ Meta.bonuses.xpPct=(Meta.bonuses.xpPct||0)+0.10; } },
-  { id:'startGold',ico:'💰',name:'Fortune',          nameEn:'Fortune',           desc:'+25 or au départ',         descEn:'+25 starting gold',  max:4, cost:80,  effect:function(){ Meta.bonuses.startGold=(Meta.bonuses.startGold||0)+25; } },
-];
 
 // ── QUESTS ────────────────────────────────────────────────────────
 // ── MODIFICATEURS DE RUN ─────────────────────────────────────────
@@ -8229,52 +8281,53 @@ var Meta = {
     Meta.bestFloor   = Math.max(Meta.bestFloor, State.floor||1);
     Meta.save();
   },
-
-  buildScreen: function() {
-    var _gTotal = Meta.totalGold + (State.gold||0);
-    var _rankNames = ['Inconnu','Connu','Respecté','Honoré','Légendaire'];
-    var _rankEl = document.getElementById('hs-rank-val');
-    if (_rankEl) _rankEl.textContent = _rankNames[Math.min(Meta.rank||0, _rankNames.length-1)];
-    var _elGold = document.getElementById('hs-gold-val'); if (_elGold) _elGold.textContent = _gTotal;
-    var _elRuns = document.getElementById('hs-runs');     if (_elRuns) _elRuns.textContent = Meta.totalRuns;
-    var _elBest = document.getElementById('hs-best');     if (_elBest) _elBest.textContent = Meta.bestFloor;
-    var _elKills= document.getElementById('hs-kills');    if (_elKills) _elKills.textContent = Meta.totalKills;
-    var cont = document.getElementById('hs-upgrades');
-    if (!cont) return;
-    cont.innerHTML = '';
-    META_UPGRADES.forEach(function(u) {
-      var lvl   = Meta.levels[u.id]||0;
-      var maxed = lvl >= u.max;
-      var cost  = u.cost + lvl*20;
-      var canBuy= !maxed && (Meta.totalGold+(State.gold||0)) >= cost;
-      var card  = document.createElement('div');
-      card.className = 'upgrade-card'+(maxed?' maxed':(!canBuy?' cant-afford':''));
-      card.innerHTML =
-        '<span class="uc-ico">'+u.ico+'</span>'+
-        '<div class="uc-info">'+
-          '<div class="uc-name">'+(CGE_LANG==='en'&&u.nameEn?u.nameEn:u.name)+'</div>'+
-          '<div class="uc-desc">'+(CGE_LANG==='en'&&u.descEn?u.descEn:u.desc)+'</div>'+
-          '<div class="uc-prog">'+(CGE_LANG==='en'?'Level ':'Niveau ')+lvl+' / '+u.max+(maxed?(CGE_LANG==='en'?' — MAXED':' — MAXÉ'):'')+'</div>'+
-        '</div>'+
-        (maxed ? '' : '<div class="uc-cost">'+cost+'</div>');
-      if (!maxed) {
-        card.addEventListener('click', function(){
-          var c2 = u.cost + (Meta.levels[u.id]||0)*20;
-          var _avail = Meta.totalGold + (State.gold||0);
-          if (_avail < c2) return;
-          var _fromRun = Math.min(State.gold||0, c2);
-          State.gold = (State.gold||0) - _fromRun;
-          Meta.totalGold -= (c2 - _fromRun);
-          Meta.levels[u.id] = (Meta.levels[u.id]||0)+1;
-          u.effect();
-          Meta.save();
-          Meta.buildScreen();
-        });
-      }
-      cont.appendChild(card);
-    });
-  }
 };
+
+// ── GUILDE — tableau de records (vitrine, lecture seule) ──────────
+var GuildScreen = (function(){
+  var RANK_NAMES = ['Inconnu','Connu','Respecté','Honoré','Légendaire'];
+  var RANK_NAMES_EN = ['Unknown','Known','Respected','Honoured','Legendary'];
+
+  function render() {
+    var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
+    var avatar = document.getElementById('gld-avatar'); if (avatar) avatar.textContent = r.icon || '🧑';
+    var nameEl = document.getElementById('gld-name'); if (nameEl) nameEl.textContent = (State.name && State.name!=='Aventurier') ? State.name : T('create.name.placeholder');
+    var subEl = document.getElementById('gld-sub');
+    if (subEl) subEl.textContent = (CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name) + ' · ' + (CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name);
+    var lvlEl = document.getElementById('gld-level'); if (lvlEl) lvlEl.textContent = T('hud.level') + ' ' + (State.level||1);
+
+    var names = CGE_LANG==='en' ? RANK_NAMES_EN : RANK_NAMES;
+    var rankName = names[Math.min(Meta.rank||0, names.length-1)];
+    var achTotal = (typeof ACHIEVEMENT_DEFS !== 'undefined') ? ACHIEVEMENT_DEFS.length : 0;
+    var achDone  = (typeof ACHIEVEMENT_DEFS !== 'undefined') ? ACHIEVEMENT_DEFS.filter(function(a){ return !!(Meta.achievements||{})[a.id]; }).length : 0;
+    var rows = [
+      { ico:'🏅', label:T('gld.rank'),    val: rankName },
+      { ico:'🏆', label:T('gld.ach'),     val: achDone+' / '+achTotal },
+      { ico:'🗻', label:T('gld.best'),    val: Meta.bestFloor||0 },
+      { ico:'⚔',  label:T('gld.kills'),   val: Meta.totalKills||0 },
+      { ico:'🔄', label:T('gld.runs'),    val: Meta.totalRuns||0 },
+      { ico:'🪙', label:T('gld.gold'),    val: (Meta.totalGold||0) + (State.gold||0) },
+    ];
+    var cont = document.getElementById('gld-records');
+    if (cont) {
+      cont.innerHTML = rows.map(function(row){
+        return '<div class="gld-row"><span class="gld-row-ico">'+row.ico+'</span>'
+          + '<span class="gld-row-label">'+row.label+'</span>'
+          + '<span class="gld-row-val">'+row.val+'</span></div>';
+      }).join('');
+    }
+  }
+
+  function open(from) {
+    State._heroFrom = from || 'town-screen';
+    Nav.go('guild-screen');
+  }
+
+  function close() { Nav.go(State._heroFrom || 'town-screen'); }
+
+  return { render:render, open:open, close:close };
+})();
 
 // ── BOUTIQUE ──────────────────────────────────────────────────────
 // SHOP_POOL : items disponibles en boutique
@@ -9700,6 +9753,7 @@ var InnRoom = {
     if (el) el.textContent = heroName + (r.icon||'') + ' ' + (CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name) + ' ' + (CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name);
     InnRoom.updateHp();
     if (typeof HUD !== 'undefined') HUD.updateHP();
+    if (typeof TalentsScreen !== 'undefined' && TalentsScreen.updateBadge) TalentsScreen.updateBadge();
     State.saveRun(); // auto-save à chaque retour à l'auberge
     // Dialogue Marta — première arrivée
     if (State._showMartaIntro) {
@@ -10219,7 +10273,7 @@ var HUD = (function(){
     'dungeon-map':1,'combat-screen':1,'shop-screen':1,
     'inn-room':1,'town-screen':1,'world-map':1,'world-map-2':1,
     'taverne-screen':1,'equip-screen':1,'chest-screen':1,
-    'hero-screen':1,'rest-screen':1,'loot-screen':1,'talents-screen':1
+    'hero-screen':1,'rest-screen':1,'loot-screen':1,'talents-screen':1,'guild-screen':1
   };
   var FLOOR_LABELS = ['I','II','III','IV','V','VI'];
 
@@ -10648,7 +10702,7 @@ var App = {
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
   },
-  showHero: function(){ State._heroFrom='inn-room'; Meta.buildScreen(); Nav.go('hero-screen'); },
+  showHero: function(){ State._heroFrom='inn-room'; Nav.go('hero-screen'); },
   showSettings: function(){ Sfx.nav(); Nav.go('settings-screen'); },
   continueAfterVictory: function() {
     // Le perso garde tout — on retourne juste à l'auberge
