@@ -1731,30 +1731,68 @@ canvas#particles {
 }
 #tal-back { font-size: 22px; color: rgba(201,165,80,0.7); cursor: pointer; padding: 4px 10px; -webkit-tap-highlight-color: transparent; }
 #tal-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #C9A550; letter-spacing: 1px; }
-#tal-points { font-family:'Cinzel',serif; font-size: 13px; font-weight: 700; color: #00D4E8; display:flex; align-items:center; gap:4px; }
+#tal-points { font-family:'Cinzel',serif; font-size: 12px; font-weight: 700; color: #00D4E8; display:flex; align-items:center; gap:4px; }
+#tal-points-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
 #tal-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,165,80,0.1); margin: 0 16px 8px; flex-shrink: 0; }
-#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 16px 16px; }
-.tal-branch { margin-bottom: 18px; }
+#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 8px 20px; display: flex; align-items: flex-start; justify-content: space-around; gap: 4px; }
+.tal-branch { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
 .tal-branch-head {
-  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px; color: rgba(201,165,80,0.6);
-  text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5px; color: rgba(201,165,80,0.6);
+  text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px;
+  text-align: center;
 }
-.tal-branch-ico { font-size: 16px; }
-.tal-node {
-  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15);
-  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+.tal-branch-ico { font-size: 18px; }
+.tal-node-circle {
+  width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 21px; cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+  border: 2px solid rgba(120,90,50,0.35); background: radial-gradient(circle at 35% 30%, #1a1208, #0d0a05);
+  transition: transform 0.15s;
 }
-.tal-node.available { cursor: pointer; border-color: rgba(0,212,232,0.5); background: rgba(0,212,232,0.06); }
-.tal-node.available:active { background: rgba(0,212,232,0.15); transform: scale(0.98); }
-.tal-node.unlocked { border-color: rgba(201,165,80,0.55); background: rgba(201,165,80,0.08); }
-.tal-node.locked { opacity: 0.45; }
-.tal-node-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; }
-.tal-node-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #EDE8DF; }
-.tal-node-desc { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.55); margin-top: 2px; }
-.tal-node-cost { font-family: 'Cinzel', serif; font-size: 12px; color: #00D4E8; flex-shrink: 0; white-space: nowrap; }
-.tal-node.unlocked .tal-node-cost { color: #C9A550; }
-.tal-connector { text-align: center; color: rgba(201,165,80,0.3); font-size: 13px; padding: 2px 0; }
+.tal-node-circle:active { transform: scale(0.92); }
+.tal-node-circle.unlocked {
+  border-color: rgba(201,165,80,0.85); background: radial-gradient(circle at 35% 30%, #3a2e1a, #1a1208);
+  box-shadow: 0 0 10px rgba(201,165,80,0.35);
+}
+.tal-node-circle.available {
+  border-color: rgba(0,212,232,0.8); box-shadow: 0 0 12px rgba(0,212,232,0.3);
+  animation: talPulse 2s infinite;
+}
+.tal-node-circle.locked { opacity: 0.4; }
+@keyframes talPulse {
+  0%,100% { box-shadow: 0 0 8px rgba(0,212,232,0.25); }
+  50%     { box-shadow: 0 0 16px rgba(0,212,232,0.55); }
+}
+.tal-node-cost-badge { font-family:'Cinzel',serif; font-size: 10px; color: #00D4E8; margin: 4px 0 12px; text-align: center; }
+.tal-connector-line { width: 2px; height: 20px; background: rgba(120,90,50,0.3); }
+.tal-connector-line.done { background: rgba(201,165,80,0.75); }
+#tal-detail-overlay {
+  display: none; position: absolute; inset: 0; z-index: 999; background: rgba(4,3,8,0.88);
+  align-items: flex-end; justify-content: center;
+}
+#tal-detail-overlay.show { display: flex; }
+#tal-detail-panel {
+  width: 100%; max-height: 70%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: linear-gradient(180deg, #100c1a, #07060f);
+  border-top: 1px solid rgba(201,165,80,0.3); border-radius: 18px 18px 0 0;
+  padding: 24px 20px 26px; position: relative; text-align: center;
+}
+#tal-detail-close { position: absolute; top: 14px; right: 16px; font-size: 16px; color: rgba(237,232,223,0.5); cursor: pointer; }
+#tal-detail-ico { font-size: 36px; margin-bottom: 8px; }
+#tal-detail-name { font-family: 'Cinzel Decorative', serif; font-size: 17px; color: #EDE8DF; }
+.tal-detail-kind {
+  display: inline-block; margin-top: 6px; padding: 2px 10px; border-radius: 10px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.tal-detail-kind.active  { color: #00D4E8; background: rgba(0,212,232,0.1); border: 1px solid rgba(0,212,232,0.4); }
+.tal-detail-kind.passive { color: #C9A550; background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.4); }
+#tal-detail-desc { font-family: 'Crimson Text', serif; font-size: 13px; color: rgba(237,232,223,0.75); margin-top: 14px; line-height: 1.5; }
+.tal-detail-btn {
+  margin-top: 20px; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(0,212,232,0.5); background: rgba(0,212,232,0.12); color: #00D4E8;
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+}
+.tal-detail-btn.done   { border-color: rgba(201,165,80,0.5); background: rgba(201,165,80,0.1); color: #C9A550; cursor: default; }
+.tal-detail-btn.locked { border-color: rgba(237,232,223,0.15); background: rgba(255,255,255,0.03); color: rgba(237,232,223,0.4); cursor: default; }
 #tal-respec-btn {
   margin: 0 16px 16px; padding: 12px; border-radius: 10px; cursor: pointer; flex-shrink: 0;
   background: rgba(200,60,60,0.1); border: 1px solid rgba(200,60,60,0.3); color: rgba(220,100,100,0.85);
@@ -3192,7 +3230,7 @@ canvas#particles {
       <div id="tal-header">
         <div id="tal-back" onclick="TalentsScreen.close()">←</div>
         <div id="tal-title">🌟 <span data-i18n="tal.title">Talents</span></div>
-        <div id="tal-points">✦ <span id="tal-points-val">0</span></div>
+        <div id="tal-points"><span id="tal-points-label"></span> ✦ <span id="tal-points-val">0</span></div>
       </div>
       <div id="tal-tabs">
         <div class="chest-tab active" id="tal-tab-class" onclick="TalentsScreen.tab('class')" data-i18n="tal.tab.class">Classe</div>
@@ -3200,6 +3238,17 @@ canvas#particles {
       </div>
       <div id="tal-body"></div>
       <button id="tal-respec-btn" onclick="TalentsScreen.respec()">↺ <span data-i18n="tal.respec.btn">Réinitialiser l'arbre</span></button>
+
+      <div id="tal-detail-overlay" onclick="TalentsScreen.closeDetail()">
+        <div id="tal-detail-panel" onclick="event.stopPropagation()">
+          <div id="tal-detail-close" onclick="TalentsScreen.closeDetail()">✕</div>
+          <div id="tal-detail-ico">✨</div>
+          <div id="tal-detail-name"></div>
+          <div id="tal-detail-kind" class="tal-detail-kind passive"></div>
+          <div id="tal-detail-desc"></div>
+          <button id="tal-detail-btn" onclick="TalentsScreen.upgradeDetail()"></button>
+        </div>
+      </div>
     </div>
 
     <!-- ── GUILDE (tableau de records) ── -->
@@ -3569,10 +3618,10 @@ canvas#particles {
           <span class="gld-row-label" data-i18n="chateau.training">Salle d'Entraînement</span>
           <span class="gld-row-val">›</span>
         </div>
-        <div class="gld-row" style="cursor:pointer" onclick="ChateauHub.goDungeon()">
-          <span class="gld-row-ico">⚰</span>
+        <div class="gld-row" style="cursor:pointer;opacity:0.4" onclick="ChateauHub.goDungeon()">
+          <span class="gld-row-ico">🔒</span>
           <span class="gld-row-label" data-i18n="chateau.dungeon">Donjon : Château Maudit</span>
-          <span class="gld-row-val">›</span>
+          <span class="gld-row-val" data-i18n="chateau.soon">Bientôt</span>
         </div>
       </div>
     </div>
@@ -3825,7 +3874,8 @@ var Integrity = {
     if (d.dodgeBonus != null)    d.dodgeBonus    = _clampNum(d.dodgeBonus, 0, 1, 0);
     if (d.itemLifesteal != null) d.itemLifesteal = _clampNum(d.itemLifesteal, 0, 1, 0);
     if (Array.isArray(d.inventory) && d.inventory.length > 8) d.inventory = d.inventory.slice(0,8);
-    d.skillPoints = _clampNum(d.skillPoints, 0, 29, 0);
+    d.skillPointsClass = _clampNum(d.skillPointsClass, 0, 29, 0);
+    d.skillPointsRace  = _clampNum(d.skillPointsRace, 0, 29, 0);
     if (!d.talents || typeof d.talents !== 'object') d.talents = { class:{}, race:{} };
     if (!d.talents.class || typeof d.talents.class !== 'object') d.talents.class = {};
     if (!d.talents.race  || typeof d.talents.race  !== 'object') d.talents.race  = {};
@@ -3848,7 +3898,8 @@ var State = {
   },
   _heroFrom: 'inn-room',
   _currentZone: null,
-  skillPoints: 0,
+  skillPointsClass: 0,
+  skillPointsRace: 0,
   talents: { class:{}, race:{} },
   _talentFlags: {},
   _talentXpPct: 0,
@@ -3874,7 +3925,8 @@ State.saveRun = function() {
       mana: State.mana || 0, manaMax: State.manaMax || 0,
       _introChoices: State._introChoices || null,
       _finalChoice: State._finalChoice || null,
-      skillPoints: State.skillPoints || 0,
+      skillPointsClass: State.skillPointsClass || 0,
+      skillPointsRace:  State.skillPointsRace || 0,
       talents: State.talents || { class:{}, race:{} },
       _talentFlags: State._talentFlags || {},
       _talentXpPct: State._talentXpPct || 0,
@@ -4487,7 +4539,8 @@ var ProfilesScreen = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
-    State.skillPoints = 0;
+    State.skillPointsClass = 0;
+    State.skillPointsRace = 0;
     State.talents = { class:{}, race:{} };
     State._talentFlags = {};
     State._talentXpPct = 0;
@@ -4997,6 +5050,14 @@ var STRINGS = {
     'tal.respec.btn': 'Réinitialiser l\'arbre',
     'tal.respec.title': 'Réinitialiser l\'arbre ?',
     'tal.respec.body': 'Tous les talents débloqués (classe et race) seront annulés et tes points remboursés.',
+    'tal.points.class': 'Points de Classe',
+    'tal.points.race': 'Points de Race',
+    'tal.detail.active': 'Actif',
+    'tal.detail.passive': 'Passif',
+    'tal.detail.unlocked': 'Débloqué ✓',
+    'tal.detail.upgrade': 'Améliorer (✦{n})',
+    'tal.detail.locked.prereq': 'Débloque d\'abord : {n}',
+    'tal.detail.locked.points': 'Pas assez de points',
     'gld.title': 'Guilde',
     'gld.rank': 'Rang Social',
     'gld.ach': 'Succès débloqués',
@@ -5020,6 +5081,9 @@ var STRINGS = {
     'chateau.rank.label': 'Rang au Château',
     'chateau.training': 'Salle d\'Entraînement',
     'chateau.dungeon': 'Donjon : Château Maudit',
+    'chateau.soon': 'Bientôt',
+    'chateau.soon.title': 'Verrouillé',
+    'chateau.soon.body': 'Ce donjon s\'ouvrira plus tard, à travers une quête du Château.',
     'gauntlet.notready.title': 'Pas encore prêt',
     'gauntlet.notready.body': 'Aucune épreuve n\'est disponible pour l\'instant. Parle aux PNJ du Château pour progresser.',
     'gauntlet.confirm.title': 'Entrer dans l\'épreuve ?',
@@ -5168,7 +5232,8 @@ var STRINGS = {
     'levelup.title': '✦ Montée de Niveau ✦',
     'levelup.level': 'Niveau',
     'levelup.sub': 'Choisis ton amélioration',
-    'levelup.point': '+1 Point de Compétence · {n} disponible(s)',
+    'levelup.point.class': '+1 Point de Classe · {n} disponible(s)',
+    'levelup.point.race': '+1 Point de Race · {n} disponible(s)',
     // Travel cards
     'travel.ruins.name': 'Ruines Maudites',
     'travel.ruins.desc': 'Difficile · Ennemis d\'élite, trésors rares',
@@ -5421,6 +5486,14 @@ var STRINGS = {
     'tal.respec.btn': 'Reset tree',
     'tal.respec.title': 'Reset the tree?',
     'tal.respec.body': 'All unlocked talents (class and race) will be undone and your points refunded.',
+    'tal.points.class': 'Class Points',
+    'tal.points.race': 'Race Points',
+    'tal.detail.active': 'Active',
+    'tal.detail.passive': 'Passive',
+    'tal.detail.unlocked': 'Unlocked ✓',
+    'tal.detail.upgrade': 'Upgrade (✦{n})',
+    'tal.detail.locked.prereq': 'Unlock first: {n}',
+    'tal.detail.locked.points': 'Not enough points',
     'gld.title': 'Guild',
     'gld.rank': 'Social Rank',
     'gld.ach': 'Achievements unlocked',
@@ -5444,6 +5517,9 @@ var STRINGS = {
     'chateau.rank.label': 'Castle Rank',
     'chateau.training': 'Training Hall',
     'chateau.dungeon': 'Dungeon: The Cursed Castle',
+    'chateau.soon': 'Soon',
+    'chateau.soon.title': 'Locked',
+    'chateau.soon.body': 'This dungeon will open later, through a Castle quest.',
     'gauntlet.notready.title': 'Not ready yet',
     'gauntlet.notready.body': 'No trial is available right now. Talk to the Castle\'s NPCs to progress.',
     'gauntlet.confirm.title': 'Enter the trial?',
@@ -5592,7 +5668,8 @@ var STRINGS = {
     'levelup.title': '✦ Level Up ✦',
     'levelup.level': 'Level',
     'levelup.sub': 'Choose your upgrade',
-    'levelup.point': '+1 Skill Point · {n} available',
+    'levelup.point.class': '+1 Class Point · {n} available',
+    'levelup.point.race': '+1 Race Point · {n} available',
     // Travel cards
     'travel.ruins.name': 'Cursed Ruins',
     'travel.ruins.desc': 'Hard · Elite enemies, rare treasures',
@@ -7266,11 +7343,13 @@ var Talents = (function(){
     if (d.xpPct)     State._talentXpPct  = Math.max(0, (State._talentXpPct||0)  + sign*d.xpPct);
   }
 
+  function _pointsField(scope) { return scope === 'class' ? 'skillPointsClass' : 'skillPointsRace'; }
+
   // Rang 1 d'une branche : toujours accessible. Rang 2 : rang 1 requis.
   function canUnlock(scope, node, tier) {
     State.talents = State.talents || { class:{}, race:{} };
     if (State.talents[scope][node.id]) return false; // déjà débloqué
-    if ((State.skillPoints||0) < node.cost) return false;
+    if ((State[_pointsField(scope)]||0) < node.cost) return false;
     if (tier > 0) {
       var found = _findNode(scope, node.id);
       if (!found) return false;
@@ -7292,7 +7371,7 @@ var Talents = (function(){
     _applyDeltas(found.node.deltas, 1);
     if (found.node.flag) { State._talentFlags = State._talentFlags || {}; State._talentFlags[found.node.flag] = true; }
     State.talents[scope][nodeId] = true;
-    State.skillPoints -= found.node.cost;
+    State[_pointsField(scope)] -= found.node.cost;
     if (typeof HUD !== 'undefined') { HUD.updateHP(); }
     State.saveRun();
     return true;
@@ -7303,12 +7382,13 @@ var Talents = (function(){
     ['class','race'].forEach(function(scope){
       var key = scope === 'class' ? State.cls : State.race;
       var branches = _tree(scope, key);
+      var field = _pointsField(scope);
       branches.forEach(function(branch){
         branch.nodes.slice().reverse().forEach(function(node){
           if (isUnlocked(scope, node.id)) {
             _applyDeltas(node.deltas, -1);
             if (node.flag) State._talentFlags[node.flag] = false;
-            State.skillPoints += node.cost;
+            State[field] = (State[field]||0) + node.cost;
             delete State.talents[scope][node.id];
           }
         });
@@ -7321,23 +7401,26 @@ var Talents = (function(){
   function hasFlag(flag) { return !!(State._talentFlags && State._talentFlags[flag]); }
 
   // Rattrape les personnages déjà avancés (créés avant l'arbre de talents, ou
-  // montés de niveau ailleurs) : le total de points jamais gagnés est toujours
-  // niveau-1 (1 point par montée de niveau). On ne fait que compléter, jamais
-  // retirer, pour ne pas retirer des points déjà dépensés.
+  // montés de niveau ailleurs) : à chaque montée de niveau, un point est gagné,
+  // en alternance classe (niveaux impairs) / race (niveaux pairs). On ne fait
+  // que compléter, jamais retirer, pour ne pas retirer des points déjà dépensés.
   function syncSkillPoints() {
     State.talents = State.talents || { class:{}, race:{} };
-    var spent = 0;
+    var spentClass = 0, spentRace = 0;
     ['class','race'].forEach(function(scope){
       var key = scope === 'class' ? State.cls : State.race;
       _tree(scope, key).forEach(function(branch){
         branch.nodes.forEach(function(node){
-          if (isUnlocked(scope, node.id)) spent += node.cost;
+          if (isUnlocked(scope, node.id)) { if (scope==='class') spentClass += node.cost; else spentRace += node.cost; }
         });
       });
     });
-    var totalEarned = Math.max(0, (State.level||1) - 1);
-    var shouldHave = Math.max(0, totalEarned - spent);
-    if (shouldHave > (State.skillPoints||0)) State.skillPoints = shouldHave;
+    var earnedClass = 0, earnedRace = 0;
+    for (var L=2; L<=(State.level||1); L++) { if (L % 2 === 1) earnedClass++; else earnedRace++; }
+    var shouldHaveClass = Math.max(0, earnedClass - spentClass);
+    var shouldHaveRace  = Math.max(0, earnedRace - spentRace);
+    if (shouldHaveClass > (State.skillPointsClass||0)) State.skillPointsClass = shouldHaveClass;
+    if (shouldHaveRace  > (State.skillPointsRace||0))  State.skillPointsRace  = shouldHaveRace;
   }
 
   return {
@@ -7350,6 +7433,7 @@ var Talents = (function(){
 var TalentsScreen = (function(){
   var _tab = 'class';
   var _from = 'inn-room';
+  var _detailScope = null, _detailId = null;
 
   function _nodeState(scope, node, tier) {
     if (Talents.isUnlocked(scope, node.id)) return 'unlocked';
@@ -7357,9 +7441,27 @@ var TalentsScreen = (function(){
     return 'locked';
   }
 
+  // Recherche locale (TALENT_TREES est global) — miroir de GuildScreen._nodeInfo,
+  // mais on a besoin ici du triplet complet {node, branch, tier}.
+  function _lookup(scope, nodeId) {
+    var trees = TALENT_TREES[scope] || {};
+    for (var key in trees) {
+      var branches = trees[key];
+      for (var b=0; b<branches.length; b++) {
+        for (var t=0; t<branches[b].nodes.length; t++) {
+          if (branches[b].nodes[t].id === nodeId) return { node:branches[b].nodes[t], branch:branches[b], tier:t };
+        }
+      }
+    }
+    return null;
+  }
+
   function render() {
+    var field = _tab === 'class' ? 'skillPointsClass' : 'skillPointsRace';
     var pv = document.getElementById('tal-points-val');
-    if (pv) pv.textContent = State.skillPoints||0;
+    if (pv) pv.textContent = State[field]||0;
+    var pl = document.getElementById('tal-points-label');
+    if (pl) pl.textContent = _tab === 'class' ? T('tal.points.class') : T('tal.points.race');
     var body = document.getElementById('tal-body');
     if (!body) return;
     body.innerHTML = '';
@@ -7371,32 +7473,80 @@ var TalentsScreen = (function(){
       var html = '<div class="tal-branch-head"><span class="tal-branch-ico">'+branch.ico+'</span>'+label+'</div>';
       branch.nodes.forEach(function(node, tier){
         var st = _nodeState(_tab, node, tier);
-        var name = (CGE_LANG==='en' && node.nameEn) ? node.nameEn : node.name;
-        var desc = (CGE_LANG==='en' && node.descEn) ? node.descEn : node.desc;
-        html += '<div class="tal-node '+st+'" data-scope="'+_tab+'" data-id="'+node.id+'">'
-          + '<span class="tal-node-ico">'+(st==='locked' ? '🔒' : node.ico)+'</span>'
-          + '<div class="tal-node-info"><div class="tal-node-name">'+name+'</div><div class="tal-node-desc">'+desc+'</div></div>'
-          + '<div class="tal-node-cost">'+(st==='unlocked' ? '✓' : ('✦'+node.cost))+'</div>'
-          + '</div>';
-        if (tier < branch.nodes.length-1) html += '<div class="tal-connector">↓</div>';
+        if (tier > 0) {
+          var prevDone = Talents.isUnlocked(_tab, branch.nodes[tier-1].id);
+          html += '<div class="tal-connector-line'+(prevDone?' done':'')+'"></div>';
+        }
+        html += '<div class="tal-node-circle '+st+'" data-scope="'+_tab+'" data-id="'+node.id+'">'
+          + (st==='locked' ? '🔒' : node.ico) + '</div>'
+          + '<div class="tal-node-cost-badge">'+(st==='unlocked' ? '✓' : ('✦'+node.cost))+'</div>';
       });
       wrap.innerHTML = html;
       body.appendChild(wrap);
     });
-    body.querySelectorAll('.tal-node.available').forEach(function(el){
-      el.addEventListener('click', function(){
-        Talents.unlock(el.dataset.scope, el.dataset.id);
-        render();
-        updateBadge();
-      });
+    body.querySelectorAll('.tal-node-circle').forEach(function(el){
+      el.addEventListener('click', function(){ openDetail(el.dataset.scope, el.dataset.id); });
     });
+  }
+
+  function openDetail(scope, nodeId) {
+    var found = _lookup(scope, nodeId);
+    if (!found) return;
+    _detailScope = scope; _detailId = nodeId;
+    renderDetail();
+    document.getElementById('tal-detail-overlay').classList.add('show');
+  }
+
+  function renderDetail() {
+    var found = _lookup(_detailScope, _detailId);
+    if (!found) return;
+    var node = found.node, tier = found.tier;
+    var name = (CGE_LANG==='en' && node.nameEn) ? node.nameEn : node.name;
+    var desc = (CGE_LANG==='en' && node.descEn) ? node.descEn : node.desc;
+    document.getElementById('tal-detail-ico').textContent = node.ico;
+    document.getElementById('tal-detail-name').textContent = name;
+    var kindEl = document.getElementById('tal-detail-kind');
+    kindEl.textContent = node.flag ? T('tal.detail.active') : T('tal.detail.passive');
+    kindEl.className = 'tal-detail-kind ' + (node.flag ? 'active' : 'passive');
+    document.getElementById('tal-detail-desc').textContent = desc;
+
+    var st = _nodeState(_detailScope, node, tier);
+    var btn = document.getElementById('tal-detail-btn');
+    if (st === 'unlocked') {
+      btn.textContent = T('tal.detail.unlocked');
+      btn.className = 'tal-detail-btn done';
+    } else if (st === 'available') {
+      btn.textContent = T('tal.detail.upgrade').replace('{n}', node.cost);
+      btn.className = 'tal-detail-btn';
+    } else if (tier > 0 && !Talents.isUnlocked(_detailScope, found.branch.nodes[tier-1].id)) {
+      var prev = found.branch.nodes[tier-1];
+      var prevName = (CGE_LANG==='en' && prev.nameEn) ? prev.nameEn : prev.name;
+      btn.textContent = T('tal.detail.locked.prereq').replace('{n}', prevName);
+      btn.className = 'tal-detail-btn locked';
+    } else {
+      btn.textContent = T('tal.detail.locked.points');
+      btn.className = 'tal-detail-btn locked';
+    }
+  }
+
+  function upgradeDetail() {
+    if (!_detailScope || !_detailId) return;
+    if (Talents.unlock(_detailScope, _detailId)) {
+      renderDetail();
+      render();
+      updateBadge();
+    }
+  }
+
+  function closeDetail() {
+    document.getElementById('tal-detail-overlay').classList.remove('show');
   }
 
   function updateBadge() {
     var badge = document.getElementById('inn-talents-badge');
     if (!badge) return;
     Talents.syncSkillPoints();
-    var n = State.skillPoints||0;
+    var n = (State.skillPointsClass||0) + (State.skillPointsRace||0);
     badge.textContent = n;
     badge.classList.toggle('show', n > 0);
   }
@@ -7428,7 +7578,10 @@ var TalentsScreen = (function(){
     });
   }
 
-  return { open:open, close:close, tab:tab, render:render, respec:respec, updateBadge:updateBadge };
+  return {
+    open:open, close:close, tab:tab, render:render, respec:respec, updateBadge:updateBadge,
+    openDetail:openDetail, closeDetail:closeDetail, upgradeDetail:upgradeDetail
+  };
 })();
 
 function getPassive() {
@@ -7450,7 +7603,9 @@ function gainXP(amount) {
   if (State.xp >= threshold && State.level < 30) {
     State.xp -= threshold;
     State.level++;
-    State.skillPoints = (State.skillPoints||0) + 1;
+    // Alterne classe (niveaux impairs) / race (niveaux pairs)
+    if (State.level % 2 === 1) State.skillPointsClass = (State.skillPointsClass||0) + 1;
+    else State.skillPointsRace = (State.skillPointsRace||0) + 1;
     triggerLevelUp();
     if (typeof Achievements !== 'undefined') Achievements.check('level');
   }
@@ -7464,7 +7619,11 @@ function triggerLevelUp() {
   Sfx.levelup();
   document.getElementById('lu-level-num').textContent = State.level;
   var sub = document.getElementById('lu-sub');
-  if (sub) sub.textContent = T('levelup.point').replace('{n}', State.skillPoints||0);
+  if (sub) {
+    var wasClassPoint = State.level % 2 === 1;
+    var key = wasClassPoint ? 'levelup.point.class' : 'levelup.point.race';
+    sub.textContent = T(key).replace('{n}', wasClassPoint ? (State.skillPointsClass||0) : (State.skillPointsRace||0));
+  }
   var cards = document.getElementById('lu-cards');
   cards.innerHTML = '';
   var btn = document.createElement('button');
@@ -8593,7 +8752,8 @@ var ChateauHub = (function(){
   }
 
   function goDungeon() {
-    WorldMap.enter('chateau_maudit');
+    // Verrouillé pour l'instant : sera débloqué par une future quête du Château.
+    CGEModal.alert(T('chateau.soon.title'), T('chateau.soon.body'));
   }
 
   function open(from) {
@@ -10929,7 +11089,8 @@ var HUD = (function(){
     'dungeon-map':1,'combat-screen':1,'shop-screen':1,
     'inn-room':1,'town-screen':1,'world-map':1,'world-map-2':1,
     'taverne-screen':1,'equip-screen':1,'chest-screen':1,
-    'hero-screen':1,'rest-screen':1,'loot-screen':1,'talents-screen':1,'guild-screen':1
+    'hero-screen':1,'rest-screen':1,'loot-screen':1,'talents-screen':1,'guild-screen':1,
+    'chateau-hub-screen':1
   };
   var FLOOR_LABELS = ['I','II','III','IV','V','VI'];
 
@@ -11369,7 +11530,8 @@ var App = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0;
-    State.skillPoints = 0;
+    State.skillPointsClass = 0;
+    State.skillPointsRace = 0;
     State.talents = { class:{}, race:{} };
     State._talentFlags = {};
     State._talentXpPct = 0;
@@ -11423,7 +11585,8 @@ var App = {
     State.scrolls = [];
     State.equipped = { heaume:null,arme:null,bouclier:null,gants:null,bottes:null,ceinture:null,jambieres:null,collier:null,plastron:null,bague_gauche:null,bague_droite:null };
     State.fleeBonus = 0; State.dodgeBonus = 0; State.itemLifesteal = 0;
-    State.skillPoints = 0;
+    State.skillPointsClass = 0;
+    State.skillPointsRace = 0;
     State.talents = { class:{}, race:{} };
     State._talentFlags = {};
     State._talentXpPct = 0;
