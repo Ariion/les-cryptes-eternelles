@@ -1824,11 +1824,9 @@ canvas#particles {
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: 20px 16px; flex-shrink: 0; border-bottom: 1px solid rgba(201,165,80,0.1);
 }
-#gld-avatar {
-  width: 64px; height: 64px; border-radius: 50%; font-size: 30px;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.4); margin-bottom: 10px;
-}
+#gld-avatar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+#gld-avatar .npc-bar { width: 34px; height: 1px; background: linear-gradient(90deg,transparent,rgba(201,165,80,0.6),transparent); }
+#gld-avatar .npc-gem { color: #C9A550; font-size: 11px; text-shadow: 0 0 8px rgba(201,165,80,0.55); }
 #gld-name { font-family: 'Cinzel Decorative', serif; font-size: 18px; color: #EDE8DF; }
 #gld-sub { font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px; color: rgba(201,165,80,0.55); margin-top: 2px; }
 #gld-level {
@@ -1899,11 +1897,9 @@ canvas#particles {
 #gld-detail-close {
   position: absolute; top: 14px; right: 16px; font-size: 16px; color: rgba(237,232,223,0.5); cursor: pointer;
 }
-#gld-detail-avatar {
-  width: 56px; height: 56px; border-radius: 50%; font-size: 26px; margin: 0 auto 8px;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.4);
-}
+#gld-detail-avatar { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 auto 8px; }
+#gld-detail-avatar .npc-bar { width: 34px; height: 1px; background: linear-gradient(90deg,transparent,rgba(201,165,80,0.6),transparent); }
+#gld-detail-avatar .npc-gem { color: #C9A550; font-size: 11px; text-shadow: 0 0 8px rgba(201,165,80,0.55); }
 #gld-detail-name { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: #EDE8DF; text-align: center; }
 #gld-detail-sub { font-family: 'Crimson Text', serif; font-style: italic; font-size: 12px; color: rgba(201,165,80,0.55); text-align: center; margin-top: 2px; }
 #gld-detail-level { font-family: 'Cinzel', serif; font-size: 11px; color: #00D4E8; text-align: center; margin-top: 6px; }
@@ -2239,7 +2235,9 @@ canvas#particles {
   display:flex; flex-direction:column; gap:10px;
   box-shadow:0 -4px 30px rgba(0,0,0,0.8);
 }
-#npc-portrait-ico { font-size:40px; text-align:center; }
+#npc-portrait-deco { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:2px; }
+#npc-portrait-deco .npc-bar { width:34px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.6),transparent); }
+#npc-portrait-deco .npc-gem { color:#C9A550; font-size:11px; text-shadow:0 0 8px rgba(201,165,80,0.55); }
 #npc-portrait-name {
   font-family:'Cinzel',serif; font-size:14px; font-weight:700;
   color:#C9A550; text-align:center; letter-spacing:2px;
@@ -3275,7 +3273,7 @@ canvas#particles {
 
       <div id="gld-panel-records">
         <div id="gld-card">
-          <div id="gld-avatar">🧑</div>
+          <div id="gld-avatar"><span class="npc-bar"></span><span class="npc-gem">✦</span><span class="npc-bar"></span></div>
           <div id="gld-name">Aventurier</div>
           <div id="gld-sub"></div>
           <div id="gld-level"></div>
@@ -3294,7 +3292,7 @@ canvas#particles {
       <div id="gld-detail-overlay" onclick="GuildScreen.closeDetail()">
         <div id="gld-detail-panel" onclick="event.stopPropagation()">
           <div id="gld-detail-close" onclick="GuildScreen.closeDetail()">✕</div>
-          <div id="gld-detail-avatar">🧑</div>
+          <div id="gld-detail-avatar"><span class="npc-bar"></span><span class="npc-gem">✦</span><span class="npc-bar"></span></div>
           <div id="gld-detail-name"></div>
           <div id="gld-detail-sub"></div>
           <div id="gld-detail-level"></div>
@@ -3506,7 +3504,7 @@ canvas#particles {
 
     <div id="npc-overlay" class="overlay" style="display:none">
       <div id="npc-box">
-        <div id="npc-portrait-ico"></div>
+        <div id="npc-portrait-deco"><span class="npc-bar"></span><span class="npc-gem">✦</span><span class="npc-bar"></span></div>
         <div id="npc-portrait-name"></div>
         <div id="npc-speech"></div>
         <div id="npc-quest-info" style="display:none">
@@ -8747,10 +8745,6 @@ var Quests = (function(){
       _currentNpc = npc;
       _currentQuest = null;
       var nd = NPC_DATA[npc];
-      // Portrait : juste le nom, plus d'icône emoji
-      var portIco = document.getElementById('npc-portrait-ico');
-      var _npcIcons = {bertrand:'🍺',oswin:'🎵',marta:'🏠',seraphine:'🔮',aldric:'⚔',elise:'✨',corvin:'🪓',conseiller:'📜',duc:'👑'};
-      if (portIco) portIco.textContent = _npcIcons[npc] || '👤';
       document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
@@ -9170,7 +9164,6 @@ var GuildScreen = (function(){
   function render() {
     var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
-    var avatar = document.getElementById('gld-avatar'); if (avatar) avatar.textContent = r.icon || '🧑';
     var nameEl = document.getElementById('gld-name'); if (nameEl) nameEl.textContent = (State.name && State.name!=='Aventurier') ? State.name : T('create.name.placeholder');
     var subEl = document.getElementById('gld-sub');
     if (subEl) subEl.textContent = (CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name) + ' · ' + (CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name);
@@ -9266,7 +9259,6 @@ var GuildScreen = (function(){
     if (!entry) return;
     var r = RACES.find(function(x){ return x.id===entry.race; });
     var c = CLASSES.find(function(x){ return x.id===entry.cls; });
-    var avatarEl = document.getElementById('gld-detail-avatar'); if (avatarEl) avatarEl.textContent = (r&&r.icon)||'🧑';
     var nameEl = document.getElementById('gld-detail-name'); if (nameEl) nameEl.textContent = entry.name||'?';
     var subEl = document.getElementById('gld-detail-sub');
     if (subEl) subEl.textContent = (r?(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name):(entry.race||'?')) + ' · ' + (c?(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name):(entry.cls||'?'));
