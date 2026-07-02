@@ -975,6 +975,16 @@ canvas#particles {
   font-family:'Cinzel',serif; font-size:13px; font-weight:700;
   color:#EDE8DF; letter-spacing:2px; text-transform:uppercase;
 }
+#cb-enemy-element {
+  display:inline-flex; align-items:center; gap:4px; margin:3px 0 4px;
+  font-family:'Cinzel',serif; font-size:9.5px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  padding:2px 9px; border-radius:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15);
+}
+#cb-enemy-element.el-feu      { color:#ff8a5a; border-color:rgba(255,106,61,0.5);  background:rgba(255,106,61,0.1); }
+#cb-enemy-element.el-glace    { color:#8fd8f5; border-color:rgba(94,200,245,0.5);  background:rgba(94,200,245,0.1); }
+#cb-enemy-element.el-poison   { color:#a0e87a; border-color:rgba(126,217,87,0.5);  background:rgba(126,217,87,0.1); }
+#cb-enemy-element.el-tenebres { color:#cf9cf0; border-color:rgba(176,110,224,0.5); background:rgba(176,110,224,0.1); }
+#cb-enemy-element.el-brut     { color:#e0c27a; border-color:rgba(201,165,80,0.5);  background:rgba(201,165,80,0.1); }
 #cb-enemy-hp-wrap { width:100%; max-width:220px; display:flex; align-items:center; gap:8px; }
 #cb-enemy-hp-inner { background:linear-gradient(90deg,#1a6a1a,#2db82d,#50d050); }
 #cb-enemy-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(140,220,140,0.8); white-space:nowrap; }
@@ -1481,7 +1491,8 @@ canvas#particles {
 .spell-btn.disabled { opacity:0.35; pointer-events:none; }
 .spell-btn .sp-ico { font-size:20px; flex-shrink:0; }
 .spell-btn .sp-info { flex:1; }
-.spell-btn .sp-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#c0d8ff; }
+.spell-btn .sp-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#c0d8ff; display:flex; align-items:center; gap:5px; }
+.spell-btn .sp-el { font-size:10px; opacity:0.85; }
 .spell-btn .sp-desc { font-size:12px; color:rgba(160,200,255,0.6); margin-top:1px; }
 .spell-btn .sp-cost { font-family:'Cinzel',serif; font-size:10px; color:#60a0ff; flex-shrink:0; }
 #spell-cancel { font-family:'Cinzel',serif; font-size:9px; color:rgba(255,255,255,0.25); background:none; border:none; cursor:pointer; padding:6px; text-align:center; }
@@ -3063,6 +3074,7 @@ canvas#particles {
       <div id="cb-enemy-zone">
         <div id="cb-enemy-sprite">👹</div>
         <div id="cb-enemy-name">Ennemi</div>
+        <div id="cb-enemy-element"></div>
         <div id="cb-enemy-telegraph" style="display:none"></div>
         <div id="cb-enemy-hp-wrap">
           <div class="hp-bar-outer" style="flex:1">
@@ -5104,6 +5116,8 @@ var STRINGS = {
     'cl.confusion': '🔮 Confusion ! L\'ennemi perd son tour.',
     'cl.flee': 'Tu t\'enfuis dans l\'obscurité !',
     'cl.fleefail': 'Impossible de fuir !',
+    'cl.elsuper': '✨ Super efficace !',
+    'cl.elresist': '🛡 Résisté...',
     // Loot
     'loot.title': 'Victoire !',
     'loot.sub': 'L\'ennemi est vaincu',
@@ -5550,6 +5564,8 @@ var STRINGS = {
     'cl.confusion': '🔮 Confusion! The enemy loses its turn.',
     'cl.flee': 'You flee into the darkness!',
     'cl.fleefail': 'Your escape failed!',
+    'cl.elsuper': '✨ Super effective!',
+    'cl.elresist': '🛡 Resisted...',
     // Loot
     'loot.title': 'Victory!',
     'loot.sub': 'Enemy defeated',
@@ -6288,16 +6304,60 @@ function getBossForZone(zone, floor) {
   return bosses[0] || ENEMIES.find(function(e){ return e.boss; });
 }
 
+// ── ÉLÉMENTS : faiblesses/résistances en combat ──────────────────
+// Cycle fermé à 5 : chaque élément est fort contre le suivant, faible contre le précédent.
+var ELEMENTS = {
+  feu:      { ico:'🔥', name:'Feu',      nameEn:'Fire' },
+  glace:    { ico:'❄',  name:'Glace',    nameEn:'Ice' },
+  poison:   { ico:'☠',  name:'Poison',   nameEn:'Poison' },
+  tenebres: { ico:'🌑', name:'Ténèbres', nameEn:'Shadow' },
+  brut:     { ico:'⚔',  name:'Brut',     nameEn:'Physical' }
+};
+var ELEMENT_BEATS = { feu:'glace', glace:'poison', poison:'tenebres', tenebres:'brut', brut:'feu' };
+// Élément dominant par zone — évite de retagger individuellement chaque ennemi.
+var ZONE_ELEMENT = {
+  grottes:'brut', foret:'poison', ruines:'tenebres', port:'glace', pics:'glace',
+  cryptes:'tenebres', marais:'poison', volcan:'feu', chateau_maudit:'tenebres',
+  cite_oubliee:'brut', gouffre_astral:'tenebres', cryptes_profondes:'tenebres'
+};
+function enemyElement(e) {
+  if (!e) return 'brut';
+  var zone = e.zones && e.zones[0];
+  return ZONE_ELEMENT[zone] || 'brut';
+}
+// >1 : attaque avantagée (+30%) · <1 : attaque résistée (−15%) · 1 : neutre
+function elementalMod(atkEl, defEl) {
+  if (!atkEl || !defEl) return 1;
+  if (ELEMENT_BEATS[atkEl] === defEl) return 1.3;
+  if (ELEMENT_BEATS[defEl] === atkEl) return 0.85;
+  return 1;
+}
+// Dégâts d'un sort avec multiplicateur + modificateur élémentaire appliqués.
+function elDmg(atk, mult, element, enemyObj) {
+  return Math.round(Math.round(atk*mult) * elementalMod(element, enemyElement(enemyObj)));
+}
+// Formule d'attaque partagée (attaque de base joueur, tir multiple, IA ennemie).
+// Globale (et non interne à Combat) car les cast() de SPELLS — définis hors de la
+// closure Combat — doivent aussi pouvoir l'appeler.
+function calcDmg(atk, def, isEnemy, atkElement, enemyObj) {
+  var base = Math.max(1, atk - def);
+  var mod = 1;
+  if (!isEnemy && atkElement) { mod = elementalMod(atkElement, enemyElement(enemyObj)); base = Math.round(base * mod); }
+  var critChance = isEnemy ? 0.15 : (0.15 + (State.critBonus||0) + ((Meta.bonuses && Meta.bonuses.crit)||0));
+  var crit = Math.random() < critChance;
+  return { dmg: crit ? Math.round(base*1.5) : base, crit:crit, elMod: mod };
+}
+
 // ── SORTS (Mage & Prêtre) ────────────────────────────────────────
 var SPELLS = {
   Mage: [
-    { id:'fireball',  ico:'🔥', name:'Boule de Feu',   nameEn:'Fireball',     cost:20, desc:'1.8× ATQ — dégâts de feu',  descEn:'1.8× ATK — fire damage',
-      cast:function(enemy){ var d=Math.round(State.atk*1.8); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Boule de feu ! '+d+' dégâts de feu !',logEn:'Fireball! '+d+' fire damage!',crit:true}; } },
+    { id:'fireball',  ico:'🔥', name:'Boule de Feu',   nameEn:'Fireball',     cost:20, desc:'1.8× ATQ — dégâts de feu',  descEn:'1.8× ATK — fire damage', element:'feu',
+      cast:function(enemy){ var d=elDmg(State.atk,1.8,'feu',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Boule de feu ! '+d+' dégâts de feu !',logEn:'Fireball! '+d+' fire damage!',crit:true}; } },
     { id:'lightning', ico:'⚡', name:'Éclair',          nameEn:'Lightning',    cost:15, desc:'1.4× ATQ + Étourdi 1 tour',  descEn:'1.4× ATK + Stun 1 turn',
       cast:function(enemy){ var d=Math.round(State.atk*1.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Éclair ! '+d+' dégâts + étourdi !',logEn:'Lightning! '+d+' damage + stun!',crit:false,stun:1}; } },
-    { id:'blizzard',  ico:'❄', name:'Blizzard',         nameEn:'Blizzard',     cost:32, desc:'2.4× ATQ — dégâts de glace', descEn:'2.4× ATK — ice damage',
+    { id:'blizzard',  ico:'❄', name:'Blizzard',         nameEn:'Blizzard',     cost:32, desc:'2.4× ATQ — dégâts de glace', descEn:'2.4× ATK — ice damage', element:'glace',
       unlockLevel:8,
-      cast:function(enemy){ var d=Math.round(State.atk*2.4); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Blizzard ! '+d+' dégâts de glace !',logEn:'Blizzard! '+d+' ice damage!',crit:true}; } },
+      cast:function(enemy){ var d=elDmg(State.atk,2.4,'glace',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Blizzard ! '+d+' dégâts de glace !',logEn:'Blizzard! '+d+' ice damage!',crit:true}; } },
     { id:'arcane',    ico:'🔮', name:'Tempête Arcane',  nameEn:'Arcane Storm', cost:45, desc:'3.0× ATQ — dégâts purs',    descEn:'3.0× ATK — pure damage',
       unlockLevel:15,
       cast:function(enemy){ var d=Math.round(State.atk*3.0); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tempête arcane ! '+d+' dégâts purs !',logEn:'Arcane storm! '+d+' pure damage!',crit:true}; } },
@@ -6312,9 +6372,9 @@ var SPELLS = {
       cast:function(){ var h=Math.round(State.hpMax*0.55); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Soin majeur ! +'+h+' PV !',logEn:'Major heal! +'+h+' HP!'}; } },
     { id:'shield',    ico:'✨', name:'Bouclier Divin',  nameEn:'Divine Shield', cost:18, desc:'+12 DEF pendant 2 tours',  descEn:'+12 DEF for 2 turns',
       cast:function(){ return {log:'Bouclier divin ! +12 DEF pour 2 tours.',logEn:'Divine shield! +12 DEF for 2 turns.',shield:2,shieldDef:12}; } },
-    { id:'smite',     ico:'⚡', name:'Jugement',        nameEn:'Judgment',     cost:22, desc:'1.2× ATQ + Brûlure 2 tours', descEn:'1.2× ATK + Burn 2 turns',
+    { id:'smite',     ico:'⚡', name:'Jugement',        nameEn:'Judgment',     cost:22, desc:'1.2× ATQ + Brûlure 2 tours', descEn:'1.2× ATK + Burn 2 turns', element:'feu',
       unlockLevel:8,
-      cast:function(enemy){ var d=Math.round(State.atk*1.2); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',logEn:'Judgment! '+d+' damage + burn!',burn:2}; } },
+      cast:function(enemy){ var d=elDmg(State.atk,1.2,'feu',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Jugement ! '+d+' dégâts + brûlure !',logEn:'Judgment! '+d+' damage + burn!',burn:2}; } },
     { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent', heal:true,
       unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_redemption'); },
       cast:function(){ var h=Math.round(State.hpMax*0.9); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Rédemption ! +'+h+' PV !',logEn:'Redemption! +'+h+' HP!'}; } },
@@ -6329,76 +6389,77 @@ var SPELLS = {
         var turns = rempart?3:2, val = rempart?16:8;
         return { log:'Posture défensive ! +'+val+' DEF pour '+turns+' tours.', logEn:'Defensive stance! +'+val+' DEF for '+turns+' turns.', shield:turns, shieldDef:val };
       } },
-    { id:'sunder', ico:'💥', name:'Frappe Brisante', nameEn:'Sundering Blow', cost:3, desc:'1.8× ATQ + réduit la DEF ennemie de 20% (2 tours)', descEn:'1.8× ATK + reduces enemy DEF by 20% (2 turns)',
+    { id:'sunder', ico:'💥', name:'Frappe Brisante', nameEn:'Sundering Blow', cost:3, desc:'1.8× ATQ + réduit la DEF ennemie de 20% (2 tours)', descEn:'1.8× ATK + reduces enemy DEF by 20% (2 turns)', element:'brut',
       cast:function(enemy){
-        var d = Math.round(State.atk*1.8);
+        var d = elDmg(State.atk,1.8,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         var sunderVal = Math.round(enemy.def*0.2);
         return { dmg:d, log:'Frappe brisante ! '+d+' dégâts, DEF ennemie affaiblie.', logEn:'Sundering blow! '+d+' damage, enemy DEF weakened.', crit:false, sunder:2, sunderVal:sunderVal };
       } },
-    { id:'grace', ico:'⚔', name:'Coup de Grâce', nameEn:'Coup de Grace', cost:4, desc:'1.3× ATQ (2.5× si l\'ennemi est sous 30% PV)', descEn:'1.3× ATK (2.5× if the enemy is below 30% HP)',
+    { id:'grace', ico:'⚔', name:'Coup de Grâce', nameEn:'Coup de Grace', cost:4, desc:'1.3× ATQ (2.5× si l\'ennemi est sous 30% PV)', descEn:'1.3× ATK (2.5× if the enemy is below 30% HP)', element:'brut',
       cast:function(enemy){
         var low = enemy.hp < enemy.hpMax*0.3;
-        var d = Math.round(State.atk*(low?2.5:1.3));
+        var d = elDmg(State.atk,(low?2.5:1.3),'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:(low?'Coup de grâce ! '+d+' dégâts fatals !':'Coup de grâce ! '+d+' dégâts.'), logEn:(low?'Coup de grace! '+d+' fatal damage!':'Coup de grace! '+d+' damage.'), crit:low };
       } },
   ],
   Chasseur: [
-    { id:'multitir', ico:'🏹', name:'Tir Multiple', nameEn:'Multi-Shot', cost:2, desc:'2-3 tirs rapides (3ᵉ tir débloqué par talent)', descEn:'2-3 rapid shots (3rd shot unlocked by talent)',
+    { id:'multitir', ico:'🏹', name:'Tir Multiple', nameEn:'Multi-Shot', cost:2, desc:'2-3 tirs rapides (3ᵉ tir débloqué par talent)', descEn:'2-3 rapid shots (3rd shot unlocked by talent)', element:'brut',
       cast:function(enemy){
         var triple = typeof Talents!=='undefined' && Talents.hasFlag('chasseur_triple');
-        var d1 = calcDmg(State.atk, enemy.def), d2 = calcDmg(State.atk, enemy.def);
-        var d3 = triple ? calcDmg(State.atk, enemy.def) : null;
+        var d1 = calcDmg(State.atk, enemy.def, false, 'brut', enemy), d2 = calcDmg(State.atk, enemy.def, false, 'brut', enemy);
+        var d3 = triple ? calcDmg(State.atk, enemy.def, false, 'brut', enemy) : null;
         var total = d1.dmg + d2.dmg + (d3?d3.dmg:0);
         enemy.hp = Math.max(0, enemy.hp-total);
         return { dmg: total, log:(triple?'Triple tir ! ':'Double tir ! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' dégâts.', logEn:(triple?'Triple shot! ':'Double shot! ')+d1.dmg+' + '+d2.dmg+(d3?' + '+d3.dmg:'')+' = '+total+' damage.', crit:false };
       } },
-    { id:'percant', ico:'🎯', name:'Tir Perçant', nameEn:'Piercing Shot', cost:3, desc:'2.2× ATQ — ignore la défense ennemie', descEn:'2.2× ATK — ignores enemy defense',
+    { id:'percant', ico:'🎯', name:'Tir Perçant', nameEn:'Piercing Shot', cost:3, desc:'2.2× ATQ — ignore la défense ennemie', descEn:'2.2× ATK — ignores enemy defense', element:'brut',
       cast:function(enemy){
-        var d = Math.round(State.atk*2.2);
+        var d = elDmg(State.atk,2.2,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:'Tir perçant ! '+d+' dégâts qui ignorent l\'armure !', logEn:'Piercing shot! '+d+' damage bypassing armor!', crit:true };
       } },
-    { id:'immobilisant', ico:'🪤', name:'Tir Immobilisant', nameEn:'Pinning Shot', cost:4, desc:'1.0× ATQ + Étourdi 1 tour', descEn:'1.0× ATK + Stun 1 turn',
+    { id:'immobilisant', ico:'🪤', name:'Tir Immobilisant', nameEn:'Pinning Shot', cost:4, desc:'1.0× ATQ + Étourdi 1 tour', descEn:'1.0× ATK + Stun 1 turn', element:'brut',
       cast:function(enemy){
-        var d = Math.round(State.atk*1.0);
+        var d = elDmg(State.atk,1.0,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:'Tir immobilisant ! '+d+' dégâts, ennemi étourdi.', logEn:'Pinning shot! '+d+' damage, enemy stunned.', stun:1 };
       } },
   ],
   Assassin: [
-    { id:'critique', ico:'🗡', name:'Frappe Critique', nameEn:'Critical Strike', cost:3, desc:'Coup critique garanti (2×/2.4× ATQ avec talent + vol de vie)', descEn:'Guaranteed critical (2×/2.4× ATK with talent + lifesteal)',
+    { id:'critique', ico:'🗡', name:'Frappe Critique', nameEn:'Critical Strike', cost:3, desc:'Coup critique garanti (2×/2.4× ATQ avec talent + vol de vie)', descEn:'Guaranteed critical (2×/2.4× ATK with talent + lifesteal)', element:'brut',
       cast:function(enemy){
         var lethal = typeof Talents!=='undefined' && Talents.hasFlag('assassin_lethal');
-        var d = Math.round(State.atk*(lethal?2.4:2));
+        var d = elDmg(State.atk,(lethal?2.4:2),'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         if (lethal) { var h = Math.round(d*0.2); State.hp = Math.min(State.hpMax, State.hp+h); }
         return { dmg:d, log:'Frappe critique garantie ! '+d+' dégâts.'+(lethal?' (+'+Math.round(d*0.2)+' PV volés)':''), logEn:'Guaranteed critical strike! '+d+' damage.'+(lethal?' (+'+Math.round(d*0.2)+' HP lifesteal)':''), crit:true };
       } },
-    { id:'poison', ico:'☠', name:'Poison Mortel', nameEn:'Deadly Poison', cost:3, desc:'1.0× ATQ + Poison puissant (3 tours)', descEn:'1.0× ATK + Strong poison (3 turns)',
+    { id:'poison', ico:'☠', name:'Poison Mortel', nameEn:'Deadly Poison', cost:3, desc:'1.0× ATQ + Poison puissant (3 tours)', descEn:'1.0× ATK + Strong poison (3 turns)', element:'poison',
       cast:function(enemy){
-        var d = Math.round(State.atk*1.0);
+        var d = elDmg(State.atk,1.0,'poison',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         var pv = Math.round(State.atk*0.4);
         return { dmg:d, log:'Poison mortel ! '+d+' dégâts + empoisonné.', logEn:'Deadly poison! '+d+' damage + poisoned.', poison:3, poisonVal:pv };
       } },
-    { id:'evanouissement', ico:'💨', name:'Évanouissement', nameEn:'Vanishing Strike', cost:4, desc:'1.2× ATQ + esquive garantie de la prochaine attaque', descEn:'1.2× ATK + guarantees a dodge of the next attack',
+    { id:'evanouissement', ico:'💨', name:'Évanouissement', nameEn:'Vanishing Strike', cost:4, desc:'1.2× ATQ + esquive garantie de la prochaine attaque', descEn:'1.2× ATK + guarantees a dodge of the next attack', element:'brut',
       cast:function(enemy){
-        var d = Math.round(State.atk*1.2);
+        var d = elDmg(State.atk,1.2,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         State._guaranteedDodge = true;
         return { dmg:d, log:'Évanouissement ! '+d+' dégâts, tu deviens intouchable.', logEn:'Vanishing strike! '+d+' damage, you become untouchable.', crit:false };
       } },
   ],
   Barbare: [
-    { id:'frenesie', ico:'🪓', name:'Frénésie', nameEn:'Frenzy', cost:3, desc:'1.6×/2.0× ATQ (bonus si PV < 30%/40%, talent)', descEn:'1.6×/2.0× ATK (bonus if HP < 30%/40%, talent)',
+    { id:'frenesie', ico:'🪓', name:'Frénésie', nameEn:'Frenzy', cost:3, desc:'1.6×/2.0× ATQ (bonus si PV < 30%/40%, talent)', descEn:'1.6×/2.0× ATK (bonus if HP < 30%/40%, talent)', element:'brut',
       cast:function(enemy){
         var rageTotale = typeof Talents!=='undefined' && Talents.hasFlag('barbare_rage_totale');
         var rageSeuil  = (typeof Talents!=='undefined' && Talents.hasFlag('barbare_rage_seuil')) ? 0.4 : 0.3;
         var enraged = State.hp < State.hpMax*rageSeuil;
-        var d = Math.round(State.atk*(rageTotale?2.0:1.6));
-        if (enraged) d = Math.round(d*(rageTotale?1.8:1.5));
+        var mult = rageTotale?2.0:1.6;
+        if (enraged) mult *= (rageTotale?1.8:1.5);
+        var d = elDmg(State.atk,mult,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:'Frénésie barbare ! '+d+' dégâts sauvages.', logEn:'Barbarian frenzy! '+d+' savage damage.', crit:enraged };
       } },
@@ -6409,9 +6470,9 @@ var SPELLS = {
         var atkBuff = Math.round(State.atk*0.4);
         return { log:'Provocation ! -'+selfDmg+' PV, +'+atkBuff+' ATQ pour 2 tours.', logEn:'Reckless taunt! -'+selfDmg+' HP, +'+atkBuff+' ATK for 2 turns.', atkbuff:2, atkbuffVal:atkBuff, selfDmg:selfDmg };
       } },
-    { id:'assommoir', ico:'💫', name:'Coup d\'Assommoir', nameEn:'Skullcracker', cost:4, desc:'1.4× ATQ + 40% de chance d\'étourdir', descEn:'1.4× ATK + 40% chance to stun',
+    { id:'assommoir', ico:'💫', name:'Coup d\'Assommoir', nameEn:'Skullcracker', cost:4, desc:'1.4× ATQ + 40% de chance d\'étourdir', descEn:'1.4× ATK + 40% chance to stun', element:'brut',
       cast:function(enemy){
-        var d = Math.round(State.atk*1.4);
+        var d = elDmg(State.atk,1.4,'brut',enemy);
         enemy.hp = Math.max(0, enemy.hp-d);
         var stunned = Math.random() < 0.4;
         return { dmg:d, log:'Coup d\'assommoir ! '+d+' dégâts.'+(stunned?' Ennemi étourdi !':''), logEn:'Skullcracker! '+d+' damage.'+(stunned?' Enemy stunned!':''), stun: stunned?1:0, crit:false };
@@ -6526,12 +6587,10 @@ var Combat = (function(){
     setTimeout(function(){ el.classList.remove('hit'); }, 400);
   }
 
-  function calcDmg(atk, def, isEnemy) {
-    var base = Math.max(1, atk - def);
-    // Le bonus de critique du joueur ne s'applique qu'à SES attaques, pas à l'ennemi
-    var critChance = isEnemy ? 0.15 : (0.15 + (State.critBonus||0) + ((Meta.bonuses && Meta.bonuses.crit)||0));
-    var crit = Math.random() < critChance;
-    return { dmg: crit ? Math.round(base*1.5) : base, crit:crit };
+  // Petite ligne de log façon "Super efficace !" quand l'élément joue — silencieux si neutre.
+  function logElementFx(mod) {
+    if (mod > 1) log(T('cl.elsuper'), 'player');
+    else if (mod < 1) log(T('cl.elresist'), 'player');
   }
 
   function setButtons(enabled) {
@@ -6931,6 +6990,13 @@ var Combat = (function(){
       sprEl2.classList.remove('hit','dead');
       sprEl2.textContent = enemy.sprite;
       document.getElementById('cb-enemy-name').textContent   = CGE_LANG === 'en' && enemy.nameEn ? enemy.nameEn : enemy.name;
+      var elBadge = document.getElementById('cb-enemy-element');
+      if (elBadge) {
+        var eEl = enemyElement(enemy);
+        var eMeta = ELEMENTS[eEl] || ELEMENTS.brut;
+        elBadge.className = 'el-'+eEl;
+        elBadge.textContent = eMeta.ico+' '+(CGE_LANG==='en'?eMeta.nameEn:eMeta.name);
+      }
       var floorBadgeEl = document.getElementById('cb-floor-badge');
       if (State._gauntletTrial) {
         var gTrial = GAUNTLET_TRIALS[State._gauntletTrial];
@@ -6961,7 +7027,7 @@ var Combat = (function(){
       // Elfe : initiative — frappe en premier
       if (getPassive() === 'initiative') {
         setTimeout(function(){
-          var res = calcDmg(State.atk, enemy.def);
+          var res = calcDmg(State.atk, enemy.def, false, 'brut', enemy);
           enemy.hp = Math.max(0, enemy.hp - res.dmg);
           enemyHitAnim(); showDmg(res.dmg, false, res.crit); updateEnemyUI();
           log((CGE_LANG==='en'?'🌿 Elven initiative! You strike for '+res.dmg+' damage before the enemy.':'🌿 Initiative elfique ! Tu frappes pour '+res.dmg+' dégâts avant l\'ennemi.'),'player');
@@ -6976,7 +7042,7 @@ var Combat = (function(){
     playerAttack: function() {
       if (turnLocked) return;
       var atkBonus = (getPassive()==='rage' && State.hp < State.hpMax*0.3) ? 1.5 : 1;
-      var res = calcDmg(Math.round(State.atk * atkBonus), enemy.def);
+      var res = calcDmg(Math.round(State.atk * atkBonus), enemy.def, false, 'brut', enemy);
       if (atkBonus > 1) log(T('cl.ragebonus'),'player');
       enemy.hp = Math.max(0, enemy.hp - res.dmg);
       enemyHitAnim();
@@ -6984,6 +7050,7 @@ var Combat = (function(){
       updateEnemyUI();
       if (res.crit) { Sfx.crit(); log((CGE_LANG==='en'?'CRITICAL HIT! You deal '+res.dmg+' damage to '+(enemy.nameEn||enemy.name)+'!':'CRITIQUE ! Tu infliges '+res.dmg+' dégâts à '+enemy.name+' !'),'player'); }
       else          { Sfx.attack(); log((CGE_LANG==='en'?'You attack '+(enemy.nameEn||enemy.name)+' for '+res.dmg+' damage.':'Tu attaques '+enemy.name+' pour '+res.dmg+' dégâts.'),'player'); }
+      logElementFx(res.elMod);
       // Vampirisme
       var _lifesteal = (Meta.bonuses.lifesteal||0) + (State.itemLifesteal||0);
       if (_lifesteal > 0) {
@@ -7028,8 +7095,9 @@ var Combat = (function(){
         var resOk = withMana ? (State.mana||0) >= sp.cost : skillCd <= 0;
         var btn = document.createElement('button');
         btn.className = 'spell-btn ripple-el' + ((!lvlOk || !resOk) ? ' disabled' : '');
+        var spEl = sp.element ? ELEMENTS[sp.element] : null;
         btn.innerHTML = '<span class="sp-ico">'+sp.ico+'</span>'
-          + '<span class="sp-info"><div class="sp-name">'+(CGE_LANG==='en'&&sp.nameEn?sp.nameEn:sp.name)+'</div>'
+          + '<span class="sp-info"><div class="sp-name">'+(CGE_LANG==='en'&&sp.nameEn?sp.nameEn:sp.name)+(spEl?' <span class="sp-el">'+spEl.ico+'</span>':'')+'</div>'
           + '<div class="sp-desc">'+(lvlOk ? (CGE_LANG==='en'&&sp.descEn?sp.descEn:sp.desc) : (CGE_LANG==='en'?'Unlocked at level '+sp.unlockLevel:'Débloqué niveau '+sp.unlockLevel))+'</div></span>'
           + '<span class="sp-cost">'+(withMana ? sp.cost+' MP' : (CGE_LANG==='en'?sp.cost+' turn'+(sp.cost>1?'s':''):sp.cost+' tour'+(sp.cost>1?'s':'')))+'</span>';
         if (lvlOk && resOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
@@ -7069,6 +7137,7 @@ var Combat = (function(){
       if (res.shield) { addStatus(statuses, 'shield', res.shield, res.shieldDef || 12); }
       if (res.atkbuff) { addStatus(statuses, 'atkbuff', res.atkbuff, res.atkbuffVal || 0); }
       log((CGE_LANG==='en'&&res.logEn?res.logEn:res.log), res.heal ? 'heal' : 'player');
+      if (res.dmg && sp.element) { logElementFx(elementalMod(sp.element, enemyElement(enemy))); }
       if (enemy.hp <= 0) { endCombat(true); return; }
       enemyTurn();
     },
