@@ -201,7 +201,27 @@ canvas#particles {
 #main-menu { background:#06050f; justify-content:flex-start; align-items:center; }
 
 /* ── MENU HERO — visible + restructuré ─────────────────────── */
-.lang-screen-layout { flex-direction:column; align-items:center; justify-content:center; background:#0a0608; gap:32px; }
+.lang-screen-layout { flex-direction:column; align-items:center; justify-content:flex-end; background:#06050f; gap:20px; padding-bottom:14vh; }
+/* Même image que le menu principal — mais son logo/titre fait partie de
+   l'illustration elle-même (pas un calque HTML séparé) : on l'assombrit
+   fortement en haut pour le masquer, sans toucher au fichier image. */
+#lang-bg {
+  position:absolute; inset:0; z-index:0;
+  background:
+    linear-gradient(to bottom,
+      #06050f 0%, #06050f 30%,
+      rgba(6,5,15,0.5) 46%, rgba(6,5,15,0.48) 64%,
+      rgba(6,5,15,0.9) 100%),
+    url('images/menu-bg.webp') center top / cover no-repeat,
+    #06050f;
+}
+#lang-sub {
+  position:relative; z-index:1; width:100%; text-align:center; padding:0 28px;
+  font-family:'Crimson Text',serif; font-style:italic; font-size:14px;
+  color:rgba(201,165,80,0.65); letter-spacing:0.5px;
+}
+#lang-btns { position:relative; z-index:1; width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; padding:0 32px; }
+#lang-btns .btn { justify-content:center; }
 #menu-bg {
   position:absolute; inset:0;
   background:
@@ -2747,11 +2767,11 @@ canvas#particles {
 
     <!-- ── LANGUAGE SELECTION ── -->
     <div id="lang-screen" class="screen lang-screen-layout">
-      <div style="font-family:'Cinzel',serif;font-size:28px;color:#C9A550;letter-spacing:4px;text-align:center">LES CRYPTES ÉTERNELLES</div>
-      <div style="font-size:14px;color:rgba(255,255,255,0.5);letter-spacing:2px">Choose your language / Choisissez votre langue</div>
-      <div style="display:flex;gap:24px;margin-top:16px">
-        <button onclick="LangSystem.set('fr')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇫🇷 Français</button>
-        <button onclick="LangSystem.set('en')" style="font-family:'Cinzel',serif;font-size:18px;padding:16px 36px;background:rgba(201,165,80,0.15);border:1px solid #C9A550;color:#C9A550;border-radius:4px;cursor:pointer">🇬🇧 English</button>
+      <div id="lang-bg"></div>
+      <div id="lang-sub">Choose your language / Choisissez votre langue</div>
+      <div id="lang-btns">
+        <button class="btn btn-primary" onclick="LangSystem.set('fr')">🇫🇷 Français</button>
+        <button class="btn btn-primary" onclick="LangSystem.set('en')">🇬🇧 English</button>
       </div>
     </div>
 
