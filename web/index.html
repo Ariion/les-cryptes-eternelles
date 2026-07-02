@@ -2283,13 +2283,13 @@ canvas#particles {
 /* ── NPC DIALOGUE OVERLAY ── */
 #npc-overlay {
   position:absolute; inset:0; background:rgba(5,3,2,0.85); z-index:80;
-  display:flex; align-items:flex-end; justify-content:center; padding-bottom:20px;
+  display:flex; align-items:center; justify-content:center; padding-bottom:60px;
 }
 #npc-box {
   background:linear-gradient(160deg,#1a140d,#0e0b07); border:1px solid #5a4020;
-  border-radius:16px; padding:18px; width:88%; max-height:70%;
+  border-radius:16px; padding:18px; width:88%; max-height:64%; overflow-y:auto;
   display:flex; flex-direction:column; gap:10px;
-  box-shadow:0 -4px 30px rgba(0,0,0,0.8);
+  box-shadow:0 10px 40px rgba(0,0,0,0.8);
 }
 #npc-portrait-deco { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:2px; }
 #npc-portrait-deco .npc-bar { width:34px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.6),transparent); }
@@ -3639,7 +3639,9 @@ canvas#particles {
         <div id="npc-btns">
           <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
           <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
-          <button onclick="Quests.close()" data-i18n="quest.close">Fermer</button>
+          <button id="npc-btn-smalltalk" onclick="Quests.smalltalk()" data-i18n="npc.smalltalk.btn">💬 Comment vas-tu ?</button>
+          <button id="npc-btn-main" onclick="Quests.backToMain()" style="display:none" data-i18n="npc.main.btn">📜 As-tu des quêtes ?</button>
+          <button onclick="Quests.close()" data-i18n="quest.close">👋 Au revoir</button>
         </div>
       </div>
     </div>
@@ -5189,7 +5191,9 @@ var STRINGS = {
     // Quest UI
     'quest.accept': 'Accepter la quête',
     'quest.claim': 'Réclamer la récompense',
-    'quest.close': 'Fermer',
+    'quest.close': '👋 Au revoir',
+    'npc.smalltalk.btn': '💬 Comment vas-tu ?',
+    'npc.main.btn': '📜 As-tu des quêtes ?',
     'quest.inprogress': 'En cours : ',
     'quest.reward': 'Récompense : ',
     'final.prompt': '— Tu tiens le cristal de Séraphine. Devant toi, l\'autel. En dessous, le sceau. Et la voix du Dieu de la Mémoire, patiente.\n\n« Tu sais déjà ce que tu es venu faire. Choisis. »',
@@ -5633,7 +5637,9 @@ var STRINGS = {
     // Quest UI
     'quest.accept': 'Accept quest',
     'quest.claim': 'Claim reward',
-    'quest.close': 'Close',
+    'quest.close': '👋 Goodbye',
+    'npc.smalltalk.btn': '💬 How are you?',
+    'npc.main.btn': '📜 Any quests?',
     'quest.inprogress': 'In progress: ',
     'quest.reward': 'Reward: ',
     'final.prompt': '— You hold Séraphine\'s crystal. Before you, the altar. Beneath it, the seal. And the voice of the God of Memory, patient.\n\n"You already know what you came to do. Choose."',
@@ -5964,9 +5970,19 @@ var Nav = {
 
 // ── HUB TAB BAR : nav persistante Auberge / Personnage / Ville / Région ──
 var HubNav = {
+  // Tous les écrans "en run" (has-game-header) sauf le combat — la barre y est masquée
+  // le temps du tour par tour, elle reste présente partout ailleurs.
+  SHOWN: {
+    'dungeon-map':1, 'shop-screen':1, 'loot-screen':1, 'rest-screen':1,
+    'inn-room':1, 'town-screen':1, 'world-map':1, 'world-map-2':1,
+    'taverne-screen':1, 'chest-screen':1, 'hero-screen':1, 'talents-screen':1,
+    'guild-screen':1, 'chateau-hub-screen':1
+  },
   MAP: {
     'town-screen':'ville', 'inn-room':'auberge', 'world-map':'region', 'world-map-2':'region',
-    'hero-screen':'perso', 'chest-screen':'perso', 'talents-screen':'perso'
+    'hero-screen':'perso', 'chest-screen':'perso', 'talents-screen':'perso',
+    'shop-screen':'ville', 'taverne-screen':'ville', 'guild-screen':'ville', 'chateau-hub-screen':'ville',
+    'dungeon-map':'region', 'loot-screen':'region', 'rest-screen':'region'
   },
   _lastRegion: 'world-map',
   _personaFrom: 'inn-room',
@@ -5974,9 +5990,9 @@ var HubNav = {
     var bar = document.getElementById('hub-tabbar');
     if (!bar) return;
     if (id === 'world-map' || id === 'world-map-2') HubNav._lastRegion = id;
-    var active = HubNav.MAP[id];
-    if (!active) { bar.classList.remove('show'); return; }
+    if (!HubNav.SHOWN[id]) { bar.classList.remove('show'); return; }
     bar.classList.add('show');
+    var active = HubNav.MAP[id];
     var tabs = bar.querySelectorAll('.hub-tab');
     for (var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active', tabs[i].getAttribute('data-hub')===active);
   },
@@ -8587,6 +8603,8 @@ function isQuestUnlocked(q) {
 var NPC_DATA = {
   bertrand: {
     name:'Bertrand',
+    smalltalk:'"Ça va, ça va. Le brassin est bon ce soir, c\'est déjà pas mal."',
+    smalltalkEn:'"Fine, fine. The brew\'s good tonight, that\'s not nothing."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
@@ -8644,6 +8662,8 @@ var NPC_DATA = {
   },
   oswin: {
     name:'Oswin',
+    smalltalk:'"*pince une corde*\nÇa va comme vont les chansons — parfois juste, parfois fausse. Aujourd\'hui... plutôt juste."',
+    smalltalkEn:'"*plucks a string*\nI\'m doing like songs do — sometimes true, sometimes off-key. Today... rather true."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
@@ -8703,6 +8723,8 @@ var NPC_DATA = {
   },
   marta: {
     name:'Marta',
+    smalltalk:'"Fatiguée, comme toujours. Mais l\'auberge tient debout, et moi aussi."',
+    smalltalkEn:'"Tired, as always. But the inn\'s still standing, and so am I."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
@@ -8746,6 +8768,8 @@ var NPC_DATA = {
   },
   seraphine: {
     name:'Séraphine',
+    smalltalk:'"*sans lever les yeux de son grimoire*\nLe temps n\'a pas vraiment de prise sur moi. Mais merci de demander."',
+    smalltalkEn:'"*without looking up from her grimoire*\nTime doesn\'t really hold much sway over me. But thank you for asking."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
@@ -8821,6 +8845,8 @@ var NPC_DATA = {
   },
   aldric: {
     name:'Capitaine Aldric',
+    smalltalk:'"En forme. La garnison me tient occupé, mais c\'est ainsi qu\'on la préfère."',
+    smalltalkEn:'"In good form. The garrison keeps me busy, but that\'s how we like it."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var cls = State.cls||'Guerrier';
@@ -8842,6 +8868,8 @@ var NPC_DATA = {
   },
   elise: {
     name:'Sœur Élise',
+    smalltalk:'"En paix, grâce à la lumière. Puissiez-vous trouver la même."',
+    smalltalkEn:'"At peace, by the light\'s grace. May you find the same."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var cls = State.cls||'Guerrier';
@@ -8863,6 +8891,8 @@ var NPC_DATA = {
   },
   corvin: {
     name:'Maître Corvin',
+    smalltalk:'"*hausse les épaules*\nEn vie. Encore capable de manier une hache. Ça suffit à mon bonheur."',
+    smalltalkEn:'"*shrugs*\nAlive. Still able to swing an axe. That\'s enough for my happiness."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       if (!done['chateau_corvin_1']) return '"*t\'évalue de haut en bas*\nUn autre aventurier qui pense pouvoir franchir ces grilles.\n\nMontre-moi ce que tu vaux avant de perdre mon temps."';
@@ -8882,6 +8912,8 @@ var NPC_DATA = {
   },
   conseiller: {
     name:'Le Conseiller',
+    smalltalk:'"*sans lever les yeux de ses registres*\nOccupé, comme toujours. Le Château ne s\'administre pas tout seul."',
+    smalltalkEn:'"*without looking up from his ledgers*\nBusy, as always. The Castle doesn\'t administer itself."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       if (!(Meta.completedQuests||{})['chateau_trial_ecuyer']) return '"*sans lever les yeux de ses parchemins*\nJe ne reçois pas les recrues. Revenez quand Corvin vous en jugera digne."';
@@ -8903,6 +8935,8 @@ var NPC_DATA = {
   },
   duc: {
     name:'Duc Wulfric',
+    smalltalk:'"*depuis son trône*\nGouverner pèse plus lourd chaque année. Mais cette ville tient encore debout — et moi avec elle."',
+    smalltalkEn:'"*from his throne*\nRuling weighs heavier each year. But this town still stands — and so do I."',
     dialogue: function() {
       var done = Meta.completedQuests||{};
       if (!(Meta.completedQuests||{})['chateau_trial_chevalier']) return '"*depuis son trône, sans même te regarder*\nLe Conseiller m\'informe quand il juge que quelqu\'un mérite mon temps. Ce n\'est pas encore le cas."';
@@ -8925,6 +8959,7 @@ var NPC_DATA = {
 var Quests = (function(){
   var _currentNpc = null;
   var _currentQuest = null;
+  var _mainSpeech = '';
 
   function getCompletedQuests(){ return Meta.completedQuests||{}; }
   function getActiveQuest(npc){ return (Meta.activeQuests||{})[npc]||null; }
@@ -8999,9 +9034,31 @@ var Quests = (function(){
         }
       }
 
+      // Choix "Comment vas-tu ?" / "As-tu des quêtes ?" — masqués pendant le
+      // choix final (moment narratif critique, ne doit pas être noyé dans le smalltalk).
+      _mainSpeech = document.getElementById('npc-speech').textContent;
+      var isFinalMoment = document.getElementById('npc-final-choice').style.display !== 'none';
+      document.getElementById('npc-btn-smalltalk').style.display = isFinalMoment ? 'none' : '';
+      document.getElementById('npc-btn-main').style.display = 'none';
+
       var ov = document.getElementById('npc-overlay');
       ov.style.display = 'flex';
       setTimeout(function(){ ov.style.opacity='1'; },10);
+    },
+
+    smalltalk: function() {
+      if (!_currentNpc) return;
+      var nd = NPC_DATA[_currentNpc];
+      var line = (CGE_LANG==='en' && nd.smalltalkEn) ? nd.smalltalkEn : (nd.smalltalk || '');
+      document.getElementById('npc-speech').textContent = line;
+      document.getElementById('npc-btn-smalltalk').style.display = 'none';
+      document.getElementById('npc-btn-main').style.display = '';
+    },
+
+    backToMain: function() {
+      document.getElementById('npc-speech').textContent = _mainSpeech;
+      document.getElementById('npc-btn-smalltalk').style.display = '';
+      document.getElementById('npc-btn-main').style.display = 'none';
     },
 
     accept: function() {
