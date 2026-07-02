@@ -1770,7 +1770,7 @@ canvas#particles {
 #eq-detail-overlay.open { display: block; }
 
 /* ── TALENTS SCREEN ─────────────────────────────────────────── */
-#talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; }
+#talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; padding-bottom: 68px; }
 #tal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 10px; border-bottom: 1px solid rgba(201,165,80,0.15);
@@ -1781,7 +1781,7 @@ canvas#particles {
 #tal-points { font-family:'Cinzel',serif; font-size: 12px; font-weight: 700; color: #00D4E8; display:flex; align-items:center; gap:4px; }
 #tal-points-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
 #tal-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,165,80,0.1); margin: 0 16px 8px; flex-shrink: 0; }
-#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 8px 20px; display: flex; align-items: flex-start; justify-content: space-around; gap: 4px; }
+#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 8px 90px; display: flex; align-items: flex-start; justify-content: space-around; gap: 4px; }
 .tal-branch { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
 .tal-branch-head {
   font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5px; color: rgba(201,165,80,0.6);
@@ -2124,7 +2124,13 @@ canvas#particles {
 /* ── MENU SETTINGS BTN ── */
 /* ── INN ROOM ── */
 #inn-room {
-  background:#0e0a05 url('images/inn-room.webp') center/cover no-repeat;
+  background-image:
+    linear-gradient(180deg, rgba(6,5,15,0.78) 0%, rgba(20,10,30,0.26) 22%, rgba(20,10,30,0.22) 55%, rgba(6,5,15,0.82) 100%),
+    radial-gradient(ellipse 90% 65% at 50% 42%, transparent 22%, rgba(6,5,15,0.55) 100%),
+    linear-gradient(rgba(28,14,42,0.3), rgba(28,14,42,0.3)),
+    url('images/inn-room.webp');
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  background-color:#0e0a05;
   flex-direction:column; align-items:stretch; justify-content:flex-start;
   overflow:hidden;
 }
@@ -2156,14 +2162,14 @@ canvas#particles {
   display:flex; flex-direction:column; align-items:center;
 }
 .hs-ring {
-  width:26px; height:26px; border-radius:50%;
-  border:2px solid rgba(201,165,80,0.8);
-  background:rgba(201,165,80,0.15);
+  width:14px; height:14px; border-radius:50%; margin-top:8px;
+  background:radial-gradient(circle,#f0dca8,#C9A550);
+  box-shadow:0 0 0 4px rgba(201,165,80,0.14), 0 0 10px rgba(201,165,80,0.55);
   position:relative; flex-shrink:0;
 }
 .hs-ring::after {
-  content:''; position:absolute; inset:-5px; border-radius:50%;
-  border:2px solid rgba(201,165,80,0.35);
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid rgba(201,165,80,0.4);
   animation:hs-pulse 2.2s ease-in-out infinite;
 }
 @keyframes hs-pulse {
@@ -2171,13 +2177,13 @@ canvas#particles {
   50%    { transform:scale(1.45); opacity:0; }
 }
 .hs-lbl {
-  margin-top:5px; padding:3px 8px;
-  background:rgba(5,3,1,0.82); border:1px solid rgba(201,165,80,0.4);
-  border-radius:4px; color:#C9A550;
-  font-family:'Cinzel',serif; font-size:8px; letter-spacing:0.8px;
+  margin-top:6px; padding:3px 9px;
+  background:rgba(6,5,15,0.65); border:1px solid rgba(201,165,80,0.3);
+  border-radius:20px; color:rgba(232,212,160,0.9);
+  font-family:'Cinzel',serif; font-size:8px; letter-spacing:0.6px;
   white-space:nowrap;
 }
-.hotspot:active .hs-ring { background:rgba(201,165,80,0.4); }
+.hotspot:active .hs-ring { box-shadow:0 0 0 6px rgba(201,165,80,0.3), 0 0 14px rgba(201,165,80,0.85); }
 /* positions hotspots chambre */
 #hs-inn-window  { top:40%;  left:50%; transform:translateX(-50%); }
 #hs-inn-armoire { top:22%;  left:12%; }
@@ -2191,7 +2197,7 @@ canvas#particles {
 .hs-badge.show { display: block; }
 #hs-inn-chest   { top:65%;  left:10%; }
 #hs-inn-bed     { top:55%;  left:68%; }
-#hs-inn-town    { bottom:6%; left:50%; transform:translateX(-50%); }
+#hs-inn-town    { bottom:11%; left:50%; transform:translateX(-50%); }
 
 /* ── NPC HOTSPOTS ── */
 .npc-hotspot {
@@ -2203,22 +2209,22 @@ canvas#particles {
 /* Même marqueur que les hotspots de bâtiment (.hs-ring) — un anneau doré qui
    pulse, plus cohérent sur les cartes peintes qu'un visage en emoji. */
 .npc-avatar {
-  width:26px; height:26px; border-radius:50%;
-  border:2px solid rgba(201,165,80,0.8);
-  background:rgba(201,165,80,0.15);
+  width:14px; height:14px; border-radius:50%; margin-top:8px;
+  background:radial-gradient(circle,#f0dca8,#C9A550);
+  box-shadow:0 0 0 4px rgba(201,165,80,0.14), 0 0 10px rgba(201,165,80,0.55);
   position:relative; flex-shrink:0;
 }
 .npc-avatar::after {
-  content:''; position:absolute; inset:-5px; border-radius:50%;
-  border:2px solid rgba(201,165,80,0.35);
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1px solid rgba(201,165,80,0.4);
   animation:hs-pulse 2.2s ease-in-out infinite;
 }
 .npc-name-tag {
+  margin-top:6px;
   font-family:'Cinzel',serif; font-size:8px; font-weight:700;
-  color:#C9A550; letter-spacing:0.8px; text-transform:uppercase;
-  background:rgba(5,3,1,0.82); border:1px solid rgba(201,165,80,0.4);
-  padding:3px 8px; border-radius:4px; white-space:nowrap;
-  text-shadow:0 1px 3px rgba(0,0,0,0.8);
+  color:rgba(232,212,160,0.9); letter-spacing:0.6px; text-transform:uppercase;
+  background:rgba(6,5,15,0.65); border:1px solid rgba(201,165,80,0.3);
+  padding:3px 9px; border-radius:20px; white-space:nowrap;
 }
 #npc-bertrand  { bottom:36%; left:10%; }
 #npc-oswin     { bottom:52%; left:42%; }
@@ -2324,7 +2330,13 @@ canvas#particles {
 
 /* ── TOWN SCREEN ── */
 #town-screen {
-  background:#0e0a05 url('images/town.webp') center/cover no-repeat;
+  background-image:
+    linear-gradient(180deg, rgba(6,5,15,0.85) 0%, rgba(20,10,30,0.32) 20%, rgba(20,10,30,0.28) 55%, rgba(6,5,15,0.85) 100%),
+    radial-gradient(ellipse 90% 65% at 50% 42%, transparent 20%, rgba(6,5,15,0.6) 100%),
+    linear-gradient(rgba(28,14,42,0.35), rgba(28,14,42,0.35)),
+    url('images/town.webp');
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  background-color:#0e0a05;
   flex-direction:column; align-items:stretch; justify-content:flex-start;
   overflow:hidden;
 }
@@ -2357,7 +2369,13 @@ canvas#particles {
 
 /* ── WORLD MAP (région) ── */
 #world-map {
-  background:#0e0a05 url('images/region.webp') center/cover no-repeat;
+  background-image:
+    linear-gradient(180deg, rgba(6,5,15,0.85) 0%, rgba(20,10,30,0.32) 20%, rgba(20,10,30,0.28) 55%, rgba(6,5,15,0.85) 100%),
+    radial-gradient(ellipse 90% 65% at 50% 42%, transparent 20%, rgba(6,5,15,0.6) 100%),
+    linear-gradient(rgba(28,14,42,0.35), rgba(28,14,42,0.35)),
+    url('images/region.webp');
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  background-color:#0e0a05;
   flex-direction:column; align-items:stretch; justify-content:flex-start;
   overflow:hidden;
 }
@@ -2390,6 +2408,48 @@ canvas#particles {
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
 .hs-lbl.extreme{ border-color:rgba(160,30,160,0.6); color:#c060c0; }
 .hs-lbl.safe   { border-color:rgba(60,160,60,0.5);  color:#80d080; }
+
+/* ── HUB TAB BAR (persistent nav: auberge/personnage/ville/région) ── */
+#hub-tabbar {
+  position:absolute; left:0; right:0; bottom:0; z-index:80; height:68px;
+  background:linear-gradient(180deg,rgba(10,7,15,0.7) 0%,rgba(6,5,15,0.97) 35%,#08060f 100%);
+  border-top:1px solid rgba(201,165,80,0.22);
+  display:none; align-items:stretch;
+  box-shadow:0 -8px 24px rgba(0,0,0,0.4);
+  -webkit-tap-highlight-color:transparent;
+}
+#hub-tabbar.show { display:flex; }
+.hub-tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; position:relative; cursor:pointer;
+}
+.hub-tab-ico { font-size:18px; opacity:0.45; filter:grayscale(0.4); transition:all 0.15s; }
+.hub-tab-lbl {
+  font-family:'Cinzel',serif; font-size:8.5px; letter-spacing:1px; text-transform:uppercase;
+  color:rgba(201,165,80,0.45); transition:all 0.15s;
+}
+.hub-tab.active .hub-tab-ico { opacity:1; filter:none; transform:translateY(-2px); }
+.hub-tab.active .hub-tab-lbl { color:#00D4E8; }
+.hub-tab.active::before {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:26px; height:2px; border-radius:2px; background:#00D4E8; box-shadow:0 0 8px rgba(0,212,232,0.8);
+}
+.hub-tab:active { transform:scale(0.94); }
+
+/* Sous-onglets internes au pôle Personnage (hero/coffre/talents) */
+.perso-subtabs { display:flex; gap:6px; padding:10px 16px 2px; position:relative; z-index:3; flex-shrink:0; }
+.perso-subtab {
+  flex:1; text-align:center; padding:8px 4px; border-radius:9px;
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.8px;
+  color:rgba(201,165,80,0.55); background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.16); cursor:pointer; transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.perso-subtab:hover { border-color:rgba(201,165,80,0.35); color:rgba(201,165,80,0.8); }
+.perso-subtab.active {
+  color:#0a0710; background:linear-gradient(135deg,#e0c27a,#C9A550); border-color:#C9A550;
+  font-weight:700; box-shadow:0 0 14px rgba(201,165,80,0.3);
+}
 /* ── TIMER COMBAT ── */
 #cb-timer-wrap {
   display:flex; align-items:center; justify-content:center; gap:6px;
@@ -2550,7 +2610,7 @@ canvas#particles {
 }
 .chest-tab.active { color:#C9A550; border-bottom-color:#C9A550; }
 
-#chest-body { flex:1; overflow-y:auto; padding:12px; }
+#chest-body { flex:1; overflow-y:auto; padding:12px 12px 90px; }
 
 #chest-grid, #chest-inv-grid {
   display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
@@ -3127,6 +3187,11 @@ canvas#particles {
         <div id="eq-title">Équipement</div>
         <div style="width:40px"></div>
       </div>
+      <div class="perso-subtabs">
+        <div class="perso-subtab active" onclick="HubNav.personaGo('stats')" data-i18n="hub.sub.perso">Personnage</div>
+        <div class="perso-subtab" onclick="HubNav.personaGo('coffre')" data-i18n="hub.sub.coffre">Coffre</div>
+        <div class="perso-subtab" onclick="HubNav.personaGo('talents')" data-i18n="hub.sub.talents">Talents</div>
+      </div>
       <!-- Stats bar -->
       <div id="eq-stats-bar">
         <div class="eq-stat-pill">
@@ -3288,6 +3353,11 @@ canvas#particles {
         <div id="tal-back" onclick="TalentsScreen.close()">←</div>
         <div id="tal-title">🌟 <span data-i18n="tal.title">Talents</span></div>
         <div id="tal-points"><span id="tal-points-label"></span> ✦ <span id="tal-points-val">0</span></div>
+      </div>
+      <div class="perso-subtabs">
+        <div class="perso-subtab" onclick="HubNav.personaGo('stats')" data-i18n="hub.sub.perso">Personnage</div>
+        <div class="perso-subtab" onclick="HubNav.personaGo('coffre')" data-i18n="hub.sub.coffre">Coffre</div>
+        <div class="perso-subtab active" onclick="HubNav.personaGo('talents')" data-i18n="hub.sub.talents">Talents</div>
       </div>
       <div id="tal-tabs">
         <div class="chest-tab active" id="tal-tab-class" onclick="TalentsScreen.tab('class')" data-i18n="tal.tab.class">Classe</div>
@@ -3773,6 +3843,11 @@ canvas#particles {
         <div id="chest-title">⚰ Coffre</div>
         <div id="chest-capacity"><span id="chest-used">0</span>/20</div>
       </div>
+      <div class="perso-subtabs">
+        <div class="perso-subtab" onclick="HubNav.personaGo('stats')" data-i18n="hub.sub.perso">Personnage</div>
+        <div class="perso-subtab active" onclick="HubNav.personaGo('coffre')" data-i18n="hub.sub.coffre">Coffre</div>
+        <div class="perso-subtab" onclick="HubNav.personaGo('talents')" data-i18n="hub.sub.talents">Talents</div>
+      </div>
       <div id="chest-tabs">
         <div class="chest-tab active" id="chest-tab-chest" onclick="ChestScreen.showTab('chest')">Coffre</div>
         <div class="chest-tab" id="chest-tab-inv" onclick="ChestScreen.showTab('inv')">Inventaire</div>
@@ -3815,6 +3890,26 @@ canvas#particles {
       <div id="ft-num">II</div>
       <div id="ft-sub">Les ténèbres s'épaississent...</div>
       <div id="ft-memory"></div>
+    </div>
+
+    <!-- ── HUB TAB BAR (global, persistent nav across town/inn/region/perso) ── -->
+    <div id="hub-tabbar">
+      <div class="hub-tab" data-hub="auberge" onclick="HubNav.go('auberge')">
+        <div class="hub-tab-ico">🛏</div>
+        <div class="hub-tab-lbl" data-i18n="hub.auberge">Auberge</div>
+      </div>
+      <div class="hub-tab" data-hub="perso" onclick="HubNav.go('perso')">
+        <div class="hub-tab-ico">⚖</div>
+        <div class="hub-tab-lbl" data-i18n="hub.perso">Personnage</div>
+      </div>
+      <div class="hub-tab" data-hub="ville" onclick="HubNav.go('ville')">
+        <div class="hub-tab-ico">🏘</div>
+        <div class="hub-tab-lbl" data-i18n="hub.ville">Ville</div>
+      </div>
+      <div class="hub-tab" data-hub="region" onclick="HubNav.go('region')">
+        <div class="hub-tab-ico">🗺</div>
+        <div class="hub-tab-lbl" data-i18n="hub.region">Région</div>
+      </div>
     </div>
 
   </div><!-- /phone-screen -->
@@ -5001,6 +5096,14 @@ var STRINGS = {
     'town.adventure': '⚔ Partir à l\'aventure',
     'town.chateau': '🏰 Château',
     'town.taverne': '🍺 Taverne',
+    // Hub tab bar
+    'hub.auberge': 'Auberge',
+    'hub.perso': 'Personnage',
+    'hub.ville': 'Ville',
+    'hub.region': 'Région',
+    'hub.sub.perso': 'Personnage',
+    'hub.sub.coffre': 'Coffre',
+    'hub.sub.talents': 'Talents',
     // Inn
     'inn.window': 'Partir à l\'aventure',
     'inn.equip': 'Équipement',
@@ -5437,6 +5540,14 @@ var STRINGS = {
     'town.adventure': '⚔ Go adventuring',
     'town.chateau': '🏰 Castle',
     'town.taverne': '🍺 Tavern',
+    // Hub tab bar
+    'hub.auberge': 'Inn',
+    'hub.perso': 'Character',
+    'hub.ville': 'Town',
+    'hub.region': 'Region',
+    'hub.sub.perso': 'Character',
+    'hub.sub.coffre': 'Chest',
+    'hub.sub.talents': 'Talents',
     // Inn
     'inn.window': 'Go adventuring',
     'inn.equip': 'Equipment',
@@ -5789,6 +5900,7 @@ var Nav = {
     if (prev === id) return;
     Nav.current = id;
     if (typeof HUD !== 'undefined') { HUD.update(id); HUD.updateGold(); }
+    if (typeof HubNav !== 'undefined') HubNav.update(id);
     // Auto-save à chaque changement d'écran si un run est actif
     var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1,'story-intro':1};
     if (!menuScreens[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
@@ -5847,6 +5959,42 @@ var Nav = {
         else Embers.stop();
       }
     }, prev ? 150 : 0);
+  }
+};
+
+// ── HUB TAB BAR : nav persistante Auberge / Personnage / Ville / Région ──
+var HubNav = {
+  MAP: {
+    'town-screen':'ville', 'inn-room':'auberge', 'world-map':'region', 'world-map-2':'region',
+    'hero-screen':'perso', 'chest-screen':'perso', 'talents-screen':'perso'
+  },
+  _lastRegion: 'world-map',
+  _personaFrom: 'inn-room',
+  update: function(id) {
+    var bar = document.getElementById('hub-tabbar');
+    if (!bar) return;
+    if (id === 'world-map' || id === 'world-map-2') HubNav._lastRegion = id;
+    var active = HubNav.MAP[id];
+    if (!active) { bar.classList.remove('show'); return; }
+    bar.classList.add('show');
+    var tabs = bar.querySelectorAll('.hub-tab');
+    for (var i=0;i<tabs.length;i++) tabs[i].classList.toggle('active', tabs[i].getAttribute('data-hub')===active);
+  },
+  go: function(hub) {
+    if (hub === 'auberge') Nav.go('inn-room');
+    else if (hub === 'ville') Nav.go('town-screen');
+    else if (hub === 'region') Nav.go(HubNav._lastRegion || 'world-map');
+    else if (hub === 'perso') {
+      var cur = Nav.current;
+      var inCluster = (cur==='hero-screen' || cur==='chest-screen' || cur==='talents-screen');
+      if (!inCluster) HubNav._personaFrom = cur || 'inn-room';
+      if (typeof EquipScreen !== 'undefined') EquipScreen.open(HubNav._personaFrom);
+    }
+  },
+  personaGo: function(dest) {
+    if (dest === 'stats' && typeof EquipScreen !== 'undefined') EquipScreen.open(HubNav._personaFrom);
+    else if (dest === 'coffre' && typeof ChestScreen !== 'undefined') ChestScreen.open();
+    else if (dest === 'talents' && typeof TalentsScreen !== 'undefined') TalentsScreen.open(HubNav._personaFrom);
   }
 };
 
