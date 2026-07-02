@@ -2576,50 +2576,6 @@ canvas#particles {
   color:rgba(200,190,180,0.4); font-family:'Cinzel',serif; font-size:10px;
   letter-spacing:2px; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
-/* ── SAC OVERLAY (donjon) ── */
-#bag-overlay {
-  position:absolute; inset:0; z-index:30; display:none;
-  flex-direction:column; align-items:center; justify-content:flex-end;
-  padding-bottom:16px;
-  background:rgba(0,0,0,0.75); backdrop-filter:blur(4px);
-}
-#bag-overlay.show { display:flex; }
-#bag-overlay-box {
-  width:calc(100% - 32px); background:#0e0a05; border:1px solid rgba(201,165,80,0.3);
-  border-radius:14px; padding:14px 12px; display:flex; flex-direction:column; gap:8px;
-}
-#bag-overlay-title {
-  font-family:'Cinzel',serif; font-size:12px; letter-spacing:2px; color:#C9A550;
-  text-align:center; margin-bottom:2px;
-}
-.bag-row {
-  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px;
-  background:rgba(255,255,255,0.04); border:1px solid rgba(201,165,80,0.15);
-  cursor:pointer; -webkit-tap-highlight-color:transparent;
-}
-.bag-row:active { background:rgba(201,165,80,0.1); }
-.bag-row .br-ico { font-size:24px; flex-shrink:0; }
-.bag-row .br-info { flex:1; }
-.bag-row .br-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#EDE8DF; }
-.bag-row .br-desc { font-family:'Crimson Text',serif; font-size:11px; color:rgba(180,160,200,0.7); }
-.bag-empty { font-family:'Crimson Text',serif; font-size:13px; font-style:italic;
-  color:rgba(237,232,223,0.3); text-align:center; padding:10px 0; }
-#bag-overlay-cancel {
-  width:100%; margin-top:4px; padding:10px; border-radius:8px;
-  background:transparent; border:1px solid rgba(255,255,255,0.1);
-  color:rgba(200,190,180,0.4); font-family:'Cinzel',serif; font-size:10px;
-  letter-spacing:2px; cursor:pointer; -webkit-tap-highlight-color:transparent;
-}
-/* ── SAC BUTTON ── */
-#dm-bag-btn {
-  position:absolute; bottom:110px; right:16px; z-index:10;
-  width:48px; height:48px; border-radius:50%;
-  background:rgba(201,165,80,0.12); border:1px solid rgba(201,165,80,0.35);
-  color:#C9A550; font-size:22px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  -webkit-tap-highlight-color:transparent; transition:all 0.15s;
-}
-#dm-bag-btn:active { transform:scale(0.93); background:rgba(201,165,80,0.25); }
 /* ── DEFEAT OVERLAY ── */
 #defeat-overlay {
   position:absolute; inset:0; z-index:40; display:none;
@@ -3245,15 +3201,6 @@ canvas#particles {
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
       <button id="dm-camp-btn" onclick="Nav.go('world-map')"><span data-i18n="dm.camp">🗺 Voyager</span></button>
-      <button id="dm-bag-btn" onclick="EquipScreen.open('dungeon-map')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C9A550" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v1H7V6a2 2 0 0 1 2-2z"/><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7v2a4 4 0 0 0 8 0V7"/><circle cx="12" cy="14" r="1.5" fill="#C9A550" stroke="none"/></svg></button>
-      <!-- Bag overlay -->
-      <div id="bag-overlay">
-        <div id="bag-overlay-box">
-          <div id="bag-overlay-title">ÉQUIPEMENT · SAC</div>
-          <div id="bag-rows"></div>
-          <button id="bag-overlay-cancel" onclick="this.closest('#bag-overlay').classList.remove('show')">Fermer</button>
-        </div>
-      </div>
     </div>
 
     <!-- ── LEVEL UP OVERLAY ── -->
@@ -5506,6 +5453,10 @@ var STRINGS = {
     'warn.enter.title': 'Attention, Aventurier',
     'warn.enter.ok': 'Entrer quand même',
     'warn.enter.cancel': 'Reculer',
+    'dm.resume.title': 'Expédition en cours',
+    'dm.resume.text': 'Tu as déjà exploré jusqu\'à l\'étage {floor} ici. Continuer où tu en étais, ou repartir de zéro ?',
+    'dm.resume.continue': 'Continuer',
+    'dm.resume.restart': 'Recommencer',
     'warn.zone.locked': '⚠ Zone non recommandée pour ton niveau de progression.',
     'warn.zone.level': '💀 Niveau conseillé : {rec} (tu es niveau {lvl}).',
   },
@@ -5954,6 +5905,10 @@ var STRINGS = {
     'warn.enter.title': 'Beware, Adventurer',
     'warn.enter.ok': 'Enter anyway',
     'warn.enter.cancel': 'Back off',
+    'dm.resume.title': 'Expedition in progress',
+    'dm.resume.text': 'You\'ve already explored up to floor {floor} here. Continue where you left off, or start over?',
+    'dm.resume.continue': 'Continue',
+    'dm.resume.restart': 'Restart',
     'warn.zone.locked': '⚠ Zone not recommended for your progression level.',
     'warn.zone.level': '💀 Recommended level: {rec} (you are level {lvl}).',
   }
@@ -11686,6 +11641,21 @@ var WorldMap = {
     var warnings = [];
     if (!Meta.isZoneUnlocked(zoneId)) warnings.push(T('warn.zone.locked'));
     if (lvl < zone.minLevel) warnings.push(T('warn.zone.level').replace('{rec}', zone.minLevel).replace('{lvl}', lvl));
+
+    function enterAtFloor(floor) {
+      State._currentZone = zoneId;
+      State.floor = floor;
+      State._runGoldBonus = State._runGoldBonus || 1;
+      Nav.go('dungeon-map');
+      if (floor === 1) {
+        setTimeout(function(){
+          RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
+        }, 350);
+      } else {
+        setTimeout(function(){ DungeonMap.init(floor, State.hp, State.hpMax); }, 300);
+      }
+    }
+
     function doEnter() {
       State._zoneMod = {
         hpMult:   zone.hpMult||1,
@@ -11696,17 +11666,18 @@ var WorldMap = {
         enemyMod: zone.hpMult||1,
         goldMod:  zone.goldMult||1,
       };
-      var resumeFloor = (State._currentZone === zoneId && (State.floor||1) > 1) ? (State.floor||1) : 1;
-      State._currentZone = zoneId;
-      State.floor = resumeFloor;
-      State._runGoldBonus = State._runGoldBonus || 1;
-      Nav.go('dungeon-map');
-      if (resumeFloor === 1) {
-        setTimeout(function(){
-          RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
-        }, 350);
+      var hasProgress = (State._currentZone === zoneId && (State.floor||1) > 1);
+      if (hasProgress) {
+        CGEModal.show({
+          title: T('dm.resume.title'),
+          text: T('dm.resume.text').replace('{floor}', State.floor),
+          okLabel: T('dm.resume.continue'),
+          cancelLabel: T('dm.resume.restart'),
+          onOk: function(){ enterAtFloor(State.floor||1); },
+          onCancel: function(){ enterAtFloor(1); }
+        });
       } else {
-        setTimeout(function(){ DungeonMap.init(resumeFloor, State.hp, State.hpMax); }, 300);
+        enterAtFloor(1);
       }
     }
 
