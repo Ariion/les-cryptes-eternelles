@@ -251,6 +251,7 @@ canvas#particles {
   box-shadow:0 0 16px rgba(0,212,232,0.22), inset 0 0 12px rgba(0,212,232,0.06);
   justify-content:center;
 }
+#menu-btns .btn:first-child:hover  { box-shadow:0 0 26px rgba(0,212,232,0.32); border-color:#4ee4f5; }
 #menu-btns .btn:first-child:active { box-shadow:0 0 28px rgba(0,212,232,0.35); }
 /* PARAMÈTRES & SUCCÈS — doré, lisible, cohérent avec le reste du jeu */
 #menu-btns .btn:not(:first-child) {
@@ -260,6 +261,7 @@ canvas#particles {
   box-shadow:0 0 14px rgba(201,165,80,0.1), inset 0 1px 0 rgba(201,165,80,0.1);
   justify-content:center;
 }
+#menu-btns .btn:not(:first-child):hover  { border-color:#C9A550; box-shadow:0 0 18px rgba(201,165,80,0.18); }
 #menu-btns .btn:not(:first-child):active { border-color:#C9A550; box-shadow:0 0 20px rgba(201,165,80,0.22); }
 /* cache les icones dans le menu principal */
 #menu-btns .btn .ico { display:none; }
@@ -277,12 +279,16 @@ canvas#particles {
   transition:all 0.15s ease; position:relative; overflow:hidden;
   -webkit-tap-highlight-color:transparent;
 }
+.btn:hover { transform:translateY(-2px) scale(1.015); filter:brightness(1.08); }
 .btn:active { transform:scale(0.97); filter:brightness(1.1); }
 .btn .ico { font-size:17px; opacity:0.9; }
 .btn-primary { background:linear-gradient(135deg,rgba(201,165,80,0.2),rgba(201,165,80,0.08)); border:1px solid rgba(201,165,80,0.65); color:#C9A550; box-shadow:0 0 20px rgba(201,165,80,0.08),inset 0 1px 0 rgba(201,165,80,0.12); }
+.btn-primary:hover  { box-shadow:0 0 26px rgba(201,165,80,0.22),inset 0 1px 0 rgba(201,165,80,0.12); border-color:#C9A550; }
 .btn-primary:active { box-shadow:0 0 30px rgba(201,165,80,0.2); }
 .btn-secondary { background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.18); color:rgba(237,232,223,0.7); }
+.btn-secondary:hover { background:rgba(255,255,255,0.06); border-color:rgba(201,165,80,0.4); }
 .btn-danger { background:rgba(180,40,40,0.12); border:1px solid rgba(220,60,60,0.4); color:rgba(240,140,140,0.85); }
+.btn-danger:hover { box-shadow:0 0 18px rgba(220,60,60,0.2); }
 
 /* ── CHARACTER SELECT ────────────────────────────────────────── */
 #char-select {
