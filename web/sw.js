@@ -1,6 +1,6 @@
 // Service Worker – Les Cryptes Éternelles
 // La version change à chaque déploiement → auto-update automatique
-const CACHE_NAME = 'cge-cache-v4';
+const CACHE_NAME = 'cge-cache-v5';
 
 const PRECACHE = [
   './index.html',
@@ -41,10 +41,13 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('fetch', function(e) {
   var url = new URL(e.request.url);
 
-  // Toujours aller chercher le réseau pour index.html (pour avoir la dernière version)
+  // Toujours aller chercher le réseau pour index.html (pour avoir la dernière version).
+  // cache:'no-store' est essentiel ici : sans ça, fetch() peut être servi par le cache
+  // HTTP du navigateur lui-même (Cache-Control du serveur) sans jamais toucher le réseau,
+  // ce qui annule complètement la stratégie "network-first" voulue.
   if (url.pathname.endsWith('index.html') || url.pathname.endsWith('/')) {
     e.respondWith(
-      fetch(e.request).then(function(response) {
+      fetch(e.request, { cache: 'no-store' }).then(function(response) {
         var clone = response.clone();
         caches.open(CACHE_NAME).then(function(cache) { cache.put(e.request, clone); });
         return response;
