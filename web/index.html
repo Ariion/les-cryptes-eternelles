@@ -1241,54 +1241,113 @@ canvas#particles {
 /* ── BOUTIQUE ────────────────────────────────────────────────── */
 #shop-screen {
   background:#06050f;
-  background-image: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(60,40,0,0.45) 0%, transparent 60%);
-  flex-direction:column; align-items:center; justify-content:flex-start;
+  flex-direction:column; align-items:stretch; justify-content:flex-start;
   padding-top: 0; gap:0;
 }
 #shop-header-bar {
-  display:flex; align-items:center; justify-content:space-between;
-  width:100%; padding:14px 16px 10px; flex-shrink:0;
-  border-bottom:1px solid rgba(201,165,80,0.15);
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:14px 16px 14px; flex-shrink:0;
+  background:
+    radial-gradient(ellipse 100% 100% at 50% 0%, rgba(90,50,10,0.35) 0%, transparent 70%),
+    linear-gradient(180deg,#0c0810 0%,#06050f 100%);
+  border-bottom:1px solid rgba(201,165,80,0.18);
 }
 #shop-back-btn {
-  font-size:22px; color:rgba(201,165,80,0.7); cursor:pointer;
-  padding:4px 10px; -webkit-tap-highlight-color:transparent;
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(201,165,80,0.25);
+  color:rgba(201,165,80,0.8); font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
-#shop-title { font-family:'Cinzel Decorative',serif; font-size:17px; color:#C9A550; text-align:center; flex:1; }
-#shop-gold-display { font-size:13px; color:#C9A550; }
-#shop-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(201,165,80,0.45); margin:6px 0 8px; }
-#shop-gold-display {
-  display:flex; align-items:center; gap:8px; margin-bottom:20px;
-  padding:8px 20px; border-radius:20px;
-  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
-  font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550;
+#shop-header-titles { flex:1; text-align:center; min-width:0; }
+#shop-title {
+  font-family:'Cinzel Decorative',serif; font-size:18px; color:#f0dca8;
+  letter-spacing:1px; text-shadow:0 0 18px rgba(201,165,80,0.4);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-#shop-restock-bar { width:100%; padding:0 16px 10px; flex-shrink:0; text-align:right; }
-#shop-restock-btn { font-size:11px; padding:5px 10px; border-radius:8px; background:rgba(126,207,255,0.1); border:1px solid rgba(126,207,255,0.3); color:#7ecfff; cursor:pointer; white-space:nowrap; }
-#shop-restock-btn:active { background:rgba(126,207,255,0.25); }
-#shop-items { width:100%; padding:0 16px 20px; display:flex; flex-direction:column; gap:10px; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.shop-item {
-  display:flex; align-items:center; gap:14px; padding:14px 16px;
-  border-radius:10px; background:rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.15);
+#shop-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:11.5px; color:rgba(201,165,80,0.5); margin-top:2px; }
+#shop-gold-pill {
+  flex-shrink:0; display:flex; align-items:center; gap:5px;
+  padding:7px 12px; border-radius:20px;
+  background:linear-gradient(135deg,rgba(201,165,80,0.18),rgba(201,165,80,0.06));
+  border:1px solid rgba(201,165,80,0.4);
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#f0dca8;
+}
+#shop-tabs { display:flex; gap:8px; padding:0 16px; margin-top:14px; flex-shrink:0; }
+.shop-tab {
+  flex:1; text-align:center; padding:9px 4px; border-radius:9px;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:rgba(201,165,80,0.55); background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.16);
   cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
-  position:relative;
 }
-.shop-item:active { transform:scale(0.98); background:rgba(201,165,80,0.08); }
-.shop-item.sold { opacity:0.35; pointer-events:none; }
-.shop-item .si-ico { font-size:30px; flex-shrink:0; }
-.shop-item .si-info { flex:1; }
-.shop-item .si-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
-.shop-item .si-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:1px; }
+.shop-tab.active {
+  color:#0a0710; background:linear-gradient(135deg,#e0c27a,#C9A550); border-color:#C9A550;
+  box-shadow:0 0 16px rgba(201,165,80,0.35);
+}
+#shop-restock-bar { width:100%; padding:10px 16px 0; flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:6px; }
+#shop-restock-timer {
+  font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:0.5px; color:rgba(201,165,80,0.5);
+}
+#shop-restock-btn {
+  width:100%; font-size:10.5px; padding:7px; border-radius:9px;
+  background:rgba(0,212,232,0.08); border:1px solid rgba(0,212,232,0.3); color:#7ee8f5;
+  font-family:'Cinzel',serif; letter-spacing:0.5px; cursor:pointer; white-space:nowrap; transition:all 0.15s;
+}
+#shop-restock-btn:active { background:rgba(0,212,232,0.2); }
+#shop-items { width:100%; padding:14px 16px 90px; display:flex; flex-direction:column; gap:9px; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.shop-featured-lbl { display:flex; align-items:center; gap:8px; margin-bottom:-1px; }
+.shop-featured-lbl .bar { flex:0 0 20px; height:1px; background:linear-gradient(90deg,transparent,rgba(255,200,40,0.7)); }
+.shop-featured-lbl .bar.rev { background:linear-gradient(270deg,transparent,rgba(255,200,40,0.7)); flex:1; }
+.shop-featured-lbl span { font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:2px; color:#ffc820; text-transform:uppercase; white-space:nowrap; }
+.shop-sec-lbl { display:flex; align-items:center; gap:8px; margin:4px 0 -1px; }
+.shop-sec-lbl .bar { flex:1; height:1px; background:linear-gradient(90deg,rgba(201,165,80,0.4),transparent); }
+.shop-sec-lbl .bar.rev { background:linear-gradient(270deg,rgba(201,165,80,0.4),transparent); }
+.shop-sec-lbl span { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.55); text-transform:uppercase; white-space:nowrap; }
+.shop-item {
+  display:flex; align-items:center; gap:12px; padding:12px;
+  border-radius:12px; background:rgba(255,255,255,0.025);
+  border:1px solid rgba(160,160,160,0.35);
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+  position:relative; overflow:hidden;
+}
+.shop-item:active { transform:scale(0.98); }
+.shop-item.sold { opacity:0.4; pointer-events:none; }
+.shop-item.featured { padding:16px; gap:14px; animation:shop-featured-glow 2.4s ease-in-out infinite; }
+@keyframes shop-featured-glow {
+  0%,100% { box-shadow:0 0 10px rgba(255,200,40,0.25); }
+  50%     { box-shadow:0 0 22px rgba(255,200,40,0.55), inset 0 0 14px rgba(255,200,40,0.08); }
+}
+.shop-item .si-ico {
+  width:50px; height:50px; border-radius:11px; flex-shrink:0; font-size:25px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(160,160,160,0.4);
+}
+.shop-item.featured .si-ico { width:64px; height:64px; font-size:32px; border-radius:14px; }
+.shop-item .si-info { flex:1; min-width:0; }
+.shop-item .si-name { font-family:'Cinzel',serif; font-size:12.5px; font-weight:700; color:#EDE8DF; }
+.shop-item.featured .si-name { font-size:15px; }
+.shop-item .si-desc {
+  font-family:'Crimson Text',serif; font-style:italic; font-size:11px; color:rgba(237,232,223,0.45); margin-top:1px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 .shop-item .si-price {
-  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#C9A550;
-  display:flex; align-items:center; gap:4px; flex-shrink:0;
+  flex-shrink:0; display:flex; align-items:center; gap:4px;
+  font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#f0dca8;
+  background:rgba(201,165,80,0.1); border:1px solid rgba(201,165,80,0.3);
+  padding:6px 10px; border-radius:20px;
 }
-.shop-item .si-price::before { content:'🪙'; font-size:14px; }
-.shop-item.cant-afford .si-price { color:rgba(200,80,80,0.7); }
+.shop-item .si-price::before { content:'🪙'; font-size:13px; }
+.shop-item.cant-afford .si-price { color:#e88; background:rgba(200,60,60,0.08); border-color:rgba(200,60,60,0.3); }
 .si-price.race-tax { flex-direction:column; align-items:flex-end; gap:0; }
 .si-price.race-tax::before { display:none; }
-.si-price.race-tax::after { content:'🪙'; font-size:14px; }
+.si-price.race-tax::after { content:'🪙'; font-size:13px; }
+.si-price.sell { color:#7ee89a; background:rgba(60,170,70,0.1); border-color:rgba(80,200,90,0.35); }
+.si-price.sell::before { content:none; }
+.si-sold-ribbon {
+  position:absolute; top:9px; right:-28px; width:110px; text-align:center;
+  transform:rotate(35deg); background:rgba(180,40,40,0.9); color:#fff;
+  font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:1px; padding:2px 0;
+}
 .orig-price { font-size:10px; color:rgba(201,165,80,0.4); text-decoration:line-through; }
 
 /* ── GAME HEADER fixe ─────────────────────────────────────────── */
@@ -3134,19 +3193,22 @@ canvas#particles {
     <div id="shop-screen" class="screen has-game-header">
       <div id="shop-header-bar">
         <div id="shop-back-btn" onclick="Rooms.shopLeave()">←</div>
-        <div id="shop-title">🏪 Marchand Obscur</div>
-        <div style="font-family:'Cinzel',serif;font-size:12px;color:#C9A550;display:flex;align-items:center;gap:4px">🪙 <span id="shop-gold-val">0</span></div>
+        <div id="shop-header-titles">
+          <div id="shop-title">🏪 Marchand Obscur</div>
+          <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
+        </div>
+        <div id="shop-gold-pill">🪙 <span id="shop-gold-val">0</span></div>
       </div>
-      <div id="shop-sub">"Tout a un prix dans les ténèbres..."</div>
-      <div id="shop-tabs" style="display:flex;gap:0;border-bottom:1px solid rgba(201,165,80,0.1);margin:0 16px 8px;flex-shrink:0">
-        <div class="chest-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
-        <div class="chest-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
+      <div id="shop-tabs">
+        <div class="shop-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
+        <div class="shop-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
       </div>
       <div id="shop-restock-bar" style="display:none">
-        <button id="shop-restock-btn" onclick="Rooms.restockShop()">🔄 Nouvel arrivage (💎 5)</button>
+        <div id="shop-restock-timer"></div>
+        <button id="shop-restock-btn" onclick="Rooms.restockShop()">💎 Rafraîchir maintenant · 5</button>
       </div>
       <div id="shop-items"></div>
-      <div id="shop-ad-wrap" style="padding:0 16px 16px"></div>
+      <div id="shop-ad-wrap" style="padding:0 16px 90px"></div>
     </div>
 
     <!-- ── DUNGEON MAP ── -->
@@ -9648,6 +9710,7 @@ Rooms.SHOP_TITLE_MAP = {
 };
 Rooms.SHOP_STOCK_SIZE = 6;
 Rooms.SHOP_RESTOCK_COST = 5;
+Rooms.SHOP_RESTOCK_INTERVAL_MS = 6*60*60*1000; // renouvellement gratuit du stock toutes les 6h
 
 Rooms._shopPool = function(category) {
   var slots = Rooms.SHOP_SLOT_MAP[category];
@@ -9658,15 +9721,32 @@ Rooms._generateShopStock = function(category) {
   var pool = Rooms._shopPool(category).slice();
   for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
   Meta.shopStock = Meta.shopStock || {};
+  Meta.shopStockTs = Meta.shopStockTs || {};
   Meta.shopStock[category] = pool.slice(0, Rooms.SHOP_STOCK_SIZE).map(function(it){ return { idx: SHOP_POOL.indexOf(it), sold:false }; });
+  Meta.shopStockTs[category] = Date.now();
   Meta.save();
+};
+
+Rooms._stockMsLeft = function(category) {
+  var ts = (Meta.shopStockTs||{})[category];
+  if (!ts) return 0;
+  return Math.max(0, Rooms.SHOP_RESTOCK_INTERVAL_MS - (Date.now() - ts));
+};
+
+Rooms._formatShopCountdown = function(ms) {
+  var totalMin = Math.ceil(ms / 60000);
+  var h = Math.floor(totalMin / 60), m = totalMin % 60;
+  var timeStr = h > 0 ? (h+'h '+(m<10?'0':'')+m+'m') : (m+'m');
+  return (CGE_LANG==='en' ? 'New stock in ' : 'Nouveau stock dans ') + timeStr;
 };
 
 // Renvoie les objets du stock (clonés) avec _stockPos/_stockSold pour que
 // Rooms.shopBuy puisse marquer l'entrée vendue de façon persistante.
 Rooms._shopStockItems = function(category) {
   Meta.shopStock = Meta.shopStock || {};
-  if (!Meta.shopStock[category] || !Meta.shopStock[category].length) Rooms._generateShopStock(category);
+  if (!Meta.shopStock[category] || !Meta.shopStock[category].length || Rooms._stockMsLeft(category) <= 0) {
+    Rooms._generateShopStock(category);
+  }
   return Meta.shopStock[category].map(function(entry, pos){
     var it = entry && SHOP_POOL[entry.idx];
     if (!it) return null;
@@ -9676,6 +9756,32 @@ Rooms._shopStockItems = function(category) {
     clone._stockSold = !!entry.sold;
     return clone;
   }).filter(function(it){ return !!it; });
+};
+
+Rooms._shopRestockTimerId = null;
+
+Rooms._tickRestockTimer = function() {
+  var category = State._shopCategory;
+  var lbl = document.getElementById('shop-restock-timer');
+  if (!category || !lbl) return;
+  var msLeft = Rooms._stockMsLeft(category);
+  if (msLeft <= 0) {
+    // Le stock vient d'expirer pendant que le joueur était sur l'écran — on le renouvelle live.
+    State._shopItems = Rooms._shopStockItems(category);
+    if (Rooms._shopTab === 'buy') Rooms._renderShopBuy();
+    msLeft = Rooms._stockMsLeft(category);
+  }
+  lbl.textContent = Rooms._formatShopCountdown(msLeft);
+};
+
+Rooms._startRestockTimer = function() {
+  Rooms._stopRestockTimer();
+  Rooms._tickRestockTimer();
+  Rooms._shopRestockTimerId = setInterval(Rooms._tickRestockTimer, 30000);
+};
+
+Rooms._stopRestockTimer = function() {
+  if (Rooms._shopRestockTimerId) { clearInterval(Rooms._shopRestockTimerId); Rooms._shopRestockTimerId = null; }
 };
 
 Rooms.showShop = function(fromScreen, category) {
@@ -9698,6 +9804,7 @@ Rooms.showShop = function(fromScreen, category) {
   var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold||0;
   var restockBar = document.getElementById('shop-restock-bar');
   if (restockBar) restockBar.style.display = stocked ? '' : 'none';
+  if (stocked) Rooms._startRestockTimer(); else Rooms._stopRestockTimer();
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
 };
@@ -9715,31 +9822,63 @@ Rooms.restockShop = function() {
   if (typeof HUD !== 'undefined') HUD.updateGems();
   State._shopItems = Rooms._shopStockItems(category);
   Rooms._renderShopBuy();
+  Rooms._tickRestockTimer();
+};
+
+Rooms._RARITY_ORDER = ['common','uncommon','rare','epic','legendary','mythic'];
+
+Rooms._buildShopItemCard = function(item, idx, featured) {
+  var rar2 = item.rarity||'common';
+  var displayCost = Rooms._racePriceMod(item.cost);
+  var div = document.createElement('div');
+  div.className = 'shop-item rarity-'+rar2 + (featured ? ' featured' : '') +
+    (item._stockSold ? ' sold' : ((State.gold||0) < displayCost ? ' cant-afford' : ''));
+  div.dataset.idx = idx;
+  var rarLabel2 = (RARITY_LABELS||{})[rar2]||rar2;
+  var priceHtml = item._stockSold
+    ? '<div class="si-price"><span style="color:rgba(255,255,255,0.25)">'+(CGE_LANG==='en'?'Sold':'Vendu')+'</span></div>'
+    : (displayCost !== item.cost
+      ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
+      : '<div class="si-price">'+displayCost+'</div>');
+  div.innerHTML =
+    (item._stockSold ? '<div class="si-sold-ribbon">'+(CGE_LANG==='en'?'SOLD':'VENDU')+'</div>' : '') +
+    '<span class="si-ico">'+_escHtml(item.ico)+'</span>'+
+    '<div class="si-info"><div class="si-name">'+_escHtml(item.name)+'</div><div class="si-desc">'+_escHtml(item.desc)+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
+    priceHtml;
+  div.addEventListener('click', function(){ Rooms.shopItemDetail(idx); });
+  return div;
 };
 
 Rooms._renderShopBuy = function() {
   var items = State._shopItems || [];
   var cont = document.getElementById('shop-items');
   cont.innerHTML = '';
+
+  // Objet du jour : l'objet le plus rare du stock, tant qu'il n'est pas déjà vendu.
+  var featuredIdx = -1, featuredRank = 1; // rank >= 2 (rare+) requis pour être mis en avant
+  items.forEach(function(item, idx) {
+    if ((item.condition && !item.condition()) || item._stockSold) return;
+    var rank = Rooms._RARITY_ORDER.indexOf(item.rarity||'common');
+    if (rank > featuredRank) { featuredRank = rank; featuredIdx = idx; }
+  });
+
+  if (featuredIdx !== -1) {
+    var lblDiv = document.createElement('div');
+    lblDiv.className = 'shop-featured-lbl';
+    lblDiv.innerHTML = '<div class="bar"></div><span>'+(CGE_LANG==='en'?'Featured item':'Objet du jour')+'</span><div class="bar rev"></div>';
+    cont.appendChild(lblDiv);
+    cont.appendChild(Rooms._buildShopItemCard(items[featuredIdx], featuredIdx, true));
+
+    var secDiv = document.createElement('div');
+    secDiv.className = 'shop-sec-lbl';
+    secDiv.innerHTML = '<div class="bar"></div><span>'+(CGE_LANG==='en'?'In stock':'En stock')+'</span><div class="bar rev"></div>';
+    cont.appendChild(secDiv);
+  }
+
   items.forEach(function(item, idx) {
     if (item.condition && !item.condition()) return;
-    var div = document.createElement('div');
-    var rar2 = item.rarity||'common';
-    var displayCost = Rooms._racePriceMod(item.cost);
-    div.className = 'shop-item rarity-'+rar2 + (item._stockSold ? ' sold' : ((State.gold||0) < displayCost ? ' cant-afford' : ''));
-    div.dataset.idx = idx;
-    var rarLabel2 = (RARITY_LABELS||{})[rar2]||rar2;
-    var priceHtml = item._stockSold
-      ? '<div class="si-price"><span style="color:rgba(255,255,255,0.25)">'+(CGE_LANG==='en'?'Sold':'Vendu')+'</span></div>'
-      : (displayCost !== item.cost
-        ? '<div class="si-price race-tax">'+displayCost+'<span class="orig-price">'+item.cost+'</span></div>'
-        : '<div class="si-price">'+displayCost+'</div>');
-    div.innerHTML =
-      '<span class="si-ico">'+_escHtml(item.ico)+'</span>'+
-      '<div class="si-info"><div class="si-name">'+_escHtml(item.name)+'</div><div class="si-desc">'+_escHtml(item.desc)+'</div><span class="rarity-badge '+rar2+'">'+rarLabel2+'</span></div>'+
-      priceHtml;
-    div.addEventListener('click', function(){ Rooms.shopItemDetail(idx); });
-    cont.appendChild(div);
+    if (idx === featuredIdx) return; // déjà affiché en objet du jour
+    cont.appendChild(Rooms._buildShopItemCard(item, idx, false));
   });
 };
 
@@ -9759,13 +9898,15 @@ Rooms._renderShopSell = function() {
   }
   allSellable.forEach(function(entry, i) {
     var it = entry.item;
+    var rar3 = it.rarity||'common';
+    var rarLabel3 = (RARITY_LABELS||{})[rar3]||rar3;
     var sellPrice = Rooms._sellPrice(it);
     var div = document.createElement('div');
-    div.className = 'shop-item';
+    div.className = 'shop-item rarity-'+rar3;
     div.innerHTML =
       '<span class="si-ico">'+_escHtml(it.ico)+'</span>'+
-      '<div class="si-info"><div class="si-name">'+_escHtml(it.name)+(entry.src==='slot'?' [équipé]':'')+'</div><div class="si-desc">'+_escHtml(it.desc)+'</div></div>'+
-      '<div class="si-price" style="color:#50c870">+'+sellPrice+'</div>';
+      '<div class="si-info"><div class="si-name">'+_escHtml(it.name)+(entry.src==='slot'?' · '+(CGE_LANG==='en'?'equipped':'équipé'):'')+'</div><div class="si-desc">'+_escHtml(it.desc)+'</div><span class="rarity-badge '+rar3+'">'+rarLabel3+'</span></div>'+
+      '<div class="si-price sell">+'+sellPrice+'</div>';
     div.addEventListener('click', function(){
       State.gold = (State.gold||0) + sellPrice;
       var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold;
@@ -9798,6 +9939,9 @@ Rooms.shopTab = function(tab) {
   Rooms._shopTab = tab;
   document.getElementById('stab-buy').classList.toggle('active', tab==='buy');
   document.getElementById('stab-sell').classList.toggle('active', tab==='sell');
+  var stocked = State._shopCategory && Rooms.SHOP_SLOT_MAP[State._shopCategory];
+  var restockBar = document.getElementById('shop-restock-bar');
+  if (restockBar) restockBar.style.display = (stocked && tab==='buy') ? '' : 'none';
   if (tab==='buy') Rooms._renderShopBuy(); else Rooms._renderShopSell();
 };
 
@@ -9885,8 +10029,8 @@ Rooms.shopBuy = function(idx) {
   }
   var _sgv2 = document.getElementById('shop-gold-val'); if (_sgv2) _sgv2.textContent = State.gold;
   if (typeof HUD !== 'undefined') HUD.updateGold();
-  var cards = document.querySelectorAll('.shop-item');
-  if (cards[idx]) cards[idx].classList.add('sold');
+  var boughtCard = document.querySelector('.shop-item[data-idx="'+idx+'"]');
+  if (boughtCard) boughtCard.classList.add('sold');
   document.querySelectorAll('.shop-item:not(.sold)').forEach(function(c){
     var base = State._shopItems[c.dataset.idx]&&State._shopItems[c.dataset.idx].cost||999;
     var cost2 = Rooms._racePriceMod(base);
@@ -9900,6 +10044,7 @@ Rooms.shopBuy = function(idx) {
 };
 
 Rooms.shopLeave = function() {
+  Rooms._stopRestockTimer();
   var dest = State._shopFrom || 'dungeon-map';
   if (dest === 'dungeon-map') updateMapHpBar();
   Nav.go(dest);
