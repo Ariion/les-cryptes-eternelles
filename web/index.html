@@ -602,6 +602,7 @@ canvas#particles {
   background:#06050f;
   flex-direction:column;
   justify-content:flex-start;
+  padding-bottom:68px;
 }
 /* Zone ambiances */
 #dungeon-map.zone-grottes { background:#0a0604; }
@@ -2116,19 +2117,28 @@ canvas#particles {
   display:flex; align-items:center; gap:14px; padding:14px 16px;
   border-radius:10px; background:rgba(255,255,255,0.025);
   border:1px solid rgba(201,165,80,0.08);
-  border-left:3px solid rgba(201,165,80,0.5);
-  transition:border-color .2s;
+  border-left:3px solid rgba(201,165,80,0.15);
+  transition:all .2s;
 }
-.ach-srow.ach-srow-done { border-left-color:#C9A550; }
-.ach-srow.ach-srow-locked { opacity:0.4; }
+.ach-srow.ach-srow-done {
+  border-left-color:#C9A550; border-color:rgba(201,165,80,0.28);
+  background:rgba(201,165,80,0.05); box-shadow:0 0 14px rgba(201,165,80,0.12);
+}
+.ach-srow.ach-srow-locked .ach-srow-ico { opacity:0.35; filter:grayscale(1); }
+.ach-srow.ach-srow-locked .ach-srow-title { color:rgba(237,232,223,0.4); }
+.ach-srow.ach-srow-locked .ach-srow-desc { opacity:0.6; }
 .ach-srow-ico { font-size:24px; flex-shrink:0; width:32px; text-align:center; }
-.ach-srow-info { flex:1; }
+.ach-srow-info { flex:1; min-width:0; }
 .ach-srow-title {
   font-family:'Cinzel',serif; font-size:12px; font-weight:700;
   color:#EDE8DF; letter-spacing:.5px; text-transform:uppercase;
 }
 .ach-srow-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:2px; }
 .ach-srow-check { color:#C9A550; font-size:14px; flex-shrink:0; }
+.ach-srow-progress { margin-top:7px; }
+.ach-srow-progress-bar { height:3px; background:rgba(201,165,80,0.12); border-radius:2px; overflow:hidden; }
+.ach-srow-progress-fill { height:100%; background:linear-gradient(90deg,#C9A550,#f0cc70); border-radius:2px; }
+.ach-srow-progress-txt { font-family:'Cinzel',serif; font-size:9px; color:rgba(201,165,80,0.45); margin-top:3px; text-align:right; }
 .st-version { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:rgba(201,165,80,0.2); text-align:center; margin-top:auto; padding-bottom:20px; }
 
 /* critiques visuels */
@@ -2183,7 +2193,7 @@ canvas#particles {
 
 /* bouton campement dans la carte donjon */
 #dm-camp-btn {
-  position:absolute; bottom:14px; right:14px; z-index:10;
+  position:absolute; bottom:82px; right:14px; z-index:10;
   padding:9px 16px; border-radius:8px; border:none; cursor:pointer;
   background:rgba(255,140,0,0.15); border:1px solid rgba(255,140,0,0.3);
   font-family:'Cinzel',serif; font-size:10px; color:rgba(255,180,80,0.85);
@@ -11401,13 +11411,13 @@ var RewardedAds = (function(){
 var ACHIEVEMENT_DEFS = [
   // Exploration
   { id:'first_kill',   ico:'⚔', title:'Premier Sang',      titleEn:'First Blood',     desc:'Vaincre ton premier ennemi',              descEn:'Defeat your first enemy',                check:function(){ return (Meta.totalKills||0)>=1; } },
-  { id:'kills_25',     ico:'💀', title:'Chasseur',           titleEn:'Hunter',          desc:'Vaincre 25 ennemis',                      descEn:'Defeat 25 enemies',                        check:function(){ return (Meta.totalKills||0)>=25; } },
-  { id:'kills_100',    ico:'🩸', title:'Boucher',            titleEn:'Butcher',         desc:'Vaincre 100 ennemis',                     descEn:'Defeat 100 enemies',                       check:function(){ return (Meta.totalKills||0)>=100; } },
-  { id:'kills_500',    ico:'☠',  title:'Fléau des Cryptes', titleEn:'Crypt Scourge',   desc:'Vaincre 500 ennemis',                      descEn:'Defeat 500 enemies',                        check:function(){ return (Meta.totalKills||0)>=500; } },
+  { id:'kills_25',     ico:'💀', title:'Chasseur',           titleEn:'Hunter',          desc:'Vaincre 25 ennemis',                      descEn:'Defeat 25 enemies',                        check:function(){ return (Meta.totalKills||0)>=25; },  progress:function(){ return {cur:Meta.totalKills||0, target:25}; } },
+  { id:'kills_100',    ico:'🩸', title:'Boucher',            titleEn:'Butcher',         desc:'Vaincre 100 ennemis',                     descEn:'Defeat 100 enemies',                       check:function(){ return (Meta.totalKills||0)>=100; }, progress:function(){ return {cur:Meta.totalKills||0, target:100}; } },
+  { id:'kills_500',    ico:'☠',  title:'Fléau des Cryptes', titleEn:'Crypt Scourge',   desc:'Vaincre 500 ennemis',                      descEn:'Defeat 500 enemies',                        check:function(){ return (Meta.totalKills||0)>=500; }, progress:function(){ return {cur:Meta.totalKills||0, target:500}; } },
   // Runs
   { id:'runs_1',       ico:'🏃', title:'Aventurier',        titleEn:'Adventurer',      desc:'Compléter un run',                         descEn:'Complete one run',                           check:function(){ return (Meta.totalRuns||0)>=1; } },
-  { id:'runs_10',      ico:'🔁', title:'Vétéran',           titleEn:'Veteran',         desc:'Compléter 10 runs',                        descEn:'Complete 10 runs',                          check:function(){ return (Meta.totalRuns||0)>=10; } },
-  { id:'runs_50',      ico:'🌀', title:'Éternel',           titleEn:'Eternal',         desc:'Compléter 50 runs',                        descEn:'Complete 50 runs',                          check:function(){ return (Meta.totalRuns||0)>=50; } },
+  { id:'runs_10',      ico:'🔁', title:'Vétéran',           titleEn:'Veteran',         desc:'Compléter 10 runs',                        descEn:'Complete 10 runs',                          check:function(){ return (Meta.totalRuns||0)>=10; },  progress:function(){ return {cur:Meta.totalRuns||0, target:10}; } },
+  { id:'runs_50',      ico:'🌀', title:'Éternel',           titleEn:'Eternal',         desc:'Compléter 50 runs',                        descEn:'Complete 50 runs',                          check:function(){ return (Meta.totalRuns||0)>=50; },  progress:function(){ return {cur:Meta.totalRuns||0, target:50}; } },
   // Zones
   { id:'zone_grottes', ico:'🪨', title:'Spéléologue',       titleEn:'Spelunker',       desc:'Nettoyer les Grottes des Ombres',          descEn:'Clear the Shadow Caves',            check:function(){ return !!(Meta.clearedZones||{})['grottes']; } },
   { id:'zone_foret',   ico:'🌲', title:'Traqueur',          titleEn:'Tracker',         desc:'Nettoyer la Forêt des Âmes Perdues',       descEn:'Clear the Forest of Lost Souls',         check:function(){ return !!(Meta.clearedZones||{})['foret']; } },
@@ -11418,17 +11428,17 @@ var ACHIEVEMENT_DEFS = [
   { id:'zone_volcan',  ico:'🌋', title:'Dompteur de Flammes',titleEn:'Flame Tamer',    desc:'Nettoyer la Caldera d\'Aszgol',           descEn:'Clear the Caldera of Aszgol',             check:function(){ return !!(Meta.clearedZones||{})['volcan']; } },
   { id:'zone_cryptes', ico:'⚰', title:'Seigneur des Cryptes',titleEn:'Crypt Lord',     desc:'Nettoyer les Cryptes Éternelles',          descEn:'Clear the Eternal Crypts',          check:function(){ return !!(Meta.clearedZones||{})['cryptes']; } },
   // Progression
-  { id:'level_10',     ico:'✨', title:'Prometteur',        titleEn:'Promising',       desc:'Atteindre le niveau 10',                   descEn:'Reach level 10',                     check:function(){ return (State.level||1)>=10; } },
-  { id:'level_30',     ico:'⚡', title:'Chevalier',         titleEn:'Knight',          desc:'Atteindre le niveau 30',                   descEn:'Reach level 30',                     check:function(){ return (State.level||1)>=30; } },
-  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=60; } },
-  { id:'level_100',    ico:'👑', title:'Légendaire',        titleEn:'Legendary',       desc:'Atteindre le niveau 100',                  descEn:'Reach level 100',                    check:function(){ return (State.level||1)>=100; } },
+  { id:'level_10',     ico:'✨', title:'Prometteur',        titleEn:'Promising',       desc:'Atteindre le niveau 10',                   descEn:'Reach level 10',                     check:function(){ return (State.level||1)>=10; },  progress:function(){ return {cur:State.level||1, target:10}; } },
+  { id:'level_30',     ico:'⚡', title:'Chevalier',         titleEn:'Knight',          desc:'Atteindre le niveau 30',                   descEn:'Reach level 30',                     check:function(){ return (State.level||1)>=30; },  progress:function(){ return {cur:State.level||1, target:30}; } },
+  { id:'level_60',     ico:'🔮', title:'Maître',            titleEn:'Master',          desc:'Atteindre le niveau 60',                   descEn:'Reach level 60',                     check:function(){ return (State.level||1)>=60; },  progress:function(){ return {cur:State.level||1, target:60}; } },
+  { id:'level_100',    ico:'👑', title:'Légendaire',        titleEn:'Legendary',       desc:'Atteindre le niveau 100',                  descEn:'Reach level 100',                    check:function(){ return (State.level||1)>=100; }, progress:function(){ return {cur:State.level||1, target:100}; } },
   // Histoire
   { id:'quest_act1',   ico:'📜', title:'L\'Éveillé',        titleEn:'The Awakened',   desc:'Compléter l\'Acte I de l\'histoire',       descEn:'Complete Act I of the story',         check:function(){ return !!(Meta.completedQuests||{})['seraphine_1']; } },
   { id:'quest_act2',   ico:'📖', title:'Fils du Néant',     titleEn:'Son of the Void', desc:'Compléter l\'Acte II',                     descEn:'Complete Act II',                       check:function(){ return !!(Meta.completedQuests||{})['seraphine_2']; } },
   { id:'quest_act3',   ico:'📚', title:'La Vérité',         titleEn:'The Truth',       desc:'Compléter l\'Acte III',                    descEn:'Complete Act III',                      check:function(){ return !!(Meta.completedQuests||{})['seraphine_3']; } },
   { id:'quest_final',  ico:'🏆', title:'L\'Éveillé Éternel',titleEn:'The Eternal Awakened', desc:'Compléter l\'histoire',               descEn:'Complete the story',                      check:function(){ return !!(Meta.completedQuests||{})['cryptes_final']; } },
   // Secrets
-  { id:'rich',         ico:'🪙', title:'Négociant',         titleEn:'Merchant',        desc:'Accumuler 1000 pièces d\'or',              descEn:'Accumulate 1000 gold coins',                check:function(){ return (State.gold||0)>=1000; } },
+  { id:'rich',         ico:'🪙', title:'Négociant',         titleEn:'Merchant',        desc:'Accumuler 1000 pièces d\'or',              descEn:'Accumulate 1000 gold coins',                check:function(){ return (State.gold||0)>=1000; }, progress:function(){ return {cur:State.gold||0, target:1000}; } },
   { id:'no_potion',    ico:'💪', title:'Dur à Cuire',       titleEn:'Tough as Nails',  desc:'Battre un boss sans utiliser de potion',   descEn:'Defeat a boss without using a potion',     check:function(){ return !!(Meta.achievements||{})['no_potion']; } },
 ];
 
@@ -11476,11 +11486,24 @@ var Achievements = (function(){
       var u = !!done[a.id];
       var title = (CGE_LANG === 'en' && a.titleEn ? a.titleEn : a.title);
       var desc  = (CGE_LANG === 'en' && a.descEn ? a.descEn : a.desc);
-      return '<div class="ach-srow'+(u?' ach-srow--done':'')+'">'+
+      var progHtml = '';
+      if (!u && a.progress) {
+        var p = a.progress();
+        if (p && p.target) {
+          var cur = Math.min(p.cur||0, p.target);
+          var pct2 = Math.round(cur / p.target * 100);
+          progHtml = '<div class="ach-srow-progress">'+
+            '<div class="ach-srow-progress-bar"><div class="ach-srow-progress-fill" style="width:'+pct2+'%"></div></div>'+
+            '<div class="ach-srow-progress-txt">'+cur+' / '+p.target+'</div>'+
+          '</div>';
+        }
+      }
+      return '<div class="ach-srow'+(u?' ach-srow-done':' ach-srow-locked')+'">'+
         '<span class="ach-srow-ico">'+(u ? a.ico : '🔒')+'</span>'+
         '<div class="ach-srow-info">'+
           '<div class="ach-srow-title">'+title+'</div>'+
           '<div class="ach-srow-desc">'+desc+'</div>'+
+          progHtml+
         '</div>'+
         (u ? '<span class="ach-srow-check">✓</span>' : '')+
       '</div>';
