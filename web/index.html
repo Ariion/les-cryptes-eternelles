@@ -2164,7 +2164,19 @@ canvas#particles {
   user-select:none;
 }
 .npc-hotspot:hover { transform:scale(1.15); }
-.npc-avatar { font-size:30px; line-height:1; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.75)); }
+/* Même marqueur que les hotspots de bâtiment (.hs-ring) — un anneau doré qui
+   pulse, plus cohérent sur les cartes peintes qu'un visage en emoji. */
+.npc-avatar {
+  width:26px; height:26px; border-radius:50%;
+  border:2px solid rgba(201,165,80,0.8);
+  background:rgba(201,165,80,0.15);
+  position:relative; flex-shrink:0;
+}
+.npc-avatar::after {
+  content:''; position:absolute; inset:-5px; border-radius:50%;
+  border:2px solid rgba(201,165,80,0.35);
+  animation:hs-pulse 2.2s ease-in-out infinite;
+}
 .npc-name-tag {
   font-family:'Cinzel',serif; font-size:8px; font-weight:700;
   color:#C9A550; letter-spacing:0.8px; text-transform:uppercase;
@@ -3428,7 +3440,7 @@ canvas#particles {
       </div>
       <!-- Marta NPC -->
       <div class="npc-hotspot" id="npc-marta" onclick="Quests.openNpc('marta')" style="position:absolute;top:57%;left:13%">
-        <div class="npc-avatar">👩</div>
+        <div class="npc-avatar"></div>
         <div class="npc-name-tag">Marta</div>
       </div>
       <!-- hotspot fenêtre → région -->
@@ -3477,12 +3489,12 @@ canvas#particles {
       <div class="tav-deco tav-sign">🍺</div>
       <!-- NPC: aubergiste -->
       <div class="npc-hotspot" id="npc-bertrand" onclick="Quests.openNpc('bertrand')">
-        <div class="npc-avatar">🧔</div>
+        <div class="npc-avatar"></div>
         <div class="npc-name-tag">Bertrand</div>
       </div>
       <!-- NPC: barde -->
       <div class="npc-hotspot" id="npc-oswin" onclick="Quests.openNpc('oswin')">
-        <div class="npc-avatar">🎻</div>
+        <div class="npc-avatar"></div>
         <div class="npc-name-tag">Oswin</div>
       </div>
       <!-- NPC: mage -->
@@ -3580,12 +3592,12 @@ canvas#particles {
       </div>
       <!-- NPC: Capitaine Aldric (devant le château) -->
       <div class="npc-hotspot" id="npc-aldric" onclick="Quests.openNpc('aldric')" style="position:absolute;top:29%;left:33%">
-        <div class="npc-avatar">💂</div>
+        <div class="npc-avatar"></div>
         <div class="npc-name-tag" data-i18n="npc.aldric">Capitaine Aldric</div>
       </div>
       <!-- NPC: Sœur Élise (devant l'église) -->
       <div class="npc-hotspot" id="npc-elise" onclick="Quests.openNpc('elise')" style="position:absolute;top:44%;left:78%">
-        <div class="npc-avatar">🙏</div>
+        <div class="npc-avatar"></div>
         <div class="npc-name-tag" data-i18n="npc.elise">Sœur Élise</div>
       </div>
       <!-- hotspot taverne -->
