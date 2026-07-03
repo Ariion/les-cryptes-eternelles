@@ -12670,6 +12670,15 @@ window.addEventListener('load', function(){
           }
         };
       };
+      // Le navigateur ne revérifie une mise à jour qu'à sa propre discrétion
+      // (souvent jamais, sur une PWA qu'on rouvre sans vraiment la relancer).
+      // On force la vérification explicitement à chaque lancement et à chaque
+      // retour au premier plan, pour que les mises à jour arrivent sans jamais
+      // avoir à vider le cache ou réinstaller l'app.
+      reg.update();
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') reg.update();
+      });
     }).catch(function(e){ console.warn('[CGE] SW:', e); });
   }
 
