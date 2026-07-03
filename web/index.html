@@ -2358,16 +2358,6 @@ canvas#particles {
 .tv-card-badge.danger { background:rgba(180,30,30,0.15); border-color:rgba(200,60,60,0.3); color:rgba(220,100,100,0.8); }
 .tv-card-badge.safe   { background:rgba(30,100,30,0.15); border-color:rgba(60,160,60,0.3); color:rgba(100,200,100,0.8); }
 
-/* bouton campement dans la carte donjon */
-#dm-camp-btn {
-  position:absolute; bottom:82px; right:14px; z-index:10;
-  padding:9px 16px; border-radius:8px; border:none; cursor:pointer;
-  background:rgba(255,140,0,0.15); border:1px solid rgba(255,140,0,0.3);
-  font-family:'Cinzel',serif; font-size:10px; color:rgba(255,180,80,0.85);
-  letter-spacing:1px; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
-}
-#dm-camp-btn:active { transform:scale(0.95); }
-
 /* ── MENU SETTINGS BTN ── */
 /* ── INN ROOM ── */
 #inn-room {
@@ -3378,7 +3368,6 @@ canvas#particles {
         <div id="dm-node-info" data-i18n="dm.nodeinfo">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
       </div>
-      <button id="dm-camp-btn" onclick="Nav.go('world-map')"><span data-i18n="dm.camp">🗺 Voyager</span></button>
     </div>
 
     <!-- ── LEVEL UP OVERLAY ── -->
@@ -4463,9 +4452,24 @@ var Music = (function(){
     nodes = [];
   }
 
+  // Pour les sons ponctuels (gouttes, percussions) plutôt que les drones tenus toute
+  // la piste — les retire du tableau une fois finis pour ne pas l'alourdir sans fin
+  // sur une longue session, ce qui finissait par peser sur les téléphones modestes.
+  function trackNode(n) {
+    nodes.push(n);
+    n.onended = function() {
+      var idx = nodes.indexOf(n);
+      if (idx >= 0) nodes.splice(idx, 1);
+    };
+  }
+
   function osc(freq, type, vol, dest) {
     var c = ac(); if (!c) return null;
-    var g = c.createGain(); g.gain.value = vol;
+    var g = c.createGain();
+    // Monter le volume en douceur plutôt qu'un saut instantané — un gain qui passe
+    // de 0 à sa valeur en une seule étape crée une discontinuité audible (un "clic").
+    g.gain.setValueAtTime(0, c.currentTime);
+    g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.25);
     g.connect(dest);
     var o = c.createOscillator(); o.type = type; o.frequency.value = freq;
     o.connect(g); o.start();
@@ -4490,8 +4494,11 @@ var Music = (function(){
       for (var i=0; i<len; i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.5);
     }
     var conv = c.createConvolver(); conv.buffer = buf;
-    var g = c.createGain(); g.gain.value = 0.22;
-    conv.connect(g); g.connect(dest);
+    // Le bruit blanc brut donne un "chuintement" statique permanent (le grésillement
+    // signalé) — un filtre passe-bas adoucit ça en une traîne feutrée au lieu d'un souffle.
+    var lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800;
+    var g = c.createGain(); g.gain.value = 0.09;
+    conv.connect(lp); lp.connect(g); g.connect(dest);
     return conv;
   }
 
@@ -4525,7 +4532,7 @@ var Music = (function(){
       var o = c2.createOscillator(); o.type='triangle';
       o.frequency.value = melody[step % melody.length];
       o.connect(g); o.start(); o.stop(c2.currentTime+1.8);
-      nodes.push(o);
+      trackNode(o);
       step++;
       setTimeout(nextNote, 1400 + Math.random()*600);
     }
@@ -4554,10 +4561,63 @@ var Music = (function(){
       var f = c2.createBiquadFilter(); f.type='bandpass'; f.frequency.value=800+Math.random()*400;
       var g = c2.createGain(); g.gain.value=0.06;
       src.connect(f); f.connect(g); g.connect(rv);
-      src.start(); nodes.push(src);
+      src.start(); trackNode(src);
       setTimeout(drip, 2000 + Math.random()*4000);
     }
     drip();
+  }
+
+  // Marais / Volcan — plus tendu, plus vivant : intervalle dissonant, bulles/vapeur plus fréquentes
+  function playDungeonHarsh() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 3.2);
+    osc(41.2, 'sawtooth', 0.07, rv);   // fondamentale
+    osc(43.7, 'sine',     0.09, rv);   // seconde mineure au-dessus — frotte contre la fondamentale
+    osc(61.7, 'sine',     0.05, rv);
+    var bNode = c.createGain(); bNode.gain.value = 0.11; bNode.connect(m);
+    lfo(bNode, 'gain', 0.16, 0.09, 0.11);
+    osc(41.2, 'triangle', 0.10, bNode);
+    function bubble() {
+      if (!musicOn || current !== 'dungeon_harsh') return;
+      var c2 = ac(); if (!c2) return;
+      var buf = c2.createBuffer(1, c2.sampleRate*0.08, c2.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+      var src = c2.createBufferSource(); src.buffer=buf;
+      var f = c2.createBiquadFilter(); f.type='bandpass'; f.frequency.value=300+Math.random()*900;
+      var g = c2.createGain(); g.gain.value=0.07;
+      src.connect(f); f.connect(g); g.connect(rv);
+      src.start(); trackNode(src);
+      setTimeout(bubble, 900 + Math.random()*1800);
+    }
+    bubble();
+  }
+
+  // Château maudit / Cité oubliée / Gouffre astral / Cryptes profondes — épuré, glacial, lointain
+  function playDungeonDread() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 6);
+    osc(32.7,  'sine', 0.10, rv);
+    osc(1046.5,'sine', 0.015, rv); // filet aigu, presque un sifflement d'oreille
+    var pad = c.createGain(); pad.gain.value = 0.05; pad.connect(rv);
+    lfo(pad, 'gain', 0.045, 0.03, 0.05);
+    [130.8, 155.6].forEach(function(f){ osc(f, 'sine', 0.06, pad); }); // quarte diminuée — froid, irrésolu
+    function bell() {
+      if (!musicOn || current !== 'dungeon_dread') return;
+      var c2 = ac(); if (!c2) return;
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0, c2.currentTime);
+      g.gain.linearRampToValueAtTime(0.05, c2.currentTime+0.6);
+      g.gain.exponentialRampToValueAtTime(0.001, c2.currentTime+5);
+      g.connect(rv);
+      var notes = [523.2, 622.2, 783.9, 466.1];
+      var o = c2.createOscillator(); o.type='sine';
+      o.frequency.value = notes[Math.floor(Math.random()*notes.length)];
+      o.connect(g); o.start(); o.stop(c2.currentTime+5.2);
+      trackNode(o);
+      setTimeout(bell, 4500 + Math.random()*4500);
+    }
+    bell();
   }
 
   function playCombat() {
@@ -4576,7 +4636,7 @@ var Music = (function(){
       o.frequency.setValueAtTime(120, c2.currentTime);
       o.frequency.exponentialRampToValueAtTime(40, c2.currentTime+0.3);
       o.connect(g); o.start(); o.stop(c2.currentTime+0.4);
-      nodes.push(o);
+      trackNode(o);
       // Double battement (lub-dub)
       setTimeout(function(){
         if (!musicOn || current !== 'combat') return;
@@ -4589,7 +4649,7 @@ var Music = (function(){
         o2.frequency.setValueAtTime(90, c3.currentTime);
         o2.frequency.exponentialRampToValueAtTime(35, c3.currentTime+0.2);
         o2.connect(g2); o2.start(); o2.stop(c3.currentTime+0.3);
-        nodes.push(o2);
+        trackNode(o2);
       }, 220);
       setTimeout(beat, 900);
     }
@@ -4609,11 +4669,52 @@ var Music = (function(){
       g.gain.linearRampToValueAtTime(0.06, c2.currentTime+0.04);
       g.gain.linearRampToValueAtTime(0, c2.currentTime+0.18);
       g.connect(rv);
-      var o = c2.createOscillator(); o.type='square';
+      var o = c2.createOscillator(); o.type='triangle';
       o.frequency.value = motif[mi % motif.length];
       o.connect(g); o.start(); o.stop(c2.currentTime+0.22);
-      nodes.push(o); mi++;
+      trackNode(o); mi++;
       setTimeout(mNote, 280 + (mi%4===0?160:0));
+    }
+    mNote();
+  }
+
+  // Combat en zone tardive (marais/volcan/postgame) — tempo plus rapide, intervalle de triton
+  function playCombatIntense() {
+    var c = ac(), m = master(); if (!c || !m) return;
+    var rv = reverb(m, 1.3);
+    function beat() {
+      if (!musicOn || current !== 'combat_intense') return;
+      var c2 = ac(); if (!c2) return;
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0.27, c2.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c2.currentTime+0.3);
+      g.connect(m);
+      var o = c2.createOscillator(); o.type='sine';
+      o.frequency.setValueAtTime(130, c2.currentTime);
+      o.frequency.exponentialRampToValueAtTime(38, c2.currentTime+0.26);
+      o.connect(g); o.start(); o.stop(c2.currentTime+0.34);
+      trackNode(o);
+      setTimeout(beat, 620);
+    }
+    beat();
+    var pad = c.createGain(); pad.gain.value = 0.055; pad.connect(rv);
+    lfo(pad, 'gain', 0.13, 0.05, 0.055);
+    [116.5, 164.8, 233.1].forEach(function(f){ osc(f,'sawtooth',0.08,pad); }); // triton — tension max
+    var motif = [233.1,220,207.7,220,233.1,246.9,233.1,207.7];
+    var mi = 0;
+    function mNote() {
+      if (!musicOn || current !== 'combat_intense') return;
+      var c2 = ac(); if (!c2) return;
+      var g = c2.createGain();
+      g.gain.setValueAtTime(0, c2.currentTime);
+      g.gain.linearRampToValueAtTime(0.065, c2.currentTime+0.03);
+      g.gain.linearRampToValueAtTime(0, c2.currentTime+0.15);
+      g.connect(rv);
+      var o = c2.createOscillator(); o.type='triangle';
+      o.frequency.value = motif[mi % motif.length];
+      o.connect(g); o.start(); o.stop(c2.currentTime+0.18);
+      trackNode(o); mi++;
+      setTimeout(mNote, 210 + (mi%4===0?110:0));
     }
     mNote();
   }
@@ -4636,10 +4737,31 @@ var Music = (function(){
         if (!musicOn || current !== track) return;
         m.gain.setValueAtTime(0, c.currentTime);
         m.gain.linearRampToValueAtTime(0.7, c.currentTime+2.5);
-        if (track==='menu')    playMenu();
-        if (track==='dungeon') playDungeon();
-        if (track==='combat')  playCombat();
+        if (track==='menu')            playMenu();
+        if (track==='dungeon')         playDungeon();
+        if (track==='dungeon_harsh')   playDungeonHarsh();
+        if (track==='dungeon_dread')   playDungeonDread();
+        if (track==='combat')          playCombat();
+        if (track==='combat_intense')  playCombatIntense();
       }, 1300);
+    },
+
+    // Zones tardives/hostiles → variantes plus tendues des thèmes donjon/combat.
+    // 'grottes','foret','ruines','port','pics','cryptes' gardent l'ambiance d'origine.
+    zoneTrack: function(base) {
+      var zone = (typeof State !== 'undefined' && State._currentZone) || '';
+      var harsh = { marais:1, volcan:1 };
+      var dread = { chateau_maudit:1, cite_oubliee:1, gouffre_astral:1, cryptes_profondes:1 };
+      if (base === 'dungeon') {
+        if (dread[zone]) return 'dungeon_dread';
+        if (harsh[zone]) return 'dungeon_harsh';
+        return 'dungeon';
+      }
+      if (base === 'combat') {
+        if (dread[zone] || harsh[zone]) return 'combat_intense';
+        return 'combat';
+      }
+      return base;
     },
 
     stop: function() {
@@ -5422,7 +5544,6 @@ var STRINGS = {
     'ach.title': 'Succès',
     'ach.close': 'Fermer',
     // Dungeon map
-    'dm.camp': '🗺 Voyager',
     'dm.quests': '📜 Quêtes',
     'dm.carnet': '🔍 Enquête',
     // Misc
@@ -5874,7 +5995,6 @@ var STRINGS = {
     'ach.title': 'Achievements',
     'ach.close': 'Close',
     // Dungeon map
-    'dm.camp': '🗺 Travel',
     'dm.quests': '📜 Quests',
     'dm.carnet': '🔍 Journal',
     // Misc
@@ -6137,11 +6257,11 @@ var Nav = {
     if (prev && typeof Sfx !== 'undefined') Sfx.nav();
     // Musique selon l'écran
     if (typeof Music !== 'undefined') {
-      if (id==='combat-screen') Music.play('combat');
-      else if (id==='dungeon-map') Music.play('dungeon');
+      if (id==='combat-screen') Music.play(Music.zoneTrack('combat'));
+      else if (id==='dungeon-map') Music.play(Music.zoneTrack('dungeon'));
       else if (id==='inn-room') Music.play('menu');
-      else if (id==='world-map') { Music.play('dungeon'); if (typeof WorldMap !== 'undefined') WorldMap.updateHotspots(); }
-      else if (id==='world-map-2') { Music.play('dungeon'); }
+      else if (id==='world-map') { Music.play(Music.zoneTrack('dungeon')); if (typeof WorldMap !== 'undefined') WorldMap.updateHotspots(); }
+      else if (id==='world-map-2') { Music.play(Music.zoneTrack('dungeon')); }
       else if (id==='main-menu'||id==='char-select'||id==='profiles-screen'||id==='title-screen'||id==='story-intro') Music.stop();
       else if (id==='gameover-screen') Music.stop();
     }
