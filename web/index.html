@@ -1448,10 +1448,31 @@ canvas#particles {
   overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
 }
 #gh-carnet-title { font-family: 'Cinzel Decorative', serif; color: #C9A550; font-size: 15px; text-align: center; }
-#gh-carnet-list  { font-family: 'Crimson Text', serif; font-size: 14px; color: #EDE8DF; display: flex; flex-direction: column; gap: 10px; }
-.carnet-clue { border-left: 2px solid rgba(201,165,80,0.4); padding-left: 8px; }
-.carnet-unknown { color: rgba(237,232,223,0.35); font-style: italic; }
-.carnet-deduction { border: 1px solid rgba(201,165,80,0.5); border-radius: 6px; padding: 8px; background: rgba(201,165,80,0.07); }
+#gh-carnet-list  { display: flex; flex-direction: column; gap: 9px; }
+.carnet-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px;
+  border-radius: 10px; background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(201,165,80,0.15); border-left: 3px solid rgba(201,165,80,0.15);
+  transition: all .2s;
+}
+.carnet-row.carnet-row-found {
+  border-left-color: #C9A550; border-color: rgba(201,165,80,0.28);
+  background: rgba(201,165,80,0.05); box-shadow: 0 0 14px rgba(201,165,80,0.12);
+}
+.carnet-ico { font-size: 20px; flex-shrink: 0; width: 26px; text-align: center; margin-top: 1px; }
+.carnet-row-locked .carnet-ico { opacity: 0.35; filter: grayscale(1); }
+.carnet-info { flex: 1; min-width: 0; }
+.carnet-name { font-family: 'Cinzel', serif; font-size: 12.5px; font-weight: 700; color: #EDE8DF; }
+.carnet-row-locked .carnet-name { color: rgba(237,232,223,0.4); font-style: italic; font-weight: 400; }
+.carnet-loc { font-family: 'Crimson Text', serif; font-style: italic; font-size: 11.5px; color: rgba(201,165,80,0.55); margin-top: 2px; }
+.carnet-text { font-family: 'Crimson Text', serif; font-size: 12.5px; color: rgba(237,232,223,0.7); margin-top: 4px; line-height: 1.4; }
+.carnet-deduction {
+  margin-top: 2px; border: 1px solid rgba(201,165,80,0.5); border-radius: 10px; padding: 12px;
+  background: linear-gradient(135deg,rgba(201,165,80,0.12),rgba(201,165,80,0.04));
+  box-shadow: 0 0 16px rgba(201,165,80,0.15);
+  font-family: 'Crimson Text', serif; font-size: 13px; color: #EDE8DF; line-height: 1.4;
+}
+.carnet-deduction b { color: #C9A550; font-family: 'Cinzel', serif; }
 #gh-carnet-close {
   margin-top: 8px; background: transparent; border: 1px solid rgba(201,165,80,0.3);
   color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
@@ -11856,25 +11877,33 @@ var HUD = (function(){
 })();
 
 var CarnetEnquete = {
+  _clueIco: { medallion:'📿', carte:'🗺', journal_marin:'📖' },
+  _clueRow: function(key, num) {
+    var clues = Meta.clues || {};
+    var found = !!clues[key];
+    var foundBy = CGE_LANG === 'en' ? 'Found in ' : 'Trouvé dans ';
+    if (!found) {
+      return '<div class="carnet-row carnet-row-locked">'+
+        '<span class="carnet-ico">🔒</span>'+
+        '<div class="carnet-info"><div class="carnet-name">'+T('carnet.unknown')+'</div></div>'+
+      '</div>';
+    }
+    return '<div class="carnet-row carnet-row-found">'+
+      '<span class="carnet-ico">'+CarnetEnquete._clueIco[key]+'</span>'+
+      '<div class="carnet-info">'+
+        '<div class="carnet-name">'+T('carnet.clue'+num+'.name')+'</div>'+
+        '<div class="carnet-loc">'+foundBy+T('carnet.clue'+num+'.loc')+'</div>'+
+        '<div class="carnet-text">'+T('carnet.clue'+num+'.text')+'</div>'+
+      '</div>'+
+    '</div>';
+  },
   open: function() {
     var clues = Meta.clues || {};
-    var items = [];
-    var foundBy = CGE_LANG === 'en' ? 'Found in ' : 'Trouvé dans ';
-    if (clues.medallion) {
-      items.push('<div class="carnet-clue"><b>'+T('carnet.clue1.name')+'</b><br>'+foundBy+T('carnet.clue1.loc')+'. '+T('carnet.clue1.text')+'</div>');
-    } else {
-      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
-    }
-    if (clues.carte) {
-      items.push('<div class="carnet-clue"><b>'+T('carnet.clue2.name')+'</b><br>'+foundBy+T('carnet.clue2.loc')+'. '+T('carnet.clue2.text')+'</div>');
-    } else {
-      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
-    }
-    if (clues.journal_marin) {
-      items.push('<div class="carnet-clue"><b>'+T('carnet.clue3.name')+'</b><br>'+foundBy+T('carnet.clue3.loc')+'. '+T('carnet.clue3.text')+'</div>');
-    } else {
-      items.push('<div class="carnet-clue carnet-unknown">'+T('carnet.unknown')+'</div>');
-    }
+    var items = [
+      CarnetEnquete._clueRow('medallion', 1),
+      CarnetEnquete._clueRow('carte', 2),
+      CarnetEnquete._clueRow('journal_marin', 3),
+    ];
     if (clues.medallion && clues.carte && clues.journal_marin) {
       items.push('<div class="carnet-deduction"><b>'+(CGE_LANG==='en'?'Deduction:':'Déduction :')+'</b> '+T('carnet.deduction')+'</div>');
     }
