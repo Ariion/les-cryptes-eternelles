@@ -727,7 +727,7 @@ canvas#particles {
   0%,100%{ box-shadow:0 0 8px rgba(255,200,40,0.3); }
   50%    { box-shadow:0 0 22px rgba(255,200,40,0.75); }
 }
-.rarity-badge { font-size:9px; font-family:'Cinzel',serif; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:3px; display:inline-block; margin-top:3px; }
+.rarity-badge { font-size:9px; line-height:1.4; font-family:'Cinzel',serif; font-weight:700; letter-spacing:1px; padding:1px 5px; border-radius:3px; display:inline-block; margin-top:3px; white-space:nowrap; }
 .rarity-badge.common    { color:#aaa; }
 .rarity-badge.uncommon  { color:#3cc83c; }
 .rarity-badge.rare      { color:#5080ff; }
@@ -1455,14 +1455,16 @@ canvas#particles {
 .shop-sec-lbl span { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.55); text-transform:uppercase; white-space:nowrap; }
 .shop-item {
   display:flex; align-items:center; gap:12px; padding:12px;
+  min-height:74px; box-sizing:border-box;
   border-radius:12px; background:rgba(255,255,255,0.025);
   border:1px solid rgba(160,160,160,0.35);
   cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
-  position:relative; overflow:hidden;
+  position:relative; overflow:hidden; contain:layout paint;
+  -webkit-text-size-adjust:none; text-size-adjust:none;
 }
 .shop-item:active { transform:scale(0.98); }
 .shop-item.sold { opacity:0.4; pointer-events:none; }
-.shop-item.featured { padding:16px; gap:14px; animation:shop-featured-glow 2.4s ease-in-out infinite; }
+.shop-item.featured { padding:16px; gap:14px; min-height:88px; animation:shop-featured-glow 2.4s ease-in-out infinite; }
 @keyframes shop-featured-glow {
   0%,100% { box-shadow:0 0 10px rgba(255,200,40,0.25); }
   50%     { box-shadow:0 0 22px rgba(255,200,40,0.55), inset 0 0 14px rgba(255,200,40,0.08); }
@@ -1473,11 +1475,14 @@ canvas#particles {
   background:rgba(255,255,255,0.04); border:1px solid rgba(160,160,160,0.4);
 }
 .shop-item.featured .si-ico { width:64px; height:64px; font-size:32px; border-radius:14px; }
-.shop-item .si-info { flex:1; min-width:0; }
-.shop-item .si-name { font-family:'Cinzel',serif; font-size:12.5px; font-weight:700; color:#EDE8DF; }
+.shop-item .si-info { flex:1; min-width:0; overflow:hidden; }
+.shop-item .si-name {
+  font-family:'Cinzel',serif; font-size:12.5px; line-height:1.35; font-weight:700; color:#EDE8DF;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 .shop-item.featured .si-name { font-size:15px; }
 .shop-item .si-desc {
-  font-family:'Crimson Text',serif; font-style:italic; font-size:11px; color:rgba(237,232,223,0.45); margin-top:1px;
+  font-family:'Crimson Text',serif; font-style:italic; font-size:11px; line-height:1.35; color:rgba(237,232,223,0.45); margin-top:1px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .shop-item .si-price {
