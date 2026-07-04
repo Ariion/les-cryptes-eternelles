@@ -1745,6 +1745,33 @@ canvas#particles {
 #ft-memory { font-family:'Crimson Text',serif; font-style:italic; font-size:14px; color:rgba(237,232,223,0.75); line-height:1.6; margin:18px 24px 0; white-space:pre-line; text-align:center; max-height:0; overflow:hidden; opacity:0; transition:max-height 0.6s ease, opacity 0.6s ease; }
 #ft-memory.show { max-height:300px; opacity:1; }
 
+/* ── VISION NARRATIVE (souvenirs fragmentés) ── */
+#vision-overlay {
+  position:absolute; inset:0; z-index:950;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 40%, rgba(30,55,48,0.97) 0%, rgba(4,8,7,0.99) 75%);
+  opacity:0; pointer-events:none; transition:opacity 0.9s ease;
+  gap:14px; padding:40px 30px; text-align:center; cursor:pointer;
+}
+#vision-overlay.show { opacity:1; pointer-events:all; }
+#vision-symbol {
+  font-size:34px; color:#8fc9b4; text-shadow:0 0 40px rgba(111,156,139,0.6);
+  animation:vision-pulse 3s ease-in-out infinite;
+}
+@keyframes vision-pulse { 0%,100%{ opacity:0.7; transform:scale(1); } 50%{ opacity:1; transform:scale(1.08); } }
+#vision-label {
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:5px; text-transform:uppercase;
+  color:rgba(143,201,180,0.75);
+}
+#vision-text {
+  font-family:'Crimson Text',serif; font-style:italic; font-size:16px; line-height:1.75;
+  color:rgba(232,237,231,0.9); max-width:440px; white-space:pre-line;
+}
+#vision-tap {
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  color:rgba(143,201,180,0.4); margin-top:10px;
+}
+
 /* ── STATUTS de combat ───────────────────────────────────────── */
 #cb-status-row {
   width:100%; padding:4px 16px 0;
@@ -3838,6 +3865,7 @@ canvas#particles {
         <div id="npc-btns">
           <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
           <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
+          <button id="npc-btn-daily" onclick="Quests.openDaily()" style="display:none" data-i18n="npc.daily.btn">💎 Voir les commissions du jour</button>
           <button id="npc-btn-smalltalk" onclick="Quests.smalltalk()" data-i18n="npc.smalltalk.btn">💬 Comment vas-tu ?</button>
           <button id="npc-btn-main" onclick="Quests.backToMain()" style="display:none" data-i18n="npc.main.btn">📜 As-tu des quêtes ?</button>
           <button onclick="Quests.close()" data-i18n="quest.close">👋 Au revoir</button>
@@ -3905,6 +3933,11 @@ canvas#particles {
       <div class="npc-hotspot" id="npc-elise" onclick="Quests.openNpc('elise')" style="position:absolute;top:44%;left:78%">
         <div class="npc-avatar"></div>
         <div class="npc-name-tag" data-i18n="npc.elise">Sœur Élise</div>
+      </div>
+      <!-- NPC: Josselin, le coursier (commissions du jour) -->
+      <div class="npc-hotspot" id="npc-josselin" onclick="Quests.openNpc('josselin')" style="position:absolute;top:80%;left:50%">
+        <div class="npc-avatar"></div>
+        <div class="npc-name-tag" data-i18n="npc.josselin">Josselin</div>
       </div>
       <!-- hotspot taverne -->
       <div class="hotspot" id="hs-town-taverne" onclick="Nav.go('taverne-screen')">
@@ -4091,6 +4124,14 @@ canvas#particles {
       <div id="ft-num">II</div>
       <div id="ft-sub">Les ténèbres s'épaississent...</div>
       <div id="ft-memory"></div>
+    </div>
+
+    <!-- Vision narrative (souvenirs fragmentés — Prologue, fin d'Actes I/II/III) -->
+    <div id="vision-overlay" onclick="Story.dismissVision()">
+      <div id="vision-symbol">✧</div>
+      <div id="vision-label">Vision</div>
+      <div id="vision-text"></div>
+      <div id="vision-tap">touche pour continuer</div>
     </div>
 
     <!-- ── HUB TAB BAR (global, persistent nav across town/inn/region/perso) ── -->
@@ -5052,6 +5093,8 @@ var ProfilesScreen = {
     else { State.manaMax = 0; State.mana = 0; }
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
+    // Première nuit à L'Écu Brisé — le sommeil apporte un premier fragment de mémoire.
+    setTimeout(function(){ if (typeof Story !== 'undefined') Story.showVision('vision1'); }, 1400);
   },
 
   openExport: function(id) {
@@ -5531,12 +5574,14 @@ var STRINGS = {
     'npc.corvin': 'Maître Corvin',
     'npc.conseiller': 'Le Conseiller',
     'npc.duc': 'Duc Wulfric',
+    'npc.josselin': 'Josselin',
     // Quest UI
     'quest.accept': 'Accepter la quête',
     'quest.claim': 'Réclamer la récompense',
     'quest.close': '👋 Au revoir',
     'npc.smalltalk.btn': '💬 Comment vas-tu ?',
     'npc.main.btn': '📜 As-tu des quêtes ?',
+    'npc.daily.btn': '💎 Voir les commissions du jour',
     'quest.inprogress': 'En cours : ',
     'quest.reward': 'Récompense : ',
     'final.prompt': '— Tu tiens le cristal de Séraphine. Devant toi, l\'autel. En dessous, le sceau. Et la voix du Dieu de la Mémoire, patiente.\n\n« Tu sais déjà ce que tu es venu faire. Choisis. »',
@@ -5982,12 +6027,14 @@ var STRINGS = {
     'npc.corvin': 'Master-at-Arms Corvin',
     'npc.conseiller': 'The Counsellor',
     'npc.duc': 'Duke Wulfric',
+    'npc.josselin': 'Josselin',
     // Quest UI
     'quest.accept': 'Accept quest',
     'quest.claim': 'Claim reward',
     'quest.close': '👋 Goodbye',
     'npc.smalltalk.btn': '💬 How are you?',
     'npc.main.btn': '📜 Any quests?',
+    'npc.daily.btn': '💎 See today\'s commissions',
     'quest.inprogress': 'In progress: ',
     'quest.reward': 'Reward: ',
     'final.prompt': '— You hold Séraphine\'s crystal. Before you, the altar. Beneath it, the seal. And the voice of the God of Memory, patient.\n\n"You already know what you came to do. Choose."',
@@ -8580,6 +8627,36 @@ var RunMods = (function(){
   };
 })();
 
+// ── VISIONS (souvenirs fragmentés du massacre fondateur — Prologue, fin d'Actes) ──
+var Story = (function(){
+  var VISIONS = {
+    vision1: {
+      symbol: '✧',
+      label: 'Vision I — Fragment', labelEn: 'Vision I — Fragment',
+      text: 'Le feu prend aux reliures avant qu\'on ait fini de les descendre.\nQuelqu\'un compte à voix haute — trois cent... quatre cent... — comme si le nombre exact changeait quelque chose.\nUne main referme une porte que personne ne rouvrira.',
+      textEn: 'The fire catches the bindings before they finish carrying them down.\nSomeone counts aloud — three hundred... four hundred... — as if the exact number changed anything.\nA hand closes a door no one will ever reopen.'
+    }
+  };
+
+  return {
+    showVision: function(key) {
+      var flags = Meta.storyFlags || (Meta.storyFlags = {});
+      if (flags[key]) return;
+      var v = VISIONS[key]; if (!v) return;
+      document.getElementById('vision-symbol').textContent = v.symbol;
+      document.getElementById('vision-label').textContent = CGE_LANG==='en' ? v.labelEn : v.label;
+      document.getElementById('vision-text').textContent = CGE_LANG==='en' ? v.textEn : v.text;
+      document.getElementById('vision-tap').textContent = CGE_LANG==='en' ? 'tap to continue' : 'touche pour continuer';
+      document.getElementById('vision-overlay').classList.add('show');
+      flags[key] = true;
+      Meta.save();
+    },
+    dismissVision: function() {
+      document.getElementById('vision-overlay').classList.remove('show');
+    }
+  };
+})();
+
 // ── STORY QUESTS (débloquées uniquement via PNJ / déclencheurs) ────
 var QUEST_DEFS = [
 
@@ -9262,8 +9339,24 @@ var NPC_DATA = {
   },
   seraphine: {
     name:'Séraphine',
-    smalltalk:'"*sans lever les yeux de son grimoire*\nLe temps n\'a pas vraiment de prise sur moi. Mais merci de demander."',
-    smalltalkEn:'"*without looking up from her grimoire*\nTime doesn\'t really hold much sway over me. But thank you for asking."',
+    smalltalk: function() {
+      var done = Meta.completedQuests||{};
+      var flags = Meta.storyFlags||{};
+      if (done['seraphine_1'] && !done['seraphine_2'] && !flags.seraphine_hint) {
+        flags.seraphine_hint = true; Meta.save();
+        return '"*elle hésite, puis referme son grimoire à moitié*\nIl y a... ceux qui gardent. Je ne peux pas t\'en dire plus pour l\'instant. Mais sache que tu n\'es pas seul à t\'intéresser à ce sceau."';
+      }
+      return '"*sans lever les yeux de son grimoire*\nLe temps n\'a pas vraiment de prise sur moi. Mais merci de demander."';
+    },
+    smalltalkEn: function() {
+      var done = Meta.completedQuests||{};
+      var flags = Meta.storyFlags||{};
+      if (done['seraphine_1'] && !done['seraphine_2'] && !flags.seraphine_hint) {
+        flags.seraphine_hint = true; Meta.save();
+        return '"*she hesitates, then half-closes her grimoire*\nThere are... those who keep watch. I can\'t say more for now. But know you are not the only one interested in that seal."';
+      }
+      return '"*without looking up from her grimoire*\nTime doesn\'t really hold much sway over me. But thank you for asking."';
+    },
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
@@ -9339,8 +9432,24 @@ var NPC_DATA = {
   },
   aldric: {
     name:'Capitaine Aldric',
-    smalltalk:'"En forme. La garnison me tient occupé, mais c\'est ainsi qu\'on la préfère."',
-    smalltalkEn:'"In good form. The garrison keeps me busy, but that\'s how we like it."',
+    smalltalk: function() {
+      var done = Meta.completedQuests||{};
+      var flags = Meta.storyFlags||{};
+      if (done['marta_debt'] && !flags.aldric_hint) {
+        flags.aldric_hint = true; Meta.save();
+        return '"Le Château s\'intéresse plus que d\'habitude aux nouveaux venus, ces derniers temps. Surtout ceux qui ont... un certain regard."\nIl vous étudie un instant de trop, puis se détourne.';
+      }
+      return '"En forme. La garnison me tient occupé, mais c\'est ainsi qu\'on la préfère."';
+    },
+    smalltalkEn: function() {
+      var done = Meta.completedQuests||{};
+      var flags = Meta.storyFlags||{};
+      if (done['marta_debt'] && !flags.aldric_hint) {
+        flags.aldric_hint = true; Meta.save();
+        return '"The Château has taken more interest than usual in newcomers, these days. Especially those with... a certain look about them."\nHe studies you a moment too long, then looks away.';
+      }
+      return '"In good form. The garrison keeps me busy, but that\'s how we like it."';
+    },
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var cls = State.cls||'Guerrier';
@@ -9448,6 +9557,17 @@ var NPC_DATA = {
       return '"Warlord."\n\nHe rises from his throne.\n\n"This town — and this Castle — are now under your watch as much as mine. Carry that title with the weight it deserves."';
     }
   },
+  josselin: {
+    name:'Josselin',
+    smalltalk:'"*ajuste son sac plein de messages*\nToujours entre deux courses, moi. Mais j\'ai toujours une minute pour un habitué."',
+    smalltalkEn:'"*adjusts his bag full of messages*\nAlways between two errands, me. But I always have a minute for a regular."',
+    dialogue: function() {
+      return '"Ah, te revoilà !"\nJosselin sort un petit carnet corné de sa poche.\n"J\'ai toujours quelques commissions qui traînent — rien d\'aussi grand que ce que te demandent Bertrand ou Séraphine, mais ça paie en gemmes, et ça se renouvelle chaque jour."';
+    },
+    dialogueEn: function() {
+      return '"Ah, there you are again!"\nJosselin pulls a dog-eared little notebook from his pocket.\n"I always have a few odd jobs lying around — nothing as grand as what Bertrand or Séraphine ask of you, but they pay in gems, and there\'s a fresh batch every day."';
+    }
+  },
 };
 
 var Quests = (function(){
@@ -9534,6 +9654,7 @@ var Quests = (function(){
       var isFinalMoment = document.getElementById('npc-final-choice').style.display !== 'none';
       document.getElementById('npc-btn-smalltalk').style.display = isFinalMoment ? 'none' : '';
       document.getElementById('npc-btn-main').style.display = 'none';
+      document.getElementById('npc-btn-daily').style.display = (npc === 'josselin') ? '' : 'none';
 
       var ov = document.getElementById('npc-overlay');
       ov.style.display = 'flex';
@@ -9543,7 +9664,8 @@ var Quests = (function(){
     smalltalk: function() {
       if (!_currentNpc) return;
       var nd = NPC_DATA[_currentNpc];
-      var line = (CGE_LANG==='en' && nd.smalltalkEn) ? nd.smalltalkEn : (nd.smalltalk || '');
+      var raw = (CGE_LANG==='en' && nd.smalltalkEn) ? nd.smalltalkEn : (nd.smalltalk || '');
+      var line = typeof raw === 'function' ? raw() : raw;
       document.getElementById('npc-speech').textContent = line;
       document.getElementById('npc-btn-smalltalk').style.display = 'none';
       document.getElementById('npc-btn-main').style.display = '';
@@ -9603,6 +9725,11 @@ var Quests = (function(){
     close: function() {
       var ov = document.getElementById('npc-overlay');
       ov.style.display = 'none';
+    },
+    openDaily: function() {
+      Quests.close();
+      if (typeof HUD !== 'undefined' && HUD.showQuests) HUD.showQuests();
+      if (typeof DailyQuests !== 'undefined' && DailyQuests.renderInModal) DailyQuests.renderInModal();
     },
     refreshBadges: function() {
       var cont = document.getElementById('tav-quest-badges');
@@ -9784,6 +9911,7 @@ var Meta = {
   gems: 0,
   shopStock: {},      // { forge:[SHOP_POOL indices], armurerie:[...], couturier:[...], bijoutier:[...], eglise:[...] }
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
+  storyFlags: {},     // one-off narrative beats seen (Aldric's hint, visions, etc.) — { key: true }
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
   load: function() {
@@ -9812,6 +9940,7 @@ var Meta = {
       Meta.gems            = d.gems||0;
       Meta.shopStock       = d.shopStock||{};
       Meta.dailyQuests     = d.dailyQuests||{};
+      Meta.storyFlags      = d.storyFlags||{};
     } catch(e){}
   },
 
@@ -9839,6 +9968,7 @@ var Meta = {
       gems:           Meta.gems,
       shopStock:      Meta.shopStock,
       dailyQuests:    Meta.dailyQuests,
+      storyFlags:     Meta.storyFlags,
     };
     localStorage.setItem('cge_meta', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
