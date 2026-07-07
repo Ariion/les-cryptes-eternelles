@@ -5238,9 +5238,9 @@ var StoryIntro = (function(){
 
   var SCENES = [
     // 0 — Éveil
-    { type:'auto', delay:2800,
-      lines:['Noir.','Absolument tout est noir.','Puis... une sensation.'],
-      linesEn:['Black.','Absolutely everything is black.','Then... a sensation.'] },
+    { type:'auto', delay:1100,
+      lines:['Noir.','Puis... une sensation.'],
+      linesEn:['Black.','Then... a sensation.'] },
     // 1 — Première sensation
     { type:'choice',
       lines:['La première chose que tu ressens...'],
@@ -5253,26 +5253,22 @@ var StoryIntro = (function(){
     },
     // 2 — Une voix
     { type:'choice',
-      lines:['Une voix. Lointaine.', 'Elle parle de toi.'],
-      linesEn:['A voice. Distant.', 'It speaks of you.'],
+      lines:['Une voix lointaine. Elle parle de toi.'],
+      linesEn:['A distant voice. It speaks of you.'],
       choices:[
         { text:'"Il respire encore."', textEn:'"He still breathes."', key:'voice', val:'survivor' },
         { text:'"Par les dieux... réveille-toi."', textEn:'"By the gods... wake up."', key:'voice', val:'divine' },
         { text:'"Quelqu\'un l\'a trouvé."', textEn:'"Someone found him."', key:'voice', val:'found' }
       ]
     },
-    // 3 — La lumière
-    { type:'auto', delay:3000,
-      lines:['La lumière arrive.','Brutalement.','Un plafond de bois. Une bougie vacillante.','Tu ne reconnais rien.'],
-      linesEn:['The light comes.','Brutally.','A wooden ceiling. A flickering candle.','You recognize nothing.'] },
-    // 4 — Le vide
-    { type:'auto', delay:2200,
-      lines:['Tu cherches quelque chose.','Un nom.','Il n\'est pas là.'],
-      linesEn:['You search for something.','A name.','It is not there.'] },
-    // 5 — Race
+    // 3 — La lumière / le vide
+    { type:'auto', delay:1100,
+      lines:['La lumière arrive, brutale.','Un plafond de bois. Tu ne reconnais rien.','Tu cherches un nom. Il n\'est pas là.'],
+      linesEn:['The light comes, brutal.','A wooden ceiling. You recognize nothing.','You search for a name. It is not there.'] },
+    // 4 — Race
     { type:'choice',
-      lines:['Dans le brouillard de ton esprit...','Une forme. La tienne ?'],
-      linesEn:['In the fog of your mind...','A shape. Yours?'],
+      lines:['Une forme se dessine. La tienne ?'],
+      linesEn:['A shape takes form. Yours?'],
       choices:[
         { text:'Massive. Rugueuse. Taillée dans la pierre.', textEn:'Massive. Rugged. Carved from stone.', key:'race', val:'Nain' },
         { text:'Fine. Presque transparente. Faite pour disparaître.', textEn:'Slender. Almost transparent. Made to vanish.', key:'race', val:'Elfe' },
@@ -5280,10 +5276,10 @@ var StoryIntro = (function(){
         { text:'Ordinaire. Mais tes yeux — ils observent tout.', textEn:'Ordinary. But your eyes — they see everything.', key:'race', val:'Humain' }
       ]
     },
-    // 6 — Classe
+    // 5 — Classe
     { type:'choice',
-      lines:['Un instinct remonte.','Quelque chose que ton corps sait faire.'],
-      linesEn:['An instinct surfaces.','Something your body knows how to do.'],
+      lines:['Un instinct remonte en toi.'],
+      linesEn:['An instinct surfaces in you.'],
       choices:[
         { text:'Tes mains cherchent une lame. C\'est un réflexe.', textEn:'Your hands reach for a blade. It\'s a reflex.', key:'cls', val:'Guerrier' },
         { text:'Des mots étranges murmurent dans ta tête. Du feu.', textEn:'Strange words whisper in your head. Fire.', key:'cls', val:'Mage' },
@@ -5293,24 +5289,20 @@ var StoryIntro = (function(){
         { text:'Tu souffres. Et tu souris. Ça ne s\'arrête pas.', textEn:'You suffer. And you smile. It never stops.', key:'cls', val:'Barbare' }
       ]
     },
-    // 7 — Nom
+    // 6 — Nom
     { type:'input',
-      lines:['Un mot remonte. Juste un.','Comment t\'appelle-t-on ?'],
-      linesEn:['One word surfaces. Just one.','What are you called?'] },
-    // 8 — Marta (fin)
-    { type:'auto', delay:4200, finish:true,
+      lines:['Comment t\'appelle-t-on ?'],
+      linesEn:['What are you called?'] },
+    // 7 — Marta (fin)
+    { type:'auto', delay:1400, finish:true,
       lines:[
-        'Soudain — une voix dans la pièce.',
-        'Réelle, cette fois.',
+        'Une voix, dans la pièce. Réelle, cette fois.',
         '"Enfin réveillé ? Vous avez dormi trois jours."',
-        'Une femme dans l\'embrasure de la porte.',
         '"Je suis Marta. Et vous me devez de l\'argent."'
       ],
       linesEn:[
-        'Suddenly — a voice in the room.',
-        'Real, this time.',
+        'A voice, in the room. Real, this time.',
         '"Awake at last? You slept for three days."',
-        'A woman in the doorway.',
         '"I am Marta. And you owe me money."'
       ]
     }
@@ -5338,9 +5330,9 @@ var StoryIntro = (function(){
       t.appendChild(sp);
       requestAnimationFrame(function(){ requestAnimationFrame(function(){
         sp.classList.add('vis');
-        // Delay based on length: short = 1s, long = 1.8s
-        var wait = Math.min(1800, Math.max(1000, line.length * 35));
-        setTimeout(next, wait + 300);
+        // Delay based on length: short = 0.65s, long = 1.3s
+        var wait = Math.min(1300, Math.max(650, line.length * 22));
+        setTimeout(next, wait + 150);
       }); });
     }
     next();
