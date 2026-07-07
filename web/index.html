@@ -1772,6 +1772,46 @@ canvas#particles {
   color:rgba(143,201,180,0.4); margin-top:10px;
 }
 
+/* ── TUTORIEL GUIDÉ (voix off + verrouillage de boutons) ── */
+#tutorial-banner {
+  position:fixed; top:64px; left:12px; right:12px; z-index:850;
+  display:none; align-items:center; gap:10px;
+  background:rgba(10,14,12,0.92); border:1px solid rgba(143,201,180,0.35);
+  border-left:3px solid #6f9c8b; border-radius:8px; padding:11px 14px;
+  box-shadow:0 8px 24px -10px rgba(0,0,0,0.7);
+}
+#tutorial-ico { font-size:18px; flex-shrink:0; }
+#tutorial-text {
+  flex:1; font-family:'Crimson Text',serif; font-style:italic; font-size:13.5px;
+  line-height:1.4; color:rgba(232,237,231,0.92);
+}
+#tutorial-skip {
+  flex-shrink:0; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1.5px; text-transform:uppercase;
+  color:rgba(143,201,180,0.5); padding:6px 8px; cursor:pointer; white-space:nowrap;
+}
+#tutorial-skip:active { color:rgba(143,201,180,0.9); }
+
+body.tutorial-locked #hub-tabbar,
+body.tutorial-locked #gh-btn-menu,
+body.tutorial-locked #gh-btn-quests,
+body.tutorial-locked #gh-btn-carnet { display:none !important; }
+body.tutorial-locked .screen.active .hotspot,
+body.tutorial-locked .screen.active .npc-hotspot {
+  pointer-events:none; opacity:0.25; filter:grayscale(0.7);
+  transition:opacity 0.3s ease, filter 0.3s ease;
+}
+body.tutorial-locked .screen.active .tut-allow {
+  pointer-events:all !important; opacity:1 !important; filter:none !important;
+}
+body.tutorial-locked .screen.active .tut-allow .hs-ring::before,
+body.tutorial-locked .screen.active .tut-allow .npc-avatar {
+  animation:tut-glow 1.3s ease-in-out infinite;
+}
+@keyframes tut-glow {
+  0%,100% { box-shadow:0 0 0 4px rgba(111,156,139,0.25), 0 0 12px rgba(111,156,139,0.5); }
+  50%     { box-shadow:0 0 0 9px rgba(111,156,139,0.08), 0 0 24px rgba(111,156,139,0.9); }
+}
+
 /* ── STATUTS de combat ───────────────────────────────────────── */
 #cb-status-row {
   width:100%; padding:4px 16px 0;
@@ -4134,6 +4174,13 @@ canvas#particles {
       <div id="vision-tap">touche pour continuer</div>
     </div>
 
+    <!-- Bannière tutoriel (voix off du héros) -->
+    <div id="tutorial-banner" style="display:none">
+      <div id="tutorial-ico">💭</div>
+      <div id="tutorial-text"></div>
+      <div id="tutorial-skip" onclick="Tutorial.confirmSkip()">passer</div>
+    </div>
+
     <!-- ── HUB TAB BAR (global, persistent nav across town/inn/region/perso) ── -->
     <div id="hub-tabbar">
       <div class="hub-tab" data-hub="auberge" onclick="HubNav.go('auberge')">
@@ -5467,6 +5514,10 @@ var STRINGS = {
     'tuto.map.body': 'Touche un nœud accessible (en surbrillance) pour avancer.\n\nLes salles sont cachées : ⚔ ennemi, 🔥 repos, 🛒 boutique, ❓ mystère, ⚠ piège.\nUn 🔥 feu de camp apparaît toujours juste avant le ☠ boss.\n\nChoisis bien ton chemin — chaque nœud compte !',
     'tuto.combat.title': '⚔ Le combat',
     'tuto.combat.body': 'À ton tour, choisis une action :\n\n⚔ Attaquer — inflige des dégâts.\n🛡 Défendre — réduit les dégâts du prochain coup.\n✨ Compétence — pouvoir spécial de ta classe.\n🧪 Potion — restaure tes PV.\n🎒 Sac — utilise un objet.\n🏃 Fuir — tente de quitter le combat (risqué).',
+    'tuto.equip.title': '⚔ Ton équipement',
+    'tuto.equip.body': 'Chaque emplacement peut recevoir une pièce d\'équipement trouvée en donjon.\nTouche un emplacement pour voir ce que tu portes, le comparer, ou l\'échanger contre un objet de ton coffre.',
+    'tuto.talents.title': '🌟 L\'arbre de talents',
+    'tuto.talents.body': 'En montant de niveau, tu gagnes des points de talent.\nDépense-les ici pour renforcer ta classe ou ta race — chaque nœud débloque le suivant.',
     'passage.label': 'PASSAGE OBSCUR',
     'passage.sub': 'Le mur du fond a toujours été là.',
     'passage.text': 'Tu as déjà été ici. Des dizaines de fois peut-être.\n\nMais aujourd\'hui quelque chose a changé.\n\nLa pierre du fond vibre légèrement. Une fissure. Longue d\'un doigt.\n\nTu la touches.\n\nEt le mur s\'ouvre.',
@@ -5920,6 +5971,10 @@ var STRINGS = {
     'tuto.map.body': 'Tap a highlighted node to advance.\n\nRooms are hidden: ⚔ enemy, 🔥 rest, 🛒 shop, ❓ mystery, ⚠ trap.\nA 🔥 campfire always appears right before the ☠ boss.\n\nChoose your path wisely — every node counts!',
     'tuto.combat.title': '⚔ Combat',
     'tuto.combat.body': 'On your turn, choose an action:\n\n⚔ Attack — deal damage.\n🛡 Defend — reduce the next hit.\n✨ Skill — your class\'s special power.\n🧪 Potion — restore HP.\n🎒 Bag — use an item.\n🏃 Flee — try to leave the fight (risky).',
+    'tuto.equip.title': '⚔ Your equipment',
+    'tuto.equip.body': 'Each slot can hold a piece of gear found in the dungeons.\nTap a slot to see what you\'re wearing, compare it, or swap it for something from your chest.',
+    'tuto.talents.title': '🌟 The talent tree',
+    'tuto.talents.body': 'Leveling up grants talent points.\nSpend them here to strengthen your class or race — each node unlocks the next.',
     'passage.label': 'HIDDEN PASSAGE',
     'passage.sub': 'The far wall has always been there.',
     'passage.text': 'You\'ve been here before. Dozens of times perhaps.\n\nBut today something has changed.\n\nThe far stone vibrates slightly. A crack. A finger\'s width long.\n\nYou touch it.\n\nAnd the wall opens.',
@@ -6303,6 +6358,7 @@ var Nav = {
     var prev = Nav.current;
     if (prev === id) return;
     Nav.current = id;
+    if (typeof Tutorial !== 'undefined') Tutorial.notifyNav(id);
     if (typeof HUD !== 'undefined') { HUD.update(id); HUD.updateGold(); }
     if (typeof HubNav !== 'undefined') HubNav.update(id);
     // Auto-save à chaque changement d'écran si un run est actif
@@ -8478,6 +8534,10 @@ var TalentsScreen = (function(){
     Talents.syncSkillPoints();
     Nav.go('talents-screen');
     render();
+    if (!Meta.tutoTalents) {
+      Meta.tutoTalents = true; Meta.save();
+      setTimeout(function(){ CGEModal.alert(T('tuto.talents.title'), T('tuto.talents.body')); }, 400);
+    }
   }
 
   function close() { Nav.go(_from); }
@@ -8527,6 +8587,7 @@ function gainXP(amount) {
     else State.skillPointsRace = (State.skillPointsRace||0) + 1;
     triggerLevelUp();
     if (typeof Achievements !== 'undefined') Achievements.check('level');
+    if (typeof Tutorial !== 'undefined') Tutorial.maybeFinishAtLevel(State.level);
   }
 }
 
@@ -8638,6 +8699,8 @@ var Story = (function(){
     }
   };
 
+  var _lastVision = null;
+
   return {
     showVision: function(key) {
       var flags = Meta.storyFlags || (Meta.storyFlags = {});
@@ -8648,12 +8711,149 @@ var Story = (function(){
       document.getElementById('vision-text').textContent = CGE_LANG==='en' ? v.textEn : v.text;
       document.getElementById('vision-tap').textContent = CGE_LANG==='en' ? 'tap to continue' : 'touche pour continuer';
       document.getElementById('vision-overlay').classList.add('show');
+      _lastVision = key;
       flags[key] = true;
       Meta.save();
     },
     dismissVision: function() {
       document.getElementById('vision-overlay').classList.remove('show');
+      // Vision I referme le rideau sur le réveil — c'est le bon moment pour
+      // proposer le tutoriel guidé, avant que le joueur n'aille cliquer partout.
+      if (_lastVision === 'vision1' && typeof Tutorial !== 'undefined') {
+        setTimeout(function(){ Tutorial.maybeStart(); }, 500);
+      }
+      _lastVision = null;
     }
+  };
+})();
+
+// ── TUTORIEL GUIDÉ (voix off du héros, du réveil jusqu'au niveau 2) ──
+var Tutorial = (function(){
+  // Portion stricte : un seul élément cliquable à la fois, le reste grisé.
+  // S'arrête au tout premier départ à l'aventure — ce qui suit (combat, butin,
+  // remboursement de Marta, équipement, talents) ne peut pas être verrouillé
+  // de la même façon sans bloquer la boucle de jeu normale (il faut d'abord
+  // gagner de l'or en jouant), donc c'est géré via des indices ponctuels.
+  var STEPS = [
+    { id:'marta', allow:['npc-marta'],
+      text:'Cette femme... elle dit s\'appeler Marta. Je devrais lui parler.',
+      textEn:'This woman... she says her name is Marta. I should speak with her.' },
+    { id:'town', allow:['hs-inn-town'],
+      text:'Elle parle d\'une taverne, en face, où des gens m\'attendraient. Je devrais aller en ville.',
+      textEn:'She speaks of a tavern, across the way, where people are apparently waiting for me. I should go into town.' },
+    { id:'taverne', allow:['hs-town-taverne'],
+      text:'La taverne devrait être quelque part par ici.',
+      textEn:'The tavern should be around here somewhere.' },
+    { id:'bertrand', allow:['npc-bertrand'],
+      text:'Cherchons l\'aubergiste.',
+      textEn:'Let\'s find the innkeeper.' },
+    { id:'oswin', allow:['npc-oswin'],
+      text:'Ce barde... il semble aussi me connaître.',
+      textEn:'This bard... he also seems to know me.' },
+    { id:'seraphine', allow:['npc-seraphine'],
+      text:'Et cette mage, là-bas — je devrais aussi lui parler.',
+      textEn:'And that mage, over there — I should speak with her too.' },
+    { id:'adventure', allow:['hs-town-adventure','hs-inn-window'],
+      text:'Il est temps de sortir de cette ville et de découvrir ce qui m\'attend dehors.',
+      textEn:'Time to leave this town and discover what awaits out there.' },
+  ];
+
+  var _idx = -1;
+
+  function _isGated() { return _idx >= 0 && _idx < STEPS.length; }
+
+  function _applyGate() {
+    document.querySelectorAll('.tut-allow').forEach(function(el){ el.classList.remove('tut-allow'); });
+    document.body.classList.toggle('tutorial-locked', _isGated());
+    if (!_isGated()) { document.getElementById('tutorial-banner').style.display = 'none'; return; }
+    var step = STEPS[_idx];
+    step.allow.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.add('tut-allow');
+    });
+    var bar = document.getElementById('tutorial-banner');
+    document.getElementById('tutorial-text').textContent = CGE_LANG==='en' ? step.textEn : step.text;
+    bar.style.display = 'flex';
+  }
+
+  function _finishGated() {
+    _idx = STEPS.length;
+    document.body.classList.remove('tutorial-locked');
+    document.getElementById('tutorial-banner').style.display = 'none';
+    Meta.tutorialPhase = 'freeplay';
+    Meta.save();
+  }
+
+  function _advance(stepId) {
+    if (!_isGated() || STEPS[_idx].id !== stepId) return;
+    _idx++;
+    if (_idx >= STEPS.length) { _finishGated(); return; }
+    _applyGate();
+  }
+
+  return {
+    // Appelé une fois, juste après la Vision I d'un tout nouveau personnage.
+    maybeStart: function() {
+      if (Meta.tutorialPhase) return; // déjà répondu (suivi, sauté, ou terminé) sur ce profil
+      CGEModal.show({
+        title: CGE_LANG==='en' ? 'Follow a guided tutorial?' : 'Suivre un tutoriel guidé ?',
+        text: CGE_LANG==='en'
+          ? 'I can guide your very first steps — who to talk to, where to go — up until you reach level 2. You can skip it if you already know the game.'
+          : 'Je peux te guider pour tes tout premiers pas — qui voir, où aller — jusqu\'au niveau 2. Tu peux le sauter si tu connais déjà le jeu.',
+        okLabel: CGE_LANG==='en' ? 'Guide me' : 'Guide-moi',
+        cancelLabel: CGE_LANG==='en' ? 'Skip' : 'Passer',
+        onOk: function() {
+          Meta.tutorialPhase = 'gated';
+          Meta.save();
+          _idx = 0;
+          _applyGate();
+        },
+        onCancel: function() {
+          Meta.tutorialPhase = 'skipped';
+          Meta.save();
+        }
+      });
+    },
+    confirmSkip: function() {
+      if (!_isGated()) return;
+      CGEModal.show({
+        title: CGE_LANG==='en' ? 'Skip the tutorial?' : 'Passer le tutoriel ?',
+        text: CGE_LANG==='en' ? 'You can\'t resume it afterwards.' : 'Tu ne pourras plus le reprendre ensuite.',
+        okLabel: CGE_LANG==='en' ? 'Skip' : 'Passer',
+        cancelLabel: CGE_LANG==='en' ? 'Keep going' : 'Continuer',
+        onOk: function() {
+          Meta.tutorialPhase = 'skipped';
+          Meta.save();
+          _finishGated();
+        },
+        onCancel: function(){}
+      });
+    },
+    notifyNpc: function(npcId) {
+      var map = { marta:'marta', bertrand:'bertrand', oswin:'oswin', seraphine:'seraphine' };
+      if (map[npcId]) _advance(map[npcId]);
+    },
+    notifyNav: function(screenId) {
+      if (screenId === 'town-screen') _advance('town');
+      else if (screenId === 'taverne-screen') _advance('taverne');
+      else if (screenId === 'world-map') _advance('adventure');
+    },
+    isGatedNow: _isGated,
+    // Le tutoriel se referme au niveau 2 — dernier mot, sans verrouiller quoi que ce soit.
+    maybeFinishAtLevel: function(level) {
+      if (Meta.tutorialPhase !== 'freeplay' || level < 2) return;
+      Meta.tutorialPhase = 'done';
+      Meta.save();
+      setTimeout(function(){
+        var bar = document.getElementById('tutorial-banner');
+        document.getElementById('tutorial-skip').style.display = 'none';
+        document.getElementById('tutorial-text').textContent = CGE_LANG==='en'
+          ? 'I\'m starting to know who I am. The rest, I\'ll find out along the way.'
+          : 'Je commence à savoir qui je suis. Le reste, je le découvrirai en chemin.';
+        bar.style.display = 'flex';
+        setTimeout(function(){ bar.style.display = 'none'; }, 6000);
+      }, 3200);
+    },
   };
 })();
 
@@ -9590,6 +9790,7 @@ var Quests = (function(){
     openNpc: function(npc) {
       _currentNpc = npc;
       _currentQuest = null;
+      if (typeof Tutorial !== 'undefined') Tutorial.notifyNpc(npc);
       var nd = NPC_DATA[npc];
       document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
       document.getElementById('npc-btn-accept').style.display  = 'none';
@@ -9907,11 +10108,14 @@ var Meta = {
   achievements: {},
   tutoMap: false,
   tutoCombat: false,
+  tutoEquip: false,
+  tutoTalents: false,
   chest: [],          // persistent cross-run storage (max 20 items)
   gems: 0,
   shopStock: {},      // { forge:[SHOP_POOL indices], armurerie:[...], couturier:[...], bijoutier:[...], eglise:[...] }
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
   storyFlags: {},     // one-off narrative beats seen (Aldric's hint, visions, etc.) — { key: true }
+  tutorialPhase: null, // null=not yet asked, 'gated'|'freeplay'|'skipped'|'done'
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
 
   load: function() {
@@ -9937,10 +10141,13 @@ var Meta = {
       Meta.achievements    = d.achievements||{};
       Meta.tutoMap         = d.tutoMap||false;
       Meta.tutoCombat      = d.tutoCombat||false;
+      Meta.tutoEquip       = d.tutoEquip||false;
+      Meta.tutoTalents     = d.tutoTalents||false;
       Meta.gems            = d.gems||0;
       Meta.shopStock       = d.shopStock||{};
       Meta.dailyQuests     = d.dailyQuests||{};
       Meta.storyFlags      = d.storyFlags||{};
+      Meta.tutorialPhase   = d.tutorialPhase||null;
     } catch(e){}
   },
 
@@ -9965,10 +10172,13 @@ var Meta = {
       achievements:   Meta.achievements,
       tutoMap:        Meta.tutoMap,
       tutoCombat:     Meta.tutoCombat,
+      tutoEquip:      Meta.tutoEquip,
+      tutoTalents:    Meta.tutoTalents,
       gems:           Meta.gems,
       shopStock:      Meta.shopStock,
       dailyQuests:    Meta.dailyQuests,
       storyFlags:     Meta.storyFlags,
+      tutorialPhase:  Meta.tutorialPhase,
     };
     localStorage.setItem('cge_meta', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(data, undefined);
@@ -11642,6 +11852,10 @@ var EquipScreen = (function() {
       State._heroFrom = _from;
       _refreshSlots();
       Nav.go('hero-screen');
+      if (!Meta.tutoEquip) {
+        Meta.tutoEquip = true; Meta.save();
+        setTimeout(function(){ CGEModal.alert(T('tuto.equip.title'), T('tuto.equip.body')); }, 400);
+      }
     },
     close: function() {
       closeDetail();
