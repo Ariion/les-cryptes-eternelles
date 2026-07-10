@@ -430,10 +430,10 @@ canvas#particles {
 
 /* ── NOM HÉROS ───────────────────────────────────────────────── */
 #cs-name-wrap {
-  display:flex; flex-direction:column; gap:4px; flex-shrink:0;
+  display:flex; flex-direction:row; align-items:center; gap:8px; flex-shrink:0;
 }
 #cs-name-input {
-  width:100%; height:44px; border-radius:10px;
+  flex:1; min-width:0; height:44px; border-radius:10px;
   background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.3);
   color:#EDE8DF; font-family:'Cinzel',serif; font-size:14px; font-weight:600;
   padding:0 14px; outline:none; letter-spacing:1px;
@@ -441,6 +441,14 @@ canvas#particles {
 }
 #cs-name-input:focus { border-color:#C9A550; background:rgba(201,165,80,0.06); }
 #cs-name-input::placeholder { color:rgba(201,165,80,0.25); font-style:italic; font-family:'Crimson Text',serif; font-size:13px; letter-spacing:0; }
+#cs-name-random {
+  flex-shrink:0; width:44px; height:44px; border-radius:10px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.3);
+  color:#C9A550; font-size:19px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+}
+#cs-name-random:active { background:rgba(201,165,80,0.2); transform:scale(0.92) rotate(-12deg); }
 
 /* ── ÉCRAN PROFILS ────────────────────────────────────────────── */
 #profiles-screen {
@@ -1711,13 +1719,24 @@ canvas#particles {
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
 }
 #si-name-wrap.show { opacity:1; pointer-events:all; }
+#si-name-row {
+  width:100%; display:flex; flex-direction:row; align-items:center; gap:10px;
+}
 #si-name-input {
-  width:100%; background:transparent; border:none;
+  flex:1; min-width:0; background:transparent; border:none;
   border-bottom:1px solid rgba(201,165,80,0.35);
   color:#EDE8DF; font-family:'Cinzel',serif; font-size:22px;
   text-align:center; padding:10px 0; outline:none; letter-spacing:3px;
 }
 #si-name-input::placeholder { color:rgba(201,165,80,0.2); font-style:italic; font-family:'Crimson Text',serif; font-size:14px; letter-spacing:1px; }
+#si-name-random {
+  flex-shrink:0; width:40px; height:40px; border-radius:50%;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.35);
+  color:#C9A550; font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+}
+#si-name-random:active { background:rgba(201,165,80,0.2); transform:scale(0.92) rotate(-12deg); }
 #si-name-btn {
   padding:12px 30px; background:transparent;
   border:1px solid rgba(201,165,80,0.3); color:rgba(201,165,80,0.65);
@@ -3290,7 +3309,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="si-text"></div>
       <div id="si-choices"></div>
       <div id="si-name-wrap">
-        <input id="si-name-input" type="text" maxlength="20" placeholder="ton nom..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <div id="si-name-row">
+          <input id="si-name-input" type="text" maxlength="20" placeholder="ton nom..." autocomplete="off" autocorrect="off" spellcheck="false">
+          <button id="si-name-random" type="button" onclick="NameGen.roll('si-name-input')" title="Nom aléatoire" aria-label="Nom aléatoire">🎲</button>
+        </div>
         <button id="si-name-btn" onclick="StoryIntro.confirmName()">C'est mon nom</button>
       </div>
       <button id="si-skip" onclick="StoryIntro.skip()">Passer →</button>
@@ -3311,6 +3333,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div class="cs-section-label">Nom</div>
         <div id="cs-name-wrap">
           <input id="cs-name-input" type="text" maxlength="20" placeholder="Donne un nom à ton héros..." autocomplete="off" autocorrect="off" spellcheck="false">
+          <button id="cs-name-random" type="button" onclick="NameGen.roll('cs-name-input')" title="Nom aléatoire" aria-label="Nom aléatoire">🎲</button>
         </div>
         <div class="cs-section-label">Race</div>
         <div id="race-grid"></div>
@@ -5335,6 +5358,52 @@ function spawnRipple(el, e) {
       Sfx.nav();
     }
   }, {passive:true});
+})();
+
+// ── GÉNÉRATEUR DE NOMS ALÉATOIRES (héroic fantasy) ──────────────────
+var NameGen = (function(){
+  var POOL = [
+    // Humains
+    'Aldric','Cedric','Roland','Gareth','Tristan','Alaric','Baldwin','Percival','Edmund','Godric',
+    'Leoric','Wulfric','Ansel','Bastian','Corvin','Darian','Emeric','Fenwick','Gideon','Harwin',
+    'Ivor','Jareth','Kellan','Lucan','Magnus','Nolan','Osric','Peregrin','Reynard','Silas',
+    'Thane','Ulric','Varric','Wystan','Yorick','Aramis','Draven','Malachai','Cassiel','Torvald',
+    'Elara','Rosalind','Isolde','Guinevere','Adelaide','Beatrix','Cecily','Marguerite','Odalys','Wynne',
+    'Aveline','Briar','Celestine','Delphine','Esme','Faye','Genevieve','Helewise','Ismay','Joslyn',
+    'Kestrel','Liora','Maren','Nerissa','Oriana','Perpetua','Rosamund','Sabine','Thessaly','Una',
+    'Verity','Wilhelmina','Yseult','Elowen','Lyriana','Junipar','Vesper','Sable','Ysolde','Maelys',
+    // Elfes
+    'Aerendyl','Belanor','Caladwen','Duskryn','Elithra','Faelar','Galanor','Haldirion','Ithilwen','Jaelith',
+    'Kaelith','Lirien','Mithrandor','Nienna','Orinthiel','Pelethyl','Quenwyn','Ryalith','Sylvaris','Thalindra',
+    'Vaelis','Wrenithil','Xanthiel','Ylvara','Zaelith','Aranel','Berelith','Celeborn','Dorenil','Erendyl',
+    'Feylin','Halithien','Ilyandra','Jorvyn','Sylandra','Theron','Vaelen','Fenris','Elyndra','Aelowen',
+    // Nains
+    'Borin','Dwalric','Grundak','Thorbek','Fendrik','Kordan','Balgrim','Dornik','Gundren','Harnak',
+    'Ivarr','Jorund','Krogan','Lundor','Malgrim','Norrik','Oddrun','Ragnar','Skarnag','Torvik',
+    'Ulfar','Vandrek','Wyrgan','Zunndar','Brogar','Durgrim','Eldrik','Falrik','Gorhild','Bruniga',
+    // Orcs
+    'Grakthar','Muzgash','Vornukh','Drogath','Skarn','Uzgul','Kranok','Mogthar','Ragash','Thruk',
+    'Vazgor','Ymgash','Zulrak','Bragnor','Grishnak','Karguk','Morzul','Ruzgash','Snagrath','Thokk',
+    'Vulgrath','Yagrok','Zorgash','Kruggash','Narzuk',
+    // Voyous / mages / divers
+    'Kael','Vex','Ryn','Zara','Nyx','Corin','Lash','Vesper','Rook','Shade',
+    'Whisper','Talon','Rune','Onyx','Raven','Vane','Wren','Ash','Zoltar','Hexil',
+    'Ismerelda','Kaldwyn','Grimwald','Nazrael','Morvain','Alderic','Ismerin','Caedmon','Rowena','Selwyn',
+  ];
+  return {
+    random: function() {
+      return POOL[Math.floor(Math.random() * POOL.length)];
+    },
+    roll: function(inputId) {
+      var inp = document.getElementById(inputId);
+      if (!inp) return;
+      var name;
+      do { name = NameGen.random(); } while (name === inp.value && POOL.length > 1);
+      inp.value = name;
+      inp.focus();
+      if (typeof Sfx !== 'undefined' && Sfx.nav) Sfx.nav();
+    }
+  };
 })();
 
 // ── STORY INTRO ────────────────────────────────────────────────────
