@@ -12627,6 +12627,19 @@ var InnRoom = {
       var visionPending = !(Meta.storyFlags && Meta.storyFlags['vision1']);
       if (visionPending) State._martaWelcomePending = true;
       else setTimeout(InnRoom._showMartaWelcome, 600);
+    } else if (!Meta.tutorialPhase) {
+      // Filet de sécurité : sur mobile, la page peut recharger en pleine
+      // séquence d'accueil (mise en arrière-plan, mise à jour du service
+      // worker, mémoire faible...) et perdre les indicateurs volatils
+      // ci-dessus en cours de route, bloquant le tutoriel à "jamais proposé"
+      // pour toujours. On relance la scène là où elle a pu s'interrompre à
+      // chaque nouvelle visite de l'auberge, tant qu'elle n'a pas abouti.
+      if (!(Meta.storyFlags && Meta.storyFlags['vision1'])) {
+        State._martaWelcomePending = true;
+        setTimeout(function(){ if (typeof Story !== 'undefined') Story.showVision('vision1'); }, 700);
+      } else {
+        setTimeout(InnRoom._showMartaWelcome, 700);
+      }
     }
   },
   _showMartaWelcome: function() {
