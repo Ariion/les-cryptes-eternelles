@@ -328,14 +328,14 @@ canvas#particles {
 /* Portrait en direct : reflète race + genre choisis, mis à jour à chaque
    sélection (voir buildCharSelect/selectGender/selectRace). */
 #cs-portrait {
-  width:calc(100% - 32px); margin:10px 16px 0; height:190px; flex-shrink:0;
+  width:calc(100% - 32px); margin:6px 16px 0; height:132px; flex-shrink:0;
   position:relative; overflow:hidden; border-radius:12px;
   border:1px solid rgba(201,165,80,0.3);
   background:rgba(255,255,255,0.02);
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 14px rgba(0,0,0,0.35);
 }
 #cs-portrait-img {
-  width:100%; height:100%; object-fit:cover; object-position:top center;
+  width:100%; height:100%; object-fit:cover; object-position:center 12%;
   display:block;
 }
 #cs-portrait::after {
@@ -351,13 +351,21 @@ canvas#particles {
 #cs-body {
   width:100%; flex:1;
   display:flex; flex-direction:column;
-  padding:12px 16px 0;
-  gap:10px;
+  padding:8px 16px 6px;
+  gap:7px;
   position:relative; z-index:2;
   overflow-y:auto; overflow-x:hidden;
   scrollbar-width:none;
 }
 #cs-body::-webkit-scrollbar { display:none; }
+/* Voile en bas de la zone défilante : signale qu'il reste du contenu à
+   faire défiler au lieu de laisser la coupure sembler accidentelle /
+   chevaucher le bouton fixe du bas. */
+#cs-body-fade {
+  position: sticky; bottom: -1px; left: 0; right: 0; height: 22px;
+  margin-top: -22px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(5,4,9,0.85));
+}
 
 .cs-section-label {
   font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px;
@@ -413,26 +421,26 @@ canvas#particles {
 #gender-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:8px;
 }
-.gender-card { padding:9px 10px; display:flex; align-items:center; gap:10px; }
-.gender-icon { width:38px; height:38px; font-size:18px; }
+.gender-card { padding:7px 10px; display:flex; align-items:center; gap:10px; }
+.gender-icon { width:34px; height:34px; font-size:16px; }
 .gender-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
 
 /* Grille races */
 #race-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  display:grid; grid-template-columns:1fr 1fr; gap:7px;
 }
-.race-card { padding:12px 14px; }
-.race-icon { width:46px; height:46px; font-size:22px; margin-bottom:6px; }
+.race-card { padding:9px 12px; }
+.race-icon { width:38px; height:38px; font-size:18px; margin-bottom:4px; }
 .race-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
 .race-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.5); margin-top:1px; }
-.race-bonus { font-size:10px; color:rgba(150,200,150,0.7); margin-top:4px; font-family:system-ui,sans-serif; }
+.race-bonus { font-size:10px; color:rgba(150,200,150,0.7); margin-top:3px; font-family:system-ui,sans-serif; }
 
 /* Classes */
 #class-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:7px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:6px;
 }
-.class-card { padding:12px 8px; display:flex; flex-direction:column; align-items:center; gap:5px; }
-.class-icon { width:40px; height:40px; font-size:19px; }
+.class-card { padding:9px 6px; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.class-icon { width:34px; height:34px; font-size:16px; }
 .class-name { font-family:'Cinzel',serif; font-size:10px; font-weight:600; color:#EDE8DF; text-align:center; }
 .class-sub { font-family:'Crimson Text',serif; font-size:10px; color:rgba(201,165,80,0.45); }
 
@@ -441,7 +449,7 @@ canvas#particles {
   background:linear-gradient(160deg, rgba(255,255,255,0.03), rgba(10,8,22,0.85));
   border:1px solid rgba(201,165,80,0.2);
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
-  border-radius:10px; padding:12px 18px;
+  border-radius:10px; padding:9px 18px;
   display:flex; justify-content:space-around; align-items:center;
   flex-shrink:0;
 }
@@ -452,11 +460,14 @@ canvas#particles {
 .stat-value.down { color:#e07070; }
 .stat-sep { width:1px; height:36px; background:rgba(201,165,80,0.15); }
 
-/* Bouton lancer */
+/* Bouton lancer — bordure/ombre du haut pour bien le lire comme une barre
+   fixe distincte du contenu défilant au-dessus, plutôt qu'un chevauchement. */
 #cs-footer {
-  width:100%; padding:10px 16px 18px;
+  width:100%; padding:10px 16px 14px;
   display:flex; flex-direction:column; gap:8px;
   position:relative; z-index:2; flex-shrink:0;
+  border-top:1px solid rgba(201,165,80,0.14);
+  background:linear-gradient(to bottom, rgba(5,4,9,0.4), rgba(5,4,9,0.15));
 }
 /* Même traitement cyan que le bouton JOUER du menu principal : c'est le même
    type d'action (lancer la partie/le prochain run), donc le même accent.
@@ -3481,6 +3492,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
             <div class="stat-value" id="stat-spe" style="font-size:14px;text-align:center;max-width:60px">—</div>
           </div>
         </div>
+        <div id="cs-body-fade"></div>
       </div>
 
       <div id="cs-footer">
