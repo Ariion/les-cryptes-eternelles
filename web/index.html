@@ -1970,52 +1970,53 @@ body.tut-combat-gate #combat-screen .tut-allow {
   padding: 12px 14px 200px;
   display: flex; flex-direction: column; gap: 6px;
 }
-/* Section labels */
-.eq-section-lbl {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
-  color: rgba(201,165,80,0.35); text-transform: uppercase;
-  padding: 8px 0 4px; border-bottom: 1px solid rgba(201,165,80,0.08);
-  margin-bottom: 2px;
+/* ── Silhouette d'équipement : colonnes gauche/droite encadrant le futur
+   portrait du personnage au centre. Chaque emplacement reprend le style
+   compact des cases du coffre pour rester cohérent visuellement. ── */
+#eq-doll {
+  display: flex; align-items: stretch; gap: 8px; padding: 4px 0 10px;
 }
-/* Slot row */
+#eq-doll-left, #eq-doll-right {
+  width: 74px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px;
+}
+#eq-doll-center {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; border-radius: 12px;
+  border: 1px dashed rgba(201,165,80,0.2);
+  background: rgba(255,255,255,0.02);
+  padding: 8px 4px;
+}
+#eq-doll-portrait-ph { font-size: 34px; opacity: 0.25; }
+#eq-doll-center-lbl {
+  font-family: 'Crimson Text', serif; font-style: italic; font-size: 9px;
+  color: rgba(237,232,223,0.25); text-align: center; line-height: 1.3;
+}
 .eq-slot-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.08);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; aspect-ratio: 1; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.1);
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
-  -webkit-tap-highlight-color: transparent;
-  min-height: 60px;
+  -webkit-tap-highlight-color: transparent; padding: 4px 2px;
 }
-.eq-slot-row:active { background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.25); }
-.eq-slot-row.has-item { border-color: rgba(201,165,80,0.18); }
+.eq-slot-row:active { transform: scale(0.94); background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.25); }
+.eq-slot-row.has-item { border-color: rgba(201,165,80,0.35); background: rgba(201,165,80,0.06); }
 .eq-slot-ico {
-  width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(201,165,80,0.12);
+  font-size: 20px; line-height: 1; color: #C9A550;
 }
-.eq-slot-row.has-item .eq-slot-ico {
-  background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.3);
-}
-.eq-slot-info { flex: 1; min-width: 0; }
+.eq-slot-info { width: 100%; min-width: 0; text-align: center; }
+/* Étiquette fixe du type d'emplacement ("Chapeau", "Arme"...) — toujours
+   visible, équipé ou non, pour que chaque case reste identifiable même
+   vide. Le nom précis de l'objet s'affiche au tap (panneau détail). */
 .eq-slot-name {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
-  color: rgba(201,165,80,0.4); text-transform: uppercase; margin-bottom: 3px;
+  font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 0.3px;
+  color: rgba(201,165,80,0.5); text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
 }
-.eq-slot-item-name {
-  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: #EDE8DF;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.eq-slot-empty {
-  font-family: 'Crimson Text', serif; font-style: italic; font-size: 13px;
-  color: rgba(237,232,223,0.2);
-}
+.eq-slot-item-name, .eq-slot-empty { display: none; }
 .eq-slot-stat {
-  font-family: 'Cinzel', serif; font-size: 10px; color: rgba(201,165,80,0.6);
-  margin-top: 2px;
-}
-.eq-slot-arrow {
-  color: rgba(201,165,80,0.25); font-size: 14px; flex-shrink: 0;
+  font-family: 'Cinzel', serif; font-size: 7.5px; color: rgba(201,165,80,0.65);
+  min-height: 9px;
 }
 /* Inventory grid */
 #eq-inv-grid {
@@ -3634,109 +3635,106 @@ body.tut-combat-gate #combat-screen .tut-allow {
       </div>
       <!-- Scrollable body -->
       <div id="eq-body">
-        <div class="eq-section-lbl">Armement</div>
-        <div class="eq-slot-row" id="eq-row-arme"      onclick="EquipScreen.tapSlot('arme')">
-          <div class="eq-slot-ico" id="eq-ico-arme">⚔</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Arme</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-arme">Aucune</div>
-            <div class="eq-slot-stat" id="eq-stat-arme"></div>
+        <!-- Silhouette d'équipement : gauche / futur portrait / droite -->
+        <div id="eq-doll">
+          <div id="eq-doll-left">
+            <div class="eq-slot-row" id="eq-row-heaume" onclick="EquipScreen.tapSlot('heaume')">
+              <div class="eq-slot-ico" id="eq-ico-heaume">🪖</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Chapeau</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-heaume">Aucun</div>
+                <div class="eq-slot-stat" id="eq-stat-heaume"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-arme" onclick="EquipScreen.tapSlot('arme')">
+              <div class="eq-slot-ico" id="eq-ico-arme">⚔</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Arme</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-arme">Aucune</div>
+                <div class="eq-slot-stat" id="eq-stat-arme"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-gants" onclick="EquipScreen.tapSlot('gants')">
+              <div class="eq-slot-ico" id="eq-ico-gants">🧤</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Gant</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-gants">Aucuns</div>
+                <div class="eq-slot-stat" id="eq-stat-gants"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-bague_gauche" onclick="EquipScreen.tapSlot('bague_gauche')">
+              <div class="eq-slot-ico" id="eq-ico-bague_gauche">💍</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Bague G.</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_gauche">Aucune</div>
+                <div class="eq-slot-stat" id="eq-stat-bague_gauche"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-collier" onclick="EquipScreen.tapSlot('collier')">
+              <div class="eq-slot-ico" id="eq-ico-collier">📿</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Collier</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-collier">Aucun</div>
+                <div class="eq-slot-stat" id="eq-stat-collier"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-jambieres" onclick="EquipScreen.tapSlot('jambieres')">
+              <div class="eq-slot-ico" id="eq-ico-jambieres">🦵</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Jambières</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-jambieres">Aucunes</div>
+                <div class="eq-slot-stat" id="eq-stat-jambieres"></div>
+              </div>
+            </div>
           </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-bouclier"  onclick="EquipScreen.tapSlot('bouclier')">
-          <div class="eq-slot-ico" id="eq-ico-bouclier">🛡</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Bouclier</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bouclier">Aucun</div>
-            <div class="eq-slot-stat" id="eq-stat-bouclier"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
 
-        <div class="eq-section-lbl">Armure</div>
-        <div class="eq-slot-row" id="eq-row-heaume"    onclick="EquipScreen.tapSlot('heaume')">
-          <div class="eq-slot-ico" id="eq-ico-heaume">🪖</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Heaume</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-heaume">Aucun</div>
-            <div class="eq-slot-stat" id="eq-stat-heaume"></div>
+          <div id="eq-doll-center">
+            <div id="eq-doll-portrait-ph">🧍</div>
+            <div id="eq-doll-center-lbl">Personnage<br>(bientôt)</div>
           </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-plastron"  onclick="EquipScreen.tapSlot('plastron')">
-          <div class="eq-slot-ico" id="eq-ico-plastron">🥋</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Plastron</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-plastron">Aucun</div>
-            <div class="eq-slot-stat" id="eq-stat-plastron"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-gants"     onclick="EquipScreen.tapSlot('gants')">
-          <div class="eq-slot-ico" id="eq-ico-gants">🧤</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Gantelets</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-gants">Aucuns</div>
-            <div class="eq-slot-stat" id="eq-stat-gants"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-ceinture"  onclick="EquipScreen.tapSlot('ceinture')">
-          <div class="eq-slot-ico" id="eq-ico-ceinture">➰</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Ceinture</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-ceinture">Aucune</div>
-            <div class="eq-slot-stat" id="eq-stat-ceinture"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-jambieres" onclick="EquipScreen.tapSlot('jambieres')">
-          <div class="eq-slot-ico" id="eq-ico-jambieres">🦵</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Jambières</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-jambieres">Aucunes</div>
-            <div class="eq-slot-stat" id="eq-stat-jambieres"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-bottes"    onclick="EquipScreen.tapSlot('bottes')">
-          <div class="eq-slot-ico" id="eq-ico-bottes">👢</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Bottes</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bottes">Aucunes</div>
-            <div class="eq-slot-stat" id="eq-stat-bottes"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
 
-        <div class="eq-section-lbl">Bijoux</div>
-        <div class="eq-slot-row" id="eq-row-collier"       onclick="EquipScreen.tapSlot('collier')">
-          <div class="eq-slot-ico" id="eq-ico-collier">📿</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Collier</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-collier">Aucun</div>
-            <div class="eq-slot-stat" id="eq-stat-collier"></div>
+          <div id="eq-doll-right">
+            <div class="eq-slot-row" id="eq-row-bouclier" onclick="EquipScreen.tapSlot('bouclier')">
+              <div class="eq-slot-ico" id="eq-ico-bouclier">🛡</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Bouclier</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bouclier">Aucun</div>
+                <div class="eq-slot-stat" id="eq-stat-bouclier"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-ceinture" onclick="EquipScreen.tapSlot('ceinture')">
+              <div class="eq-slot-ico" id="eq-ico-ceinture">➰</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Ceinture</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-ceinture">Aucune</div>
+                <div class="eq-slot-stat" id="eq-stat-ceinture"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-bague_droite" onclick="EquipScreen.tapSlot('bague_droite')">
+              <div class="eq-slot-ico" id="eq-ico-bague_droite">💍</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Bague D.</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_droite">Aucune</div>
+                <div class="eq-slot-stat" id="eq-stat-bague_droite"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-plastron" onclick="EquipScreen.tapSlot('plastron')">
+              <div class="eq-slot-ico" id="eq-ico-plastron">🥋</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Plastron</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-plastron">Aucun</div>
+                <div class="eq-slot-stat" id="eq-stat-plastron"></div>
+              </div>
+            </div>
+            <div class="eq-slot-row" id="eq-row-bottes" onclick="EquipScreen.tapSlot('bottes')">
+              <div class="eq-slot-ico" id="eq-ico-bottes">👢</div>
+              <div class="eq-slot-info">
+                <div class="eq-slot-name">Bottes</div>
+                <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bottes">Aucunes</div>
+                <div class="eq-slot-stat" id="eq-stat-bottes"></div>
+              </div>
+            </div>
           </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-bague_gauche"  onclick="EquipScreen.tapSlot('bague_gauche')">
-          <div class="eq-slot-ico" id="eq-ico-bague_gauche">💍</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Bague gauche</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_gauche">Aucune</div>
-            <div class="eq-slot-stat" id="eq-stat-bague_gauche"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
-        </div>
-        <div class="eq-slot-row" id="eq-row-bague_droite"  onclick="EquipScreen.tapSlot('bague_droite')">
-          <div class="eq-slot-ico" id="eq-ico-bague_droite">💍</div>
-          <div class="eq-slot-info">
-            <div class="eq-slot-name">Bague droite</div>
-            <div class="eq-slot-item-name eq-slot-empty" id="eq-name-bague_droite">Aucune</div>
-            <div class="eq-slot-stat" id="eq-stat-bague_droite"></div>
-          </div>
-          <div class="eq-slot-arrow">›</div>
         </div>
 
         <div class="eq-section-lbl">Inventaire · <span id="eq-inv-count">0</span>/8</div>
