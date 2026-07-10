@@ -751,7 +751,7 @@ canvas#particles {
 .runmod-card { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid; }
 .runmod-card.bad  { background:rgba(150,30,20,0.15); border-color:rgba(200,60,40,0.4); }
 .runmod-card.good { background:rgba(30,100,30,0.15); border-color:rgba(60,180,60,0.4); }
-.runmod-ico  { font-size:24px; flex-shrink:0; }
+.runmod-ico  { font-size:24px; flex-shrink:0; color: #C9A550; }
 .runmod-name { font-family:'Cinzel',serif; font-size:11px; font-weight:700; color:#EDE8DF; }
 .runmod-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(237,232,223,0.7); margin-top:2px; }
 #runmod-btn {
@@ -1352,7 +1352,7 @@ canvas#particles {
 /* ── Popup "Félicitations" succès débloqué ── */
 .achievement-toast { position:fixed; top:-120px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#241a09,#120c04); border:1px solid #C9A550; border-radius:14px; padding:13px 20px; display:flex; align-items:center; gap:14px; min-width:250px; max-width:330px; z-index:99999; transition:top 0.45s cubic-bezier(.34,1.56,.64,1); box-shadow:0 10px 40px rgba(0,0,0,0.7),0 0 24px rgba(201,165,80,0.25); }
 .achievement-toast.show { top:24px; }
-.at-ico { font-size:32px; flex-shrink:0; filter:drop-shadow(0 0 6px rgba(201,165,80,0.5)); }
+.at-ico { font-size:32px; flex-shrink:0; color: #C9A550; filter:drop-shadow(0 0 6px rgba(201,165,80,0.5)); }
 .at-body { display:flex; flex-direction:column; gap:2px; }
 .at-header { font-family:'Cinzel',serif; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(201,165,80,0.7); }
 .at-title { font-family:'Cinzel Decorative',serif; font-size:15px; font-weight:700; color:#EAD79A; letter-spacing:0.5px; }
@@ -1368,7 +1368,7 @@ canvas#particles {
 .ach-row { display:flex; align-items:center; gap:12px; padding:10px 8px; border-radius:8px; border-bottom:1px solid rgba(201,165,80,0.08); }
 .ach-row.ach-done { background:rgba(201,165,80,0.07); border-bottom-color:rgba(201,165,80,0.18); }
 .ach-row:not(.ach-done) { opacity:0.78; }
-.ach-ico { font-size:22px; flex-shrink:0; width:30px; text-align:center; }
+.ach-ico { font-size:22px; flex-shrink:0; width:30px; text-align:center; color: #C9A550; }
 .ach-info { flex:1; min-width:0; }
 .ach-title { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:rgba(237,232,223,0.82); letter-spacing:0.5px; }
 .ach-row.ach-done .ach-title { color:#EAD79A; }
@@ -1603,7 +1603,7 @@ canvas#particles {
   border-left-color: #C9A550; border-color: rgba(201,165,80,0.28);
   background: rgba(201,165,80,0.05); box-shadow: 0 0 14px rgba(201,165,80,0.12);
 }
-.carnet-ico { font-size: 20px; flex-shrink: 0; width: 26px; text-align: center; margin-top: 1px; }
+.carnet-ico { font-size: 20px; flex-shrink: 0; width: 26px; text-align: center; margin-top: 1px; color: #C9A550; }
 .carnet-row-locked .carnet-ico { opacity: 0.35; filter: grayscale(1); }
 .carnet-info { flex: 1; min-width: 0; }
 .carnet-name { font-family: 'Cinzel', serif; font-size: 12.5px; font-weight: 700; color: #EDE8DF; }
@@ -1922,7 +1922,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   border-right: 1px solid rgba(201,165,80,0.08);
 }
 .eq-stat-pill:last-child { border-right: none; }
-.eq-stat-ico { font-size: 14px; line-height: 1; }
+.eq-stat-ico { font-size: 14px; line-height: 1; color: #C9A550; }
 .eq-stat-val {
   font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: #C9A550;
 }
@@ -2106,49 +2106,80 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #tal-points { font-family:'Cinzel',serif; font-size: 12px; font-weight: 700; color: #00D4E8; display:flex; align-items:center; gap:4px; }
 #tal-points-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
 #tal-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(201,165,80,0.1); margin: 0 16px 8px; flex-shrink: 0; }
-#tal-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 8px 90px; display: flex; align-items: flex-start; justify-content: space-around; gap: 4px; }
-.tal-branch { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
+#tal-body {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 6px 90px;
+  display: flex; align-items: flex-start; justify-content: space-around; gap: 2px;
+  background:
+    radial-gradient(ellipse 140% 60% at 50% 0%, rgba(201,165,80,0.06) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+}
+.tal-branch {
+  display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0;
+  position: relative; padding: 0 2px 10px;
+  border-right: 1px solid rgba(201,165,80,0.08);
+}
+.tal-branch:last-child { border-right: none; }
 .tal-branch-head {
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5px; color: rgba(201,165,80,0.6);
-  text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px;
+  font-family: 'Cinzel', serif; font-size: 9.5px; letter-spacing: 0.8px; color: rgba(232,212,160,0.75);
+  text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px;
   text-align: center;
 }
-.tal-branch-ico { font-size: 18px; }
+.tal-branch-ico {
+  font-size: 22px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, rgba(201,165,80,0.16), rgba(201,165,80,0.03));
+  border: 1px solid rgba(201,165,80,0.3); box-shadow: 0 0 10px rgba(201,165,80,0.12);
+}
+.tal-branch-head::after { content:''; display:block; width:26px; height:1px; background:linear-gradient(90deg, transparent, rgba(201,165,80,0.5), transparent); }
 .tal-node-circle {
-  width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 21px; cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
-  border: 2px solid rgba(120,90,50,0.35); background: radial-gradient(circle at 35% 30%, #1a1208, #0d0a05);
+  width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+  border: 2.5px solid rgba(120,90,50,0.35); background: radial-gradient(circle at 32% 28%, #241a0e, #0d0a05 75%);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.5);
   transition: transform 0.15s;
 }
+/* Le palier capstone (tier 2) est visuellement plus imposant — c'est la
+   récompense de branche, comme les nœuds finaux dans un arbre CK3/KCD2. */
+.tal-node-circle.tal-tier-2 { width: 70px; height: 70px; font-size: 30px; border-width: 3px; }
 .tal-node-circle:active { transform: scale(0.92); }
 .tal-node-circle.unlocked {
-  border-color: rgba(201,165,80,0.85); background: radial-gradient(circle at 35% 30%, #3a2e1a, #1a1208);
-  box-shadow: 0 0 10px rgba(201,165,80,0.35);
+  border-color: rgba(201,165,80,0.9); background: radial-gradient(circle at 32% 28%, #4a3a20, #1a1208 75%);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 4px rgba(0,0,0,0.4), 0 0 14px rgba(201,165,80,0.45);
 }
 .tal-node-circle.available {
-  border-color: rgba(0,212,232,0.8); box-shadow: 0 0 12px rgba(0,212,232,0.3);
+  border-color: rgba(0,212,232,0.85); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 16px rgba(0,212,232,0.35);
   animation: talPulse 2s infinite;
 }
-.tal-node-circle.locked { opacity: 0.4; }
+.tal-node-circle.locked { opacity: 0.38; filter: saturate(0.5); }
 @keyframes talPulse {
-  0%,100% { box-shadow: 0 0 8px rgba(0,212,232,0.25); }
-  50%     { box-shadow: 0 0 16px rgba(0,212,232,0.55); }
+  0%,100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 10px rgba(0,212,232,0.3); }
+  50%     { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 20px rgba(0,212,232,0.65); }
 }
-.tal-node-cost-badge { font-family:'Cinzel',serif; font-size: 10px; color: #00D4E8; margin: 4px 0 12px; text-align: center; }
-.tal-connector-line { width: 2px; height: 20px; background: rgba(120,90,50,0.3); }
-.tal-connector-line.done { background: rgba(201,165,80,0.75); }
+.tal-node-name {
+  font-family: 'Cinzel', serif; font-size: 8.5px; letter-spacing: 0.3px; color: rgba(237,232,223,0.8);
+  text-align: center; margin-top: 6px; max-width: 64px; line-height: 1.25;
+}
+.tal-node-name.locked { color: rgba(237,232,223,0.35); }
+.tal-node-cost-badge {
+  font-family:'Cinzel',serif; font-size: 10px; color: #00D4E8; margin: 5px 0 14px; text-align: center;
+  background: rgba(0,212,232,0.08); border: 1px solid rgba(0,212,232,0.25); border-radius: 10px; padding: 1px 8px;
+}
+.tal-connector-line {
+  width: 3px; height: 22px; border-radius: 2px;
+  background: linear-gradient(180deg, rgba(120,90,50,0.5), rgba(120,90,50,0.15));
+}
+.tal-connector-line.done { background: linear-gradient(180deg, rgba(201,165,80,0.95), rgba(201,165,80,0.5)); box-shadow: 0 0 6px rgba(201,165,80,0.4); }
 /* Compétences actives (capstones débloquant un sort de combat) : accent
    ambre distinct des nœuds passifs, + un petit badge d'épée. */
-.tal-node-circle.active-type.unlocked { border-color: rgba(230,140,50,0.9); box-shadow: 0 0 12px rgba(230,140,50,0.4); }
-.tal-node-circle.active-type.available { border-color: rgba(230,140,50,0.85); box-shadow: 0 0 12px rgba(230,140,50,0.35); animation: talPulseActive 2s infinite; }
+.tal-node-circle.active-type.unlocked { border-color: rgba(230,140,50,0.95); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 16px rgba(230,140,50,0.5); }
+.tal-node-circle.active-type.available { border-color: rgba(230,140,50,0.9); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 18px rgba(230,140,50,0.4); animation: talPulseActive 2s infinite; }
 @keyframes talPulseActive {
-  0%,100% { box-shadow: 0 0 8px rgba(230,140,50,0.3); }
-  50%     { box-shadow: 0 0 16px rgba(230,140,50,0.6); }
+  0%,100% { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 10px rgba(230,140,50,0.35); }
+  50%     { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 22px rgba(230,140,50,0.75); }
 }
 .tal-node-active-badge {
-  position: absolute; bottom: -3px; right: -3px; font-size: 10px; width: 16px; height: 16px;
-  border-radius: 50%; background: #1a1208; border: 1px solid rgba(230,140,50,0.8);
-  display: flex; align-items: center; justify-content: center;
+  position: absolute; bottom: -4px; right: -4px; font-size: 11px; width: 19px; height: 19px;
+  border-radius: 50%; background: #1a1208; border: 1.5px solid rgba(230,140,50,0.9);
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(0,0,0,0.6);
 }
 .tal-node-circle { position: relative; }
 /* Onglet Compétences de combat : liste des actifs débloqués, sélection du loadout (3 max) */
@@ -2246,7 +2277,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px;
   background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15);
 }
-.gld-row-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; }
+.gld-row-ico { font-size: 22px; flex-shrink: 0; width: 26px; text-align: center; color: #C9A550; }
 .gld-row-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5px; color: rgba(237,232,223,0.6); flex: 1; }
 .gld-row-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #C9A550; }
 
@@ -2282,7 +2313,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 .gld-lb-row:active { background: rgba(201,165,80,0.1); }
 .gld-lb-rank { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: rgba(201,165,80,0.5); width: 24px; flex-shrink: 0; text-align: center; }
-.gld-lb-ico { font-size: 20px; flex-shrink: 0; }
+.gld-lb-ico { font-size: 20px; flex-shrink: 0; color: #C9A550; }
 .gld-lb-info { flex: 1; min-width: 0; }
 .gld-lb-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: #EDE8DF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gld-lb-sub { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.5); }
@@ -2319,7 +2350,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.12);
   font-family: 'Cinzel', serif; font-size: 11px; color: #EDE8DF;
 }
-.gld-detail-item-ico { font-size: 18px; flex-shrink: 0; }
+.gld-detail-item-ico { font-size: 18px; flex-shrink: 0; color: #C9A550; }
 .gld-detail-item-name { font-weight: 700; }
 .gld-detail-item-desc { font-family: 'Crimson Text', serif; font-size: 11px; color: rgba(201,165,80,0.5); margin-top: 1px; }
 
@@ -2425,7 +2456,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .ach-srow.ach-srow-locked .ach-srow-ico { opacity:0.35; filter:grayscale(1); }
 .ach-srow.ach-srow-locked .ach-srow-title { color:rgba(237,232,223,0.4); }
 .ach-srow.ach-srow-locked .ach-srow-desc { opacity:0.6; }
-.ach-srow-ico { font-size:24px; flex-shrink:0; width:32px; text-align:center; }
+.ach-srow-ico { font-size:24px; flex-shrink:0; width:32px; text-align:center; color: #C9A550; }
 .ach-srow-info { flex:1; min-width:0; }
 .ach-srow-title {
   font-family:'Cinzel',serif; font-size:12px; font-weight:700;
@@ -2479,7 +2510,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 .tv-card:active { transform:scale(0.98); border-color:rgba(201,165,80,0.4); }
 .tv-card.locked { opacity:0.4; pointer-events:none; }
-.tv-card-ico { font-size:32px; flex-shrink:0; }
+.tv-card-ico { font-size:32px; flex-shrink:0; color: #C9A550; }
 .tv-card-info { flex:1; }
 .tv-card-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#EDE8DF; }
 .tv-card-desc { font-family:'Crimson Text',serif; font-size:12px; color:rgba(201,165,80,0.5); margin-top:3px; }
@@ -2671,6 +2702,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #npc-speech {
   font-family:'Crimson Text',serif; font-size:14px; color:#EDE8DF;
   line-height:1.5; font-style:italic; text-align:center;
+  white-space: pre-line;
 }
 #npc-quest-info {
   background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
@@ -2733,7 +2765,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #hs-town-bijoutier  { top:50%; left:30%; }
 #hs-town-temple     { top:36%; left:62%; }
 #hs-town-guild      { top:66%; left:38%; }
-#hs-town-adventure  { top:86%; left:6%; }
 #hs-town-chateau    { top:14%; left:38%; }
 #hs-town-taverne    { top:58%; left:64%; }
 
@@ -2834,10 +2865,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
   height:24px; margin-bottom:2px;
 }
 #cb-timer-bar-outer {
-  flex:1; height:8px; background:rgba(255,255,255,0.07); border-radius:4px;
-  border:1px solid rgba(201,165,80,0.2); overflow:hidden;
+  flex:1; height:10px; background:rgba(255,255,255,0.16); border-radius:5px;
+  border:1px solid rgba(201,165,80,0.45); overflow:hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
 }
-#cb-timer-bar { height:100%; border-radius:4px; background:#C9A550; transition:width 0.1s linear, background 0.2s ease; }
+#cb-timer-bar { height:100%; border-radius:5px; background:#E8C976; box-shadow:0 0 6px rgba(232,201,118,0.7); transition:width 0.1s linear, background 0.2s ease; }
 #cb-timer-bar.urgent { animation:cb-timer-pulse 0.7s ease-in-out infinite; }
 @keyframes cb-timer-pulse { 0%,100%{ filter:brightness(1); } 50%{ filter:brightness(1.4); } }
 #cb-timer-txt {
@@ -3055,6 +3087,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #cge-modal-text {
   font-family:'Crimson Text',serif; font-size:14px; font-style:italic;
   color:rgba(237,232,223,0.75); text-align:center; line-height:1.5;
+  white-space: pre-line;
 }
 #cge-modal-btns { display:flex; gap:10px; margin-top:8px; }
 #cge-modal-btns button {
@@ -3985,7 +4018,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <!-- ── TOWN SCREEN ── -->
     <div id="town-screen" class="screen has-game-header">
       <div id="town-header">
-        <div id="town-back" onclick="Nav.go('inn-room')">←</div>
         <div id="town-title">Thornwall</div>
       </div>
       <!-- hotspot chambre (haut gauche) -->
@@ -4022,11 +4054,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div class="hotspot" id="hs-town-guild" onclick="GuildScreen.open('town-screen')">
         <div class="hs-ring"></div>
         <div class="hs-lbl" data-i18n="town.guild">Guilde</div>
-      </div>
-      <!-- hotspot aventure (bas gauche - pont) -->
-      <div class="hotspot" id="hs-town-adventure" onclick="Nav.go('world-map')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl extreme" data-i18n="town.adventure">⚔ Partir à l'aventure</div>
       </div>
       <!-- hotspot château (haut centre) -->
       <div class="hotspot" id="hs-town-chateau" onclick="TownScreen.goChateau()">
@@ -4099,28 +4126,27 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <!-- ── WORLD MAP (région) ── -->
     <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
-        <div id="wm-back" onclick="Nav.go('inn-room')">←</div>
         <div id="wm-title" data-i18n="wm.title">La Région</div>
       </div>
       <!-- cave / cryptes (montagne haut centre) -->
       <div class="hotspot" id="hs-reg-cave" onclick="WorldMap.enter('cryptes')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">⚰ Cryptes · Légendaire</div>
+        <div class="hs-lbl extreme">⚰ Cryptes · Nv. 50</div>
       </div>
       <!-- forêt (centre gauche) -->
       <div class="hotspot" id="hs-reg-forest" onclick="WorldMap.enter('foret')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🌲 Forêt · Moyen</div>
+        <div class="hs-lbl">🌲 Forêt · Nv. 5</div>
       </div>
       <!-- ruines (centre, portail) -->
       <div class="hotspot" id="hs-reg-ruins" onclick="WorldMap.enter('ruines')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl danger">🏚 Ruines · Difficile</div>
+        <div class="hs-lbl danger">🏚 Ruines · Nv. 10</div>
       </div>
       <!-- port (droite) -->
       <div class="hotspot" id="hs-reg-port" onclick="WorldMap.enter('port')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl danger">🌊 Port · Dangereux</div>
+        <div class="hs-lbl danger">🌊 Port · Nv. 20</div>
       </div>
       <!-- ville (bas gauche) -->
       <div class="hotspot" id="hs-reg-town" onclick="Nav.go('town-screen')">
@@ -4130,22 +4156,22 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <!-- grottes (bas droite) -->
       <div class="hotspot" id="hs-reg-peaks" onclick="WorldMap.enter('grottes')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl">🪨 Grottes · Facile</div>
+        <div class="hs-lbl">🪨 Grottes · Nv. 1</div>
       </div>
       <!-- marais (centre) -->
       <div class="hotspot" id="hs-reg-marais" onclick="WorldMap.enter('marais')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl danger">🌿 Marais · Dur</div>
+        <div class="hs-lbl danger">🌿 Marais · Nv. 28</div>
       </div>
       <!-- volcan (haut droite) -->
       <div class="hotspot" id="hs-reg-volcan" onclick="WorldMap.enter('volcan')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">🌋 Volcan · Extrême</div>
+        <div class="hs-lbl extreme">🌋 Volcan · Nv. 42</div>
       </div>
       <!-- pics du néant (haut centre) -->
       <div class="hotspot" id="hs-reg-pics" onclick="WorldMap.enter('pics')">
         <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">🏔 Pics · Glacial</div>
+        <div class="hs-lbl extreme">🏔 Pics · Nv. 35</div>
       </div>
     </div>
 
@@ -4600,7 +4626,19 @@ var Music = (function(){
       var c = ac(); if (!c) return null;
       masterGain = c.createGain();
       masterGain.gain.setValueAtTime(0, c.currentTime);
-      masterGain.connect(c.destination);
+      // Chaque piste empile plusieurs oscillateurs (drone + pad + mélodie + traîne
+      // de reverb) sans jamais vérifier leur somme — rien n'empêchait les crêtes de
+      // dépasser 1.0 et de "clipper" en dur (le grésillement/saturation signalé
+      // plusieurs fois), quels que soient les fondus appliqués à chaque voix
+      // individuellement. Un limiteur en bout de chaîne absorbe ces crêtes.
+      var limiter = c.createDynamicsCompressor();
+      limiter.threshold.setValueAtTime(-8, c.currentTime);
+      limiter.knee.setValueAtTime(6, c.currentTime);
+      limiter.ratio.setValueAtTime(14, c.currentTime);
+      limiter.attack.setValueAtTime(0.003, c.currentTime);
+      limiter.release.setValueAtTime(0.18, c.currentTime);
+      masterGain.connect(limiter);
+      limiter.connect(c.destination);
     }
     return masterGain;
   }
@@ -4913,12 +4951,13 @@ var Music = (function(){
       }, 1300);
     },
 
-    // Zones tardives/hostiles → variantes plus tendues des thèmes donjon/combat.
-    // 'grottes','foret','ruines','port','pics','cryptes' gardent l'ambiance d'origine.
+    // Variantes plus tendues des thèmes donjon/combat, réparties sur toute la
+    // progression (pas seulement l'end-game) pour que la musique change bien
+    // avant le niveau 28 — sinon les 6 premières zones sonnaient identiques.
     zoneTrack: function(base) {
       var zone = (typeof State !== 'undefined' && State._currentZone) || '';
-      var harsh = { marais:1, volcan:1 };
-      var dread = { chateau_maudit:1, cite_oubliee:1, gouffre_astral:1, cryptes_profondes:1 };
+      var harsh = { ruines:1, port:1, marais:1 };
+      var dread = { volcan:1, pics:1, cryptes:1, chateau_maudit:1, cite_oubliee:1, gouffre_astral:1, cryptes_profondes:1 };
       if (base === 'dungeon') {
         if (dread[zone]) return 'dungeon_dread';
         if (harsh[zone]) return 'dungeon_harsh';
@@ -7426,7 +7465,7 @@ var Combat = (function(){
     var txt = document.getElementById('cb-timer-txt');
     if (bar) {
       bar.style.width = Math.max(0, (s/timerMax)*100) + '%';
-      bar.style.background = s <= 2 ? '#e05050' : s <= 3 ? '#d08020' : '#C9A550';
+      bar.style.background = s <= 2 ? '#ff6a5a' : s <= 3 ? '#e69a3a' : '#E8C976';
       bar.classList.toggle('urgent', s <= 3 && s > 0);
     }
     if (txt) txt.textContent = Math.max(0, s);
@@ -7723,11 +7762,16 @@ var Combat = (function(){
       setButtons(true);
       updatePotionBtn();
       log((CGE_LANG==='en'?'⚔ '+(enemy.nameEn||enemy.name)+' emerges from the shadows!':'⚔ '+enemy.name+' surgit de l\'ombre !')+(enemy.boss?' ☠':''),'system');
-      // Tutoriel combat — une seule fois
+      // Tutoriel combat — une seule fois. Le timer est mis en pause dès
+      // maintenant (pas seulement à l'ouverture de la modale 450ms plus tard)
+      // pour qu'aucune seconde ne soit perdue pendant que le joueur lit.
       if (!Meta.tutoCombat) {
         Meta.tutoCombat = true;
         if (typeof Meta.save === 'function') Meta.save();
-        setTimeout(function(){ CGEModal.alert(T('tuto.combat.title'), T('tuto.combat.body')); }, 450);
+        pauseTimer();
+        setTimeout(function(){
+          CGEModal.show({ title: T('tuto.combat.title'), text: T('tuto.combat.body'), okLabel: T('modal.ok'), onOk: function(){ resumeTimer(); } });
+        }, 450);
       }
       // Elfe : initiative — frappe en premier
       if (getPassive() === 'initiative') {
@@ -8744,8 +8788,10 @@ var TalentsScreen = (function(){
           html += '<div class="tal-connector-line'+(prevDone?' done':'')+'"></div>';
         }
         var isActive = !!node.flag;
-        html += '<div class="tal-node-circle '+st+(isActive?' active-type':' passive-type')+'" data-scope="'+_tab+'" data-id="'+node.id+'" title="'+(CGE_LANG==='en'&&node.nameEn?node.nameEn:node.name)+' — '+(CGE_LANG==='en'&&node.descEn?node.descEn:node.desc)+'">'
+        var nodeName = (CGE_LANG==='en'&&node.nameEn) ? node.nameEn : node.name;
+        html += '<div class="tal-node-circle tal-tier-'+tier+' '+st+(isActive?' active-type':' passive-type')+'" data-scope="'+_tab+'" data-id="'+node.id+'" title="'+nodeName+' — '+(CGE_LANG==='en'&&node.descEn?node.descEn:node.desc)+'">'
           + (st==='locked' ? '🔒' : node.ico) + (isActive && st!=='locked' ? '<span class="tal-node-active-badge">⚔</span>' : '') + '</div>'
+          + '<div class="tal-node-name'+(st==='locked'?' locked':'')+'">'+nodeName+'</div>'
           + '<div class="tal-node-cost-badge">'+(st==='unlocked' ? '✓' : ('✦'+node.cost))+'</div>';
       });
       wrap.innerHTML = html;
@@ -9099,7 +9145,7 @@ var Tutorial = (function(){
     { id:'seraphine', allow:['npc-seraphine'],
       text:'Et cette mage, là-bas — je devrais aussi lui parler.',
       textEn:'And that mage, over there — I should speak with her too.' },
-    { id:'adventure', allow:['hs-town-adventure','hs-inn-window'],
+    { id:'adventure', allow:['hs-inn-window'],
       text:'Il est temps de sortir de cette ville et de découvrir ce qui m\'attend dehors.',
       textEn:'Time to leave this town and discover what awaits out there.' },
     { id:'zone', allow:['hs-reg-peaks'],
@@ -10606,6 +10652,7 @@ var Meta = {
   chest: [],          // persistent cross-run storage (max 20 items)
   gems: 0,
   shopStock: {},      // { forge:[SHOP_POOL indices], armurerie:[...], couturier:[...], bijoutier:[...], eglise:[...] }
+  shopStockSlot: {},  // { forge:'2026-6-10-1', ... } — créneau de 6h (heure locale) où ce stock a été généré
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
   storyFlags: {},     // one-off narrative beats seen (Aldric's hint, visions, etc.) — { key: true }
   tutorialPhase: null, // null=not asked, 'gate'|'explore'|'return'|'skipped'|'done'
@@ -10640,6 +10687,7 @@ var Meta = {
       Meta.tutoTalents     = d.tutoTalents||false;
       Meta.gems            = d.gems||0;
       Meta.shopStock       = d.shopStock||{};
+      Meta.shopStockSlot   = d.shopStockSlot||{};
       Meta.dailyQuests     = d.dailyQuests||{};
       Meta.storyFlags      = d.storyFlags||{};
       Meta.tutorialPhase   = d.tutorialPhase||null;
@@ -10673,6 +10721,7 @@ var Meta = {
       tutoTalents:    Meta.tutoTalents,
       gems:           Meta.gems,
       shopStock:      Meta.shopStock,
+      shopStockSlot:  Meta.shopStockSlot,
       dailyQuests:    Meta.dailyQuests,
       storyFlags:     Meta.storyFlags,
       tutorialPhase:  Meta.tutorialPhase,
@@ -10981,7 +11030,23 @@ Rooms.SHOP_TITLE_MAP = {
 };
 Rooms.SHOP_STOCK_SIZE = 6;
 Rooms.SHOP_RESTOCK_COST = 5;
-Rooms.SHOP_RESTOCK_INTERVAL_MS = 6*60*60*1000; // renouvellement gratuit du stock toutes les 6h
+// Le stock se renouvelle 4×/jour, à heure fixe (minuit, 6h, midi, 18h — heure
+// locale de l'appareil) plutôt que "6h après la dernière visite" : plus besoin
+// de mémoriser un horodatage (qui ne survivait pas aux rechargements de la
+// page, d'où le compteur qui semblait figé), tout se recalcule depuis l'heure
+// actuelle.
+Rooms._resetSlotId = function() {
+  var d = new Date();
+  return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()+'-'+Math.floor(d.getHours()/6);
+};
+
+Rooms._msUntilNextReset = function() {
+  var d = new Date();
+  var nextHour = (Math.floor(d.getHours()/6)+1)*6;
+  var next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  next.setHours(nextHour);
+  return Math.max(0, next.getTime() - d.getTime());
+};
 
 Rooms._shopPool = function(category) {
   var slots = Rooms.SHOP_SLOT_MAP[category];
@@ -10992,16 +11057,16 @@ Rooms._generateShopStock = function(category) {
   var pool = Rooms._shopPool(category).slice();
   for (var i=pool.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pool[i];pool[i]=pool[j];pool[j]=t; }
   Meta.shopStock = Meta.shopStock || {};
-  Meta.shopStockTs = Meta.shopStockTs || {};
+  Meta.shopStockSlot = Meta.shopStockSlot || {};
   Meta.shopStock[category] = pool.slice(0, Rooms.SHOP_STOCK_SIZE).map(function(it){ return { idx: SHOP_POOL.indexOf(it), sold:false }; });
-  Meta.shopStockTs[category] = Date.now();
+  Meta.shopStockSlot[category] = Rooms._resetSlotId();
   Meta.save();
 };
 
 Rooms._stockMsLeft = function(category) {
-  var ts = (Meta.shopStockTs||{})[category];
-  if (!ts) return 0;
-  return Math.max(0, Rooms.SHOP_RESTOCK_INTERVAL_MS - (Date.now() - ts));
+  var slot = (Meta.shopStockSlot||{})[category];
+  if (!slot || slot !== Rooms._resetSlotId()) return 0;
+  return Rooms._msUntilNextReset();
 };
 
 Rooms._formatShopCountdown = function(ms) {
@@ -11015,7 +11080,8 @@ Rooms._formatShopCountdown = function(ms) {
 // Rooms.shopBuy puisse marquer l'entrée vendue de façon persistante.
 Rooms._shopStockItems = function(category) {
   Meta.shopStock = Meta.shopStock || {};
-  if (!Meta.shopStock[category] || !Meta.shopStock[category].length || Rooms._stockMsLeft(category) <= 0) {
+  Meta.shopStockSlot = Meta.shopStockSlot || {};
+  if (!Meta.shopStock[category] || !Meta.shopStock[category].length || Meta.shopStockSlot[category] !== Rooms._resetSlotId()) {
     Rooms._generateShopStock(category);
   }
   return Meta.shopStock[category].map(function(entry, pos){
@@ -11035,14 +11101,12 @@ Rooms._tickRestockTimer = function() {
   var category = State._shopCategory;
   var lbl = document.getElementById('shop-restock-timer');
   if (!category || !lbl) return;
-  var msLeft = Rooms._stockMsLeft(category);
-  if (msLeft <= 0) {
-    // Le stock vient d'expirer pendant que le joueur était sur l'écran — on le renouvelle live.
+  if (Meta.shopStockSlot[category] !== Rooms._resetSlotId()) {
+    // Le créneau a changé pendant que le joueur était sur l'écran — on renouvelle live.
     State._shopItems = Rooms._shopStockItems(category);
     if (Rooms._shopTab === 'buy') Rooms._renderShopBuy();
-    msLeft = Rooms._stockMsLeft(category);
   }
-  lbl.textContent = Rooms._formatShopCountdown(msLeft);
+  lbl.textContent = Rooms._formatShopCountdown(Rooms._msUntilNextReset());
 };
 
 Rooms._startRestockTimer = function() {
