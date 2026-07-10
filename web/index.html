@@ -1800,7 +1800,10 @@ body.tutorial-active #gh-btn-menu,
 body.tutorial-active #gh-btn-quests,
 body.tutorial-active #gh-btn-carnet { display:none !important; }
 body.tutorial-strict .screen.active .hotspot,
-body.tutorial-strict .screen.active .npc-hotspot {
+body.tutorial-strict .screen.active .npc-hotspot,
+body.tutorial-strict .screen.active #town-back,
+body.tutorial-strict .screen.active #taverne-back,
+body.tutorial-strict .screen.active #wm-back {
   pointer-events:none; opacity:0.25; filter:grayscale(0.7);
   transition:opacity 0.3s ease, filter 0.3s ease;
 }
@@ -2084,7 +2087,14 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #eq-detail-overlay.open { display: block; }
 
 /* ── TALENTS SCREEN ─────────────────────────────────────────── */
-#talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; padding-bottom: 68px; }
+/* z-index above #hub-tabbar (80): #tal-detail-overlay is a bottom-sheet
+   anchored to the screen's own bottom edge, and .screen creates its own
+   stacking context, so its internal z-index:999 never actually competes
+   against the tabbar — without this the "Améliorer" button sits directly
+   under the tabbar and swallows every tap. Safe while inactive/idle too:
+   the 68px bottom padding means nothing here ever visually overlaps the
+   tabbar except this overlay while it's open. */
+#talents-screen { background: #07060f; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow: hidden; padding-bottom: 68px; z-index: 90; }
 #tal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 10px; border-bottom: 1px solid rgba(201,165,80,0.15);
@@ -8724,8 +8734,14 @@ var Story = (function(){
       document.getElementById('vision-overlay').classList.remove('show');
       // Vision I referme le rideau sur le réveil — c'est le bon moment pour
       // proposer le tutoriel guidé, avant que le joueur n'aille cliquer partout.
-      if (_lastVision === 'vision1' && typeof Tutorial !== 'undefined') {
-        setTimeout(function(){ Tutorial.maybeStart(); }, 500);
+      if (_lastVision === 'vision1') {
+        if (State._martaWelcomePending && typeof InnRoom !== 'undefined') {
+          State._martaWelcomePending = false;
+          // Marta's own onOk chains into Tutorial.maybeStart() once her modal closes.
+          setTimeout(function(){ InnRoom._showMartaWelcome(); }, 400);
+        } else if (typeof Tutorial !== 'undefined') {
+          setTimeout(function(){ Tutorial.maybeStart(); }, 500);
+        }
       }
       _lastVision = null;
     }
@@ -12212,34 +12228,44 @@ var InnRoom = {
     if (State._showMartaIntro) {
       State._showMartaIntro = false;
       State.saveRun();
-      setTimeout(function(){
-        var trait = (State._introChoices || {}).trait;
-        var en = CGE_LANG === 'en';
-        var opener = en
-          ? (trait === 'cold' ? 'You were shivering when they found you. Like a dead man.'
-            : trait === 'pain' ? 'You were moaning in your sleep. Three days.'
-            : 'You didn\'t make a sound. We wondered if you\'d ever wake up.')
-          : (trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
-            : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
-            : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.');
-        var martaText = en
-          ? opener + '\n\n"I\'m Marta, the landlady of The Broken Shield. Someone brought you here unconscious three days ago. You owe me 50 coins for the room and care.\n\nIf you want to know where you come from... try the tavern. The people who remember you — if there are any — hang around there."'
-          : opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."';
-        CGEModal.show({
-          title: 'Marta',
-          text: martaText,
-          okLabel: T('modal.ok'),
-          onOk: function() {
-            // Première quête : payer Marta
-            if (typeof Meta !== 'undefined' && !(Meta.completedQuests||{})['marta_debt']) {
-              Meta.activeQuests = Meta.activeQuests || {};
-              Meta.activeQuests['marta_debt'] = true;
-              Meta.save();
-            }
-          }
-        });
-      }, 600);
+      // Si la Vision I n'a encore jamais été vue, elle va s'afficher par-dessus
+      // tout (plein écran) juste après ; Marta attend alors que la vision soit
+      // fermée pour ne pas s'empiler dessous (invisible derrière la modale).
+      var visionPending = !(Meta.storyFlags && Meta.storyFlags['vision1']);
+      if (visionPending) State._martaWelcomePending = true;
+      else setTimeout(InnRoom._showMartaWelcome, 600);
     }
+  },
+  _showMartaWelcome: function() {
+    var trait = (State._introChoices || {}).trait;
+    var en = CGE_LANG === 'en';
+    var opener = en
+      ? (trait === 'cold' ? 'You were shivering when they found you. Like a dead man.'
+        : trait === 'pain' ? 'You were moaning in your sleep. Three days.'
+        : 'You didn\'t make a sound. We wondered if you\'d ever wake up.')
+      : (trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
+        : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
+        : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.');
+    var martaText = en
+      ? opener + '\n\n"I\'m Marta, the landlady of The Broken Shield. Someone brought you here unconscious three days ago. You owe me 50 coins for the room and care.\n\nIf you want to know where you come from... try the tavern. The people who remember you — if there are any — hang around there."'
+      : opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."';
+    CGEModal.show({
+      title: 'Marta',
+      text: martaText,
+      okLabel: T('modal.ok'),
+      onOk: function() {
+        // Première quête : payer Marta
+        if (typeof Meta !== 'undefined' && !(Meta.completedQuests||{})['marta_debt']) {
+          Meta.activeQuests = Meta.activeQuests || {};
+          Meta.activeQuests['marta_debt'] = true;
+          Meta.save();
+        }
+        // Ne proposer le tutoriel qu'une fois cette modale refermée : CGEModal
+        // est un singleton, ouvrir la suivante pendant que celle-ci est encore
+        // affichée écraserait son contenu sous les yeux du joueur.
+        if (typeof Tutorial !== 'undefined' && Tutorial.maybeStart) Tutorial.maybeStart();
+      }
+    });
   },
   updateHp: function() {
     var hp = State.hp||0, hpMax = State.hpMax||1;
@@ -13216,6 +13242,9 @@ var App = {
     else { State.manaMax = 0; State.mana = 0; }
     Nav.go('inn-room');
     setTimeout(function(){ InnRoom.enter(); }, 300);
+    // Première nuit à L'Écu Brisé — le sommeil apporte un premier fragment de mémoire,
+    // qui enchaîne sur la proposition du tutoriel guidé.
+    setTimeout(function(){ if (typeof Story !== 'undefined') Story.showVision('vision1'); }, 1400);
   },
   continueGame: function() {
     if (!State.loadRun()) {
