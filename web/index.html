@@ -2588,7 +2588,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 /* positions hotspots chambre */
 #hs-inn-window  { top:40%;  left:50%; transform:translateX(-50%); }
 #hs-inn-armoire { top:22%;  left:12%; }
-#hs-inn-talents { top:22%;  left:82%; }
+#hs-inn-talents { top:24%;  left:83%; }
 .hs-badge {
   position: absolute; top: -4px; right: -4px; min-width: 15px; height: 15px; padding: 0 3px;
   border-radius: 8px; background: #00D4E8; color: #05030a;
@@ -2596,8 +2596,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
   display: none;
 }
 .hs-badge.show { display: block; }
-#hs-inn-chest   { top:65%;  left:10%; }
-#hs-inn-bed     { top:55%;  left:68%; }
+/* La malle et les sacs de voyage sont bien plus bas dans inn-room.webp
+   (coin inférieur gauche), et le lit ne commence qu'au tiers inférieur —
+   les deux étaient positionnés trop haut, sur le mur nu. */
+#hs-inn-chest   { top:85%;  left:14%; }
+#hs-inn-bed     { top:78%;  left:70%; }
 #hs-inn-town    { bottom:11%; left:50%; transform:translateX(-50%); }
 
 /* ── NPC HOTSPOTS ── */
@@ -2759,11 +2762,13 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
 #hs-town-inn        { top:32%; left:10%; }
-#hs-town-forge      { top:72%; left:8%; }
-#hs-town-armurerie  { bottom:10%; right:6%; }
-#hs-town-couturier  { top:68%; left:80%; }
+#hs-town-forge      { top:68%; left:12%; }
+/* L'armurerie (les deux chevaliers en armure, écusson) est au centre-bas de
+   town.webp, pas dans le coin vide en bas à droite. */
+#hs-town-armurerie  { top:82%; left:55%; }
+#hs-town-couturier  { top:62%; left:78%; }
 #hs-town-bijoutier  { top:50%; left:30%; }
-#hs-town-temple     { top:36%; left:62%; }
+#hs-town-temple     { top:36%; left:68%; }
 #hs-town-guild      { top:66%; left:38%; }
 #hs-town-chateau    { top:14%; left:38%; }
 #hs-town-taverne    { top:58%; left:64%; }
@@ -2796,15 +2801,22 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #wm-back:active { transform:scale(0.93); }
 #wm-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots région */
-#hs-reg-cave    { top:10%; left:40%; transform:translateX(-50%); }
-#hs-reg-forest  { top:36%; left:24%; }
-#hs-reg-ruins   { top:47%; left:35%; }
-#hs-reg-port    { top:42%; left:64%; }
-#hs-reg-town    { top:68%; left:16%; }
-#hs-reg-peaks   { top:68%; left:62%; }
-#hs-reg-marais  { top:55%; left:48%; }
-#hs-reg-volcan  { top:22%; left:68%; }
-#hs-reg-pics    { top:14%; left:52%; }
+/* Repositionnés sur les repères réels de region.webp : l'arche sombre dans
+   la montagne (Cryptes), les pics acérés à droite (Pics), une ouverture de
+   grotte plus loin dans les mêmes montagnes (Volcan), la masse de forêt
+   centrale (Forêt), la petite grotte à flanc de montagne côté mer (Grottes),
+   le port et ses navires (Port), le cimetière en lisière de forêt (Marais),
+   la ruine fortifiée en bas à droite (Ruines) et le pâté de ville — château,
+   église, forge — en bas à gauche (Thornwall). */
+#hs-reg-cave    { top:17%; left:44%; transform:translateX(-50%); }
+#hs-reg-forest  { top:40%; left:43%; }
+#hs-reg-ruins   { top:83%; left:63%; }
+#hs-reg-port    { top:57%; left:80%; }
+#hs-reg-town    { top:74%; left:26%; }
+#hs-reg-peaks   { top:44%; left:70%; }
+#hs-reg-marais  { top:57%; left:50%; }
+#hs-reg-volcan  { top:32%; left:80%; }
+#hs-reg-pics    { top:15%; left:72%; }
 /* badges danger */
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
 .hs-lbl.extreme{ border-color:rgba(160,30,160,0.6); color:#c060c0; }
@@ -2941,9 +2953,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #hs2-gouffre  { top:60%; left:25%; }
 #hs2-cryptes-deep { top:75%; left:55%; }
 .hs-lbl.extreme { border-color:rgba(144,96,208,0.6); color:#9060d0; }
-/* Passage node glow */
-.passage-hint { position:absolute; top:8px; left:8px; font-size:10px; font-family:'Crimson Text',serif; color:rgba(144,96,208,0); animation:passage-pulse 3s ease-in-out infinite; pointer-events:none; }
-@keyframes passage-pulse { 0%,100%{color:rgba(144,96,208,0)} 50%{color:rgba(144,96,208,0.4)} }
 /* ══════════════════════════════════════════════════════════════════
    ÉCRAN ÉQUIPEMENT / INVENTAIRE
    ══════════════════════════════════════════════════════════════════ */
@@ -3529,7 +3538,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="dm-canvas-wrap">
         <canvas id="map-canvas"></canvas>
       </div>
-      <div id="passage-hint" class="passage-hint">Une fissure dans la pierre...</div>
       <div id="dm-footer">
         <div id="dm-node-info" data-i18n="dm.nodeinfo">Choisis ton chemin...</div>
         <div id="dm-hint">Touche un nœud accessible pour avancer</div>
@@ -7522,7 +7530,41 @@ var Combat = (function(){
           var zd = State._currentZone ? ZONE_DATA[State._currentZone] : null;
           var maxFloor = zd ? zd.floors : 6;
           var isLastFloor = (State.floor||1) >= maxFloor;
-          if (isLastFloor) {
+          if (State._passageRun && isLastFloor) {
+            // Fin spéciale : le boss de la dernière salle des Profondeurs Oubliées
+            // révèle le passage vers les Terres Maudites — pas d'écran de victoire
+            // classique, un moment scénarisé qui enchaîne sur la nouvelle région.
+            Meta.totalRuns += 1;
+            Meta.bestFloor = Math.max(Meta.bestFloor, State.floor||1);
+            Meta.bestLevel = Math.max(Meta.bestLevel||1, State.level||1);
+            Meta.passageFound = true;
+            Meta.save();
+            State._passageRun = false;
+            State._currentZone = null;
+            State.floor = 1;
+            State.saveRun();
+            var pft = document.getElementById('floor-transition');
+            var pftLabel = document.getElementById('ft-label');
+            var pftNum = document.getElementById('ft-num');
+            var pftSub = document.getElementById('ft-sub');
+            var pftMem = document.getElementById('ft-memory');
+            pftLabel.textContent = T('passage.label');
+            pftNum.textContent = '⬡';
+            pftSub.textContent = T('passage.sub');
+            pftMem.textContent = T('passage.text');
+            pftMem.classList.add('show');
+            pft.classList.add('show');
+            pft.style.background = 'radial-gradient(ellipse at center, #1a0a2e 0%, #06030f 100%)';
+            pftNum.style.color = '#9060d0';
+            Sfx.victory();
+            setTimeout(function(){
+              pft.classList.remove('show');
+              pft.style.background = '';
+              pftNum.style.color = '';
+              pftMem.classList.remove('show');
+              Nav.go('world-map-2');
+            }, 5000);
+          } else if (isLastFloor) {
             // Donjon terminé → marquer nettoyé, stats meta, mais le perso GARDE tout
             // Clue drops on zone boss kill
             var _clueZone = State._currentZone;
@@ -11613,10 +11655,6 @@ var DungeonMap = (function() {
     nodes.forEach(function(n){ if (n.row === rowCount - 2) n.type = 'campfire'; });
     // Débloque les voisins du nœud de départ
     unlockChildren(0);
-    // Passage secret dans les Grottes
-    if (State._currentZone === 'grottes' && Meta.completedQuests && Meta.completedQuests['seraphine_3']) {
-      nodes.push({ id:99, row:0, col:0, type:'passage', state:'available', x:28, y:28 });
-    }
     // Décors aléatoires
     DungeonMap._decors = buildDecors();
     updateFloorUI(floor, hp, hpMax);
@@ -12052,12 +12090,6 @@ var DungeonMap = (function() {
     });
     if (!hit) return;
 
-    if (hit.type === 'passage') {
-      hit.state = 'done';
-      DungeonMap.enterPassage();
-      return;
-    }
-
     document.getElementById('dm-node-info').textContent = 'En route...';
     hit.state = 'done';
     unlockChildren(hit.id);
@@ -12150,38 +12182,6 @@ var DungeonMap = (function() {
       _rafRunning = true;
       requestAnimationFrame(render);
       initMap(floor, hp, hpMax);
-      // Passage hint visibility
-      var hint = document.getElementById('passage-hint');
-      if (hint) {
-        var showHint = State._currentZone === 'grottes' && Meta.completedQuests && Meta.completedQuests['seraphine_3'];
-        hint.style.opacity = showHint ? '1' : '0';
-      }
-    },
-    enterPassage: function() {
-      var ft = document.getElementById('floor-transition');
-      var ftLabel = document.getElementById('ft-label');
-      var ftNum = document.getElementById('ft-num');
-      var ftSub = document.getElementById('ft-sub');
-      var ftMem = document.getElementById('ft-memory');
-
-      ftLabel.textContent = T('passage.label');
-      ftNum.textContent = '⬡';
-      ftSub.textContent = T('passage.sub');
-      ftMem.textContent = T('passage.text');
-      ftMem.classList.add('show');
-      ft.classList.add('show');
-      ft.style.background = 'radial-gradient(ellipse at center, #1a0a2e 0%, #06030f 100%)';
-      ftNum.style.color = '#9060d0';
-
-      setTimeout(function(){
-        ft.classList.remove('show');
-        ft.style.background = '';
-        ftNum.style.color = '';
-        ftMem.classList.remove('show');
-        Meta.passageFound = true;
-        Meta.save();
-        Nav.go('world-map-2');
-      }, 5000);
     }
   };
 })();
@@ -13067,15 +13067,23 @@ var WorldMap = {
     if (Meta.clearedZones[zoneId]) {
       var isGrottesReturn = zoneId === 'grottes' && done['seraphine_3'] && !done['retour_grottes'] && Meta.passageFound;
       if (isGrottesReturn) {
-        // Cas unique : retour dans les Grottes pour trouver le passage
+        // Cas unique : retour dans les Grottes pour trouver le passage — "Les
+        // Profondeurs Oubliées". Même carte que les Grottes ; le combat lui-même
+        // reste calibré par rapport aux propres statistiques du joueur (le
+        // moteur de combat cible un nombre de coups fixe quel que soit le
+        // niveau — cf. startCombat() dans DungeonMap), donc un personnage qui
+        // revient ici après l'Acte III affronte déjà une vraie résistance sans
+        // qu'on ait besoin de gonfler artificiellement la zone. La dernière
+        // salle du dernier étage révèle le passage.
         CGEModal.show({
           title: 'Quelque chose a changé',
           text: 'Tu t\'approches de l\'entrée des Grottes.\n\nLe silence est différent. Pas le silence du vide — le silence de quelque chose qui attend.\n\nUne fissure dans la pierre que tu n\'avais jamais remarquée...',
           okLabel: 'Entrer',
           cancelLabel: 'Partir',
           onOk: function() {
-            State._zoneMod = { hpMult:1, atkMult:1, defMult:1, goldMult:1, enemyMod:1, goldMod:1 };
+            State._zoneMod = { hpMult:zone.hpMult||1, atkMult:zone.atkMult||1, defMult:zone.defMult||1, goldMult:zone.goldMult||1, enemyMod:zone.hpMult||1, goldMod:zone.goldMult||1 };
             State._currentZone = zoneId;
+            State._passageRun = true;
             State.floor = 1;
             State._runGoldBonus = 1;
             Nav.go('dungeon-map');
