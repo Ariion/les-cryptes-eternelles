@@ -294,15 +294,16 @@ canvas#particles {
 
 /* ── CHARACTER SELECT ────────────────────────────────────────── */
 #char-select {
-  background:#06050f;
+  background:#050409;
   justify-content:flex-start;
   overflow:hidden;
 }
 #cs-bg {
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 80% 45% at 50% 0%,rgba(50,10,80,0.6) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(100,50,0,0.15) 0%,transparent 50%);
+    radial-gradient(ellipse 80% 45% at 50% 0%,rgba(60,15,90,0.58) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(100,50,0,0.15) 0%,transparent 50%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 42px);
 }
 
 /* Header */
@@ -342,49 +343,64 @@ canvas#particles {
   display:flex; align-items:center; gap:8px;
   margin-bottom:2px;
 }
+.cs-section-label::before {
+  content:'◆'; font-size:6px; color:rgba(201,165,80,0.5);
+}
 .cs-section-label::after {
   content:''; flex:1; height:1px;
   background:linear-gradient(90deg,rgba(201,165,80,0.2),transparent);
 }
 
+/* ── Médaillon d'icône partagé : cadre circulaire "métal gravé" pour que les
+   emoji lisent comme des icônes de jeu plutôt que du texte posé à plat.
+   Prêt à devenir une vraie image (art peint) plus tard sans retoucher le
+   reste — il suffira de remplacer le contenu textuel par une balise <img>
+   de même taille. ── */
+.race-icon, .class-icon, .gender-icon {
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 28%, rgba(201,165,80,0.24), rgba(8,6,14,0.94) 72%);
+  border:1px solid rgba(201,165,80,0.4);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(201,165,80,0.14), 0 1px 3px rgba(0,0,0,0.5);
+  transition:border-color 0.18s, box-shadow 0.18s;
+}
+
+/* Cartes de sélection (genre/race/classe) : même socle "plaque gravée" +
+   halo cyan à la sélection — le cyan est réservé aux choix actifs et à
+   l'action principale, l'or reste la couleur du décor. */
+.gender-card, .race-card, .class-card {
+  position:relative; border-radius:10px;
+  background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.014));
+  border:1px solid rgba(201,165,80,0.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3);
+  cursor:pointer; transition:all 0.18s ease;
+  -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+}
+.gender-card.selected, .race-card.selected, .class-card.selected {
+  border-color:#00D4E8; background:rgba(0,212,232,0.07);
+  box-shadow:0 0 0 1px rgba(0,212,232,0.45), 0 0 20px rgba(0,212,232,0.3), inset 0 0 20px rgba(0,212,232,0.06);
+}
+.gender-card.selected .gender-icon, .race-card.selected .race-icon, .class-card.selected .class-icon {
+  border-color:rgba(0,212,232,0.6);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,0.5), 0 0 12px rgba(0,212,232,0.5);
+}
+.gender-card:active, .race-card:active, .class-card:active { transform:scale(0.97); }
+
 /* Genre */
 #gender-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:8px;
 }
-.gender-card {
-  position:relative; border-radius:10px; padding:9px 10px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.15);
-  cursor:pointer; transition:all 0.18s ease;
-  -webkit-tap-highlight-color:transparent;
-  display:flex; align-items:center; gap:8px;
-}
-.gender-card.selected { border-color:#C9A550; background:rgba(201,165,80,0.1); }
-.gender-card:active { transform:scale(0.97); }
-.gender-icon { font-size:20px; }
+.gender-card { padding:9px 10px; display:flex; align-items:center; gap:10px; }
+.gender-icon { width:38px; height:38px; font-size:18px; }
 .gender-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
 
 /* Grille races */
 #race-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:8px;
 }
-.race-card {
-  position:relative; border-radius:10px; padding:12px 14px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.15);
-  cursor:pointer; transition:all 0.18s ease;
-  -webkit-tap-highlight-color:transparent;
-  overflow:hidden;
-}
-.race-card::before {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(135deg,rgba(201,165,80,0.06) 0%,transparent 60%);
-  opacity:0; transition:opacity 0.18s;
-}
-.race-card.selected { border-color:#C9A550; background:rgba(201,165,80,0.1); }
-.race-card.selected::before { opacity:1; }
-.race-card:active { transform:scale(0.97); }
-.race-icon { font-size:22px; margin-bottom:4px; display:block; }
+.race-card { padding:12px 14px; }
+.race-icon { width:46px; height:46px; font-size:22px; margin-bottom:6px; }
 .race-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
 .race-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.5); margin-top:1px; }
 .race-bonus { font-size:10px; color:rgba(150,200,150,0.7); margin-top:4px; font-family:system-ui,sans-serif; }
@@ -393,26 +409,16 @@ canvas#particles {
 #class-grid {
   display:grid; grid-template-columns:repeat(3,1fr); gap:7px;
 }
-.class-card {
-  position:relative; border-radius:10px; padding:12px 8px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(201,165,80,0.15);
-  cursor:pointer; transition:all 0.18s ease;
-  -webkit-tap-highlight-color:transparent;
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  overflow:hidden;
-}
-.class-card.selected { border-color:#C9A550; background:rgba(201,165,80,0.1); }
-.class-card.selected::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(201,165,80,0.07) 0%,transparent 60%); }
-.class-card:active { transform:scale(0.97); }
-.class-icon { font-size:20px; }
+.class-card { padding:12px 8px; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.class-icon { width:40px; height:40px; font-size:19px; }
 .class-name { font-family:'Cinzel',serif; font-size:10px; font-weight:600; color:#EDE8DF; text-align:center; }
 .class-sub { font-family:'Crimson Text',serif; font-size:10px; color:rgba(201,165,80,0.45); }
 
 /* Stats panel */
 #cs-stats {
-  background:rgba(10,8,22,0.8);
+  background:linear-gradient(160deg, rgba(255,255,255,0.03), rgba(10,8,22,0.85));
   border:1px solid rgba(201,165,80,0.2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
   border-radius:10px; padding:12px 18px;
   display:flex; justify-content:space-around; align-items:center;
   flex-shrink:0;
@@ -431,9 +437,11 @@ canvas#particles {
   position:relative; z-index:2; flex-shrink:0;
 }
 /* Même traitement cyan que le bouton JOUER du menu principal : c'est le même
-   type d'action (lancer la partie/le prochain run), donc le même accent. */
+   type d'action (lancer la partie/le prochain run), donc le même accent.
+   Double liseré + reflet balayant en boucle pour un rendu "plaque enchantée"
+   plutôt qu'un simple bouton plat. */
 #btn-start-run {
-  width:100%; height:60px; border-radius:10px;
+  position:relative; width:100%; height:60px; border-radius:10px;
   background:linear-gradient(135deg,rgba(0,212,232,0.16),rgba(0,212,232,0.05));
   border:1px solid #00D4E8;
   color:#00D4E8; cursor:pointer;
@@ -441,6 +449,22 @@ canvas#particles {
   display:flex; align-items:center; justify-content:center; gap:14px;
   box-shadow:0 0 30px rgba(0,212,232,0.15),inset 0 1px 0 rgba(0,212,232,0.15);
   transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+}
+#btn-start-run::before {
+  content:''; position:absolute; inset:3px; border-radius:7px;
+  border:1px solid rgba(0,212,232,0.28); pointer-events:none;
+}
+#btn-start-run::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 35%, rgba(0,212,232,0.4) 48%, rgba(255,255,255,0.55) 50%, rgba(0,212,232,0.4) 52%, transparent 65%);
+  background-size:250% 100%; background-position:150% 0;
+  animation:cs-cta-shimmer 3.4s linear infinite;
+  mix-blend-mode:screen; pointer-events:none;
+}
+@keyframes cs-cta-shimmer {
+  0% { background-position:180% 0; }
+  100% { background-position:-80% 0; }
 }
 #btn-start-run:active { transform:scale(0.97); box-shadow:0 0 50px rgba(0,212,232,0.3); }
 #btn-start-run .ico { font-size:20px; }
@@ -464,8 +488,13 @@ canvas#particles {
   color:#C9A550; font-size:19px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+  animation:cs-dice-glow 2.8s ease-in-out infinite;
 }
 #cs-name-random:active { background:rgba(201,165,80,0.2); transform:scale(0.92) rotate(-12deg); }
+@keyframes cs-dice-glow {
+  0%, 100% { box-shadow:0 0 0 rgba(201,165,80,0); }
+  50% { box-shadow:0 0 14px rgba(201,165,80,0.55); }
+}
 
 /* ── ÉCRAN PROFILS ────────────────────────────────────────────── */
 #profiles-screen {
