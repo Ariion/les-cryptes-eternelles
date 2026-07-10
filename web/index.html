@@ -1793,11 +1793,19 @@ canvas#particles {
   width:100%; padding:13px 16px;
   background:transparent; border:1px solid rgba(237,232,223,0.12);
   color:rgba(237,232,223,0.65); font-family:'Crimson Text',serif;
-  font-size:15px; font-style:italic; letter-spacing:0.2px;
+  font-size:15px; letter-spacing:0.2px;
   border-radius:5px; cursor:pointer; text-align:left; position:relative; overflow:hidden;
   transition:all 0.18s ease; -webkit-tap-highlight-color:transparent;
+  display:flex; flex-direction:column; gap:4px;
+}
+.si-choice-text { font-style:italic; }
+.si-choice-bonus {
+  font-family:system-ui,sans-serif; font-style:normal;
+  font-size:10.5px; letter-spacing:0.4px; text-transform:uppercase;
+  color:rgba(201,165,80,0.85);
 }
 .si-choice:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.4); color:#C9A550; }
+.si-choice:active .si-choice-bonus { color:#C9A550; }
 #si-name-wrap {
   width:100%; margin-top:28px; display:flex; flex-direction:column; align-items:center; gap:12px;
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
@@ -5398,14 +5406,15 @@ var ProfilesScreen = {
     var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
     var b = Meta.bonuses;
-    State.hp    = c.hp  + r.dhp  + (b.hp||0);
-    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
-    State.atk   = c.atk + r.datk + (b.atk||0);
-    State.def   = c.def + r.ddef + (b.def||0);
-    State.floor  = 1; State.gold = (b.startGold||0); State.kills = 0;
+    var ib = introBonusStats();
+    State.hp    = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.atk   = c.atk + r.datk + (b.atk||0) + ib.atk;
+    State.def   = c.def + r.ddef + (b.def||0) + ib.def;
+    State.floor  = 1; State.gold = (b.startGold||0) + ib.startGold; State.kills = 0;
     State.xp = 0; State.level = 1;
     State.potions = 2 + (b.potions||0);
-    State.regenPerFight = 0; State.critBonus = b.crit||0; State.dodgeBonus = 0; State.itemLifesteal = 0;
+    State.regenPerFight = 0; State.critBonus = (b.crit||0) + ib.crit; State.dodgeBonus = 0; State.itemLifesteal = 0;
     State._zoneMod = { enemyMod:1, goldMod:1 }; State._currentZone = null;
     State.persistentStatuses = [];
     State.bag = []; State.inventory = [];
@@ -5549,6 +5558,41 @@ var NameGen = (function(){
 })();
 
 // ── STORY INTRO ────────────────────────────────────────────────────
+// Petits bonus permanents rattachés aux choix d'éveil (trait ressenti /
+// voix entendue). Lus à la fois par l'aperçu affiché sous chaque bouton
+// de choix (StoryIntro._scene) et par App.startRun() qui les applique
+// aux stats de départ du héros.
+var INTRO_BONUSES = {
+  trait: {
+    cold: { def:3,  label:'+3 DÉF',      labelEn:'+3 DEF' },
+    pain: { atk:3,  label:'+3 ATQ',      labelEn:'+3 ATK' },
+    void: { hp:15,  label:'+15 PV max',  labelEn:'+15 max HP' }
+  },
+  voice: {
+    survivor: { hp:10,        label:'+10 PV max', labelEn:'+10 max HP' },
+    divine:   { crit:0.05,    label:'+5% critique', labelEn:'+5% crit' },
+    found:    { startGold:15, label:'+15 or',      labelEn:'+15 gold' }
+  }
+};
+function introBonusOf(key, val) {
+  var g = INTRO_BONUSES[key];
+  return (g && g[val]) || null;
+}
+// Cumule les bonus des choix d'éveil (trait + voix) sur la base de State._introChoices —
+// utilisé partout où les stats de départ sont (re)calculées, pour rester cohérent
+// entre la création, la reprise de profil et un nouvel essai après game over.
+function introBonusStats() {
+  var out = { hp:0, atk:0, def:0, crit:0, startGold:0 };
+  var ch = (typeof State !== 'undefined' && State._introChoices) || {};
+  ['trait','voice'].forEach(function(key){
+    var b = introBonusOf(key, ch[key]);
+    if (!b) return;
+    out.hp += b.hp||0; out.atk += b.atk||0; out.def += b.def||0;
+    out.crit += b.crit||0; out.startGold += b.startGold||0;
+  });
+  return out;
+}
+
 var StoryIntro = (function(){
   var _c = {};   // choices accumulated
   var _idx = 0;
@@ -5677,7 +5721,17 @@ var StoryIntro = (function(){
         sc.choices.forEach(function(opt) {
           var btn = document.createElement('button');
           btn.className = 'si-choice ripple-el';
-          btn.textContent = (CGE_LANG === 'en' && opt.textEn) ? opt.textEn : opt.text;
+          var txt = document.createElement('span');
+          txt.className = 'si-choice-text';
+          txt.textContent = (CGE_LANG === 'en' && opt.textEn) ? opt.textEn : opt.text;
+          btn.appendChild(txt);
+          var bonus = introBonusOf(opt.key, opt.val);
+          if (bonus) {
+            var bo = document.createElement('span');
+            bo.className = 'si-choice-bonus';
+            bo.textContent = (CGE_LANG === 'en' && bonus.labelEn) ? bonus.labelEn : bonus.label;
+            btn.appendChild(bo);
+          }
           btn.addEventListener('click', function(){
             _c[opt.key] = opt.val;
             if (typeof Sfx !== 'undefined') Sfx.nav();
@@ -13922,18 +13976,19 @@ var App = {
     var r = RACES.find(function(x){ return x.id===State.race; });
     var c = CLASSES.find(function(x){ return x.id===State.cls; });
     var b = Meta.bonuses;
-    State.hp    = c.hp  + r.dhp  + (b.hp||0);
-    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
-    State.atk   = c.atk + r.datk + (b.atk||0);
-    State.def   = c.def + r.ddef + (b.def||0);
+    var ib = introBonusStats();
+    State.hp    = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.atk   = c.atk + r.datk + (b.atk||0) + ib.atk;
+    State.def   = c.def + r.ddef + (b.def||0) + ib.def;
     State.floor  = 1;
-    State.gold   = (b.startGold||0);
+    State.gold   = (b.startGold||0) + ib.startGold;
     State.kills  = 0;
     State.xp     = 0;
     State.level  = 1;
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0;
-    State.critBonus = b.crit||0;
+    State.critBonus = (b.crit||0) + ib.crit;
     State.dodgeBonus = 0;
     State.itemLifesteal = 0;
     State._zoneMod = { enemyMod:1, goldMod:1 };
@@ -13982,18 +14037,19 @@ var App = {
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
     var b = Meta.bonuses;
-    State.hp    = c.hp  + r.dhp  + (b.hp||0);
-    State.hpMax = c.hp  + r.dhp  + (b.hp||0);
-    State.atk   = c.atk + r.datk + (b.atk||0);
-    State.def   = c.def + r.ddef + (b.def||0);
+    var ib = introBonusStats();
+    State.hp    = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.hpMax = c.hp  + r.dhp  + (b.hp||0)  + ib.hp;
+    State.atk   = c.atk + r.datk + (b.atk||0) + ib.atk;
+    State.def   = c.def + r.ddef + (b.def||0) + ib.def;
     State.floor  = 1;
-    State.gold   = (b.startGold||0);
+    State.gold   = (b.startGold||0) + ib.startGold;
     State.kills  = 0;
     State.xp     = 0;
     State.level  = 1;
     State.potions = 2 + (b.potions||0);
     State.regenPerFight = 0;
-    State.critBonus = b.crit||0;
+    State.critBonus = (b.crit||0) + ib.crit;
     State._zoneMod = { enemyMod:1, goldMod:1 };
     State._currentZone = null;
     State.persistentStatuses = [];
