@@ -347,6 +347,23 @@ canvas#particles {
   background:linear-gradient(90deg,rgba(201,165,80,0.2),transparent);
 }
 
+/* Genre */
+#gender-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+}
+.gender-card {
+  position:relative; border-radius:10px; padding:9px 10px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(201,165,80,0.15);
+  cursor:pointer; transition:all 0.18s ease;
+  -webkit-tap-highlight-color:transparent;
+  display:flex; align-items:center; gap:8px;
+}
+.gender-card.selected { border-color:#C9A550; background:rgba(201,165,80,0.1); }
+.gender-card:active { transform:scale(0.97); }
+.gender-icon { font-size:20px; }
+.gender-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
+
 /* Grille races */
 #race-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:8px;
@@ -3358,6 +3375,18 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <input id="cs-name-input" type="text" maxlength="20" placeholder="Donne un nom à ton héros..." autocomplete="off" autocorrect="off" spellcheck="false">
           <button id="cs-name-random" type="button" onclick="NameGen.roll('cs-name-input')" title="Nom aléatoire" aria-label="Nom aléatoire">🎲</button>
         </div>
+        <div class="cs-section-label">Genre</div>
+        <div id="gender-grid">
+          <div class="gender-card" data-id="Homme" onclick="selectGender('Homme')">
+            <span class="gender-icon">👨</span>
+            <div class="gender-name">Homme</div>
+          </div>
+          <div class="gender-card" data-id="Femme" onclick="selectGender('Femme')">
+            <span class="gender-icon">👩</span>
+            <div class="gender-name">Femme</div>
+          </div>
+        </div>
+
         <div class="cs-section-label">Race</div>
         <div id="race-grid"></div>
 
@@ -3388,7 +3417,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
       </div>
 
       <div id="cs-footer">
-        <button id="btn-start-run" onclick="App.startRun()">
+        <button id="btn-start-run" onclick="StoryIntro.startFromPicker()">
           <span class="ico">⚔</span> Commencer l'Aventure
         </button>
       </div>
@@ -4350,11 +4379,15 @@ body.tut-combat-gate #combat-screen .tut-allow {
 <script>
 // ── DATA ─────────────────────────────────────────────────────────
 var RACES = [
-  { id:'Humain',  icon:'🧑', name:'Humain',  nameEn:'Human',  sub:'Équilibré',   subEn:'Balanced',  dhp:0,   datk:0,  ddef:0,  bonus:'+10% XP',           bonusEn:'+10% XP',            passive:'xp_boost' },
-  { id:'Elfe',    icon:'🧝', name:'Elfe',    nameEn:'Elf',    sub:'Agilité',     subEn:'Agility',   dhp:-10, datk:2,  ddef:-1, bonus:'Frappe en premier',  bonusEn:'Strikes first',      passive:'initiative' },
-  { id:'Nain',    icon:'⛏',  name:'Nain',    nameEn:'Dwarf',  sub:'Endurance',   subEn:'Endurance', dhp:20,  datk:-1, ddef:3,  bonus:'Résist. poison',    bonusEn:'Poison resist',      passive:'poison_resist' },
-  { id:'Orc',     icon:'💪', name:'Orc',     nameEn:'Orc',    sub:'Brutalité',   subEn:'Brutality', dhp:15,  datk:3,  ddef:-2, bonus:'Rage si PV < 30%',  bonusEn:'Rage if HP < 30%',   passive:'rage' },
+  { id:'Humain',  icon:'🧑', iconM:'👨',    iconF:'👩',    name:'Humain',  nameEn:'Human',  sub:'Équilibré',   subEn:'Balanced',  dhp:0,   datk:0,  ddef:0,  bonus:'+10% XP',           bonusEn:'+10% XP',            passive:'xp_boost' },
+  { id:'Elfe',    icon:'🧝', iconM:'🧝‍♂️', iconF:'🧝‍♀️', name:'Elfe',    nameEn:'Elf',    sub:'Agilité',     subEn:'Agility',   dhp:-10, datk:2,  ddef:-1, bonus:'Frappe en premier',  bonusEn:'Strikes first',      passive:'initiative' },
+  { id:'Nain',    icon:'⛏',  iconM:'🧔‍♂️', iconF:'🧔‍♀️', name:'Nain',    nameEn:'Dwarf',  sub:'Endurance',   subEn:'Endurance', dhp:20,  datk:-1, ddef:3,  bonus:'Résist. poison',    bonusEn:'Poison resist',      passive:'poison_resist' },
+  { id:'Orc',     icon:'💪', iconM:'👹',    iconF:'👹',    name:'Orc',     nameEn:'Orc',    sub:'Brutalité',   subEn:'Brutality', dhp:15,  datk:3,  ddef:-2, bonus:'Rage si PV < 30%',  bonusEn:'Rage if HP < 30%',   passive:'rage' },
 ];
+function raceIcon(r, gender) {
+  if (!r) return '?';
+  return (gender === 'Femme' ? r.iconF : r.iconM) || r.icon;
+}
 var CLASSES = [
   { id:'Guerrier', icon:'⚔',  name:'Guerrier', nameEn:'Warrior',  sub:'Solide',   subEn:'Sturdy',   hp:100, atk:12, def:6,  spe:'Bouclier',     speEn:'Shield' },
   { id:'Mage',     icon:'🔮', name:'Mage',     nameEn:'Mage',     sub:'Puissant', subEn:'Powerful', hp:70,  atk:18, def:3,  spe:'Boule de feu', speEn:'Fireball' },
@@ -4499,7 +4532,7 @@ var State = {
 State.saveRun = function() {
   try {
     var data = {
-      race: State.race, cls: State.cls, name: State.name||'Héros',
+      race: State.race, cls: State.cls, name: State.name||'Héros', gender: State.gender||'Homme',
       hp: State.hp, hpMax: State.hpMax,
       atk: State.atk, def: State.def,
       floor: State.floor, gold: State.gold,
@@ -5187,8 +5220,11 @@ var ProfilesScreen = {
 
   _creating: false,
   createNew: function() {
-    this._creating = false; // StoryIntro will set it when done
-    StoryIntro.start();
+    this._creating = false; // StoryIntro._finish() sets it once the run actually starts
+    Nav.go('char-select');
+    buildCharSelect();
+    var inp = document.getElementById('cs-name-input');
+    if (inp) inp.value = '';
   },
 
   render: function() {
@@ -5425,6 +5461,11 @@ var NameGen = (function(){
 var StoryIntro = (function(){
   var _c = {};   // choices accumulated
   var _idx = 0;
+  // Séquence d'indices de SCENES effectivement jouée. Par défaut la narration
+  // complète ; réduite aux scènes atmosphériques (réveil, sans les choix de
+  // race/classe/nom déjà faits sur l'écran de sélection) quand on démarre
+  // depuis startFromPicker().
+  var _seq = [0,1,2,3,4,5,6,7];
 
   var SCENES = [
     // 0 — Éveil
@@ -5528,16 +5569,16 @@ var StoryIntro = (function(){
     next();
   }
 
-  function _scene(idx) {
-    _idx = idx;
-    var sc = SCENES[idx];
+  function _scene(seqIdx) {
+    _idx = seqIdx;
+    var sc = SCENES[_seq[seqIdx]];
     if (!sc) return;
     _clear();
     var _lines = (CGE_LANG === 'en' && sc.linesEn) ? sc.linesEn : sc.lines;
     _typeLines(_lines, function() {
       if (sc.type === 'auto') {
         setTimeout(function(){
-          if (sc.finish) _finish(); else _scene(idx+1);
+          if (sc.finish) _finish(); else _scene(seqIdx+1);
         }, sc.delay || 2000);
       } else if (sc.type === 'choice') {
         var ch = document.getElementById('si-choices');
@@ -5549,7 +5590,7 @@ var StoryIntro = (function(){
           btn.addEventListener('click', function(){
             _c[opt.key] = opt.val;
             if (typeof Sfx !== 'undefined') Sfx.nav();
-            _scene(idx+1);
+            _scene(seqIdx+1);
           });
           ch.appendChild(btn);
         });
@@ -5563,8 +5604,9 @@ var StoryIntro = (function(){
   }
 
   function _finish() {
-    State.race = _c.race || 'Humain';
-    State.cls  = _c.cls  || 'Guerrier';
+    State.race   = _c.race   || 'Humain';
+    State.cls    = _c.cls    || 'Guerrier';
+    State.gender = _c.gender || State.gender || 'Homme';
     var heroName = _c.name || 'Étranger';
     var inp = document.getElementById('cs-name-input');
     if (inp) inp.value = heroName;
@@ -5576,7 +5618,17 @@ var StoryIntro = (function(){
 
   return {
     start: function() {
-      _c = {}; _idx = 0;
+      _c = {}; _idx = 0; _seq = [0,1,2,3,4,5,6,7];
+      Nav.go('story-intro');
+      setTimeout(function(){ _scene(0); }, 500);
+    },
+    // Lancée depuis l'écran de sélection (race/classe/genre/nom déjà
+    // choisis) : ne rejoue que les scènes atmosphériques du réveil — pas
+    // les questions de race/classe/nom, déjà répondues sur cet écran.
+    startFromPicker: function() {
+      var nameVal = (document.getElementById('cs-name-input').value||'').trim();
+      _c = { race: State.race, cls: State.cls, gender: State.gender, name: nameVal || T('create.name.placeholder') };
+      _idx = 0; _seq = [0,1,2,3,7];
       Nav.go('story-intro');
       setTimeout(function(){ _scene(0); }, 500);
     },
@@ -5588,11 +5640,9 @@ var StoryIntro = (function(){
       _scene(_idx + 1);
     },
     skip: function() {
-      ProfilesScreen._creating = true;
-      Nav.go('char-select');
-      buildCharSelect();
-      var inp = document.getElementById('cs-name-input');
-      if (inp) inp.value = '';
+      // Le choix de race/classe/genre/nom vient déjà de l'écran de sélection
+      // (startFromPicker) — "Passer" saute directement le réveil atmosphérique.
+      _finish();
     }
   };
 })();
@@ -6692,6 +6742,12 @@ function tick(){
 
 // ── CHARACTER SELECT ──────────────────────────────────────────────
 function buildCharSelect() {
+  // Genre
+  if (!State.gender) State.gender = 'Homme';
+  document.querySelectorAll('.gender-card').forEach(function(c){
+    c.classList.toggle('selected', c.dataset.id === State.gender);
+  });
+
   // Races
   var rg = document.getElementById('race-grid');
   rg.innerHTML = '';
@@ -6700,7 +6756,7 @@ function buildCharSelect() {
     card.className = 'race-card' + (State.race === r.id ? ' selected' : '');
     card.dataset.id = r.id;
     card.innerHTML =
-      '<span class="race-icon">'+r.icon+'</span>' +
+      '<span class="race-icon">'+raceIcon(r, State.gender)+'</span>' +
       '<div class="race-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>' +
       '<div class="race-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>' +
       '<div class="race-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div>';
@@ -6724,6 +6780,19 @@ function buildCharSelect() {
   });
 
   updateStats();
+}
+
+function selectGender(g) {
+  State.gender = g;
+  document.querySelectorAll('.gender-card').forEach(function(c){
+    c.classList.toggle('selected', c.dataset.id === g);
+  });
+  // Les icônes de race dépendent du genre — on les rafraîchit sans tout reconstruire.
+  document.querySelectorAll('#race-grid .race-card').forEach(function(card){
+    var r = RACES.find(function(x){ return x.id === card.dataset.id; });
+    var ico = card.querySelector('.race-icon');
+    if (r && ico) ico.textContent = raceIcon(r, g);
+  });
 }
 
 function selectRace(id) {
