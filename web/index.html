@@ -2796,10 +2796,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
 #hs-town-inn        { top:32%; left:10%; }
-#hs-town-forge      { top:68%; left:12%; }
+#hs-town-forge      { top:63%; left:12%; }
 /* L'armurerie (les deux chevaliers en armure, écusson) est au centre-bas de
    town.webp, pas dans le coin vide en bas à droite. */
-#hs-town-armurerie  { top:82%; left:55%; }
+#hs-town-armurerie  { top:76%; left:55%; }
 #hs-town-couturier  { top:62%; left:78%; }
 #hs-town-bijoutier  { top:50%; left:30%; }
 #hs-town-temple     { top:36%; left:68%; }
@@ -2842,14 +2842,13 @@ body.tut-combat-gate #combat-screen .tut-allow {
    le port et ses navires (Port), le cimetière en lisière de forêt (Marais),
    la ruine fortifiée en bas à droite (Ruines) et le pâté de ville — château,
    église, forge — en bas à gauche (Thornwall). */
-#hs-reg-cave    { top:17%; left:44%; transform:translateX(-50%); }
 #hs-reg-forest  { top:40%; left:43%; }
-#hs-reg-ruins   { top:83%; left:63%; }
-#hs-reg-port    { top:57%; left:80%; }
+#hs-reg-ruins   { top:78%; left:63%; }
+#hs-reg-port    { top:57%; left:74%; }
 #hs-reg-town    { top:74%; left:26%; }
-#hs-reg-peaks   { top:44%; left:70%; }
-#hs-reg-marais  { top:57%; left:50%; }
-#hs-reg-volcan  { top:32%; left:80%; }
+#hs-reg-peaks   { top:32%; left:74%; }
+#hs-reg-marais  { top:62%; left:50%; }
+#hs-reg-volcan  { top:44%; left:70%; }
 #hs-reg-pics    { top:15%; left:72%; }
 /* badges danger */
 .hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
@@ -3022,27 +3021,31 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 .chest-tab.active { color:#C9A550; border-bottom-color:#C9A550; }
 
-#chest-body { flex:1; overflow-y:auto; padding:12px 12px 90px; }
+/* La grille entière (20 emplacements coffre / 8 sac) doit tenir sur un
+   écran de téléphone sans défilement : les joueurs ne pensent pas
+   spontanément à scroller pour voir la suite. 5 colonnes + emplacements
+   compacts ramènent le coffre à 4 rangées pile visibles d'un coup. */
+#chest-body { flex:1; overflow-y:auto; padding:8px 8px 12px; display:flex; flex-direction:column; }
 
 #chest-grid, #chest-inv-grid {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
+  display:grid; grid-template-columns:repeat(5,1fr); gap:4px;
 }
 .chest-slot {
-  aspect-ratio:1; border-radius:8px;
+  aspect-ratio:1; border-radius:7px;
   border:1px dashed rgba(201,165,80,0.12);
   background:rgba(201,165,80,0.02);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:2px; cursor:pointer; padding:4px;
+  gap:1px; cursor:pointer; padding:3px;
   -webkit-tap-highlight-color:transparent; transition:all 0.15s;
 }
 .chest-slot.occupied { border-color:rgba(201,165,80,0.35); background:rgba(201,165,80,0.06); border-style:solid; }
 .chest-slot:active { transform:scale(0.93); }
-.chest-slot .cs-ico { font-size:20px; }
-.chest-slot .cs-name { font-family:'Cinzel',serif; font-size:7px; color:rgba(237,232,223,0.5); text-align:center; line-height:1.2; }
-.chest-slot .cs-stat { font-family:'Cinzel',serif; font-size:8px; color:rgba(201,165,80,0.65); }
+.chest-slot .cs-ico { font-size:18px; }
+.chest-slot .cs-name { font-family:'Cinzel',serif; font-size:6.5px; color:rgba(237,232,223,0.5); text-align:center; line-height:1.15; }
+.chest-slot .cs-stat { font-family:'Cinzel',serif; font-size:7.5px; color:rgba(201,165,80,0.65); }
 #chest-hint {
-  font-family:'Crimson Text',serif; font-style:italic; font-size:12px;
-  color:rgba(237,232,223,0.25); text-align:center; padding:8px 0 4px;
+  font-family:'Crimson Text',serif; font-style:italic; font-size:11px;
+  color:rgba(237,232,223,0.25); text-align:center; padding:2px 0 6px; flex-shrink:0;
 }
 
 /* ancien CSS world-map supprimé — inutile avec l'image */
@@ -4121,7 +4124,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div class="npc-name-tag" data-i18n="npc.elise">Sœur Élise</div>
       </div>
       <!-- NPC: Josselin, le coursier (commissions du jour) -->
-      <div class="npc-hotspot" id="npc-josselin" onclick="Quests.openNpc('josselin')" style="position:absolute;top:80%;left:50%">
+      <div class="npc-hotspot" id="npc-josselin" onclick="Quests.openNpc('josselin')" style="position:absolute;top:77%;left:38%">
         <div class="npc-avatar"></div>
         <div class="npc-name-tag" data-i18n="npc.josselin">Josselin</div>
       </div>
@@ -4177,11 +4180,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="world-map" class="screen has-game-header">
       <div id="wm-header">
         <div id="wm-title" data-i18n="wm.title">La Région</div>
-      </div>
-      <!-- cave / cryptes (montagne haut centre) -->
-      <div class="hotspot" id="hs-reg-cave" onclick="WorldMap.enter('cryptes')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl extreme">⚰ Cryptes · Nv. 50</div>
       </div>
       <!-- forêt (centre gauche) -->
       <div class="hotspot" id="hs-reg-forest" onclick="WorldMap.enter('foret')">
@@ -13288,7 +13286,6 @@ var WorldMap = {
       marais:  'hs-reg-marais',
       pics:    'hs-reg-pics',
       volcan:  'hs-reg-volcan',
-      cryptes: 'hs-reg-cave',
     };
     Object.keys(hsMap).forEach(function(id) {
       var el = document.getElementById(hsMap[id]);
