@@ -1816,11 +1816,14 @@ canvas#particles {
 }
 #tutorial-skip:active { color:rgba(143,201,180,0.9); }
 
-/* tutorial-active : la barre d'onglets et le menu restent hors-jeu tout le
-   temps du tutoriel (exploration comprise) — impossible de filer ailleurs.
-   tutorial-strict : en plus, grise tout sauf la cible de l'étape en cours
-   (portions linéaires seulement — l'exploration a besoin de rester libre). */
-body.tutorial-active #hub-tabbar,
+/* tutorial-active : le menu principal et les raccourcis de l'en-tête restent
+   hors-jeu tout le temps du tutoriel (exploration comprise) — impossible de
+   filer ailleurs par ce biais. La barre d'onglets du bas, elle, reste
+   visible en permanence (le joueur doit toujours pouvoir situer où il est) ;
+   tutorial-strict grise tout sauf la cible de l'étape en cours, onglets du
+   bas compris, pour qu'il reste toujours au moins un chemin de retour vers
+   le bon écran (portions linéaires seulement — l'exploration a besoin de
+   rester libre). */
 body.tutorial-active #gh-btn-menu,
 body.tutorial-active #gh-btn-quests,
 body.tutorial-active #gh-btn-carnet,
@@ -1829,15 +1832,21 @@ body.tutorial-strict .screen.active .hotspot,
 body.tutorial-strict .screen.active .npc-hotspot,
 body.tutorial-strict .screen.active #town-back,
 body.tutorial-strict .screen.active #taverne-back,
-body.tutorial-strict .screen.active #wm-back {
+body.tutorial-strict .screen.active #wm-back,
+body.tutorial-strict #hub-tabbar .hub-tab {
   pointer-events:none; opacity:0.25; filter:grayscale(0.7);
   transition:opacity 0.3s ease, filter 0.3s ease;
 }
-body.tutorial-strict .screen.active .tut-allow {
+body.tutorial-strict .screen.active .tut-allow,
+body.tutorial-strict #hub-tabbar .hub-tab.tut-allow {
   pointer-events:all !important; opacity:1 !important; filter:none !important;
 }
 body.tutorial-strict .screen.active .tut-allow .hs-ring::before,
 body.tutorial-strict .screen.active .tut-allow .npc-avatar {
+  animation:tut-glow 1.3s ease-in-out infinite;
+}
+body.tutorial-strict #hub-tabbar .hub-tab.tut-allow {
+  border-radius:10px;
   animation:tut-glow 1.3s ease-in-out infinite;
 }
 /* Premier combat du tutoriel : ne force qu'un seul coup, le temps d'apprendre. */
@@ -9248,28 +9257,28 @@ var Story = (function(){
 var Tutorial = (function(){
   // Phase 1 — verrouillage strict, un seul élément cliquable à la fois.
   var GATE_STEPS = [
-    { id:'marta', allow:['npc-marta'],
+    { id:'marta', allow:['npc-marta'], hub:'auberge',
       text:'Cette femme... elle dit s\'appeler Marta. Je devrais lui parler.',
       textEn:'This woman... she says her name is Marta. I should speak with her.' },
-    { id:'town', allow:['hs-inn-town'],
+    { id:'town', allow:['hs-inn-town'], hub:'auberge',
       text:'Elle parle d\'une taverne, en face, où des gens m\'attendraient. Je devrais aller en ville.',
       textEn:'She speaks of a tavern, across the way, where people are apparently waiting for me. I should go into town.' },
-    { id:'taverne', allow:['hs-town-taverne'],
+    { id:'taverne', allow:['hs-town-taverne'], hub:'ville',
       text:'La taverne devrait être quelque part par ici.',
       textEn:'The tavern should be around here somewhere.' },
-    { id:'bertrand', allow:['npc-bertrand'],
+    { id:'bertrand', allow:['npc-bertrand'], hub:'ville',
       text:'Cherchons l\'aubergiste.',
       textEn:'Let\'s find the innkeeper.' },
-    { id:'oswin', allow:['npc-oswin'],
+    { id:'oswin', allow:['npc-oswin'], hub:'ville',
       text:'Ce barde... il semble aussi me connaître.',
       textEn:'This bard... he also seems to know me.' },
-    { id:'seraphine', allow:['npc-seraphine'],
+    { id:'seraphine', allow:['npc-seraphine'], hub:'ville',
       text:'Et cette mage, là-bas — je devrais aussi lui parler.',
       textEn:'And that mage, over there — I should speak with her too.' },
-    { id:'adventure', allow:['hs-inn-window'],
-      text:'Il est temps de sortir de cette ville et de découvrir ce qui m\'attend dehors.',
-      textEn:'Time to leave this town and discover what awaits out there.' },
-    { id:'zone', allow:['hs-reg-peaks'],
+    { id:'adventure', allow:['hs-inn-window'], hub:'auberge',
+      text:'Il est temps de sortir de cette ville et de découvrir ce qui m\'attend dehors. Retournons à l\'auberge : la fenêtre y mène au monde extérieur.',
+      textEn:'Time to leave this town and discover what awaits out there. Back to the inn: the window leads to the outside world.' },
+    { id:'zone', allow:['hs-reg-peaks'], hub:'region',
       text:'Les Grottes des Ombres semblent être un bon point de départ. Le reste attendra.',
       textEn:'The Caves of Shadow seem like a good place to start. The rest can wait.' },
   ];
@@ -9291,21 +9300,21 @@ var Tutorial = (function(){
   // conditionnelles (équipement/talents seulement si utiles).
   function _returnSteps() {
     var steps = [
-      { id:'return_marta', allow:['npc-marta'],
+      { id:'return_marta', allow:['npc-marta'], hub:'auberge',
         text:'J\'ai de quoi rembourser Marta.',
         textEn:'I have enough to repay Marta.' }
     ];
     if ((State.inventory||[]).length || (Meta.chest||[]).length) {
-      steps.push({ id:'return_equip', allow:['hs-inn-armoire'],
+      steps.push({ id:'return_equip', allow:['hs-inn-armoire'], hub:'auberge',
         text:'Un équipement m\'attend — je devrais l\'essayer.',
         textEn:'Some gear is waiting for me — I should try it on.' });
     }
     if ((State.skillPointsClass||0) > 0 || (State.skillPointsRace||0) > 0) {
-      steps.push({ id:'return_talents', allow:['hs-inn-talents'],
+      steps.push({ id:'return_talents', allow:['hs-inn-talents'], hub:'auberge',
         text:'J\'ai gagné en expérience — mes talents m\'attendent.',
         textEn:'I\'ve grown stronger — my talents await.' });
     }
-    steps.push({ id:'return_adventure', allow:['hs-inn-window'],
+    steps.push({ id:'return_adventure', allow:['hs-inn-window'], hub:'auberge',
       text:'Il est temps de reprendre la route.',
       textEn:'Time to get back on the road.' });
     return steps;
@@ -9336,6 +9345,14 @@ var Tutorial = (function(){
       var el = document.getElementById(id);
       if (el) el.classList.add('tut-allow');
     });
+    // Autorise aussi l'onglet du bas menant à l'écran de la cible : sans ça,
+    // un joueur qui n'est pas déjà sur le bon écran (ex. encore à la
+    // taverne alors que la cible suivante est à l'auberge) n'a plus aucun
+    // moyen d'y retourner, tout le reste étant grisé.
+    if (step.hub) {
+      var tabEl = document.querySelector('#hub-tabbar .hub-tab[data-hub="'+step.hub+'"]');
+      if (tabEl) tabEl.classList.add('tut-allow');
+    }
     _setBanner(step);
   }
 
