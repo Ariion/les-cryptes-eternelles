@@ -1537,13 +1537,18 @@ canvas#particles {
   color: rgba(201,165,80,0.55); display: none;
 }
 #gh-btns { display: flex; gap: 6px; }
-#gh-btn-menu, #gh-btn-quests, #gh-btn-carnet {
+#gh-btn-menu, #gh-btn-quests, #gh-btn-carnet, #gh-btn-tuto {
   display: flex; align-items: center; gap: 4px;
   background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.3);
   color: #C9A550; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
   border-radius: 6px; padding: 4px 9px; cursor: pointer;
   -webkit-tap-highlight-color: transparent; white-space: nowrap;
 }
+#gh-btn-tuto {
+  display: none;
+  background: rgba(126,207,255,0.1); border-color: rgba(126,207,255,0.35); color: #7ecfff;
+}
+#gh-btn-tuto.show { display: flex; }
 #gh-row2 {
   display: flex; align-items: center; gap: 10px;
 }
@@ -1818,7 +1823,8 @@ canvas#particles {
 body.tutorial-active #hub-tabbar,
 body.tutorial-active #gh-btn-menu,
 body.tutorial-active #gh-btn-quests,
-body.tutorial-active #gh-btn-carnet { display:none !important; }
+body.tutorial-active #gh-btn-carnet,
+body.tutorial-active #gh-btn-tuto { display:none !important; }
 body.tutorial-strict .screen.active .hotspot,
 body.tutorial-strict .screen.active .npc-hotspot,
 body.tutorial-strict .screen.active #town-back,
@@ -3178,6 +3184,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="gh-floor-badge"></div>
         <div id="gh-btns">
           <button id="gh-btn-menu"   onclick="Nav.go('main-menu')">⌂ Menu</button>
+          <button id="gh-btn-tuto"   onclick="Tutorial.restart()">🎓 Tuto</button>
           <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes</button>
           <button id="gh-btn-carnet" onclick="CarnetEnquete.open()">🔍 Enquête</button>
         </div>
@@ -9446,6 +9453,20 @@ var Tutorial = (function(){
         }
       });
     },
+    // Relance manuelle, accessible tant que la dette envers Marta n'est pas
+    // remboursée (bouton dans l'en-tête) — filet de secours si la proposition
+    // automatique n'a jamais abouti pour une raison ou une autre.
+    restart: function() {
+      document.body.classList.remove('tutorial-active', 'tutorial-strict', 'tut-combat-gate');
+      _clearAllow();
+      var banner = document.getElementById('tutorial-banner');
+      if (banner) banner.style.display = 'none';
+      _phase = 'idle'; _idx = -1; _steps = GATE_STEPS;
+      Meta.tutorialPhase = null;
+      Meta.save();
+      Nav.go('inn-room');
+      setTimeout(function(){ Tutorial.maybeStart(); }, 350);
+    },
     confirmSkip: function() {
       if (_phase === 'idle' || _phase === 'done') return;
       CGEModal.show({
@@ -13295,6 +13316,14 @@ var HUD = (function(){
     // Name
     var nm = document.getElementById('gh-name');
     if (nm) nm.textContent = (State && State.name) ? State.name.toUpperCase() : 'AVENTURIER';
+
+    // Bouton de relance du tutoriel : visible tant que la dette envers Marta
+    // n'est pas remboursée (repère fiable du tout début de partie).
+    var tutoBtn = document.getElementById('gh-btn-tuto');
+    if (tutoBtn) {
+      var debtPaid = !!(Meta.completedQuests && Meta.completedQuests['marta_debt']);
+      tutoBtn.classList.toggle('show', !debtPaid);
+    }
 
     // Floor badge (only in dungeon)
     var fb = document.getElementById('gh-floor-badge');
