@@ -1661,6 +1661,7 @@ canvas#particles {
 .spell-btn .sp-el { font-size:10px; opacity:0.85; }
 .spell-btn .sp-desc { font-size:12px; color:rgba(160,200,255,0.6); margin-top:1px; }
 .spell-btn .sp-cost { font-family:'Cinzel',serif; font-size:10px; color:#60a0ff; flex-shrink:0; }
+.spell-empty { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(160,200,255,0.45); text-align:center; padding:24px 12px; }
 #spell-cancel { font-family:'Cinzel',serif; font-size:9px; color:rgba(255,255,255,0.25); background:none; border:none; cursor:pointer; padding:6px; text-align:center; }
 /* Screens with header get top padding */
 .has-game-header { padding-top: 82px !important; }
@@ -2136,6 +2137,48 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .tal-node-cost-badge { font-family:'Cinzel',serif; font-size: 10px; color: #00D4E8; margin: 4px 0 12px; text-align: center; }
 .tal-connector-line { width: 2px; height: 20px; background: rgba(120,90,50,0.3); }
 .tal-connector-line.done { background: rgba(201,165,80,0.75); }
+/* Compétences actives (capstones débloquant un sort de combat) : accent
+   ambre distinct des nœuds passifs, + un petit badge d'épée. */
+.tal-node-circle.active-type.unlocked { border-color: rgba(230,140,50,0.9); box-shadow: 0 0 12px rgba(230,140,50,0.4); }
+.tal-node-circle.active-type.available { border-color: rgba(230,140,50,0.85); box-shadow: 0 0 12px rgba(230,140,50,0.35); animation: talPulseActive 2s infinite; }
+@keyframes talPulseActive {
+  0%,100% { box-shadow: 0 0 8px rgba(230,140,50,0.3); }
+  50%     { box-shadow: 0 0 16px rgba(230,140,50,0.6); }
+}
+.tal-node-active-badge {
+  position: absolute; bottom: -3px; right: -3px; font-size: 10px; width: 16px; height: 16px;
+  border-radius: 50%; background: #1a1208; border: 1px solid rgba(230,140,50,0.8);
+  display: flex; align-items: center; justify-content: center;
+}
+.tal-node-circle { position: relative; }
+/* Onglet Compétences de combat : liste des actifs débloqués, sélection du loadout (3 max) */
+.tal-loadout-wrap { padding: 4px 12px 24px; display: flex; flex-direction: column; gap: 10px; }
+.tal-loadout-intro { font-family:'Crimson Text',serif; font-style: italic; font-size: 12.5px; color: rgba(201,165,80,0.55); text-align: center; padding: 4px 8px 10px; }
+.tal-loadout-empty { font-family:'Crimson Text',serif; font-style: italic; font-size: 13px; color: rgba(237,232,223,0.3); text-align: center; padding: 30px 12px; }
+.tal-loadout-card {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: rgba(20,16,10,0.5); border: 1px solid rgba(120,90,50,0.3); border-radius: 10px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: border-color 0.15s, background 0.15s;
+}
+.tal-loadout-card:active { transform: scale(0.98); }
+.tal-loadout-card.equipped { border-color: rgba(230,140,50,0.8); background: rgba(230,140,50,0.08); }
+.tal-loadout-card.full { opacity: 0.45; }
+.tal-loadout-card .tlc-ico { font-size: 22px; flex-shrink: 0; }
+.tal-loadout-card .tlc-info { flex: 1; min-width: 0; }
+.tal-loadout-card .tlc-name { font-family:'Cinzel',serif; font-size: 13px; color: #EDE8DF; }
+.tal-loadout-card .tlc-desc { font-family:'Crimson Text',serif; font-size: 12px; color: rgba(237,232,223,0.55); margin-top: 2px; }
+.tal-loadout-card .tlc-check {
+  font-family:'Cinzel',serif; font-size: 15px; color: rgba(201,165,80,0.4); flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(120,90,50,0.4);
+  display: flex; align-items: center; justify-content: center;
+}
+.tal-loadout-card.equipped .tlc-check { color: #E68C32; border-color: rgba(230,140,50,0.8); }
+.tal-loadout-card.shake { animation: tal-shake 0.4s ease; }
+@keyframes tal-shake {
+  0%,100% { transform: translateX(0); }
+  20%,60% { transform: translateX(-5px); }
+  40%,80% { transform: translateX(5px); }
+}
 #tal-detail-overlay {
   display: none; position: absolute; inset: 0; z-index: 999; background: rgba(4,3,8,0.88);
   align-items: flex-end; justify-content: center;
@@ -2148,6 +2191,8 @@ body.tut-combat-gate #combat-screen .tut-allow {
   padding: 24px 20px 26px; position: relative; text-align: center;
 }
 #tal-detail-close { position: absolute; top: 14px; right: 16px; font-size: 16px; color: rgba(237,232,223,0.5); cursor: pointer; }
+#tal-detail-tap { cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 4px; border-radius: 10px; transition: background 0.15s; }
+#tal-detail-tap:active { background: rgba(201,165,80,0.08); }
 #tal-detail-ico { font-size: 36px; margin-bottom: 8px; }
 #tal-detail-name { font-family: 'Cinzel Decorative', serif; font-size: 17px; color: #EDE8DF; }
 .tal-detail-kind {
@@ -3648,6 +3693,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="tal-tabs">
         <div class="chest-tab active" id="tal-tab-class" onclick="TalentsScreen.tab('class')" data-i18n="tal.tab.class">Classe</div>
         <div class="chest-tab" id="tal-tab-race" onclick="TalentsScreen.tab('race')" data-i18n="tal.tab.race">Race</div>
+        <div class="chest-tab" id="tal-tab-loadout" onclick="TalentsScreen.tab('loadout')"><span data-i18n="tal.tab.loadout">Compétences</span> <span id="tal-loadout-count"></span></div>
       </div>
       <div id="tal-body"></div>
       <button id="tal-respec-btn" onclick="TalentsScreen.respec()">↺ <span data-i18n="tal.respec.btn">Réinitialiser l'arbre</span></button>
@@ -3655,8 +3701,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="tal-detail-overlay" onclick="TalentsScreen.closeDetail()">
         <div id="tal-detail-panel" onclick="event.stopPropagation()">
           <div id="tal-detail-close" onclick="TalentsScreen.closeDetail()">✕</div>
-          <div id="tal-detail-ico">✨</div>
-          <div id="tal-detail-name"></div>
+          <div id="tal-detail-tap" onclick="TalentsScreen.tapNodeAgain()">
+            <div id="tal-detail-ico">✨</div>
+            <div id="tal-detail-name"></div>
+          </div>
           <div id="tal-detail-kind" class="tal-detail-kind passive"></div>
           <div id="tal-detail-desc"></div>
           <button id="tal-detail-btn" onclick="TalentsScreen.upgradeDetail()"></button>
@@ -4400,6 +4448,7 @@ State.saveRun = function() {
       talents: State.talents || { class:{}, race:{} },
       _talentFlags: State._talentFlags || {},
       _talentXpPct: State._talentXpPct || 0,
+      combatLoadout: State.combatLoadout || [],
     };
     localStorage.setItem('cge_run', Vault.pack(data));
     if (typeof ProfileManager !== 'undefined') ProfileManager.updateActive(undefined, data);
@@ -5481,6 +5530,7 @@ var STRINGS = {
     'cl.ragebonus': '🟠 Rage orcque ! ATQ ×1.5',
     'cl.nomana': 'Plus de mana !',
     'cl.notenoughmana': 'Plus assez de mana !',
+    'spell.loadout.empty': 'Aucune compétence équipée. Choisis-en dans l\'arbre de talents.',
     'cl.shieldskill': 'Bouclier de fer ! (+8 DEF)',
     'cl.nopotions': 'Plus de potions !',
     'cl.confusion': '🔮 Confusion ! L\'ennemi perd son tour.',
@@ -5670,6 +5720,9 @@ var STRINGS = {
     'tal.title': 'Talents',
     'tal.tab.class': 'Classe',
     'tal.tab.race': 'Race',
+    'tal.tab.loadout': 'Compétences',
+    'tal.loadout.intro': 'Choisis jusqu\'à 3 compétences actives à emporter au combat, parmi tout ce que tu as débloqué.',
+    'tal.loadout.none': 'Aucune compétence active débloquée pour l\'instant. Investis des points dans l\'arbre pour en débloquer.',
     'tal.respec.btn': 'Réinitialiser l\'arbre',
     'tal.respec.title': 'Réinitialiser l\'arbre ?',
     'tal.respec.body': 'Tous les talents débloqués (classe et race) seront annulés et tes points remboursés.',
@@ -5938,6 +5991,7 @@ var STRINGS = {
     'cl.ragebonus': '🟠 Orcish rage! ATK ×1.5',
     'cl.nomana': 'Out of mana!',
     'cl.notenoughmana': 'Not enough mana!',
+    'spell.loadout.empty': 'No skills equipped. Pick some in the talent tree.',
     'cl.shieldskill': 'Iron shield! (+8 DEF)',
     'cl.nopotions': 'No potions left!',
     'cl.confusion': '🔮 Confusion! The enemy loses its turn.',
@@ -6127,6 +6181,9 @@ var STRINGS = {
     'tal.title': 'Talents',
     'tal.tab.class': 'Class',
     'tal.tab.race': 'Race',
+    'tal.tab.loadout': 'Skills',
+    'tal.loadout.intro': 'Choose up to 3 active skills to bring into combat, from everything you\'ve unlocked.',
+    'tal.loadout.none': 'No active skills unlocked yet. Invest points in the tree to unlock some.',
     'tal.respec.btn': 'Reset tree',
     'tal.respec.title': 'Reset the tree?',
     'tal.respec.body': 'All unlocked talents (class and race) will be undone and your points refunded.',
@@ -6831,6 +6888,15 @@ var SPELLS = {
     { id:'meteor',    ico:'☄', name:'Météore',  nameEn:'Meteor', cost:50, desc:'3.6× ATQ — dégâts purs · Talent',    descEn:'3.6× ATK — pure damage · Talent',
       unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('mage_meteor'); },
       cast:function(enemy){ var d=Math.round(State.atk*3.6); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Météore ! '+d+' dégâts purs !',logEn:'Meteor! '+d+' pure damage!',crit:true}; } },
+    { id:'supernova', ico:'🌟', name:'Supernova', nameEn:'Supernova', cost:38, desc:'2.6× ATQ de feu + Brûlure (2 tours) · Talent', descEn:'2.6× ATK fire damage + Burn (2 turns) · Talent', element:'feu',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('mage_supernova'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.6,'feu',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Supernova ! '+d+' dégâts de feu, l\'ennemi brûle !',logEn:'Supernova! '+d+' fire damage, enemy burning!',crit:true,burn:2}; } },
+    { id:'singularite', ico:'🕳', name:'Singularité', nameEn:'Singularity', cost:30, desc:'1.6× ATQ + Étourdi (2 tours) · Talent', descEn:'1.6× ATK + Stun (2 turns) · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('mage_singularite'); },
+      cast:function(enemy){ var d=Math.round(State.atk*1.6); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Singularité ! '+d+' dégâts, l\'ennemi est aspiré et étourdi !',logEn:'Singularity! '+d+' damage, enemy pulled in and stunned!',stun:2}; } },
+    { id:'bouclier_givre', ico:'❄', name:'Bouclier de Givre', nameEn:'Frost Shield', cost:24, desc:'+14 DEF (2 tours) + Récup 15% PV max · Talent', descEn:'+14 DEF (2 turns) + Restore 15% max HP · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('mage_bouclier_givre'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.15); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Bouclier de givre ! +14 DEF pour 2 tours, +'+h+' PV.',logEn:'Frost shield! +14 DEF for 2 turns, +'+h+' HP.',shield:2,shieldDef:14}; } },
   ],
   Prêtre: [
     { id:'heal_sm',   ico:'💚', name:'Soin Léger',      nameEn:'Minor Heal',   cost:12, desc:'Récup 25% PV max',          descEn:'Restore 25% max HP', heal:true,
@@ -6845,6 +6911,15 @@ var SPELLS = {
     { id:'redemption',ico:'🕊', name:'Rédemption',      nameEn:'Redemption',   cost:40, desc:'Récup 90% PV max · Talent',  descEn:'Restore 90% max HP · Talent', heal:true,
       unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_redemption'); },
       cast:function(){ var h=Math.round(State.hpMax*0.9); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Rédemption ! +'+h+' PV !',logEn:'Redemption! +'+h+' HP!'}; } },
+    { id:'colere', ico:'☀', name:'Colère Céleste', nameEn:'Celestial Wrath', cost:34, desc:'2.0× ATQ de feu + Brûlure (2 tours) · Talent', descEn:'2.0× ATK fire damage + Burn (2 turns) · Talent', element:'feu',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_colere'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.0,'feu',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Colère céleste ! '+d+' dégâts sacrés, l\'ennemi brûle !',logEn:'Celestial wrath! '+d+' holy damage, enemy burning!',crit:true,burn:2}; } },
+    { id:'sanctuaire', ico:'⛩', name:'Sanctuaire', nameEn:'Sanctuary', cost:26, desc:'+18 DEF (3 tours) + Récup 20% PV max · Talent', descEn:'+18 DEF (3 turns) + Restore 20% max HP · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_sanctuaire'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.2); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Sanctuaire ! +18 DEF pour 3 tours, +'+h+' PV.',logEn:'Sanctuary! +18 DEF for 3 turns, +'+h+' HP.',shield:3,shieldDef:18}; } },
+    { id:'resurrection', ico:'🕊', name:'Résurrection Mineure', nameEn:'Minor Resurrection', cost:42, desc:'Récup 80% PV max · Talent', descEn:'Restore 80% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('pretre_resurrection'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.8); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Résurrection mineure ! +'+h+' PV !',logEn:'Minor resurrection! +'+h+' HP!'}; } },
   ],
   // Classes physiques : "cost" = tours de recharge partagés entre les 3 compétences
   // (pas de mana). Une compétence utilisée verrouille les deux autres pour ce temps —
@@ -6870,6 +6945,15 @@ var SPELLS = {
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:(low?'Coup de grâce ! '+d+' dégâts fatals !':'Coup de grâce ! '+d+' dégâts.'), logEn:(low?'Coup de grace! '+d+' fatal damage!':'Coup de grace! '+d+' damage.'), crit:low };
       } },
+    { id:'tornade', ico:'🌀', name:'Tornade d\'Acier', nameEn:'Steel Tornado', cost:4, desc:'2.0× ATQ · Talent', descEn:'2.0× ATK · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('guerrier_tornade'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.0,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tornade d\'acier ! '+d+' dégâts tourbillonnants.',logEn:'Steel tornado! '+d+' whirling damage.',crit:false}; } },
+    { id:'mur', ico:'🏯', name:'Mur Infranchissable', nameEn:'Unbreakable Wall', cost:4, desc:'+20 DEF (2 tours) + Récup 15% PV max · Talent', descEn:'+20 DEF (2 turns) + Restore 15% max HP · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('guerrier_mur'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.15); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Mur infranchissable ! +20 DEF pour 2 tours, +'+h+' PV.',logEn:'Unbreakable wall! +20 DEF for 2 turns, +'+h+' HP.',shield:2,shieldDef:20}; } },
+    { id:'second_souffle', ico:'💨', name:'Second Souffle', nameEn:'Second Wind', cost:4, desc:'Récup 35% PV max · Talent', descEn:'Restore 35% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('guerrier_second_souffle'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.35); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Second souffle ! +'+h+' PV.',logEn:'Second wind! +'+h+' HP.'}; } },
   ],
   Chasseur: [
     { id:'multitir', ico:'🏹', name:'Tir Multiple', nameEn:'Multi-Shot', cost:2, desc:'2-3 tirs rapides (3ᵉ tir débloqué par talent)', descEn:'2-3 rapid shots (3rd shot unlocked by talent)', element:'brut',
@@ -6893,6 +6977,15 @@ var SPELLS = {
         enemy.hp = Math.max(0, enemy.hp-d);
         return { dmg:d, log:'Tir immobilisant ! '+d+' dégâts, ennemi étourdi.', logEn:'Pinning shot! '+d+' damage, enemy stunned.', stun:1 };
       } },
+    { id:'cent_yeux', ico:'👁', name:'Tir des Cent Yeux', nameEn:'Hundred-Eyes Shot', cost:4, desc:'Critique garanti (2.2× ATQ) · Talent', descEn:'Guaranteed critical (2.2× ATK) · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('chasseur_cent_yeux'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.2,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Tir des cent yeux ! '+d+' dégâts, aucun angle mort.',logEn:'Hundred-eyes shot! '+d+' damage, no blind spot.',crit:true}; } },
+    { id:'vent', ico:'🌬', name:'Vent Rapide', nameEn:'Swift Wind', cost:4, desc:'1.2× ATQ + esquive garantie de la prochaine attaque · Talent', descEn:'1.2× ATK + guarantees a dodge of the next attack · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('chasseur_vent'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.2,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); State._guaranteedDodge=true; return {dmg:d,log:'Vent rapide ! '+d+' dégâts, tu deviens insaisissable.',logEn:'Swift wind! '+d+' damage, you become elusive.',crit:false}; } },
+    { id:'survie', ico:'🦉', name:'Instinct de Survie', nameEn:'Survival Instinct', cost:4, desc:'Récup 30% PV max · Talent', descEn:'Restore 30% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('chasseur_survie'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.3); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Instinct de survie ! +'+h+' PV.',logEn:'Survival instinct! +'+h+' HP.'}; } },
   ],
   Assassin: [
     { id:'critique', ico:'🗡', name:'Frappe Critique', nameEn:'Critical Strike', cost:3, desc:'Coup critique garanti (2×/2.4× ATQ avec talent + vol de vie)', descEn:'Guaranteed critical (2×/2.4× ATK with talent + lifesteal)', element:'brut',
@@ -6917,6 +7010,20 @@ var SPELLS = {
         State._guaranteedDodge = true;
         return { dmg:d, log:'Évanouissement ! '+d+' dégâts, tu deviens intouchable.', logEn:'Vanishing strike! '+d+' damage, you become untouchable.', crit:false };
       } },
+    { id:'mille', ico:'✂', name:'Mille Entailles', nameEn:'Thousand Cuts', cost:4, desc:'Deux frappes de 1.1× ATQ · Talent', descEn:'Two 1.1× ATK strikes · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('assassin_mille'); },
+      cast:function(enemy){
+        var d1 = elDmg(State.atk,1.1,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d1);
+        var d2 = elDmg(State.atk,1.1,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d2);
+        var total = d1+d2;
+        return { dmg:total, log:'Mille entailles ! '+d1+' + '+d2+' = '+total+' dégâts.', logEn:'Thousand cuts! '+d1+' + '+d2+' = '+total+' damage.', crit:false };
+      } },
+    { id:'voile', ico:'🕶', name:'Voile des Ombres', nameEn:'Shadow Veil', cost:4, desc:'Esquive garantie + ATQ +25% (2 tours) · Talent', descEn:'Guaranteed dodge + ATK +25% (2 turns) · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('assassin_voile'); },
+      cast:function(){ State._guaranteedDodge=true; var atkBuff=Math.round(State.atk*0.25); return {log:'Voile des ombres ! Esquive garantie, +'+atkBuff+' ATQ pour 2 tours.',logEn:'Shadow veil! Guaranteed dodge, +'+atkBuff+' ATK for 2 turns.',atkbuff:2,atkbuffVal:atkBuff}; } },
+    { id:'etreinte', ico:'💋', name:'Étreinte Vampirique', nameEn:'Vampiric Embrace', cost:4, desc:'1.4× ATQ + vol 40% des dégâts en PV · Talent', descEn:'1.4× ATK + 40% of damage stolen as HP · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('assassin_etreinte'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.4,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); var h=Math.round(d*0.4); State.hp=Math.min(State.hpMax,State.hp+h); return {dmg:d,heal:h,log:'Étreinte vampirique ! '+d+' dégâts, +'+h+' PV volés.',logEn:'Vampiric embrace! '+d+' damage, +'+h+' HP stolen.',crit:false}; } },
   ],
   Barbare: [
     { id:'frenesie', ico:'🪓', name:'Frénésie', nameEn:'Frenzy', cost:3, desc:'1.6×/2.0× ATQ (bonus si PV < 30%/40%, talent)', descEn:'1.6×/2.0× ATK (bonus if HP < 30%/40%, talent)', element:'brut',
@@ -6944,8 +7051,124 @@ var SPELLS = {
         var stunned = Math.random() < 0.4;
         return { dmg:d, log:'Coup d\'assommoir ! '+d+' dégâts.'+(stunned?' Ennemi étourdi !':''), logEn:'Skullcracker! '+d+' damage.'+(stunned?' Enemy stunned!':''), stun: stunned?1:0, crit:false };
       } },
+    { id:'explosion', ico:'💥', name:'Explosion de Rage', nameEn:'Rage Explosion', cost:4, desc:'2.3× ATQ (3.0× si PV < 40%) · Talent', descEn:'2.3× ATK (3.0× if HP < 40%) · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('barbare_explosion'); },
+      cast:function(enemy){ var low=State.hp<State.hpMax*0.4; var d=elDmg(State.atk,(low?3.0:2.3),'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Explosion de rage ! '+d+' dégâts dévastateurs.',logEn:'Rage explosion! '+d+' devastating damage.',crit:low}; } },
+    { id:'peau_fer', ico:'🗿', name:'Peau de Fer', nameEn:'Iron Skin', cost:4, desc:'+22 DEF (3 tours) · Talent', descEn:'+22 DEF (3 turns) · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('barbare_peau_fer'); },
+      cast:function(){ return {log:'Peau de fer ! +22 DEF pour 3 tours.',logEn:'Iron skin! +22 DEF for 3 turns.',shield:3,shieldDef:22}; } },
+    { id:'ecrasement', ico:'⛏', name:'Écrasement Titanesque', nameEn:'Titanic Crush', cost:4, desc:'1.8× ATQ + 30% de chance d\'étourdir · Talent', descEn:'1.8× ATK + 30% chance to stun · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('barbare_ecrasement'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.8,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); var stunned=Math.random()<0.3; return {dmg:d,log:'Écrasement titanesque ! '+d+' dégâts.'+(stunned?' Ennemi étourdi !':''),logEn:'Titanic crush! '+d+' damage.'+(stunned?' Enemy stunned!':''),stun:stunned?1:0,crit:false}; } },
   ],
 };
+
+// ── SORTS DE RACE (utilisables par toute classe, partagent la même ressource
+// que ses propres compétences — mana pour Mage/Prêtre, tours de recharge
+// sinon) ────────────────────────────────────────────────────────────
+var RACE_SPELLS = {
+  Humain: [
+    { id:'genie', ico:'💡', name:'Éclair de Génie', nameEn:'Flash of Genius', cost:function(){ return _raceSpellCost(28,4); }, desc:'1.5× ATQ + critique garanti · Talent', descEn:'1.5× ATK + guaranteed critical · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('humain_genie'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.5,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Éclair de génie ! '+d+' dégâts, la faille parfaite.',logEn:'Flash of genius! '+d+' damage, the perfect opening.',crit:true}; } },
+    { id:'renaissance', ico:'🌅', name:'Renaissance', nameEn:'Renewal', cost:function(){ return _raceSpellCost(24,4); }, desc:'Récup 30% PV max · Talent', descEn:'Restore 30% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('humain_renaissance'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.3); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Renaissance ! +'+h+' PV.',logEn:'Renewal! +'+h+' HP.'}; } },
+    { id:'chance_coup', ico:'🎲', name:'Coup du Sort', nameEn:'Stroke of Luck', cost:function(){ return _raceSpellCost(22,4); }, desc:'1.8× ATQ garanti critique · Talent', descEn:'1.8× ATK guaranteed critical · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('humain_chance_coup'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.8,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Coup du sort ! '+d+' dégâts, la chance sourit.',logEn:'Stroke of luck! '+d+' damage, fortune smiles.',crit:true}; } },
+  ],
+  Elfe: [
+    { id:'pas_etoiles', ico:'⭐', name:'Pas des Étoiles', nameEn:'Starlight Step', cost:function(){ return _raceSpellCost(20,4); }, desc:'1.0× ATQ + esquive garantie de la prochaine attaque · Talent', descEn:'1.0× ATK + guarantees a dodge of the next attack · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('elfe_pas_etoiles'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.0,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); State._guaranteedDodge=true; return {dmg:d,log:'Pas des étoiles ! '+d+' dégâts, tu glisses hors d\'atteinte.',logEn:'Starlight step! '+d+' damage, you slip out of reach.',crit:false}; } },
+    { id:'fleche_lune', ico:'🌙', name:'Flèche de Lune', nameEn:'Moon Arrow', cost:function(){ return _raceSpellCost(26,4); }, desc:'2.0× ATQ — ignore 20% de la défense ennemie · Talent', descEn:'2.0× ATK — ignores 20% of enemy defense · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('elfe_fleche_lune'); },
+      cast:function(enemy){ var reducedDef=Math.round(enemy.def*0.8); var savedDef=enemy.def; enemy.def=reducedDef; var d=elDmg(State.atk,2.0,'brut',enemy); enemy.def=savedDef; enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Flèche de lune ! '+d+' dégâts, l\'armure ne suffit pas.',logEn:'Moon arrow! '+d+' damage, armor isn\'t enough.',crit:true}; } },
+    { id:'chant', ico:'🎶', name:'Chant Sylvestre', nameEn:'Sylvan Song', cost:function(){ return _raceSpellCost(20,4); }, desc:'Récup 25% PV max · Talent', descEn:'Restore 25% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('elfe_chant'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.25); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Chant sylvestre ! +'+h+' PV.',logEn:'Sylvan song! +'+h+' HP.'}; } },
+  ],
+  Nain: [
+    { id:'peau_pierre', ico:'🗻', name:'Peau de Pierre', nameEn:'Stoneskin', cost:function(){ return _raceSpellCost(22,4); }, desc:'+18 DEF (3 tours) · Talent', descEn:'+18 DEF (3 turns) · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('nain_peau_pierre'); },
+      cast:function(){ return {log:'Peau de pierre ! +18 DEF pour 3 tours.',logEn:'Stoneskin! +18 DEF for 3 turns.',shield:3,shieldDef:18}; } },
+    { id:'ancrage', ico:'⚓', name:'Ancrage', nameEn:'Anchor', cost:function(){ return _raceSpellCost(24,4); }, desc:'1.3× ATQ + Étourdi 1 tour · Talent', descEn:'1.3× ATK + Stun 1 turn · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('nain_ancrage'); },
+      cast:function(enemy){ var d=elDmg(State.atk,1.3,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Ancrage ! '+d+' dégâts, ennemi cloué au sol.',logEn:'Anchor! '+d+' damage, enemy pinned down.',stun:1}; } },
+    { id:'marteau_runique', ico:'🔨', name:'Marteau Runique', nameEn:'Runic Hammer', cost:function(){ return _raceSpellCost(28,4); }, desc:'2.0× ATQ · Talent', descEn:'2.0× ATK · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('nain_marteau_runique'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.0,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Marteau runique ! '+d+' dégâts, la roche elle-même résonne.',logEn:'Runic hammer! '+d+' damage, the stone itself resonates.',crit:true}; } },
+  ],
+  Orc: [
+    { id:'poing', ico:'👊', name:'Poing du Chef de Guerre', nameEn:'Warchief\'s Fist', cost:function(){ return _raceSpellCost(26,4); }, desc:'2.2× ATQ · Talent', descEn:'2.2× ATK · Talent', element:'brut',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('orc_poing'); },
+      cast:function(enemy){ var d=elDmg(State.atk,2.2,'brut',enemy); enemy.hp=Math.max(0,enemy.hp-d); return {dmg:d,log:'Poing du chef de guerre ! '+d+' dégâts écrasants.',logEn:'Warchief\'s fist! '+d+' crushing damage.',crit:true}; } },
+    { id:'cri', ico:'📯', name:'Cri de Guerre', nameEn:'War Cry', cost:function(){ return _raceSpellCost(20,4); }, desc:'ATQ +30% (2 tours) · Talent', descEn:'ATK +30% (2 turns) · Talent',
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('orc_cri'); },
+      cast:function(){ var atkBuff=Math.round(State.atk*0.3); return {log:'Cri de guerre ! +'+atkBuff+' ATQ pour 2 tours.',logEn:'War cry! +'+atkBuff+' ATK for 2 turns.',atkbuff:2,atkbuffVal:atkBuff}; } },
+    { id:'regen', ico:'♻', name:'Régénération Féroce', nameEn:'Ferocious Regeneration', cost:function(){ return _raceSpellCost(24,4); }, desc:'Récup 35% PV max · Talent', descEn:'Restore 35% max HP · Talent', heal:true,
+      unlockCheck:function(){ return typeof Talents!=='undefined' && Talents.hasFlag('orc_regen'); },
+      cast:function(){ var h=Math.round(State.hpMax*0.35); State.hp=Math.min(State.hpMax,State.hp+h); return {heal:h,log:'Régénération féroce ! +'+h+' PV.',logEn:'Ferocious regeneration! +'+h+' HP.'}; } },
+  ],
+};
+function _raceSpellCost(manaCost, turnCost) { return (State.cls==='Mage'||State.cls==='Prêtre') ? manaCost : turnCost; }
+
+// ── LOADOUT DE COMBAT ────────────────────────────────────────────
+// Fusionne les compétences actives de classe et de race en un seul vivier ;
+// le joueur choisit jusqu'à 3 d'entre elles (déblocables via l'arbre de
+// talents) à emporter en combat. Par défaut, une nouvelle run reçoit les
+// compétences historiquement "gratuites" de sa classe (celles sans
+// unlockCheck/unlockLevel), pour ne rien changer au jeu existant tant que
+// le joueur n'a rien débloqué de nouveau.
+var Loadout = (function(){
+  var MAX = 3;
+
+  function allAbilities() {
+    return (SPELLS[State.cls]||[]).concat(RACE_SPELLS[State.race]||[]);
+  }
+
+  function eligibleAbilities() {
+    return allAbilities().filter(function(s){
+      var lvlOk = !s.unlockLevel || (State.level||1) >= s.unlockLevel;
+      var unlockOk = !s.unlockCheck || s.unlockCheck();
+      return lvlOk && unlockOk;
+    });
+  }
+
+  function cost(sp) { return typeof sp.cost === 'function' ? sp.cost() : sp.cost; }
+
+  function defaultForClass(cls) {
+    return (SPELLS[cls]||[]).filter(function(s){ return !s.unlockCheck && !s.unlockLevel; }).map(function(s){ return s.id; }).slice(0, MAX);
+  }
+
+  function get() {
+    if (!State.combatLoadout) State.combatLoadout = [];
+    // Retire silencieusement les entrées devenues invalides (changement de perso, etc.)
+    var eligibleIds = eligibleAbilities().map(function(s){ return s.id; });
+    State.combatLoadout = State.combatLoadout.filter(function(id){ return eligibleIds.indexOf(id) !== -1; });
+    if (!State.combatLoadout.length) {
+      State.combatLoadout = defaultForClass(State.cls);
+    }
+    return State.combatLoadout;
+  }
+
+  function isEquipped(id) { return get().indexOf(id) !== -1; }
+
+  function toggle(id) {
+    var loadout = get();
+    var idx = loadout.indexOf(id);
+    if (idx !== -1) { loadout.splice(idx, 1); }
+    else {
+      if (loadout.length >= MAX) return false;
+      loadout.push(id);
+    }
+    State.saveRun();
+    return true;
+  }
+
+  return { MAX:MAX, allAbilities:allAbilities, eligibleAbilities:eligibleAbilities, cost:cost, get:get, isEquipped:isEquipped, toggle:toggle };
+})();
 
 // ── COMBAT ────────────────────────────────────────────────────────
 var Combat = (function(){
@@ -7134,9 +7357,11 @@ var Combat = (function(){
     var cd = document.getElementById('skill-cd');
     var btn = document.getElementById('btn-skill');
     if (hasMana()) {
-      // Pour Mage/Prêtre : afficher le mana minimum requis
-      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return (!s.unlockLevel || (State.level||1)>=s.unlockLevel) && (!s.unlockCheck || s.unlockCheck()); });
-      var minCost = spells.length ? spells.reduce(function(m,s){ return Math.min(m,s.cost); }, 999) : 99;
+      // Pour Mage/Prêtre : afficher le mana minimum requis parmi les compétences
+      // réellement équipées dans le loadout (pas tout ce qui est débloqué)
+      var loadout = Loadout.get();
+      var spells = Loadout.allAbilities().filter(function(s){ return loadout.indexOf(s.id)!==-1 && (!s.unlockLevel || (State.level||1)>=s.unlockLevel) && (!s.unlockCheck || s.unlockCheck()); });
+      var minCost = spells.length ? spells.reduce(function(m,s){ return Math.min(m,Loadout.cost(s)); }, 999) : 99;
       var hasMp = (State.mana||0) >= minCost;
       if (cd) cd.textContent = (State.mana||0)+' MP';
       if (btn) { btn.disabled = !hasMp; btn.classList.toggle('skill-ready', hasMp); }
@@ -7570,20 +7795,31 @@ var Combat = (function(){
       var list = document.getElementById('spell-list');
       list.innerHTML = '';
       var withMana = hasMana();
-      var spells = (SPELLS[State.cls]||[]).filter(function(s){ return (!s.unlockCheck || s.unlockCheck()) && !(State._gauntletTrial && s.heal); });
+      var pool = Loadout.allAbilities();
+      var loadout = Loadout.get();
+      var spells = pool.filter(function(s){
+        return loadout.indexOf(s.id) !== -1 && (!s.unlockCheck || s.unlockCheck()) && !(State._gauntletTrial && s.heal);
+      });
       spells.forEach(function(sp) {
+        var cost = Loadout.cost(sp);
         var lvlOk = !sp.unlockLevel || (State.level||1) >= sp.unlockLevel;
-        var resOk = withMana ? (State.mana||0) >= sp.cost : skillCd <= 0;
+        var resOk = withMana ? (State.mana||0) >= cost : skillCd <= 0;
         var btn = document.createElement('button');
         btn.className = 'spell-btn ripple-el' + ((!lvlOk || !resOk) ? ' disabled' : '');
         var spEl = sp.element ? ELEMENTS[sp.element] : null;
         btn.innerHTML = '<span class="sp-ico">'+sp.ico+'</span>'
           + '<span class="sp-info"><div class="sp-name">'+(CGE_LANG==='en'&&sp.nameEn?sp.nameEn:sp.name)+(spEl?' <span class="sp-el">'+spEl.ico+'</span>':'')+'</div>'
           + '<div class="sp-desc">'+(lvlOk ? (CGE_LANG==='en'&&sp.descEn?sp.descEn:sp.desc) : (CGE_LANG==='en'?'Unlocked at level '+sp.unlockLevel:'Débloqué niveau '+sp.unlockLevel))+'</div></span>'
-          + '<span class="sp-cost">'+(withMana ? sp.cost+' MP' : (CGE_LANG==='en'?sp.cost+' turn'+(sp.cost>1?'s':''):sp.cost+' tour'+(sp.cost>1?'s':'')))+'</span>';
+          + '<span class="sp-cost">'+(withMana ? cost+' MP' : (CGE_LANG==='en'?cost+' turn'+(cost>1?'s':''):cost+' tour'+(cost>1?'s':'')))+'</span>';
         if (lvlOk && resOk) btn.addEventListener('click', function(){ Combat.castSpell(sp); });
         list.appendChild(btn);
       });
+      if (!spells.length) {
+        var empty = document.createElement('div');
+        empty.className = 'spell-empty';
+        empty.textContent = T('spell.loadout.empty');
+        list.appendChild(empty);
+      }
       document.getElementById('spell-overlay').classList.add('show');
     },
 
@@ -7596,13 +7832,14 @@ var Combat = (function(){
       Combat.closeSpells();
       if (turnLocked) return;
       if (sp.heal && State._gauntletTrial) { log(T('gauntlet.nopotion'),'system'); return; }
+      var cost = Loadout.cost(sp);
       if (hasMana()) {
-        if ((State.mana||0) < sp.cost) { log(T('cl.notenoughmana'),'system'); return; }
-        State.mana = Math.max(0, (State.mana||0) - sp.cost);
+        if ((State.mana||0) < cost) { log(T('cl.notenoughmana'),'system'); return; }
+        State.mana = Math.max(0, (State.mana||0) - cost);
         updateManaBar();
       } else {
         if (skillCd > 0) return;
-        skillCd = sp.cost;
+        skillCd = cost;
       }
       updateSkillBtn();
       Sfx.skill();
@@ -8160,84 +8397,102 @@ var TALENT_TREES = {
       _talentBranch('atk','Attaque','Attack','⚔',[
         { id:'guerrier_atk_1', cost:1, ico:'⚔', name:'Frappe Lourde',  nameEn:'Heavy Strike',   desc:'+5 ATQ',  descEn:'+5 ATK',  deltas:{atk:5} },
         { id:'guerrier_atk_2', cost:2, ico:'⚔', name:'Pourfendeur',    nameEn:'Cleaver',        desc:'+10 ATQ', descEn:'+10 ATK', deltas:{atk:10} },
+        { id:'guerrier_atk_3', cost:3, ico:'🌀', name:'Tornade d\'Acier', nameEn:'Steel Tornado', desc:'Débloque la compétence de combat Tornade d\'Acier', descEn:'Unlocks the Steel Tornado combat skill', deltas:{}, flag:'guerrier_tornade' },
       ]),
       _talentBranch('def','Défense','Defense','🛡',[
         { id:'guerrier_def_1', cost:1, ico:'🛡', name:'Armure Renforcée', nameEn:'Reinforced Armor', desc:'+6 DEF', descEn:'+6 DEF', deltas:{def:6} },
         { id:'guerrier_def_2', cost:2, ico:'🛡', name:'Rempart',          nameEn:'Bulwark',          desc:'+10 DEF · Bouclier renforcé (+16 DEF, 3 tours)', descEn:'+10 DEF · Shield skill empowered (+16 DEF, 3 turns)', deltas:{def:10}, flag:'guerrier_rempart' },
+        { id:'guerrier_def_3', cost:3, ico:'🏯', name:'Mur Infranchissable', nameEn:'Unbreakable Wall', desc:'Débloque la compétence de combat Mur Infranchissable', descEn:'Unlocks the Unbreakable Wall combat skill', deltas:{}, flag:'guerrier_mur' },
       ]),
       _talentBranch('vit','Vitalité','Vitality','❤',[
         { id:'guerrier_vit_1', cost:1, ico:'❤', name:'Robustesse', nameEn:'Sturdiness', desc:'+30 PV max', descEn:'+30 max HP', deltas:{hp:30} },
         { id:'guerrier_vit_2', cost:2, ico:'❤', name:'Increvable', nameEn:'Unbreakable', desc:'+50 PV max, +2 PV/combat', descEn:'+50 max HP, +2 HP/fight', deltas:{hp:50,regen:2} },
+        { id:'guerrier_vit_3', cost:3, ico:'💨', name:'Second Souffle', nameEn:'Second Wind', desc:'Débloque la compétence de combat Second Souffle', descEn:'Unlocks the Second Wind combat skill', deltas:{}, flag:'guerrier_second_souffle' },
       ]),
     ],
     Mage: [
       _talentBranch('destr','Destruction','Destruction','🔥',[
         { id:'mage_destr_1', cost:1, ico:'🔥', name:'Focalisation', nameEn:'Focus',        desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
         { id:'mage_destr_2', cost:2, ico:'🔥', name:'Puissance Arcanique', nameEn:'Arcane Power', desc:'+10 ATQ · débloque le sort Météore', descEn:'+10 ATK · unlocks the Meteor spell', deltas:{atk:10}, flag:'mage_meteor' },
+        { id:'mage_destr_3', cost:3, ico:'🌟', name:'Supernova', nameEn:'Supernova', desc:'Débloque le sort Supernova', descEn:'Unlocks the Supernova spell', deltas:{}, flag:'mage_supernova' },
       ]),
       _talentBranch('arc','Arcane','Arcane','🔮',[
         { id:'mage_arc_1', cost:1, ico:'🔷', name:'Réserve de Mana', nameEn:'Mana Reserve', desc:'+15 Mana max', descEn:'+15 max Mana', deltas:{mana:15} },
         { id:'mage_arc_2', cost:2, ico:'🔷', name:'Puits Arcanique', nameEn:'Arcane Well',  desc:'+25 Mana max', descEn:'+25 max Mana', deltas:{mana:25} },
+        { id:'mage_arc_3', cost:3, ico:'🕳', name:'Singularité', nameEn:'Singularity', desc:'Débloque le sort Singularité', descEn:'Unlocks the Singularity spell', deltas:{}, flag:'mage_singularite' },
       ]),
       _talentBranch('surv','Survie','Survival','🌿',[
         { id:'mage_surv_1', cost:1, ico:'🌿', name:'Robustesse Mineure', nameEn:'Minor Sturdiness', desc:'+20 PV max', descEn:'+20 max HP', deltas:{hp:20} },
         { id:'mage_surv_2', cost:2, ico:'🌿', name:'Sang-Froid',         nameEn:'Cold Blood',       desc:'+35 PV max, Crit +5%', descEn:'+35 max HP, Crit +5%', deltas:{hp:35,crit:0.05} },
+        { id:'mage_surv_3', cost:3, ico:'❄', name:'Bouclier de Givre', nameEn:'Frost Shield', desc:'Débloque le sort Bouclier de Givre', descEn:'Unlocks the Frost Shield spell', deltas:{}, flag:'mage_bouclier_givre' },
       ]),
     ],
     Chasseur: [
       _talentBranch('prec','Précision','Precision','🎯',[
         { id:'chasseur_prec_1', cost:1, ico:'🎯', name:'Œil de Lynx', nameEn:'Lynx Eye', desc:'Crit +8%', descEn:'Crit +8%', deltas:{crit:0.08} },
         { id:'chasseur_prec_2', cost:2, ico:'🎯', name:'Tir Perçant', nameEn:'Piercing Shot', desc:'Crit +7% · Double tir devient Triple tir', descEn:'Crit +7% · Double shot becomes Triple shot', deltas:{crit:0.07}, flag:'chasseur_triple' },
+        { id:'chasseur_prec_3', cost:3, ico:'👁', name:'Tir des Cent Yeux', nameEn:'Hundred-Eyes Shot', desc:'Débloque la compétence de combat Tir des Cent Yeux', descEn:'Unlocks the Hundred-Eyes Shot combat skill', deltas:{}, flag:'chasseur_cent_yeux' },
       ]),
       _talentBranch('cel','Célérité','Swiftness','💨',[
         { id:'chasseur_cel_1', cost:1, ico:'💨', name:'Pas Léger',      nameEn:'Light Step',    desc:'Esquive +5%',            descEn:'Dodge +5%',            deltas:{dodge:0.05} },
         { id:'chasseur_cel_2', cost:2, ico:'💨', name:'Ombre des Bois', nameEn:'Forest Shadow', desc:'Esquive +8%, Fuite +10%', descEn:'Dodge +8%, Flee +10%', deltas:{dodge:0.08,flee:0.10} },
+        { id:'chasseur_cel_3', cost:3, ico:'🌬', name:'Vent Rapide', nameEn:'Swift Wind', desc:'Débloque la compétence de combat Vent Rapide', descEn:'Unlocks the Swift Wind combat skill', deltas:{}, flag:'chasseur_vent' },
       ]),
       _talentBranch('inst','Instinct','Instinct','🏹',[
         { id:'chasseur_inst_1', cost:1, ico:'🏹', name:'Instinct du Chasseur', nameEn:'Hunter\'s Instinct', desc:'+6 ATQ',     descEn:'+6 ATK',     deltas:{atk:6} },
         { id:'chasseur_inst_2', cost:2, ico:'🏹', name:'Endurance Sauvage',    nameEn:'Wild Endurance',     desc:'+40 PV max', descEn:'+40 max HP', deltas:{hp:40} },
+        { id:'chasseur_inst_3', cost:3, ico:'🦉', name:'Instinct de Survie', nameEn:'Survival Instinct', desc:'Débloque la compétence de combat Instinct de Survie', descEn:'Unlocks the Survival Instinct combat skill', deltas:{}, flag:'chasseur_survie' },
       ]),
     ],
     Assassin: [
       _talentBranch('lame','Lames','Blades','🗡',[
         { id:'assassin_lame_1', cost:1, ico:'🗡', name:'Lames Affûtées', nameEn:'Honed Blades', desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
         { id:'assassin_lame_2', cost:2, ico:'🗡', name:'Frappe Mortelle', nameEn:'Deadly Strike', desc:'+8 ATQ · Crit. garanti vole 20% des dégâts', descEn:'+8 ATK · Guaranteed crit lifesteals 20%', deltas:{atk:8}, flag:'assassin_lethal' },
+        { id:'assassin_lame_3', cost:3, ico:'✂', name:'Mille Entailles', nameEn:'Thousand Cuts', desc:'Débloque la compétence de combat Mille Entailles', descEn:'Unlocks the Thousand Cuts combat skill', deltas:{}, flag:'assassin_mille' },
       ]),
       _talentBranch('ombre','Ombre','Shadow','🌑',[
         { id:'assassin_ombre_1', cost:1, ico:'🌑', name:'Célérité',        nameEn:'Celerity',       desc:'Esquive +6%',             descEn:'Dodge +6%',             deltas:{dodge:0.06} },
         { id:'assassin_ombre_2', cost:2, ico:'🌑', name:'Maître de l\'Ombre', nameEn:'Shadow Master', desc:'Esquive +10%, Fuite +15%', descEn:'Dodge +10%, Flee +15%', deltas:{dodge:0.10,flee:0.15} },
+        { id:'assassin_ombre_3', cost:3, ico:'🕶', name:'Voile des Ombres', nameEn:'Shadow Veil', desc:'Débloque la compétence de combat Voile des Ombres', descEn:'Unlocks the Shadow Veil combat skill', deltas:{}, flag:'assassin_voile' },
       ]),
       _talentBranch('sang','Sang-Froid','Cold Blood','🩸',[
         { id:'assassin_sang_1', cost:1, ico:'🩸', name:'Sang-Froid',       nameEn:'Cold Blood',    desc:'Vol de vie +8%',            descEn:'Lifesteal +8%',           deltas:{lifesteal:0.08} },
         { id:'assassin_sang_2', cost:2, ico:'🩸', name:'Soif Insatiable',  nameEn:'Insatiable Thirst', desc:'Vol de vie +12%, +20 PV max', descEn:'Lifesteal +12%, +20 max HP', deltas:{lifesteal:0.12,hp:20} },
+        { id:'assassin_sang_3', cost:3, ico:'💋', name:'Étreinte Vampirique', nameEn:'Vampiric Embrace', desc:'Débloque la compétence de combat Étreinte Vampirique', descEn:'Unlocks the Vampiric Embrace combat skill', deltas:{}, flag:'assassin_etreinte' },
       ]),
     ],
     Prêtre: [
       _talentBranch('lum','Lumière','Light','✨',[
         { id:'pretre_lum_1', cost:1, ico:'✨', name:'Lumière Sacrée', nameEn:'Sacred Light', desc:'+6 ATQ', descEn:'+6 ATK', deltas:{atk:6} },
         { id:'pretre_lum_2', cost:2, ico:'✨', name:'Châtiment Divin', nameEn:'Divine Punishment', desc:'+8 ATQ · débloque le sort Rédemption', descEn:'+8 ATK · unlocks the Redemption spell', deltas:{atk:8}, flag:'pretre_redemption' },
+        { id:'pretre_lum_3', cost:3, ico:'☀', name:'Colère Céleste', nameEn:'Celestial Wrath', desc:'Débloque le sort Colère Céleste', descEn:'Unlocks the Celestial Wrath spell', deltas:{}, flag:'pretre_colere' },
       ]),
       _talentBranch('prot','Protection','Protection','🛡',[
         { id:'pretre_prot_1', cost:1, ico:'🛡', name:'Bénédiction',      nameEn:'Blessing',        desc:'+6 DEF',            descEn:'+6 DEF',            deltas:{def:6} },
         { id:'pretre_prot_2', cost:2, ico:'🛡', name:'Aura Protectrice', nameEn:'Protective Aura', desc:'+10 DEF, +30 PV max', descEn:'+10 DEF, +30 max HP', deltas:{def:10,hp:30} },
+        { id:'pretre_prot_3', cost:3, ico:'⛩', name:'Sanctuaire', nameEn:'Sanctuary', desc:'Débloque le sort Sanctuaire', descEn:'Unlocks the Sanctuary spell', deltas:{}, flag:'pretre_sanctuaire' },
       ]),
       _talentBranch('soin','Soin','Healing','💚',[
         { id:'pretre_soin_1', cost:1, ico:'💚', name:'Ferveur',       nameEn:'Fervor',       desc:'+15 Mana max', descEn:'+15 max Mana', deltas:{mana:15} },
         { id:'pretre_soin_2', cost:2, ico:'💚', name:'Grâce Divine',  nameEn:'Divine Grace', desc:'+25 Mana max, +3 PV/combat', descEn:'+25 max Mana, +3 HP/fight', deltas:{mana:25,regen:3} },
+        { id:'pretre_soin_3', cost:3, ico:'🕊', name:'Résurrection Mineure', nameEn:'Minor Resurrection', desc:'Débloque le sort Résurrection Mineure', descEn:'Unlocks the Minor Resurrection spell', deltas:{}, flag:'pretre_resurrection' },
       ]),
     ],
     Barbare: [
       _talentBranch('rage','Rage','Rage','🩸',[
         { id:'barbare_rage_1', cost:1, ico:'🩸', name:'Sang Bouillonnant', nameEn:'Boiling Blood', desc:'Frenésie s\'active dès 40% PV (au lieu de 30%)', descEn:'Frenzy triggers below 40% HP (was 30%)', deltas:{}, flag:'barbare_rage_seuil' },
         { id:'barbare_rage_2', cost:2, ico:'🩸', name:'Rage Éternelle',    nameEn:'Eternal Rage',  desc:'+8 ATQ · Frenésie inflige bien plus de dégâts', descEn:'+8 ATK · Frenzy deals much more damage', deltas:{atk:8}, flag:'barbare_rage_totale' },
+        { id:'barbare_rage_3', cost:3, ico:'💥', name:'Explosion de Rage', nameEn:'Rage Explosion', desc:'Débloque la compétence de combat Explosion de Rage', descEn:'Unlocks the Rage Explosion combat skill', deltas:{}, flag:'barbare_explosion' },
       ]),
       _talentBranch('end','Endurance','Endurance','🏰',[
         { id:'barbare_end_1', cost:1, ico:'🏰', name:'Peau Épaisse', nameEn:'Thick Skin', desc:'+35 PV max',         descEn:'+35 max HP',         deltas:{hp:35} },
         { id:'barbare_end_2', cost:2, ico:'🏰', name:'Increvable',   nameEn:'Unbreakable', desc:'+60 PV max, +5 DEF', descEn:'+60 max HP, +5 DEF', deltas:{hp:60,def:5} },
+        { id:'barbare_end_3', cost:3, ico:'🗿', name:'Peau de Fer', nameEn:'Iron Skin', desc:'Débloque la compétence de combat Peau de Fer', descEn:'Unlocks the Iron Skin combat skill', deltas:{}, flag:'barbare_peau_fer' },
       ]),
       _talentBranch('brut','Brutalité','Brutality','💪',[
         { id:'barbare_brut_1', cost:1, ico:'💪', name:'Force Brute', nameEn:'Brute Force', desc:'+8 ATQ',  descEn:'+8 ATK',  deltas:{atk:8} },
         { id:'barbare_brut_2', cost:2, ico:'💪', name:'Colosse',     nameEn:'Colossus',    desc:'+14 ATQ', descEn:'+14 ATK', deltas:{atk:14} },
+        { id:'barbare_brut_3', cost:3, ico:'⛏', name:'Écrasement Titanesque', nameEn:'Titanic Crush', desc:'Débloque la compétence de combat Écrasement Titanesque', descEn:'Unlocks the Titanic Crush combat skill', deltas:{}, flag:'barbare_ecrasement' },
       ]),
     ],
   },
@@ -8246,56 +8501,68 @@ var TALENT_TREES = {
       _talentBranch('savoir','Savoir','Knowledge','📖',[
         { id:'humain_savoir_1', cost:1, ico:'📖', name:'Curiosité', nameEn:'Curiosity', desc:'+8% XP',  descEn:'+8% XP',  deltas:{xpPct:0.08} },
         { id:'humain_savoir_2', cost:2, ico:'📖', name:'Érudition', nameEn:'Erudition', desc:'+12% XP', descEn:'+12% XP', deltas:{xpPct:0.12} },
+        { id:'humain_savoir_3', cost:3, ico:'💡', name:'Éclair de Génie', nameEn:'Flash of Genius', desc:'Débloque la compétence de combat Éclair de Génie', descEn:'Unlocks the Flash of Genius combat skill', deltas:{}, flag:'humain_genie' },
       ]),
       _talentBranch('poly','Polyvalence','Versatility','⚖',[
         { id:'humain_poly_1', cost:1, ico:'⚖', name:'Équilibre',    nameEn:'Balance',      desc:'+3 ATQ +3 DEF',           descEn:'+3 ATK +3 DEF',           deltas:{atk:3,def:3} },
         { id:'humain_poly_2', cost:2, ico:'⚖', name:'Adaptabilité', nameEn:'Adaptability', desc:'+3 ATQ +3 DEF +20 PV max', descEn:'+3 ATK +3 DEF +20 max HP', deltas:{atk:3,def:3,hp:20} },
+        { id:'humain_poly_3', cost:3, ico:'🌅', name:'Renaissance', nameEn:'Renewal', desc:'Débloque la compétence de combat Renaissance', descEn:'Unlocks the Renewal combat skill', deltas:{}, flag:'humain_renaissance' },
       ]),
       _talentBranch('chance','Chance','Luck','🍀',[
         { id:'humain_chance_1', cost:1, ico:'🍀', name:'Bonne Étoile',       nameEn:'Lucky Star',     desc:'Crit +5%',    descEn:'Crit +5%',    deltas:{crit:0.05} },
         { id:'humain_chance_2', cost:2, ico:'🍀', name:'Chance du Novice',   nameEn:'Novice\'s Luck', desc:'Esquive +5%', descEn:'Dodge +5%', deltas:{dodge:0.05} },
+        { id:'humain_chance_3', cost:3, ico:'🎲', name:'Coup du Sort', nameEn:'Stroke of Luck', desc:'Débloque la compétence de combat Coup du Sort', descEn:'Unlocks the Stroke of Luck combat skill', deltas:{}, flag:'humain_chance_coup' },
       ]),
     ],
     Elfe: [
       _talentBranch('agil','Agilité','Agility','🍃',[
         { id:'elfe_agil_1', cost:1, ico:'🍃', name:'Grâce Elfique',  nameEn:'Elven Grace',  desc:'Esquive +6%',             descEn:'Dodge +6%',             deltas:{dodge:0.06} },
         { id:'elfe_agil_2', cost:2, ico:'🍃', name:'Danse des Feuilles', nameEn:'Leaf Dance', desc:'Esquive +8%, Fuite +10%', descEn:'Dodge +8%, Flee +10%', deltas:{dodge:0.08,flee:0.10} },
+        { id:'elfe_agil_3', cost:3, ico:'⭐', name:'Pas des Étoiles', nameEn:'Starlight Step', desc:'Débloque la compétence de combat Pas des Étoiles', descEn:'Unlocks the Starlight Step combat skill', deltas:{}, flag:'elfe_pas_etoiles' },
       ]),
       _talentBranch('prec','Précision','Precision','🏹',[
         { id:'elfe_prec_1', cost:1, ico:'🏹', name:'Œil Elfique',        nameEn:'Elven Eye',       desc:'Crit +6%',           descEn:'Crit +6%',           deltas:{crit:0.06} },
         { id:'elfe_prec_2', cost:2, ico:'🏹', name:'Précision Ancestrale', nameEn:'Ancestral Precision', desc:'+6 ATQ, Crit +4%', descEn:'+6 ATK, Crit +4%', deltas:{atk:6,crit:0.04} },
+        { id:'elfe_prec_3', cost:3, ico:'🌙', name:'Flèche de Lune', nameEn:'Moon Arrow', desc:'Débloque la compétence de combat Flèche de Lune', descEn:'Unlocks the Moon Arrow combat skill', deltas:{}, flag:'elfe_fleche_lune' },
       ]),
       _talentBranch('grace','Grâce','Grace','🌸',[
         { id:'elfe_grace_1', cost:1, ico:'🌸', name:'Sérénité',            nameEn:'Serenity',           desc:'+2 PV/combat',   descEn:'+2 HP/fight', deltas:{regen:2} },
         { id:'elfe_grace_2', cost:2, ico:'🌸', name:'Communion Sylvestre', nameEn:'Sylvan Communion',   desc:'Vol de vie +8%', descEn:'Lifesteal +8%', deltas:{lifesteal:0.08} },
+        { id:'elfe_grace_3', cost:3, ico:'🎶', name:'Chant Sylvestre', nameEn:'Sylvan Song', desc:'Débloque la compétence de combat Chant Sylvestre', descEn:'Unlocks the Sylvan Song combat skill', deltas:{}, flag:'elfe_chant' },
       ]),
     ],
     Nain: [
       _talentBranch('robu','Robustesse','Sturdiness','⛰',[
         { id:'nain_robu_1', cost:1, ico:'⛰', name:'Sang de Pierre', nameEn:'Stone Blood', desc:'+30 PV max',          descEn:'+30 max HP',         deltas:{hp:30} },
         { id:'nain_robu_2', cost:2, ico:'⛰', name:'Peau de Granit', nameEn:'Granite Skin', desc:'+50 PV max, +5 DEF', descEn:'+50 max HP, +5 DEF', deltas:{hp:50,def:5} },
+        { id:'nain_robu_3', cost:3, ico:'🗻', name:'Peau de Pierre', nameEn:'Stoneskin', desc:'Débloque la compétence de combat Peau de Pierre', descEn:'Unlocks the Stoneskin combat skill', deltas:{}, flag:'nain_peau_pierre' },
       ]),
       _talentBranch('tena','Ténacité','Tenacity','🛡',[
         { id:'nain_tena_1', cost:1, ico:'🛡', name:'Ténacité',    nameEn:'Tenacity',   desc:'+6 DEF',            descEn:'+6 DEF',            deltas:{def:6} },
         { id:'nain_tena_2', cost:2, ico:'🛡', name:'Inébranlable', nameEn:'Unshakable', desc:'+10 DEF, +2 PV/combat', descEn:'+10 DEF, +2 HP/fight', deltas:{def:10,regen:2} },
+        { id:'nain_tena_3', cost:3, ico:'⚓', name:'Ancrage', nameEn:'Anchor', desc:'Débloque la compétence de combat Ancrage', descEn:'Unlocks the Anchor combat skill', deltas:{}, flag:'nain_ancrage' },
       ]),
       _talentBranch('forge','Forge','Forge','⚒',[
         { id:'nain_forge_1', cost:1, ico:'⚒', name:'Bras de Forgeron', nameEn:'Smith\'s Arm', desc:'+5 ATQ', descEn:'+5 ATK', deltas:{atk:5} },
         { id:'nain_forge_2', cost:2, ico:'⚒', name:'Marteau de Guerre', nameEn:'War Hammer',  desc:'+8 ATQ', descEn:'+8 ATK', deltas:{atk:8} },
+        { id:'nain_forge_3', cost:3, ico:'🔨', name:'Marteau Runique', nameEn:'Runic Hammer', desc:'Débloque la compétence de combat Marteau Runique', descEn:'Unlocks the Runic Hammer combat skill', deltas:{}, flag:'nain_marteau_runique' },
       ]),
     ],
     Orc: [
       _talentBranch('brut','Brutalité','Brutality','💪',[
         { id:'orc_brut_1', cost:1, ico:'💪', name:'Muscle',      nameEn:'Muscle',    desc:'+6 ATQ',  descEn:'+6 ATK',  deltas:{atk:6} },
         { id:'orc_brut_2', cost:2, ico:'💪', name:'Écrasement',  nameEn:'Crushing',  desc:'+10 ATQ', descEn:'+10 ATK', deltas:{atk:10} },
+        { id:'orc_brut_3', cost:3, ico:'👊', name:'Poing du Chef de Guerre', nameEn:'Warchief\'s Fist', desc:'Débloque la compétence de combat Poing du Chef de Guerre', descEn:'Unlocks the Warchief\'s Fist combat skill', deltas:{}, flag:'orc_poing' },
       ]),
       _talentBranch('sauv','Sauvagerie','Savagery','🐗',[
         { id:'orc_sauv_1', cost:1, ico:'🐗', name:'Instinct Sauvage', nameEn:'Wild Instinct', desc:'Crit +6%',          descEn:'Crit +6%',          deltas:{crit:0.06} },
         { id:'orc_sauv_2', cost:2, ico:'🐗', name:'Fureur Primale',   nameEn:'Primal Fury',   desc:'Crit +8%, +6 ATQ', descEn:'Crit +8%, +6 ATK', deltas:{crit:0.08,atk:6} },
+        { id:'orc_sauv_3', cost:3, ico:'📯', name:'Cri de Guerre', nameEn:'War Cry', desc:'Débloque la compétence de combat Cri de Guerre', descEn:'Unlocks the War Cry combat skill', deltas:{}, flag:'orc_cri' },
       ]),
       _talentBranch('resil','Résilience','Resilience','🩸',[
         { id:'orc_resil_1', cost:1, ico:'🩸', name:'Cuir Épais',  nameEn:'Thick Hide', desc:'+25 PV max',             descEn:'+25 max HP',            deltas:{hp:25} },
         { id:'orc_resil_2', cost:2, ico:'🩸', name:'Sang Vorace', nameEn:'Ravenous Blood', desc:'+40 PV max, Vol de vie +6%', descEn:'+40 max HP, Lifesteal +6%', deltas:{hp:40,lifesteal:0.06} },
+        { id:'orc_resil_3', cost:3, ico:'♻', name:'Régénération Féroce', nameEn:'Ferocious Regeneration', desc:'Débloque la compétence de combat Régénération Féroce', descEn:'Unlocks the Ferocious Regeneration combat skill', deltas:{}, flag:'orc_regen' },
       ]),
     ],
   },
@@ -8391,9 +8658,9 @@ var Talents = (function(){
   function hasFlag(flag) { return !!(State._talentFlags && State._talentFlags[flag]); }
 
   // Rattrape les personnages déjà avancés (créés avant l'arbre de talents, ou
-  // montés de niveau ailleurs) : à chaque montée de niveau, un point est gagné,
-  // en alternance classe (niveaux impairs) / race (niveaux pairs). On ne fait
-  // que compléter, jamais retirer, pour ne pas retirer des points déjà dépensés.
+  // montés de niveau ailleurs) : à chaque montée de niveau, un point de classe
+  // ET un point de race sont gagnés simultanément. On ne fait que compléter,
+  // jamais retirer, pour ne pas retirer des points déjà dépensés.
   function syncSkillPoints() {
     State.talents = State.talents || { class:{}, race:{} };
     var spentClass = 0, spentRace = 0;
@@ -8406,7 +8673,7 @@ var Talents = (function(){
       });
     });
     var earnedClass = 0, earnedRace = 0;
-    for (var L=2; L<=(State.level||1); L++) { if (L % 2 === 1) earnedClass++; else earnedRace++; }
+    for (var L=2; L<=(State.level||1); L++) { earnedClass++; earnedRace++; }
     var shouldHaveClass = Math.max(0, earnedClass - spentClass);
     var shouldHaveRace  = Math.max(0, earnedRace - spentRace);
     if (shouldHaveClass > (State.skillPointsClass||0)) State.skillPointsClass = shouldHaveClass;
@@ -8446,7 +8713,16 @@ var TalentsScreen = (function(){
     return null;
   }
 
+  function _updateLoadoutCount() {
+    var el = document.getElementById('tal-loadout-count');
+    if (el) el.textContent = '('+Loadout.get().length+'/'+Loadout.MAX+')';
+  }
+
   function render() {
+    _updateLoadoutCount();
+    if (_tab === 'loadout') { renderLoadout(); return; }
+    var pointsEl = document.getElementById('tal-points');
+    if (pointsEl) pointsEl.style.display = '';
     var field = _tab === 'class' ? 'skillPointsClass' : 'skillPointsRace';
     var pv = document.getElementById('tal-points-val');
     if (pv) pv.textContent = State[field]||0;
@@ -8467,8 +8743,9 @@ var TalentsScreen = (function(){
           var prevDone = Talents.isUnlocked(_tab, branch.nodes[tier-1].id);
           html += '<div class="tal-connector-line'+(prevDone?' done':'')+'"></div>';
         }
-        html += '<div class="tal-node-circle '+st+'" data-scope="'+_tab+'" data-id="'+node.id+'">'
-          + (st==='locked' ? '🔒' : node.ico) + '</div>'
+        var isActive = !!node.flag;
+        html += '<div class="tal-node-circle '+st+(isActive?' active-type':' passive-type')+'" data-scope="'+_tab+'" data-id="'+node.id+'" title="'+(CGE_LANG==='en'&&node.nameEn?node.nameEn:node.name)+' — '+(CGE_LANG==='en'&&node.descEn?node.descEn:node.desc)+'">'
+          + (st==='locked' ? '🔒' : node.ico) + (isActive && st!=='locked' ? '<span class="tal-node-active-badge">⚔</span>' : '') + '</div>'
           + '<div class="tal-node-cost-badge">'+(st==='unlocked' ? '✓' : ('✦'+node.cost))+'</div>';
       });
       wrap.innerHTML = html;
@@ -8477,6 +8754,50 @@ var TalentsScreen = (function(){
     body.querySelectorAll('.tal-node-circle').forEach(function(el){
       el.addEventListener('click', function(){ openDetail(el.dataset.scope, el.dataset.id); });
     });
+  }
+
+  function renderLoadout() {
+    var pointsEl = document.getElementById('tal-points');
+    if (pointsEl) pointsEl.style.display = 'none';
+    var body = document.getElementById('tal-body');
+    if (!body) return;
+    body.innerHTML = '';
+    var loadout = Loadout.get();
+    var pool = Loadout.eligibleAbilities();
+    var wrap = document.createElement('div');
+    wrap.className = 'tal-loadout-wrap';
+    var intro = document.createElement('div');
+    intro.className = 'tal-loadout-intro';
+    intro.textContent = T('tal.loadout.intro');
+    wrap.appendChild(intro);
+    if (!pool.length) {
+      var empty = document.createElement('div');
+      empty.className = 'tal-loadout-empty';
+      empty.textContent = T('tal.loadout.none');
+      wrap.appendChild(empty);
+    } else {
+      pool.forEach(function(sp){
+        var equipped = loadout.indexOf(sp.id) !== -1;
+        var full = !equipped && loadout.length >= Loadout.MAX;
+        var name = (CGE_LANG==='en'&&sp.nameEn) ? sp.nameEn : sp.name;
+        var desc = (CGE_LANG==='en'&&sp.descEn) ? sp.descEn : sp.desc;
+        var card = document.createElement('div');
+        card.className = 'tal-loadout-card' + (equipped?' equipped':'') + (full?' full':'');
+        card.innerHTML = '<span class="tlc-ico">'+sp.ico+'</span><span class="tlc-info"><div class="tlc-name">'+name+'</div><div class="tlc-desc">'+desc+'</div></span><span class="tlc-check">'+(equipped?'✓':'+')+'</span>';
+        card.addEventListener('click', function(){
+          var ok = Loadout.toggle(sp.id);
+          if (!ok && !equipped) {
+            card.classList.add('shake');
+            setTimeout(function(){ card.classList.remove('shake'); }, 400);
+            return;
+          }
+          renderLoadout();
+          _updateLoadoutCount();
+        });
+        wrap.appendChild(card);
+      });
+    }
+    body.appendChild(wrap);
   }
 
   function openDetail(scope, nodeId) {
@@ -8528,6 +8849,11 @@ var TalentsScreen = (function(){
     }
   }
 
+  // Second tap : le joueur retape la compétence (agrandie dans le panneau,
+  // le nœud d'origine étant couvert par le fond du bottom-sheet) pour
+  // confirmer l'amélioration — sans effet si elle n'est pas "disponible".
+  function tapNodeAgain() { upgradeDetail(); }
+
   function closeDetail() {
     document.getElementById('tal-detail-overlay').classList.remove('show');
   }
@@ -8539,6 +8865,7 @@ var TalentsScreen = (function(){
     var n = (State.skillPointsClass||0) + (State.skillPointsRace||0);
     badge.textContent = n;
     badge.classList.toggle('show', n > 0);
+    _updateLoadoutCount();
   }
 
   function open(from) {
@@ -8546,6 +8873,7 @@ var TalentsScreen = (function(){
     _tab = 'class';
     document.getElementById('tal-tab-class').classList.add('active');
     document.getElementById('tal-tab-race').classList.remove('active');
+    document.getElementById('tal-tab-loadout').classList.remove('active');
     Talents.syncSkillPoints();
     Nav.go('talents-screen');
     render();
@@ -8561,6 +8889,7 @@ var TalentsScreen = (function(){
     _tab = t;
     document.getElementById('tal-tab-class').classList.toggle('active', t==='class');
     document.getElementById('tal-tab-race').classList.toggle('active', t==='race');
+    document.getElementById('tal-tab-loadout').classList.toggle('active', t==='loadout');
     render();
   }
 
@@ -8574,7 +8903,7 @@ var TalentsScreen = (function(){
 
   return {
     open:open, close:close, tab:tab, render:render, respec:respec, updateBadge:updateBadge,
-    openDetail:openDetail, closeDetail:closeDetail, upgradeDetail:upgradeDetail
+    openDetail:openDetail, closeDetail:closeDetail, upgradeDetail:upgradeDetail, tapNodeAgain:tapNodeAgain
   };
 })();
 
@@ -8597,9 +8926,9 @@ function gainXP(amount) {
   if (State.xp >= threshold && State.level < 30) {
     State.xp -= threshold;
     State.level++;
-    // Alterne classe (niveaux impairs) / race (niveaux pairs)
-    if (State.level % 2 === 1) State.skillPointsClass = (State.skillPointsClass||0) + 1;
-    else State.skillPointsRace = (State.skillPointsRace||0) + 1;
+    // Un point de classe ET un point de race à chaque niveau.
+    State.skillPointsClass = (State.skillPointsClass||0) + 1;
+    State.skillPointsRace = (State.skillPointsRace||0) + 1;
     triggerLevelUp();
     if (typeof Achievements !== 'undefined') Achievements.check('level');
     if (typeof Tutorial !== 'undefined') Tutorial.maybeFinishAtLevel(State.level);
