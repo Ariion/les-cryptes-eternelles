@@ -2019,6 +2019,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 /* ── EQUIP SCREEN ──────────────────────────────────────────── */
 #hero-screen {
   background: #07060f;
+  background-image: radial-gradient(ellipse 75% 38% at 50% 16%, rgba(0,150,210,0.16) 0%, transparent 65%);
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
@@ -2056,7 +2057,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 .eq-stat-lbl {
   font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 1px;
-  color: rgba(201,165,80,0.4); text-transform: uppercase; margin-top: 1px;
+  color: rgba(201,165,80,0.65); text-transform: uppercase; margin-top: 1px;
 }
 /* Scrollable body */
 #eq-body {
@@ -2081,7 +2082,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
   background: rgba(255,255,255,0.02);
   padding: 8px 4px;
 }
-#eq-doll-center.has-portrait { border-style: solid; border-color: rgba(201,165,80,0.35); padding: 0; }
+#eq-doll-center.has-portrait {
+  border-style: solid; border-color: rgba(0,212,232,0.55); padding: 0;
+  box-shadow: 0 0 18px rgba(0,212,232,0.25), inset 0 0 22px rgba(0,212,232,0.08);
+}
 #eq-doll-portrait-ph { font-size: 34px; opacity: 0.25; }
 #eq-doll-center-lbl {
   font-family: 'Crimson Text', serif; font-style: italic; font-size: 9px;
@@ -2101,12 +2105,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .eq-slot-row {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; aspect-ratio: 1; border-radius: 10px;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.1);
+  background: rgba(255,255,255,0.055); border: 1px solid rgba(201,165,80,0.22);
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent; padding: 4px 2px;
 }
-.eq-slot-row:active { transform: scale(0.94); background: rgba(201,165,80,0.08); border-color: rgba(201,165,80,0.25); }
-.eq-slot-row.has-item { border-color: rgba(201,165,80,0.35); background: rgba(201,165,80,0.06); }
+.eq-slot-row:active { transform: scale(0.94); background: rgba(201,165,80,0.1); border-color: rgba(201,165,80,0.35); }
+.eq-slot-row.has-item { border-color: rgba(201,165,80,0.5); background: rgba(201,165,80,0.1); }
 .eq-slot-ico {
   font-size: 20px; line-height: 1; color: #C9A550;
 }
@@ -2116,12 +2120,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
    vide. Le nom précis de l'objet s'affiche au tap (panneau détail). */
 .eq-slot-name {
   font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 0.3px;
-  color: rgba(201,165,80,0.5); text-transform: uppercase;
+  color: rgba(232,212,160,0.75); text-transform: uppercase;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
 }
 .eq-slot-item-name, .eq-slot-empty { display: none; }
 .eq-slot-stat {
-  font-family: 'Cinzel', serif; font-size: 7.5px; color: rgba(201,165,80,0.65);
+  font-family: 'Cinzel', serif; font-size: 7.5px; color: rgba(201,165,80,0.85);
   min-height: 9px;
 }
 /* Inventory grid */
@@ -2132,11 +2136,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .eq-inv-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 4px; padding: 12px 8px; border-radius: 10px; text-align: center;
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.1);
+  background: rgba(255,255,255,0.055); border: 1px solid rgba(201,165,80,0.22);
   cursor: pointer; transition: all 0.15s; min-height: 90px;
   -webkit-tap-highlight-color: transparent;
 }
-.eq-inv-card:active { background: rgba(201,165,80,0.1); }
+.eq-inv-card:active { background: rgba(201,165,80,0.12); }
 .eq-inv-card.empty {
   border-style: dashed; opacity: 0.3; cursor: default; pointer-events: none;
 }
@@ -2146,7 +2150,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   line-height: 1.2;
 }
 .eq-inv-card .card-stat {
-  font-family: 'Cinzel', serif; font-size: 10px; color: rgba(201,165,80,0.6);
+  font-family: 'Cinzel', serif; font-size: 10px; color: rgba(201,165,80,0.85);
 }
 /* Item detail panel (bottom sheet) */
 #eq-detail-panel {
@@ -3154,17 +3158,17 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 .chest-slot {
   aspect-ratio:1; border-radius:7px;
-  border:1px dashed rgba(201,165,80,0.12);
-  background:rgba(201,165,80,0.02);
+  border:1px dashed rgba(201,165,80,0.22);
+  background:rgba(201,165,80,0.04);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:1px; cursor:pointer; padding:3px;
   -webkit-tap-highlight-color:transparent; transition:all 0.15s;
 }
-.chest-slot.occupied { border-color:rgba(201,165,80,0.35); background:rgba(201,165,80,0.06); border-style:solid; }
+.chest-slot.occupied { border-color:rgba(201,165,80,0.5); background:rgba(201,165,80,0.1); border-style:solid; }
 .chest-slot:active { transform:scale(0.93); }
 .chest-slot .cs-ico { font-size:18px; }
-.chest-slot .cs-name { font-family:'Cinzel',serif; font-size:6.5px; color:rgba(237,232,223,0.5); text-align:center; line-height:1.15; }
-.chest-slot .cs-stat { font-family:'Cinzel',serif; font-size:7.5px; color:rgba(201,165,80,0.65); }
+.chest-slot .cs-name { font-family:'Cinzel',serif; font-size:6.5px; color:rgba(237,232,223,0.7); text-align:center; line-height:1.15; }
+.chest-slot .cs-stat { font-family:'Cinzel',serif; font-size:7.5px; color:rgba(201,165,80,0.85); }
 #chest-hint {
   font-family:'Crimson Text',serif; font-style:italic; font-size:11px;
   color:rgba(237,232,223,0.25); text-align:center; padding:2px 0 6px; flex-shrink:0;
@@ -12624,8 +12628,10 @@ var EquipScreen = (function() {
       var name = document.getElementById('eq-name-'+slot);
       var stat = document.getElementById('eq-stat-'+slot);
       if (!row) return;
+      RARITY_ORDER.forEach(function(r){ row.classList.remove('rarity-'+r); });
       if (item) {
         row.classList.add('has-item');
+        row.classList.add('rarity-'+(item.rarity||'common'));
         if (ico)  { ico.textContent = item.ico || SLOT_DEFAULT_ICO[slot] || '?'; }
         if (name) { name.textContent = item.name; name.className = 'eq-slot-item-name'; }
         if (stat) { stat.textContent = _statSummary(item); }
@@ -12874,7 +12880,7 @@ var ChestScreen = {
       chestGrid.innerHTML = '';
       for (var i = 0; i < 20; i++) {
         var div = document.createElement('div');
-        div.className = 'chest-slot' + (chest[i] ? ' occupied' : '');
+        div.className = 'chest-slot' + (chest[i] ? ' occupied rarity-'+(chest[i].rarity||'common') : '');
         if (chest[i]) {
           var it = chest[i];
           div.innerHTML = '<div class="cs-ico">'+_escHtml(it.ico)+'</div><div class="cs-name">'+_escHtml(it.name)+'</div><div class="cs-stat">'+_escHtml(it.desc)+'</div>';
@@ -12900,7 +12906,7 @@ var ChestScreen = {
       var maxInv = 8;
       for (var j = 0; j < maxInv; j++) {
         var div2 = document.createElement('div');
-        div2.className = 'chest-slot' + (inv[j] ? ' occupied' : '');
+        div2.className = 'chest-slot' + (inv[j] ? ' occupied rarity-'+(inv[j].rarity||'common') : '');
         if (inv[j]) {
           var it2 = inv[j];
           div2.innerHTML = '<div class="cs-ico">'+_escHtml(it2.ico)+'</div><div class="cs-name">'+_escHtml(it2.name)+'</div><div class="cs-stat">'+_escHtml(it2.desc)+'</div>';
