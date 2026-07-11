@@ -1628,6 +1628,13 @@ canvas#particles {
   background: rgba(126,207,255,0.1); border-color: rgba(126,207,255,0.35); color: #7ecfff;
 }
 #gh-btn-tuto.show { display: flex; }
+#gh-btn-quests { position: relative; }
+.gh-btn-dot {
+  display: none; position: absolute; top: -3px; right: -3px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ff4d4d; box-shadow: 0 0 5px rgba(255,77,77,0.85);
+}
+.gh-btn-dot.show { display: block; }
 #gh-row2 {
   display: flex; align-items: center; gap: 10px;
 }
@@ -3283,6 +3290,35 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .gem-pkg .gp-price { font-size:13px; padding:5px 14px; border-radius:6px; background:rgba(126,207,255,0.12); border:1px solid rgba(126,207,255,0.25); color:#7ecfff; }
 #gem-store-debug { font-family:'Crimson Text',serif; font-style:italic; font-size:11px; color:rgba(255,200,80,0.5); text-align:center; padding:8px 16px; }
 
+/* ── CADEAU DE CONNEXION QUOTIDIEN (section dans le modal quêtes) ── */
+#dl-section { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(201,165,80,0.15); }
+#dl-section-title { font-family:'Cinzel',serif; font-size:12px; color:rgba(126,207,255,0.7); margin-bottom:8px; letter-spacing:.05em; }
+#dl-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:9px; }
+.dl-day {
+  position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; padding:6px 2px; border-radius:8px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+}
+.dl-day-num { font-size:9px; color:rgba(237,232,223,0.5); font-family:'Cinzel',serif; }
+.dl-day-reward { font-size:11px; color:#EDE8DF; }
+.dl-day.dl-done { background:rgba(80,200,112,0.12); border-color:rgba(80,200,112,0.35); }
+.dl-day.dl-done .dl-day-reward { color:rgba(237,232,223,0.4); }
+.dl-day.dl-ready { background:rgba(126,207,255,0.14); border-color:rgba(126,207,255,0.55); box-shadow:0 0 8px rgba(126,207,255,0.3); }
+.dl-check {
+  position:absolute; top:-4px; right:-4px; width:13px; height:13px; border-radius:50%;
+  background:#0d0d16; color:#50c870; font-size:9px;
+  display:flex; align-items:center; justify-content:center;
+}
+#dl-claim-btn {
+  width:100%; padding:9px; border-radius:8px; cursor:pointer;
+  background:rgba(126,207,255,0.15); border:1px solid rgba(126,207,255,0.4);
+  color:#7ecfff; font-family:'Cinzel',serif; font-size:12px;
+}
+#dl-claim-btn:disabled {
+  opacity:.4; cursor:default;
+  background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); color:rgba(237,232,223,0.4);
+}
+
 /* ── QUÊTES QUOTIDIENNES (section dans le modal quêtes) ──────── */
 #dq-section { margin-top:12px; border-top:1px solid rgba(201,165,80,0.15); padding-top:10px; }
 #dq-section-title { font-family:'Cinzel',serif; font-size:12px; color:rgba(126,207,255,0.7); margin-bottom:8px; letter-spacing:.05em; }
@@ -3312,7 +3348,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="gh-btns">
           <button id="gh-btn-menu"   onclick="Nav.go('main-menu')">⌂ Menu</button>
           <button id="gh-btn-tuto"   onclick="Tutorial.restart()">🎓 Tuto</button>
-          <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes</button>
+          <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes<span id="gh-quest-badge" class="gh-btn-dot"></span></button>
           <button id="gh-btn-carnet" onclick="CarnetEnquete.open()">🔍 Enquête</button>
         </div>
       </div>
@@ -3336,6 +3372,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <!-- Modal quêtes actives -->
     <div id="gh-quest-modal">
       <div id="gh-quest-content">
+        <div id="dl-section">
+          <div id="dl-section-title">🎁 CADEAU QUOTIDIEN</div>
+          <div id="dl-grid"></div>
+          <button id="dl-claim-btn" onclick="DailyLogin.claim()">Réclamer</button>
+        </div>
         <div id="gh-quest-title">📜 Quêtes en cours</div>
         <div id="gh-quest-list"></div>
         <div id="dq-section">
@@ -11041,6 +11082,7 @@ var Meta = {
   shopStock: {},      // { forge:[SHOP_POOL indices], armurerie:[...], couturier:[...], bijoutier:[...], eglise:[...] }
   shopStockSlot: {},  // { forge:'2026-6-10-1', ... } — créneau de 6h (heure locale) où ce stock a été généré
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
+  dailyLogin: { streak:0, lastDay:null }, // cadeau de connexion quotidien (cycle 7 jours)
   storyFlags: {},     // one-off narrative beats seen (Aldric's hint, visions, etc.) — { key: true }
   tutorialPhase: null, // null=not asked, 'gate'|'explore'|'return'|'skipped'|'done'
   tutorialFirstCombatDone: false,
@@ -11076,6 +11118,7 @@ var Meta = {
       Meta.shopStock       = d.shopStock||{};
       Meta.shopStockSlot   = d.shopStockSlot||{};
       Meta.dailyQuests     = d.dailyQuests||{};
+      Meta.dailyLogin      = d.dailyLogin||{ streak:0, lastDay:null };
       Meta.storyFlags      = d.storyFlags||{};
       Meta.tutorialPhase   = d.tutorialPhase||null;
       Meta.tutorialFirstCombatDone = d.tutorialFirstCombatDone||false;
@@ -11110,6 +11153,7 @@ var Meta = {
       shopStock:      Meta.shopStock,
       shopStockSlot:  Meta.shopStockSlot,
       dailyQuests:    Meta.dailyQuests,
+      dailyLogin:     Meta.dailyLogin,
       storyFlags:     Meta.storyFlags,
       tutorialPhase:  Meta.tutorialPhase,
       tutorialFirstCombatDone: Meta.tutorialFirstCombatDone,
@@ -13560,6 +13604,13 @@ var HUD = (function(){
   };
   var FLOOR_LABELS = ['I','II','III','IV','V','VI'];
 
+  function _refreshQuestBadge() {
+    var badge = document.getElementById('gh-quest-badge');
+    if (!badge) return;
+    var claimable = typeof DailyLogin !== 'undefined' && DailyLogin.isClaimable();
+    badge.classList.toggle('show', claimable);
+  }
+
   function _refresh(screenId) {
     var hdr = document.getElementById('game-header');
     if (!hdr) return;
@@ -13582,6 +13633,8 @@ var HUD = (function(){
     // Name
     var nm = document.getElementById('gh-name');
     if (nm) nm.textContent = (State && State.name) ? State.name.toUpperCase() : 'AVENTURIER';
+
+    _refreshQuestBadge();
 
     // Bouton de relance du tutoriel : visible tant que la dette envers Marta
     // n'est pas remboursée (repère fiable du tout début de partie).
@@ -13661,6 +13714,7 @@ var HUD = (function(){
       if (txt) { txt.textContent = (State.hp||0) + '/' + (State.hpMax||0); txt.classList.remove('hdr-val-flash'); void txt.offsetWidth; txt.classList.add('hdr-val-flash'); }
     },
     updateXP: function() { _updateXP(); },
+    refreshQuestBadge: function() { _refreshQuestBadge(); },
     showQuests: function() {
       var modal = document.getElementById('gh-quest-modal');
       var list  = document.getElementById('gh-quest-list');
@@ -14214,6 +14268,80 @@ var DailyQuests = (function(){
   };
 })();
 
+// ── CADEAU DE CONNEXION QUOTIDIEN ───────────────────────────────
+// Cycle de 7 jours, en gemmes (même monnaie que les quêtes quotidiennes).
+// Le jour se déduit de la date de l'appareil (comme DailyQuests._today()) :
+// pas de minuteur à mémoriser, tout se recalcule depuis l'heure actuelle.
+var DailyLogin = (function(){
+  var REWARDS = [5, 8, 10, 12, 15, 18, 30];
+
+  function _dayKey(d) {
+    d = d || new Date();
+    return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  }
+  function _yesterdayKey() {
+    var d = new Date();
+    d.setDate(d.getDate()-1);
+    return _dayKey(d);
+  }
+  function _ensure() {
+    if (!Meta.dailyLogin) Meta.dailyLogin = { streak:0, lastDay:null };
+  }
+  // Numéro de jour (1-7) qui serait réclamé maintenant, ou null si le
+  // cadeau du jour est déjà pris.
+  function _pendingDay() {
+    _ensure();
+    var dl = Meta.dailyLogin;
+    if (dl.lastDay === _dayKey()) return null;
+    if (dl.lastDay === _yesterdayKey()) return (dl.streak % 7) + 1;
+    return 1;
+  }
+
+  return {
+    isClaimable: function() { return _pendingDay() !== null; },
+    claim: function() {
+      _ensure();
+      var pending = _pendingDay();
+      if (pending === null) return false;
+      Meta.dailyLogin.streak = pending;
+      Meta.dailyLogin.lastDay = _dayKey();
+      Meta.gems = (Meta.gems||0) + REWARDS[pending-1];
+      Meta.save();
+      if (typeof Sfx !== 'undefined' && Sfx.gold) Sfx.gold();
+      if (typeof HUD !== 'undefined') { HUD.updateGems(); HUD.refreshQuestBadge(); }
+      DailyLogin.renderInModal();
+      return true;
+    },
+    renderInModal: function() {
+      var grid = document.getElementById('dl-grid');
+      var btn  = document.getElementById('dl-claim-btn');
+      if (!grid) return;
+      _ensure();
+      var pending = _pendingDay();
+      var claimedToday = pending === null;
+      var displayDay = claimedToday ? Meta.dailyLogin.streak : pending;
+      grid.innerHTML = '';
+      for (var i=1; i<=7; i++) {
+        var done = i < displayDay || (i === displayDay && claimedToday);
+        var ready = i === displayDay && !claimedToday;
+        var cell = document.createElement('div');
+        cell.className = 'dl-day' + (done?' dl-done':'') + (ready?' dl-ready':'');
+        cell.innerHTML =
+          '<div class="dl-day-num">J'+i+'</div>'+
+          '<div class="dl-day-reward">💎'+REWARDS[i-1]+'</div>'+
+          (done ? '<div class="dl-check">✓</div>' : '');
+        grid.appendChild(cell);
+      }
+      if (btn) {
+        btn.disabled = claimedToday;
+        btn.textContent = claimedToday
+          ? 'Déjà réclamé — reviens demain'
+          : '🎁 Réclamer (Jour '+pending+' · +'+REWARDS[pending-1]+' 💎)';
+      }
+    },
+  };
+})();
+
 // ── GEM STORE ─────────────────────────────────────────────────
 var GemStore = (function(){
   var PKGS = [
@@ -14267,6 +14395,7 @@ var GemStore = (function(){
     HUD.showQuests = function() {
       _orig.call(HUD);
       DailyQuests.renderInModal();
+      DailyLogin.renderInModal();
     };
   }
   document.addEventListener('cge:kill', function(){ DailyQuests.notify('kill'); });
