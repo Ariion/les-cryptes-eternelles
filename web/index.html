@@ -2223,6 +2223,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
   background: rgba(200,60,60,0.1); border-color: rgba(200,60,60,0.3); color: rgba(220,100,100,0.8);
 }
 #eq-detail-remove:active { background: rgba(200,60,60,0.25); }
+#eq-detail-chest {
+  background: rgba(0,180,220,0.1); border-color: rgba(0,212,232,0.4); color: #7ecfff;
+  font-size: 10px;
+}
+#eq-detail-chest:active { background: rgba(0,212,232,0.22); }
 #eq-detail-close {
   background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); color: rgba(237,232,223,0.4);
   flex: 0.6;
@@ -3934,6 +3939,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="eq-detail-btns">
           <button id="eq-detail-close"  onclick="EquipScreen.closeDetail()">Fermer</button>
           <button id="eq-detail-remove" onclick="EquipScreen.detailRemove()" style="display:none">Retirer</button>
+          <button id="eq-detail-chest"  onclick="EquipScreen.detailToChest()" style="display:none">📦 Coffre</button>
           <button id="eq-detail-equip"  onclick="EquipScreen.detailEquip()"  style="display:none">Équiper</button>
         </div>
       </div>
@@ -12727,14 +12733,17 @@ var EquipScreen = (function() {
 
     var equipBtn  = document.getElementById('eq-detail-equip');
     var removeBtn = document.getElementById('eq-detail-remove');
+    var chestBtn  = document.getElementById('eq-detail-chest');
     if (ctx.src === 'slot') {
       // Equipped item — show Remove
       equipBtn.style.display  = 'none';
       removeBtn.style.display = '';
+      if (chestBtn) chestBtn.style.display = 'none';
     } else {
-      // Inventory item — show Equip
+      // Inventory item — show Equip + Envoyer au coffre
       equipBtn.style.display  = '';
       removeBtn.style.display = 'none';
+      if (chestBtn) chestBtn.style.display = '';
     }
 
     panel.classList.add('open');
@@ -12811,6 +12820,19 @@ var EquipScreen = (function() {
     if (typeof State.saveRun === 'function') State.saveRun();
   }
 
+  function detailToChest() {
+    if (!_detail || _detail.src !== 'inv') return;
+    var item = _detail.item;
+    Meta.chest = Meta.chest || [];
+    if (Meta.chest.length >= 20) { CGEModal.alert('Coffre plein', 'Le coffre ne peut contenir plus de 20 objets.'); return; }
+    State.inventory.splice(_detail.idx, 1);
+    Meta.chest.push(item);
+    Meta.save();
+    closeDetail();
+    _refreshSlots();
+    if (typeof State.saveRun === 'function') State.saveRun();
+  }
+
   function tapSlot(slot) {
     var item = (State.equipped || {})[slot];
     if (item) {
@@ -12841,6 +12863,7 @@ var EquipScreen = (function() {
     closeDetail: closeDetail,
     detailEquip: detailEquip,
     detailRemove: detailRemove,
+    detailToChest: detailToChest,
     refresh: _refreshSlots
   };
 })();
