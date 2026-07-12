@@ -14252,6 +14252,33 @@ var App = {
   },
 };
 
+// ── HOTSPOT CONFIG (positions/étiquettes éditables via web/editor/) ───────
+var HotspotConfig = (function(){
+  function apply(data){
+    if (!data || !data.screens) return;
+    Object.keys(data.screens).forEach(function(screenId){
+      var hotspots = (data.screens[screenId] || {}).hotspots || [];
+      hotspots.forEach(function(h){
+        var el = document.getElementById(h.id);
+        if (!el) return;
+        el.style.top = el.style.bottom = el.style.left = el.style.right = '';
+        if (h.anchorV === 'bottom') el.style.bottom = h.bottom + '%';
+        else el.style.top = h.top + '%';
+        if (h.anchorH === 'right') el.style.right = h.right + '%';
+        else el.style.left = h.left + '%';
+        var lbl = el.querySelector('.hs-lbl, .npc-name-tag');
+        if (lbl && h.label && !lbl.hasAttribute('data-i18n')) lbl.textContent = h.label;
+      });
+    });
+  }
+  function load(){
+    fetch('data/hotspots.json').then(function(r){ return r.ok ? r.json() : null; })
+      .then(apply)
+      .catch(function(e){ console.warn('[CGE] hotspots.json:', e); });
+  }
+  return { load:load, apply:apply };
+})();
+
 window.addEventListener('load', function(){
   Meta.load();
   ProfileManager.migrate(); // migration depuis ancien système si besoin
@@ -14260,6 +14287,7 @@ window.addEventListener('load', function(){
   Sfx.applyToggles();
   document.getElementById('st-mus-toggle').classList.toggle('on', Music.on);
   WorldMap.updateHotspots();
+  HotspotConfig.load();
 
   // Enregistrement Service Worker (PWA)
   if ('serviceWorker' in navigator) {
