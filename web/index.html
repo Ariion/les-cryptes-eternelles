@@ -5395,6 +5395,9 @@ var ProfilesScreen = {
   _creating: false,
   createNew: function() {
     this._creating = false; // StoryIntro._finish() sets it once the run actually starts
+    // Aucune race/classe pré-choisie : le joueur doit les sélectionner
+    // explicitement (le nom l'est déjà, via le champ vidé juste après).
+    State.race = null; State.cls = null;
     Nav.go('char-select');
     buildCharSelect();
     var inp = document.getElementById('cs-name-input');
@@ -5699,9 +5702,9 @@ var StoryIntro = (function(){
       lines:['Hein ? J\'entends une voix... Qui me parle ?'],
       linesEn:['Huh? I hear a voice... Who\'s talking to me?'],
       choices:[
-        { text:'"Il respire encore."', textEn:'"He still breathes."', key:'voice', val:'survivor' },
-        { text:'"Par les dieux... réveille-toi."', textEn:'"By the gods... wake up."', key:'voice', val:'divine' },
-        { text:'"Quelqu\'un l\'a trouvé."', textEn:'"Someone found him."', key:'voice', val:'found' }
+        { text:'"Il respire encore."', textEn:'"He still breathes."', frag:'"... respire ..."', fragEn:'"... breathes ..."', key:'voice', val:'survivor' },
+        { text:'"Par les dieux... réveille-toi."', textEn:'"By the gods... wake up."', frag:'"... dieux... ... toi."', fragEn:'"... gods... ... up."', key:'voice', val:'divine' },
+        { text:'"Quelqu\'un l\'a trouvé."', textEn:'"Someone found him."', frag:'"... l\'a trouvé."', fragEn:'"... found him."', key:'voice', val:'found' }
       ]
     },
     // 3 — La lumière / le vide
@@ -5760,31 +5763,17 @@ var StoryIntro = (function(){
     if (nw) { nw.classList.remove('show'); document.getElementById('si-name-input').value = ''; }
   }
 
-  // Effet "décodage" : les mots d'une voix encore lointaine, incompréhensible
-  // au premier instant, se précisent lettre par lettre jusqu'à devenir
-  // lisibles — comme une conscience qui se règle sur le son.
-  var _NOISE_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*?$§';
-  function _decodeReveal(el, text, duration) {
-    var len = text.length;
-    var start = null;
-    function frame(ts) {
-      if (!start) start = ts;
-      var pct = Math.min(1, (ts - start) / duration);
-      var revealed = Math.floor(pct * len);
-      var out = '';
-      for (var i = 0; i < len; i++) {
-        var ch = text.charAt(i);
-        if (i < revealed || ch === ' ' || ch === '\n' || /[.,!?"'’…]/.test(ch)) {
-          out += ch;
-        } else {
-          out += _NOISE_CHARS.charAt(Math.floor(Math.random() * _NOISE_CHARS.length));
-        }
-      }
-      el.textContent = out;
-      if (pct < 1) requestAnimationFrame(frame);
-      else el.textContent = text;
-    }
-    requestAnimationFrame(frame);
+  // Effet "compréhension progressive" : la voix, encore lointaine, n'est
+  // d'abord qu'un bruit indistinct (même message fixe sur les 3 choix —
+  // impossible de les distinguer) ; quelques bribes de mots se détachent
+  // ensuite ; puis la phrase entière devient lisible — comme une conscience
+  // qui se règle peu à peu sur le son.
+  var _UNCLEAR_TEXT   = '( Des mots que tu ne comprends pas encore. )';
+  var _UNCLEAR_TEXT_EN = '( Words you can\'t yet understand. )';
+  function _revealComprehension(el, fragment, finalText) {
+    el.textContent = (CGE_LANG === 'en') ? _UNCLEAR_TEXT_EN : _UNCLEAR_TEXT;
+    setTimeout(function(){ el.textContent = fragment; }, 1000);
+    setTimeout(function(){ el.textContent = finalText; }, 2100);
   }
 
   function _typeLines(lines, done) {
@@ -5828,8 +5817,12 @@ var StoryIntro = (function(){
           var txt = document.createElement('span');
           txt.className = 'si-choice-text';
           var finalText = (CGE_LANG === 'en' && opt.textEn) ? opt.textEn : opt.text;
-          if (sc.garbled) { _decodeReveal(txt, finalText, 1300 + Math.random()*400); }
-          else { txt.textContent = finalText; }
+          if (sc.garbled) {
+            var fragText = (CGE_LANG === 'en' && opt.fragEn) ? opt.fragEn : opt.frag;
+            _revealComprehension(txt, fragText, finalText);
+          } else {
+            txt.textContent = finalText;
+          }
           btn.appendChild(txt);
           var bonus = introBonusOf(opt.key, opt.val);
           if (bonus) {
@@ -5878,7 +5871,16 @@ var StoryIntro = (function(){
     // les questions de race/classe/nom, déjà répondues sur cet écran.
     startFromPicker: function() {
       var nameVal = (document.getElementById('cs-name-input').value||'').trim();
-      _c = { race: State.race, cls: State.cls, gender: State.gender, name: nameVal || T('create.name.placeholder') };
+      if (!nameVal || !State.race || !State.cls) {
+        CGEModal.alert(
+          CGE_LANG==='en' ? 'Incomplete character' : 'Personnage incomplet',
+          CGE_LANG==='en'
+            ? 'Choose a name, a race and a class before starting your adventure.'
+            : 'Choisis un nom, une race et une classe avant de commencer l\'aventure.'
+        );
+        return;
+      }
+      _c = { race: State.race, cls: State.cls, gender: State.gender, name: nameVal };
       _idx = 0; _seq = [0,1,2,3,7];
       Nav.go('story-intro');
       setTimeout(function(){ _scene(0); }, 500);
