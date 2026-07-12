@@ -10,8 +10,8 @@
           "label": "Marta",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 59.8,
-          "left": 29.2,
+          "top": 66.1,
+          "left": 51.3,
           "action": "Quests.openNpc('marta')"
         },
         {
@@ -20,8 +20,8 @@
           "label": "Équipement",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 38.2,
-          "left": 30.5,
+          "top": 37.7,
+          "left": 29.2,
           "action": "EquipScreen.open('inn-room')"
         },
         {
@@ -30,8 +30,8 @@
           "label": "🌟 Talents",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 42.2,
-          "left": 86,
+          "top": 24,
+          "left": 83,
           "action": "TalentsScreen.open('inn-room')"
         },
         {
@@ -40,8 +40,8 @@
           "label": "Coffre",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 79,
-          "left": 14,
+          "top": 71.9,
+          "left": 22.1,
           "action": "ChestScreen.open()"
         },
         {
@@ -50,8 +50,8 @@
           "label": "Repos (15 🪙)",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 64.5,
-          "left": 77.1,
+          "top": 62,
+          "left": 80,
           "action": "InnRoom.rest()"
         }
       ]
