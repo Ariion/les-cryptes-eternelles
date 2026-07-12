@@ -225,8 +225,8 @@
           "label": "🌲 Forêt · Nv. 5",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 40,
-          "left": 43,
+          "top": 42,
+          "left": 53.7,
           "action": "WorldMap.enter('foret')"
         },
         {
@@ -235,8 +235,8 @@
           "label": "🏚 Ruines · Nv. 10",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 78,
-          "left": 63,
+          "top": 75.9,
+          "left": 67.4,
           "action": "WorldMap.enter('ruines')"
         },
         {
@@ -245,8 +245,8 @@
           "label": "🌊 Port · Nv. 20",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 57,
-          "left": 74,
+          "top": 56.3,
+          "left": 71.7,
           "action": "WorldMap.enter('port')"
         },
         {
@@ -255,8 +255,8 @@
           "label": "🏘 Thornwall",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 74,
-          "left": 26,
+          "top": 66.2,
+          "left": 36.6,
           "action": "Nav.go('town-screen')"
         },
         {
@@ -265,8 +265,8 @@
           "label": "🪨 Grottes · Nv. 1",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 32,
-          "left": 74,
+          "top": 36.4,
+          "left": 73.4,
           "action": "WorldMap.enter('grottes')"
         },
         {
@@ -275,8 +275,8 @@
           "label": "🌿 Marais · Nv. 28",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 62,
-          "left": 50,
+          "top": 45.3,
+          "left": 25.6,
           "action": "WorldMap.enter('marais')"
         }
       ]
