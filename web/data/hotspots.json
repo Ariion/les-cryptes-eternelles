@@ -207,7 +207,7 @@
         {
           "id": "npc-seraphine",
           "type": "npc",
-          "label": "Séraphin",
+          "label": "Séraphine",
           "anchorV": "bottom",
           "anchorH": "right",
           "bottom": 25.8,
@@ -222,7 +222,7 @@
         {
           "id": "hs-reg-forest",
           "type": "hotspot",
-          "label": "🌲 Forêt · Nv. 5",
+          "label": "Forêt · Nv. 5",
           "anchorV": "top",
           "anchorH": "left",
           "top": 42,
@@ -232,7 +232,7 @@
         {
           "id": "hs-reg-ruins",
           "type": "hotspot",
-          "label": "🏚 Ruines · Nv. 10",
+          "label": "Ruines · Nv. 10",
           "anchorV": "top",
           "anchorH": "left",
           "top": 75.9,
@@ -242,7 +242,7 @@
         {
           "id": "hs-reg-port",
           "type": "hotspot",
-          "label": "🌊 Port · Nv. 20",
+          "label": "Port · Nv. 20",
           "anchorV": "top",
           "anchorH": "left",
           "top": 56.3,
@@ -252,7 +252,7 @@
         {
           "id": "hs-reg-town",
           "type": "hotspot",
-          "label": "🏘 Thornwall",
+          "label": "Thornwall",
           "anchorV": "top",
           "anchorH": "left",
           "top": 66.2,
@@ -262,7 +262,7 @@
         {
           "id": "hs-reg-peaks",
           "type": "hotspot",
-          "label": "🪨 Grottes · Nv. 1",
+          "label": "Grottes · Nv. 1",
           "anchorV": "top",
           "anchorH": "left",
           "top": 36.4,
@@ -272,7 +272,7 @@
         {
           "id": "hs-reg-marais",
           "type": "hotspot",
-          "label": "🌿 Marais · Nv. 28",
+          "label": "Marais · Nv. 28",
           "anchorV": "top",
           "anchorH": "left",
           "top": 45.3,
