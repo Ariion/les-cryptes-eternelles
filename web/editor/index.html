@@ -369,7 +369,7 @@
     var content = JSON.stringify(data, null, 2) + '\n';
     var label = activeTab==='hotspots' ? ('hotspots (' + SCREEN_LABELS[currentScreen] + ')') : 'quêtes';
     setSaveState('Enregistrement sur GitHub…', true);
-    fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path+'?ref='+GH_BRANCH, { headers: ghHeaders() })
+    fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path+'?ref='+GH_BRANCH+'&_='+Date.now(), { headers: ghHeaders(), cache:'no-store' })
       .then(function(r){ if (!r.ok) throw new Error('Lecture du fichier distant impossible (status '+r.status+').'); return r.json(); })
       .then(function(existing){
         return fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path, {
