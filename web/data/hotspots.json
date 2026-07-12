@@ -4,47 +4,281 @@
     "inn-room": {
       "image": "images/inn-room.webp",
       "hotspots": [
-        { "id": "npc-marta", "type": "npc", "label": "Marta", "anchorV": "top", "anchorH": "left", "top": 57, "left": 13, "action": "Quests.openNpc('marta')" },
-        { "id": "hs-inn-armoire", "type": "hotspot", "label": "Équipement", "anchorV": "top", "anchorH": "left", "top": 22, "left": 12, "action": "EquipScreen.open('inn-room')" },
-        { "id": "hs-inn-talents", "type": "hotspot", "label": "🌟 Talents", "anchorV": "top", "anchorH": "left", "top": 24, "left": 83, "action": "TalentsScreen.open('inn-room')" },
-        { "id": "hs-inn-chest", "type": "hotspot", "label": "Coffre", "anchorV": "top", "anchorH": "left", "top": 79, "left": 14, "action": "ChestScreen.open()" },
-        { "id": "hs-inn-bed", "type": "hotspot", "label": "Repos (15 🪙)", "anchorV": "top", "anchorH": "left", "top": 62, "left": 80, "action": "InnRoom.rest()" }
+        {
+          "id": "npc-marta",
+          "type": "npc",
+          "label": "Marta",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 59.8,
+          "left": 29.2,
+          "action": "Quests.openNpc('marta')"
+        },
+        {
+          "id": "hs-inn-armoire",
+          "type": "hotspot",
+          "label": "Équipement",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 38.2,
+          "left": 30.5,
+          "action": "EquipScreen.open('inn-room')"
+        },
+        {
+          "id": "hs-inn-talents",
+          "type": "hotspot",
+          "label": "🌟 Talents",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 42.2,
+          "left": 86,
+          "action": "TalentsScreen.open('inn-room')"
+        },
+        {
+          "id": "hs-inn-chest",
+          "type": "hotspot",
+          "label": "Coffre",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 79,
+          "left": 14,
+          "action": "ChestScreen.open()"
+        },
+        {
+          "id": "hs-inn-bed",
+          "type": "hotspot",
+          "label": "Repos (15 🪙)",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 64.5,
+          "left": 77.1,
+          "action": "InnRoom.rest()"
+        }
       ]
     },
     "town-screen": {
       "image": "images/town.webp",
       "hotspots": [
-        { "id": "hs-town-inn", "type": "hotspot", "label": "🛏 Chambre", "anchorV": "top", "anchorH": "left", "top": 32, "left": 17, "action": "Nav.go('inn-room')" },
-        { "id": "hs-town-forge", "type": "hotspot", "label": "⚒ Forge", "anchorV": "top", "anchorH": "left", "top": 63, "left": 12, "action": "TownScreen.goShop('forge')" },
-        { "id": "hs-town-armurerie", "type": "hotspot", "label": "🛡 Armurerie", "anchorV": "top", "anchorH": "left", "top": 76, "left": 55, "action": "TownScreen.goShop('armurerie')" },
-        { "id": "hs-town-couturier", "type": "hotspot", "label": "🧵 Couturier", "anchorV": "top", "anchorH": "left", "top": 62, "left": 78, "action": "TownScreen.goShop('couturier')" },
-        { "id": "hs-town-bijoutier", "type": "hotspot", "label": "💍 Bijoutier", "anchorV": "top", "anchorH": "left", "top": 50, "left": 30, "action": "TownScreen.goShop('bijoutier')" },
-        { "id": "hs-town-temple", "type": "hotspot", "label": "⛪ Église · Boutique", "anchorV": "top", "anchorH": "left", "top": 36, "left": 68, "action": "TownScreen.goTemple()" },
-        { "id": "hs-town-guild", "type": "hotspot", "label": "Guilde", "anchorV": "top", "anchorH": "left", "top": 66, "left": 38, "action": "GuildScreen.open('town-screen')" },
-        { "id": "hs-town-chateau", "type": "hotspot", "label": "🏰 Château", "anchorV": "top", "anchorH": "left", "top": 14, "left": 38, "action": "TownScreen.goChateau()" },
-        { "id": "npc-aldric", "type": "npc", "label": "Capitaine Aldric", "anchorV": "top", "anchorH": "left", "top": 29, "left": 33, "action": "Quests.openNpc('aldric')" },
-        { "id": "npc-elise", "type": "npc", "label": "Sœur Élise", "anchorV": "top", "anchorH": "left", "top": 44, "left": 78, "action": "Quests.openNpc('elise')" },
-        { "id": "npc-josselin", "type": "npc", "label": "Josselin", "anchorV": "top", "anchorH": "left", "top": 80, "left": 16, "action": "Quests.openNpc('josselin')" },
-        { "id": "hs-town-taverne", "type": "hotspot", "label": "🍺 Taverne", "anchorV": "top", "anchorH": "left", "top": 58, "left": 64, "action": "Nav.go('taverne-screen')" }
+        {
+          "id": "hs-town-inn",
+          "type": "hotspot",
+          "label": "🛏 Chambre",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 32,
+          "left": 17,
+          "action": "Nav.go('inn-room')"
+        },
+        {
+          "id": "hs-town-forge",
+          "type": "hotspot",
+          "label": "⚒ Forge",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 63,
+          "left": 12,
+          "action": "TownScreen.goShop('forge')"
+        },
+        {
+          "id": "hs-town-armurerie",
+          "type": "hotspot",
+          "label": "🛡 Armurerie",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 76,
+          "left": 55,
+          "action": "TownScreen.goShop('armurerie')"
+        },
+        {
+          "id": "hs-town-couturier",
+          "type": "hotspot",
+          "label": "🧵 Couturier",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 62,
+          "left": 78,
+          "action": "TownScreen.goShop('couturier')"
+        },
+        {
+          "id": "hs-town-bijoutier",
+          "type": "hotspot",
+          "label": "💍 Bijoutier",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 50,
+          "left": 30,
+          "action": "TownScreen.goShop('bijoutier')"
+        },
+        {
+          "id": "hs-town-temple",
+          "type": "hotspot",
+          "label": "⛪ Église · Boutique",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 36,
+          "left": 68,
+          "action": "TownScreen.goTemple()"
+        },
+        {
+          "id": "hs-town-guild",
+          "type": "hotspot",
+          "label": "Guilde",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 66,
+          "left": 38,
+          "action": "GuildScreen.open('town-screen')"
+        },
+        {
+          "id": "hs-town-chateau",
+          "type": "hotspot",
+          "label": "🏰 Château",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 14,
+          "left": 38,
+          "action": "TownScreen.goChateau()"
+        },
+        {
+          "id": "npc-aldric",
+          "type": "npc",
+          "label": "Capitaine Aldric",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 29,
+          "left": 33,
+          "action": "Quests.openNpc('aldric')"
+        },
+        {
+          "id": "npc-elise",
+          "type": "npc",
+          "label": "Sœur Élise",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 44,
+          "left": 78,
+          "action": "Quests.openNpc('elise')"
+        },
+        {
+          "id": "npc-josselin",
+          "type": "npc",
+          "label": "Josselin",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 80,
+          "left": 16,
+          "action": "Quests.openNpc('josselin')"
+        },
+        {
+          "id": "hs-town-taverne",
+          "type": "hotspot",
+          "label": "🍺 Taverne",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 58,
+          "left": 64,
+          "action": "Nav.go('taverne-screen')"
+        }
       ]
     },
     "taverne-screen": {
       "image": "images/taverne.webp",
       "hotspots": [
-        { "id": "npc-bertrand", "type": "npc", "label": "Bertrand", "anchorV": "bottom", "anchorH": "left", "bottom": 36, "left": 10, "action": "Quests.openNpc('bertrand')" },
-        { "id": "npc-oswin", "type": "npc", "label": "Oswin", "anchorV": "bottom", "anchorH": "left", "bottom": 52, "left": 42, "action": "Quests.openNpc('oswin')" },
-        { "id": "npc-seraphine", "type": "npc", "label": "Séraphine", "anchorV": "bottom", "anchorH": "right", "bottom": 18, "right": 6, "action": "Quests.openNpc('seraphine')" }
+        {
+          "id": "npc-bertrand",
+          "type": "npc",
+          "label": "Bertrand",
+          "anchorV": "bottom",
+          "anchorH": "left",
+          "bottom": 36,
+          "left": 10,
+          "action": "Quests.openNpc('bertrand')"
+        },
+        {
+          "id": "npc-oswin",
+          "type": "npc",
+          "label": "Oswin",
+          "anchorV": "bottom",
+          "anchorH": "left",
+          "bottom": 52,
+          "left": 42,
+          "action": "Quests.openNpc('oswin')"
+        },
+        {
+          "id": "npc-seraphine",
+          "type": "npc",
+          "label": "Séraphine",
+          "anchorV": "bottom",
+          "anchorH": "right",
+          "bottom": 18,
+          "right": 6,
+          "action": "Quests.openNpc('seraphine')"
+        }
       ]
     },
     "world-map": {
       "image": "images/region.webp",
       "hotspots": [
-        { "id": "hs-reg-forest", "type": "hotspot", "label": "🌲 Forêt · Nv. 5", "anchorV": "top", "anchorH": "left", "top": 40, "left": 43, "action": "WorldMap.enter('foret')" },
-        { "id": "hs-reg-ruins", "type": "hotspot", "label": "🏚 Ruines · Nv. 10", "anchorV": "top", "anchorH": "left", "top": 78, "left": 63, "action": "WorldMap.enter('ruines')" },
-        { "id": "hs-reg-port", "type": "hotspot", "label": "🌊 Port · Nv. 20", "anchorV": "top", "anchorH": "left", "top": 57, "left": 74, "action": "WorldMap.enter('port')" },
-        { "id": "hs-reg-town", "type": "hotspot", "label": "🏘 Thornwall", "anchorV": "top", "anchorH": "left", "top": 74, "left": 26, "action": "Nav.go('town-screen')" },
-        { "id": "hs-reg-peaks", "type": "hotspot", "label": "🪨 Grottes · Nv. 1", "anchorV": "top", "anchorH": "left", "top": 32, "left": 74, "action": "WorldMap.enter('grottes')" },
-        { "id": "hs-reg-marais", "type": "hotspot", "label": "🌿 Marais · Nv. 28", "anchorV": "top", "anchorH": "left", "top": 62, "left": 50, "action": "WorldMap.enter('marais')" }
+        {
+          "id": "hs-reg-forest",
+          "type": "hotspot",
+          "label": "🌲 Forêt · Nv. 5",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 40,
+          "left": 43,
+          "action": "WorldMap.enter('foret')"
+        },
+        {
+          "id": "hs-reg-ruins",
+          "type": "hotspot",
+          "label": "🏚 Ruines · Nv. 10",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 78,
+          "left": 63,
+          "action": "WorldMap.enter('ruines')"
+        },
+        {
+          "id": "hs-reg-port",
+          "type": "hotspot",
+          "label": "🌊 Port · Nv. 20",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 57,
+          "left": 74,
+          "action": "WorldMap.enter('port')"
+        },
+        {
+          "id": "hs-reg-town",
+          "type": "hotspot",
+          "label": "🏘 Thornwall",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 74,
+          "left": 26,
+          "action": "Nav.go('town-screen')"
+        },
+        {
+          "id": "hs-reg-peaks",
+          "type": "hotspot",
+          "label": "🪨 Grottes · Nv. 1",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 32,
+          "left": 74,
+          "action": "WorldMap.enter('grottes')"
+        },
+        {
+          "id": "hs-reg-marais",
+          "type": "hotspot",
+          "label": "🌿 Marais · Nv. 28",
+          "anchorV": "top",
+          "anchorH": "left",
+          "top": 62,
+          "left": 50,
+          "action": "WorldMap.enter('marais')"
+        }
       ]
     }
   }
