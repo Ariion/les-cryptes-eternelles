@@ -60,54 +60,14 @@
       "image": "images/town.webp",
       "hotspots": [
         {
-          "id": "hs-town-forge",
+          "id": "hs-town-market",
           "type": "hotspot",
-          "label": "⚒ Forge",
+          "label": "🏪 Marché",
           "anchorV": "top",
           "anchorH": "left",
           "top": 63.8,
           "left": 20.8,
-          "action": "TownScreen.goShop('forge')"
-        },
-        {
-          "id": "hs-town-armurerie",
-          "type": "hotspot",
-          "label": "🛡 Armurerie",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 76,
-          "left": 55,
-          "action": "TownScreen.goShop('armurerie')"
-        },
-        {
-          "id": "hs-town-couturier",
-          "type": "hotspot",
-          "label": "🧵 Couturier",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 65.9,
-          "left": 79.4,
-          "action": "TownScreen.goShop('couturier')"
-        },
-        {
-          "id": "hs-town-bijoutier",
-          "type": "hotspot",
-          "label": "💍 Bijoutier",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 50,
-          "left": 30,
-          "action": "TownScreen.goShop('bijoutier')"
-        },
-        {
-          "id": "hs-town-temple",
-          "type": "hotspot",
-          "label": "⛪ Église",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 43.3,
-          "left": 76.7,
-          "action": "TownScreen.goTemple()"
+          "action": "TownScreen.goMarket()"
         },
         {
           "id": "hs-town-guild",
