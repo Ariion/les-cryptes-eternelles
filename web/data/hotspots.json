@@ -190,8 +190,8 @@
           "label": "Bertrand",
           "anchorV": "bottom",
           "anchorH": "left",
-          "bottom": 36,
-          "left": 10,
+          "bottom": 55.7,
+          "left": 76.9,
           "action": "Quests.openNpc('bertrand')"
         },
         {
@@ -200,18 +200,18 @@
           "label": "Oswin",
           "anchorV": "bottom",
           "anchorH": "left",
-          "bottom": 52,
-          "left": 42,
+          "bottom": 57.1,
+          "left": 33.5,
           "action": "Quests.openNpc('oswin')"
         },
         {
           "id": "npc-seraphine",
           "type": "npc",
-          "label": "Séraphine",
+          "label": "Séraphin",
           "anchorV": "bottom",
           "anchorH": "right",
-          "bottom": 18,
-          "right": 6,
+          "bottom": 25.8,
+          "right": 20.1,
           "action": "Quests.openNpc('seraphine')"
         }
       ]
