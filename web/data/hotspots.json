@@ -65,8 +65,8 @@
           "label": "🛏 Chambre",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 32,
-          "left": 17,
+          "top": 65.7,
+          "left": 38.1,
           "action": "Nav.go('inn-room')"
         },
         {
@@ -75,8 +75,8 @@
           "label": "⚒ Forge",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 63,
-          "left": 12,
+          "top": 63.8,
+          "left": 20.8,
           "action": "TownScreen.goShop('forge')"
         },
         {
@@ -95,8 +95,8 @@
           "label": "🧵 Couturier",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 62,
-          "left": 78,
+          "top": 65.9,
+          "left": 79.4,
           "action": "TownScreen.goShop('couturier')"
         },
         {
@@ -112,11 +112,11 @@
         {
           "id": "hs-town-temple",
           "type": "hotspot",
-          "label": "⛪ Église · Boutique",
+          "label": "⛪ Église",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 36,
-          "left": 68,
+          "top": 43.3,
+          "left": 76.7,
           "action": "TownScreen.goTemple()"
         },
         {
@@ -125,8 +125,8 @@
           "label": "Guilde",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 66,
-          "left": 38,
+          "top": 40,
+          "left": 14.4,
           "action": "GuildScreen.open('town-screen')"
         },
         {
@@ -135,8 +135,8 @@
           "label": "🏰 Château",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 14,
-          "left": 38,
+          "top": 23.6,
+          "left": 54.9,
           "action": "TownScreen.goChateau()"
         },
         {
@@ -145,8 +145,8 @@
           "label": "Capitaine Aldric",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 29,
-          "left": 33,
+          "top": 38.8,
+          "left": 50.8,
           "action": "Quests.openNpc('aldric')"
         },
         {
@@ -155,8 +155,8 @@
           "label": "Sœur Élise",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 44,
-          "left": 78,
+          "top": 50.9,
+          "left": 61.1,
           "action": "Quests.openNpc('elise')"
         },
         {
@@ -165,8 +165,8 @@
           "label": "Josselin",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 80,
-          "left": 16,
+          "top": 78.2,
+          "left": 29.9,
           "action": "Quests.openNpc('josselin')"
         },
         {
@@ -175,8 +175,8 @@
           "label": "🍺 Taverne",
           "anchorV": "top",
           "anchorH": "left",
-          "top": 58,
-          "left": 64,
+          "top": 61.9,
+          "left": 57.2,
           "action": "Nav.go('taverne-screen')"
         }
       ]
