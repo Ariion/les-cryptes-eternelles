@@ -10955,6 +10955,9 @@ var Quests = (function(){
       npcs.forEach(function(npc) {
         var active = (Meta.activeQuests||{})[npc];
         if (!active) {
+          // Bertrand : pas de pastille "quête disponible" (📜) — seulement
+          // une fois la quête effectivement acceptée (🗺 / ✅ ci-dessous).
+          if (npc === 'bertrand') return;
           var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]) && (!q.condition || q.condition()); });
           if (next) {
             var b = document.createElement('div');
