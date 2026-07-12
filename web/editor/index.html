@@ -401,8 +401,8 @@
 
   // ── LOAD ──────────────────────────────────────────────────
   Promise.all([
-    fetch('../data/hotspots.json').then(function(r){ return r.json(); }),
-    fetch('../data/quests.json').then(function(r){ return r.json(); })
+    fetch('../data/hotspots.json?v=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }),
+    fetch('../data/quests.json?v=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); })
   ]).then(function(res){
     hotspotsData = res[0];
     questsData = res[1];
