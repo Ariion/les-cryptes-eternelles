@@ -58,6 +58,7 @@
   .tb-btn.primary:hover{ background:#d8b45f; }
   #save-state{ font-size:11.5px; color:var(--text-faint); white-space:nowrap; }
   #save-state.dirty{ color:var(--accent); }
+  .tb-group{ display:contents; }
 
   /* ── LAYOUT ──────────────────────────────────────────────── */
   #view{ flex:1; display:flex; min-height:0; }
@@ -108,7 +109,7 @@
 
   .marker{
     position:absolute; width:22px; height:22px; margin-left:-11px; margin-top:-11px;
-    border-radius:50%; border:2px solid #1a1610; cursor:grab;
+    border-radius:50%; border:2px solid #1a1610; cursor:grab; touch-action:none;
     box-shadow:0 2px 8px rgba(0,0,0,0.5); transition:box-shadow .12s;
   }
   .marker:active{ cursor:grabbing; }
@@ -187,29 +188,70 @@
   #gh-modal-msg.err{ color:#e0938c; }
   #gh-modal-msg.ok{ color:#8fd39d; }
   .modal-actions{ display:flex; justify-content:flex-end; gap:10px; }
+
+  /* ── RESPONSIVE (mobile / tablette) ─────────────────────── */
+  @media (max-width:780px){
+    html,body{ height:auto; min-height:100%; }
+    body{ overflow-y:auto; overflow-x:hidden; }
+
+    #toolbar{
+      flex-direction:column; align-items:stretch; height:auto;
+      padding:10px 12px; gap:8px; position:sticky; top:0; z-index:50;
+    }
+    #brand .sub{ display:none; }
+    #brand{ font-size:15px; text-align:center; }
+    .spacer{ display:none; }
+    .tb-group{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
+    #tabs{ flex:1; }
+    .tab-btn{ flex:1; text-align:center; }
+    #screen-select{ flex:1; min-width:120px; }
+    #save-state{ flex:1; min-width:140px; }
+    #gh-pill{ flex:0 0 auto; }
+    #btn-import, #btn-export{ flex:1; }
+    #btn-save-gh{ flex-basis:100%; justify-content:center; }
+
+    #view{ flex:none; height:auto; overflow-y:visible; min-height:0; }
+    .view-pane.active{ flex-direction:column; height:auto; }
+
+    #hs-canvas-wrap{ order:1; flex:none; padding:14px; }
+    #hs-canvas{ width:100%; max-width:440px; }
+    #hs-props{ order:2; width:100%; border-right:none; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    #hs-objects{ order:3; width:100%; border-left:none; max-height:260px; }
+
+    .marker{ width:28px; height:28px; margin-left:-14px; margin-top:-14px; }
+
+    #q-list{ width:100%; max-height:240px; border-right:none; border-bottom:1px solid var(--border); }
+    #q-form-wrap{ flex:none; padding:16px 18px 60px; }
+  }
 </style>
 </head>
 <body>
 
   <div id="toolbar">
     <div id="brand">Éditeur des Cryptes<span class="sub">Outil interne — non livré aux joueurs</span></div>
-    <div id="tabs">
-      <button class="tab-btn active" data-tab="hotspots">🗺 Cartes &amp; Boutons</button>
-      <button class="tab-btn" data-tab="quests">📜 Quêtes</button>
+    <div class="tb-group">
+      <div id="tabs">
+        <button class="tab-btn active" data-tab="hotspots">🗺 Cartes &amp; Boutons</button>
+        <button class="tab-btn" data-tab="quests">📜 Quêtes</button>
+      </div>
+      <select id="screen-select">
+        <option value="inn-room">Auberge</option>
+        <option value="town-screen">Ville</option>
+        <option value="world-map">Région</option>
+        <option value="taverne-screen">Taverne</option>
+      </select>
     </div>
-    <select id="screen-select">
-      <option value="inn-room">Auberge</option>
-      <option value="town-screen">Ville</option>
-      <option value="world-map">Région</option>
-      <option value="taverne-screen">Taverne</option>
-    </select>
     <div class="spacer"></div>
-    <span id="save-state">Chargé depuis data/</span>
-    <div id="gh-pill"><span class="dot"></span><span id="gh-pill-label">GitHub non connecté</span></div>
-    <input type="file" id="import-file" accept="application/json">
-    <button class="tb-btn" id="btn-import">Importer</button>
-    <button class="tb-btn" id="btn-export">Télécharger</button>
-    <button class="tb-btn primary save-btn" id="btn-save-gh">💾 Enregistrer sur GitHub</button>
+    <div class="tb-group">
+      <span id="save-state">Chargé depuis data/</span>
+      <div id="gh-pill"><span class="dot"></span><span id="gh-pill-label">GitHub non connecté</span></div>
+    </div>
+    <div class="tb-group">
+      <input type="file" id="import-file" accept="application/json">
+      <button class="tb-btn" id="btn-import">Importer</button>
+      <button class="tb-btn" id="btn-export">Télécharger</button>
+      <button class="tb-btn primary save-btn" id="btn-save-gh">💾 Enregistrer sur GitHub</button>
+    </div>
   </div>
 
   <div id="gh-modal-backdrop">
