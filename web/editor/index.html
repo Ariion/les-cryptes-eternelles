@@ -153,6 +153,40 @@
   }
 
   #import-file{ display:none; }
+
+  #gh-pill{
+    display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim);
+    background:var(--panel-2); border:1px solid var(--border); border-radius:20px;
+    padding:5px 11px 5px 9px; cursor:pointer; white-space:nowrap;
+  }
+  #gh-pill:hover{ border-color:var(--accent-soft); }
+  #gh-pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--text-faint); }
+  #gh-pill.connected .dot{ background:#5fae72; }
+  .tb-btn.save-btn{ background:#3c5c3f; border-color:#4d7a52; color:#eafce9; }
+  .tb-btn.save-btn:hover{ background:#476b4a; }
+
+  #gh-modal-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(8,7,5,0.72);
+    align-items:center; justify-content:center; z-index:1000;
+  }
+  #gh-modal-backdrop.open{ display:flex; }
+  #gh-modal{
+    width:440px; max-width:90vw; background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:22px 24px; box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  }
+  #gh-modal h3{ font-family:var(--font-display); font-size:19px; color:var(--accent); margin:0 0 10px; font-weight:normal; }
+  #gh-modal p{ font-size:12.5px; color:var(--text-dim); line-height:1.6; margin:0 0 10px; }
+  #gh-modal ol{ font-size:12.5px; color:var(--text-dim); line-height:1.7; margin:0 0 14px; padding-left:20px; }
+  #gh-modal code{ font-family:var(--font-mono); font-size:11.5px; color:var(--accent); background:var(--panel-2); padding:1px 5px; border-radius:4px; }
+  #gh-token-input{
+    width:100%; background:var(--panel-2); border:1px solid var(--border); border-radius:7px;
+    color:var(--text); font-family:var(--font-mono); font-size:12.5px; padding:9px 11px; margin-bottom:8px;
+  }
+  #gh-token-input:focus{ outline:none; border-color:var(--accent-soft); }
+  #gh-modal-msg{ font-size:12px; min-height:16px; margin-bottom:10px; }
+  #gh-modal-msg.err{ color:#e0938c; }
+  #gh-modal-msg.ok{ color:#8fd39d; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; }
 </style>
 </head>
 <body>
@@ -171,9 +205,31 @@
     </select>
     <div class="spacer"></div>
     <span id="save-state">Chargé depuis data/</span>
+    <div id="gh-pill"><span class="dot"></span><span id="gh-pill-label">GitHub non connecté</span></div>
     <input type="file" id="import-file" accept="application/json">
-    <button class="tb-btn" id="btn-import">Importer un JSON</button>
-    <button class="tb-btn primary" id="btn-export">Exporter le JSON</button>
+    <button class="tb-btn" id="btn-import">Importer</button>
+    <button class="tb-btn" id="btn-export">Télécharger</button>
+    <button class="tb-btn primary save-btn" id="btn-save-gh">💾 Enregistrer sur GitHub</button>
+  </div>
+
+  <div id="gh-modal-backdrop">
+    <div id="gh-modal">
+      <h3>Connexion GitHub</h3>
+      <p>Pour enregistrer directement sur GitHub (le jeu se republie ensuite tout seul), colle un jeton d'accès personnel limité à ce dépôt. Il reste stocké uniquement dans ce navigateur — jamais envoyé ailleurs qu'à GitHub.</p>
+      <ol>
+        <li>Va sur <code>github.com/settings/personal-access-tokens/new</code></li>
+        <li>« Repository access » → <em>Only select repositories</em> → <code>les-cryptes-eternelles</code></li>
+        <li>« Permissions » → <em>Repository permissions</em> → <code>Contents: Read and write</code> (rien d'autre)</li>
+        <li>Génère, copie le jeton (<code>github_pat_…</code>) et colle-le ci-dessous</li>
+      </ol>
+      <input type="password" id="gh-token-input" placeholder="github_pat_...">
+      <div id="gh-modal-msg"></div>
+      <div class="modal-actions">
+        <button class="tb-btn" id="gh-forget" style="display:none">Oublier ce jeton</button>
+        <button class="tb-btn" id="gh-cancel">Annuler</button>
+        <button class="tb-btn primary" id="gh-connect">Connecter</button>
+      </div>
+    </div>
   </div>
 
   <div id="view">
@@ -208,9 +264,98 @@
 
   function markDirty(){
     dirty = true;
-    document.getElementById('save-state').textContent = 'Modifications non exportées';
-    document.getElementById('save-state').classList.add('dirty');
+    setSaveState('Modifications non enregistrées', true);
   }
+  function setSaveState(text, isDirty){
+    var el = document.getElementById('save-state');
+    el.textContent = text;
+    el.classList.toggle('dirty', !!isDirty);
+  }
+
+  // ── GITHUB SAVE ───────────────────────────────────────────
+  var GH_OWNER = 'Ariion', GH_REPO = 'les-cryptes-eternelles', GH_BRANCH = 'main';
+  var GH_PATHS = { hotspots: 'web/data/hotspots.json', quests: 'web/data/quests.json' };
+  var GH_TOKEN_KEY = 'cge_editor_gh_pat';
+
+  function ghToken(){ return localStorage.getItem(GH_TOKEN_KEY) || ''; }
+  function ghHeaders(){ return { 'Authorization':'Bearer '+ghToken(), 'Accept':'application/vnd.github+json' }; }
+  function b64utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+
+  function refreshGhPill(){
+    var connected = !!ghToken();
+    document.getElementById('gh-pill').classList.toggle('connected', connected);
+    document.getElementById('gh-pill-label').textContent = connected ? 'GitHub connecté' : 'GitHub non connecté';
+  }
+
+  function openGhModal(){
+    document.getElementById('gh-modal-backdrop').classList.add('open');
+    document.getElementById('gh-token-input').value = '';
+    document.getElementById('gh-modal-msg').textContent = '';
+    document.getElementById('gh-modal-msg').className = '';
+    document.getElementById('gh-forget').style.display = ghToken() ? '' : 'none';
+  }
+  function closeGhModal(){ document.getElementById('gh-modal-backdrop').classList.remove('open'); }
+
+  document.getElementById('gh-pill').addEventListener('click', openGhModal);
+  document.getElementById('gh-cancel').addEventListener('click', closeGhModal);
+  document.getElementById('gh-modal-backdrop').addEventListener('click', function(e){ if (e.target===this) closeGhModal(); });
+  document.getElementById('gh-forget').addEventListener('click', function(){
+    localStorage.removeItem(GH_TOKEN_KEY);
+    refreshGhPill();
+    closeGhModal();
+  });
+  document.getElementById('gh-connect').addEventListener('click', function(){
+    var token = document.getElementById('gh-token-input').value.trim();
+    var msg = document.getElementById('gh-modal-msg');
+    if (!token){ msg.textContent = 'Colle un jeton d\'abord.'; msg.className = 'err'; return; }
+    msg.textContent = 'Vérification…'; msg.className = '';
+    fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO, { headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' } })
+      .then(function(r){ if (!r.ok) throw new Error(r.status===401 ? 'Jeton invalide.' : 'Accès refusé au dépôt (status '+r.status+').'); return r.json(); })
+      .then(function(){
+        localStorage.setItem(GH_TOKEN_KEY, token);
+        refreshGhPill();
+        msg.textContent = 'Connecté !'; msg.className = 'ok';
+        setTimeout(closeGhModal, 600);
+      })
+      .catch(function(e){ msg.textContent = e.message; msg.className = 'err'; });
+  });
+
+  function saveToGitHub(){
+    if (!ghToken()){ openGhModal(); return; }
+    var path = activeTab==='hotspots' ? GH_PATHS.hotspots : GH_PATHS.quests;
+    var data = activeTab==='hotspots' ? hotspotsData : questsData;
+    var content = JSON.stringify(data, null, 2) + '\n';
+    var label = activeTab==='hotspots' ? ('hotspots (' + SCREEN_LABELS[currentScreen] + ')') : 'quêtes';
+    setSaveState('Enregistrement sur GitHub…', true);
+    fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path+'?ref='+GH_BRANCH, { headers: ghHeaders() })
+      .then(function(r){ if (!r.ok) throw new Error('Lecture du fichier distant impossible (status '+r.status+').'); return r.json(); })
+      .then(function(existing){
+        return fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+path, {
+          method:'PUT',
+          headers: Object.assign({ 'Content-Type':'application/json' }, ghHeaders()),
+          body: JSON.stringify({
+            message: 'content: édition ' + label + ' via l\'éditeur',
+            content: b64utf8(content),
+            sha: existing.sha,
+            branch: GH_BRANCH
+          })
+        });
+      })
+      .then(function(r){
+        if (!r.ok) return r.json().then(function(e){ throw new Error(e.message || ('HTTP '+r.status)); });
+        return r.json();
+      })
+      .then(function(){
+        dirty = false;
+        setSaveState('✅ Enregistré — le jeu sera republié dans ~1-2 min', false);
+      })
+      .catch(function(e){
+        setSaveState('❌ Échec de l\'enregistrement : ' + e.message, true);
+      });
+  }
+
+  document.getElementById('btn-save-gh').addEventListener('click', saveToGitHub);
+  refreshGhPill();
 
   // ── LOAD ──────────────────────────────────────────────────
   Promise.all([
