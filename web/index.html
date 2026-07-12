@@ -14272,7 +14272,7 @@ var HotspotConfig = (function(){
     });
   }
   function load(){
-    fetch('data/hotspots.json').then(function(r){ return r.ok ? r.json() : null; })
+    fetch('data/hotspots.json?v=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
       .then(apply)
       .catch(function(e){ console.warn('[CGE] hotspots.json:', e); });
   }
