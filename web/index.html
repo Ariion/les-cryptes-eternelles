@@ -10393,11 +10393,20 @@ var NPC_DATA = {
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
+      var femme = State.gender === 'Femme';
       if (!done['marta_debt']) {
-        if (race === 'Orc') return '"Hé. On sert tout le monde ici, c\'est la règle."\nIl te regarde par-dessus son verre.\n"Mais je te surveille."';
-        if (race === 'Elfe') return '"Un Elfe, dans cette taverne."\nIl incline la tête légèrement.\n"Ça fait longtemps que votre peuple n\'est pas venu par ici."';
-        if (race === 'Nain') return '"Un Nain ! Excellent. Qu\'est-ce que tu veux boire ?"\nIl claque la table.\n"J\'ai du brassin des mines du Nord."';
-        return '"Tu es nouveau en ville ? Commande quelque chose ou laisse ta place."';
+        if (race === 'Orc') return femme
+          ? '"Hé. On sert tout le monde ici, c\'est la règle."\nIl te regarde par-dessus son verre, presque surpris.\n"Une Orc encore debout après ce que t\'as traversé... Je te surveille quand même."'
+          : '"Hé. On sert tout le monde ici, c\'est la règle."\nIl te regarde par-dessus son verre.\n"Mais je te surveille."';
+        if (race === 'Elfe') return femme
+          ? '"Une Elfe, dans cette taverne."\nIl incline la tête légèrement.\n"On en voit peu par ici. Encore moins comme toi."'
+          : '"Un Elfe, dans cette taverne."\nIl incline la tête légèrement.\n"Ça fait longtemps que votre peuple n\'est pas venu par ici."';
+        if (race === 'Nain') return femme
+          ? '"Une naine ! Ça alors."\nIl claque la table en souriant.\n"J\'ai du brassin des mines du Nord, si le cœur t\'en dit."'
+          : '"Un Nain ! Excellent. Qu\'est-ce que tu veux boire ?"\nIl claque la table.\n"J\'ai du brassin des mines du Nord."';
+        return femme
+          ? '"Tu es nouvelle en ville ? Commande quelque chose ou laisse ta place."'
+          : '"Tu es nouveau en ville ? Commande quelque chose ou laisse ta place."';
       }
       if (!done['bertrand_1']) {
         if (race === 'Orc') return '"Je t\'ai vu. Sur la route — un Orc qui court seul, de nuit."\nIl plisse les yeux.\n"Quelqu\'un te poursuivait ? Ou tu fuyais quelque chose d\'autre ?\n\nProuve-moi que tu n\'es pas comme les autres."';
@@ -10420,10 +10429,17 @@ var NPC_DATA = {
     dialogueEn: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
+      var femme = State.gender === 'Femme';
       if (!done['marta_debt']) {
-        if (race === 'Orc') return '"Hey. We serve everyone here, that\'s the rule."\nHe eyes you over his glass.\n"But I\'m watching you."';
-        if (race === 'Elfe') return '"An Elf, in this tavern."\nHe tilts his head slightly.\n"It\'s been a long time since your people passed through here."';
-        if (race === 'Nain') return '"A Dwarf! Excellent. What will you have?"\nHe slaps the table.\n"I\'ve got a brew from the Northern mines."';
+        if (race === 'Orc') return femme
+          ? '"Hey. We serve everyone here, that\'s the rule."\nHe eyes you over his glass, almost surprised.\n"An Orc still standing after what you\'ve been through... I\'m watching you anyway."'
+          : '"Hey. We serve everyone here, that\'s the rule."\nHe eyes you over his glass.\n"But I\'m watching you."';
+        if (race === 'Elfe') return femme
+          ? '"An Elf, in this tavern."\nHe tilts his head slightly.\n"We don\'t see many around here. Even fewer like you."'
+          : '"An Elf, in this tavern."\nHe tilts his head slightly.\n"It\'s been a long time since your people passed through here."';
+        if (race === 'Nain') return femme
+          ? '"A Dwarf! Well now."\nHe slaps the table with a grin.\n"I\'ve got a brew from the Northern mines, if you\'re game."'
+          : '"A Dwarf! Excellent. What will you have?"\nHe slaps the table.\n"I\'ve got a brew from the Northern mines."';
         return '"New in town? Order something or give up your seat."';
       }
       if (!done['bertrand_1']) {
@@ -10452,11 +10468,20 @@ var NPC_DATA = {
     dialogue: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
+      var femme = State.gender === 'Femme';
       if (!done['marta_debt']) {
-        if (race === 'Orc') return '"*continue à jouer sans lever les yeux*\nUn Orc dans une taverne. Rien d\'inhabituel.\n\n*une note fausse*\n\nSi. Un peu."';
-        if (race === 'Elfe') return '"*s\'arrête de jouer*\nTu entends la musique différemment, n\'est-ce pas ?\nLes Elfes l\'entendent toujours différemment."';
-        if (race === 'Nain') return '"*joue plus fort*\nPour toi, ami Nain ! Les chansons des mines méritent d\'être honorées !"';
-        return '"*accorde sa luth sans te regarder*\nJe joue, tu écoutes. C\'est comme ça que ça marche."';
+        if (race === 'Orc') return femme
+          ? '"*continue à jouer sans lever les yeux*\nUne Orc dans une taverne."\n\n*une note fausse, il relève les yeux cette fois*\n\n"Rien d\'inhabituel. Enfin... si. Un peu."'
+          : '"*continue à jouer sans lever les yeux*\nUn Orc dans une taverne. Rien d\'inhabituel.\n\n*une note fausse*\n\nSi. Un peu."';
+        if (race === 'Elfe') return femme
+          ? '"*s\'arrête de jouer, la regarde un instant*\nTu entends la musique différemment, n\'est-ce pas ?\nLes Elfes l\'entendent toujours différemment."'
+          : '"*s\'arrête de jouer*\nTu entends la musique différemment, n\'est-ce pas ?\nLes Elfes l\'entendent toujours différemment."';
+        if (race === 'Nain') return femme
+          ? '"*joue plus fort*\nPour toi, amie Naine ! Les chansons des mines méritent d\'être honorées !"'
+          : '"*joue plus fort*\nPour toi, ami Nain ! Les chansons des mines méritent d\'être honorées !"';
+        return femme
+          ? '"*accorde sa luth, un sourire en coin*\nJe joue, tu écoutes. C\'est comme ça que ça marche — même pour les plus jolies clientes."'
+          : '"*accorde sa luth sans te regarder*\nJe joue, tu écoutes. C\'est comme ça que ça marche."';
       }
       if (!done['bertrand_1']) {
         if (race === 'Orc') return '"*te regarde par-dessus sa luth*\nBertrand t\'a parlé ? Bien.\nIl y a quelque chose en toi qui transcende la race, ami. Je ne sais pas encore quoi."';
@@ -10480,11 +10505,20 @@ var NPC_DATA = {
     dialogueEn: function() {
       var done = Meta.completedQuests||{};
       var race = State.race||'Humain';
+      var femme = State.gender === 'Femme';
       if (!done['marta_debt']) {
-        if (race === 'Orc') return '"*keeps playing without looking up*\nAn Orc in a tavern. Nothing unusual.\n\n*a wrong note*\n\nWell. A little."';
-        if (race === 'Elfe') return '"*stops playing*\nYou hear music differently, don\'t you?\nElves always hear it differently."';
-        if (race === 'Nain') return '"*plays louder*\nFor you, friend Dwarf! The songs of the mines deserve to be honoured!"';
-        return '"*tunes his lute without looking at you*\nI play, you listen. That\'s how it works."';
+        if (race === 'Orc') return femme
+          ? '"*keeps playing without looking up*\nAn Orc in a tavern."\n\n*a wrong note, he glances up this time*\n\n"Nothing unusual. Well... a little."'
+          : '"*keeps playing without looking up*\nAn Orc in a tavern. Nothing unusual.\n\n*a wrong note*\n\nWell. A little."';
+        if (race === 'Elfe') return femme
+          ? '"*stops playing, glances at her for a moment*\nYou hear music differently, don\'t you?\nElves always hear it differently."'
+          : '"*stops playing*\nYou hear music differently, don\'t you?\nElves always hear it differently."';
+        if (race === 'Nain') return femme
+          ? '"*plays louder*\nFor you, friend Dwarf-woman! The songs of the mines deserve to be honoured!"'
+          : '"*plays louder*\nFor you, friend Dwarf! The songs of the mines deserve to be honoured!"';
+        return femme
+          ? '"*tunes his lute, a half-smile*\nI play, you listen. That\'s how it works — even for the prettiest guests."'
+          : '"*tunes his lute without looking at you*\nI play, you listen. That\'s how it works."';
       }
       if (!done['bertrand_1']) {
         if (race === 'Orc') return '"*looks at you over his lute*\nBertrand spoke to you? Good.\nThere\'s something in you that transcends race, friend. I don\'t know what yet."';
@@ -13119,11 +13153,12 @@ var InnRoom = {
   _showMartaWelcome: function() {
     var trait = (State._introChoices || {}).trait;
     var en = CGE_LANG === 'en';
+    var femme = State.gender === 'Femme';
     var opener = en
-      ? (trait === 'cold' ? 'You were shivering when they found you. Like a dead man.'
+      ? (trait === 'cold' ? (femme ? 'You were shivering when they found you. Like a dead woman.' : 'You were shivering when they found you. Like a dead man.')
         : trait === 'pain' ? 'You were moaning in your sleep. Three days.'
         : 'You didn\'t make a sound. We wondered if you\'d ever wake up.')
-      : (trait === 'cold' ? 'Tu frissonnais quand on t\'a trouvé. Comme un mort.'
+      : (trait === 'cold' ? (femme ? 'Tu frissonnais quand on t\'a trouvée. Comme une morte.' : 'Tu frissonnais quand on t\'a trouvé. Comme un mort.')
         : trait === 'pain' ? 'Tu gémissais dans ton sommeil. Trois jours.'
         : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.');
     var martaText = en
