@@ -1510,6 +1510,21 @@ canvas#particles {
   border:1px solid rgba(201,165,80,0.4);
   font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#f0dca8;
 }
+#shop-cat-tabs {
+  display:flex; gap:6px; padding:0 16px; margin-top:12px; flex-shrink:0;
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+}
+#shop-cat-tabs::-webkit-scrollbar { display:none; }
+.shop-cat-tab {
+  flex-shrink:0; padding:7px 12px; border-radius:20px; white-space:nowrap;
+  font-family:'Cinzel',serif; font-size:11px; font-weight:600; letter-spacing:0.3px;
+  color:rgba(201,165,80,0.6); background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.18);
+  cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
+}
+.shop-cat-tab.active {
+  color:#0a0710; background:linear-gradient(135deg,#e0c27a,#C9A550); border-color:#C9A550;
+  box-shadow:0 0 12px rgba(201,165,80,0.3);
+}
 #shop-tabs { display:flex; gap:8px; padding:0 16px; margin-top:14px; flex-shrink:0; }
 .shop-tab {
   flex:1; text-align:center; padding:9px 4px; border-radius:9px;
@@ -2935,13 +2950,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #town-back:active { transform:scale(0.93); }
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
-#hs-town-forge      { top:63%; left:12%; }
-/* L'armurerie (les deux chevaliers en armure, écusson) est au centre-bas de
-   town.webp, pas dans le coin vide en bas à droite. */
-#hs-town-armurerie  { top:76%; left:55%; }
-#hs-town-couturier  { top:62%; left:78%; }
-#hs-town-bijoutier  { top:50%; left:30%; }
-#hs-town-temple     { top:36%; left:68%; }
+#hs-town-market     { top:63%; left:12%; }
 #hs-town-guild      { top:66%; left:38%; }
 #hs-town-chateau    { top:14%; left:38%; }
 #hs-town-taverne    { top:58%; left:64%; }
@@ -3752,6 +3761,13 @@ body.tut-combat-gate #combat-screen .tut-allow {
         </div>
         <div id="shop-gold-pill">🪙 <span id="shop-gold-val">0</span></div>
       </div>
+      <div id="shop-cat-tabs" style="display:none">
+        <div class="shop-cat-tab" data-cat="forge" onclick="Rooms.switchCategory('forge')">⚒ Forge</div>
+        <div class="shop-cat-tab" data-cat="armurerie" onclick="Rooms.switchCategory('armurerie')">🛡 Armurerie</div>
+        <div class="shop-cat-tab" data-cat="couturier" onclick="Rooms.switchCategory('couturier')">🧵 Couturier</div>
+        <div class="shop-cat-tab" data-cat="bijoutier" onclick="Rooms.switchCategory('bijoutier')">💍 Bijoutier</div>
+        <div class="shop-cat-tab" data-cat="eglise" onclick="Rooms.switchCategory('eglise')">⛪ Église</div>
+      </div>
       <div id="shop-tabs">
         <div class="shop-tab active" id="stab-buy"  onclick="Rooms.shopTab('buy')">Acheter</div>
         <div class="shop-tab"        id="stab-sell" onclick="Rooms.shopTab('sell')">Vendre</div>
@@ -4249,30 +4265,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="town-header">
         <div id="town-title">Thornwall</div>
       </div>
-      <!-- hotspot forge (bas gauche) - armes -->
-      <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
+      <!-- hotspot marché : point d'entrée unique vers les 5 marchands
+           (forge/armurerie/couturier/bijoutier/église), choisis ensuite via
+           des onglets à l'intérieur de l'écran boutique. -->
+      <div class="hotspot" id="hs-town-market" onclick="TownScreen.goMarket()">
         <div class="hs-ring"></div>
-        <div class="hs-lbl" data-i18n="town.forge">⚒ Forge</div>
-      </div>
-      <!-- hotspot armurerie (bas droite) -->
-      <div class="hotspot" id="hs-town-armurerie" onclick="TownScreen.goShop('armurerie')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl" data-i18n="town.armurerie">🛡 Armurerie</div>
-      </div>
-      <!-- hotspot couturier (droite) -->
-      <div class="hotspot" id="hs-town-couturier" onclick="TownScreen.goShop('couturier')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl" data-i18n="town.couturier">🧵 Couturier</div>
-      </div>
-      <!-- hotspot bijoutier (droite haute) -->
-      <div class="hotspot" id="hs-town-bijoutier" onclick="TownScreen.goShop('bijoutier')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl" data-i18n="town.bijoutier">💍 Bijoutier</div>
-      </div>
-      <!-- hotspot église (centre droit) -->
-      <div class="hotspot" id="hs-town-temple" onclick="TownScreen.goTemple()">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl" data-i18n="town.temple">⛪ Église · Boutique</div>
+        <div class="hs-lbl" data-i18n="town.market">🏪 Marché</div>
       </div>
       <!-- hotspot guilde (bas centre) -->
       <div class="hotspot" id="hs-town-guild" onclick="GuildScreen.open('town-screen')">
@@ -6016,6 +6014,7 @@ var STRINGS = {
     'town.couturier': '🧵 Couturier',
     'town.bijoutier': '💍 Bijoutier',
     'town.temple': '⛪ Église · Boutique',
+    'town.market': '🏪 Marché',
     'town.guild': 'Guilde',
     'town.adventure': '⚔ Partir à l\'aventure',
     'town.chateau': 'Château',
@@ -6475,6 +6474,7 @@ var STRINGS = {
     'town.couturier': '🧵 Tailor',
     'town.bijoutier': '💍 Jeweller',
     'town.temple': '⛪ Church · Shop',
+    'town.market': '🏪 Market',
     'town.guild': 'Guild',
     'town.adventure': '⚔ Go adventuring',
     'town.chateau': 'Castle',
@@ -11643,9 +11643,24 @@ Rooms.showShop = function(fromScreen, category) {
   var _sgv = document.getElementById('shop-gold-val'); if (_sgv) _sgv.textContent = State.gold||0;
   var restockBar = document.getElementById('shop-restock-bar');
   if (restockBar) restockBar.style.display = stocked ? '' : 'none';
+  var catTabs = document.getElementById('shop-cat-tabs');
+  if (catTabs) catTabs.style.display = stocked ? 'flex' : 'none';
+  document.querySelectorAll('.shop-cat-tab').forEach(function(t){ t.classList.toggle('active', t.dataset.cat === category); });
   if (stocked) Rooms._startRestockTimer(); else Rooms._stopRestockTimer();
   Rooms._renderShopBuy();
   Nav.go('shop-screen');
+};
+
+// Change de marchand sans quitter l'écran boutique (les 5 marchands nommés
+// partagent le même écran) — utilisé par les onglets #shop-cat-tabs.
+Rooms.switchCategory = function(category) {
+  if (category === State._shopCategory || !Rooms.SHOP_SLOT_MAP[category]) return;
+  State._shopCategory = category;
+  State._shopItems = Rooms._shopStockItems(category);
+  document.getElementById('shop-title').textContent = Rooms.SHOP_TITLE_MAP[category];
+  document.querySelectorAll('.shop-cat-tab').forEach(function(t){ t.classList.toggle('active', t.dataset.cat === category); });
+  Rooms._startRestockTimer();
+  if (Rooms._shopTab === 'sell') Rooms._renderShopSell(); else Rooms._renderShopBuy();
 };
 
 Rooms.restockShop = function() {
@@ -13450,6 +13465,12 @@ var TownScreen = {
   goTemple: function() {
     // Boutique de consommables de l'Église
     Rooms.showShop('town-screen', 'eglise');
+  },
+  goMarket: function() {
+    // Les 5 marchands nommés (forge/armurerie/couturier/bijoutier/église)
+    // partagent un seul point d'entrée sur la carte — on choisit ensuite le
+    // marchand via les onglets à l'intérieur de l'écran boutique.
+    Rooms.showShop('town-screen', 'forge');
   },
   goChateau: function() {
     var done = Meta.completedQuests||{};
