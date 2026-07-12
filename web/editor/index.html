@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éditeur — Les Cryptes Éternelles</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg:#14120f; --panel:#1c1913; --panel-2:#25211a; --panel-3:#2e281f;
+    --border:#3c3324; --border-soft:#2a2419;
+    --text:#e9e2d2; --text-dim:#a89e8a; --text-faint:#6f6656;
+    --accent:#c9a24b; --accent-soft:#8a6f34; --accent-glow:rgba(201,162,75,0.35);
+    --npc:#7fa8d9; --danger:#a5453c;
+    --font-display:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    --font-ui:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background:var(--bg); color:var(--text); font-family:var(--font-ui);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  ::selection{ background:var(--accent-glow); }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-track{ background:var(--panel); }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:5px; }
+
+  /* ── TOOLBAR ─────────────────────────────────────────────── */
+  #toolbar{
+    display:flex; align-items:center; gap:14px; padding:0 16px; height:54px;
+    background:linear-gradient(180deg,#1f1b14,#181510); border-bottom:1px solid var(--border);
+    flex-shrink:0;
+  }
+  #brand{ font-family:var(--font-display); font-size:17px; color:var(--accent); letter-spacing:0.3px; white-space:nowrap; }
+  #brand .sub{ font-family:var(--font-ui); font-size:11px; color:var(--text-faint); display:block; margin-top:-2px; letter-spacing:0.5px; }
+  #tabs{ display:flex; gap:2px; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:3px; }
+  .tab-btn{
+    font-family:var(--font-ui); font-size:13px; font-weight:600; color:var(--text-dim);
+    background:transparent; border:none; padding:7px 14px; border-radius:6px; cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  .tab-btn.active{ background:var(--accent); color:#1a1610; }
+  .tab-btn:not(.active):hover{ background:var(--panel-3); color:var(--text); }
+  #screen-select{
+    font-family:var(--font-ui); font-size:13px; background:var(--panel-2); color:var(--text);
+    border:1px solid var(--border); border-radius:6px; padding:7px 10px; cursor:pointer;
+  }
+  .spacer{ flex:1; }
+  .tb-btn{
+    font-family:var(--font-ui); font-size:12.5px; font-weight:600; color:var(--text);
+    background:var(--panel-2); border:1px solid var(--border); border-radius:6px;
+    padding:7px 13px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .tb-btn:hover{ border-color:var(--accent-soft); background:var(--panel-3); }
+  .tb-btn.primary{ background:var(--accent); color:#1a1610; border-color:var(--accent); }
+  .tb-btn.primary:hover{ background:#d8b45f; }
+  #save-state{ font-size:11.5px; color:var(--text-faint); white-space:nowrap; }
+  #save-state.dirty{ color:var(--accent); }
+
+  /* ── LAYOUT ──────────────────────────────────────────────── */
+  #view{ flex:1; display:flex; min-height:0; }
+  .view-pane{ flex:1; display:none; min-height:0; }
+  .view-pane.active{ display:flex; }
+
+  /* Hotspot editor: 3 columns */
+  #hs-props, #hs-objects{ width:270px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border); overflow-y:auto; }
+  #hs-objects{ border-right:none; border-left:1px solid var(--border); }
+  #hs-canvas-wrap{ flex:1; display:flex; align-items:center; justify-content:center; background:#0c0a08; padding:24px; min-width:0; overflow:auto; }
+  #hs-canvas{
+    position:relative; max-width:100%; max-height:100%; width:340px;
+    background-size:cover; background-position:center; background-repeat:no-repeat;
+    border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,75,0.08);
+    border-radius:4px; cursor:default; user-select:none;
+  }
+
+  .panel-h{
+    font-family:var(--font-ui); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+    color:var(--text-faint); padding:14px 16px 8px;
+  }
+  .field{ padding:0 16px 14px; }
+  .field label{ display:block; font-size:11.5px; color:var(--text-dim); margin-bottom:5px; }
+  .field input[type=text], .field input[type=number], .field textarea{
+    width:100%; background:var(--panel-2); border:1px solid var(--border); border-radius:6px;
+    color:var(--text); font-family:var(--font-ui); font-size:13px; padding:7px 9px;
+  }
+  .field input:focus, .field textarea:focus{ outline:none; border-color:var(--accent-soft); }
+  .field .mono-ro{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint);
+    background:var(--panel-2); border:1px solid var(--border-soft); border-radius:6px; padding:7px 9px;
+    word-break:break-all;
+  }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .empty-hint{ padding:40px 20px; text-align:center; color:var(--text-faint); font-size:13px; line-height:1.6; }
+
+  .obj-item{
+    display:flex; align-items:center; gap:9px; padding:9px 14px; cursor:pointer;
+    border-left:3px solid transparent; font-size:13px;
+  }
+  .obj-item:hover{ background:var(--panel-2); }
+  .obj-item.selected{ background:var(--panel-3); border-left-color:var(--accent); }
+  .obj-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .obj-dot.hotspot{ background:var(--accent); }
+  .obj-dot.npc{ background:var(--npc); }
+  .obj-label{ flex:1; color:var(--text); }
+  .obj-id{ color:var(--text-faint); font-family:var(--font-mono); font-size:10.5px; }
+
+  .marker{
+    position:absolute; width:22px; height:22px; margin-left:-11px; margin-top:-11px;
+    border-radius:50%; border:2px solid #1a1610; cursor:grab;
+    box-shadow:0 2px 8px rgba(0,0,0,0.5); transition:box-shadow .12s;
+  }
+  .marker:active{ cursor:grabbing; }
+  .marker.hotspot{ background:var(--accent); }
+  .marker.npc{ background:var(--npc); }
+  .marker.selected{ box-shadow:0 0 0 3px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.5); }
+  .marker-tag{
+    position:absolute; top:26px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-size:10px; background:rgba(12,10,8,0.85); color:var(--text); padding:2px 6px; border-radius:4px;
+    pointer-events:none; border:1px solid var(--border-soft);
+  }
+
+  /* Quests tab */
+  #q-list{ width:340px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border); overflow-y:auto; }
+  #q-form-wrap{ flex:1; overflow-y:auto; padding:20px 28px 60px; }
+  .act-group-h{
+    font-family:var(--font-display); font-size:12.5px; color:var(--accent); padding:14px 16px 6px;
+    border-top:1px solid var(--border-soft); letter-spacing:0.4px;
+  }
+  .act-group-h:first-child{ border-top:none; }
+  .q-item{ padding:9px 16px; cursor:pointer; border-left:3px solid transparent; }
+  .q-item:hover{ background:var(--panel-2); }
+  .q-item.selected{ background:var(--panel-3); border-left-color:var(--accent); }
+  .q-item-title{ font-size:13px; color:var(--text); }
+  .q-item-npc{ font-size:11px; color:var(--text-faint); margin-top:1px; }
+  .q-dyn-badge{ font-size:9.5px; color:var(--danger); border:1px solid var(--danger); border-radius:3px; padding:0 4px; margin-left:6px; vertical-align:1px; }
+
+  #q-form h2{ font-family:var(--font-display); font-size:22px; color:var(--text); margin:0 0 4px; font-weight:normal; }
+  #q-form .q-meta{ color:var(--text-faint); font-size:12px; margin-bottom:20px; font-family:var(--font-mono); }
+  .q-field-group{ margin-bottom:20px; }
+  .q-field-group label{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.7px; color:var(--text-dim); margin-bottom:6px; }
+  .q-field-group textarea, .q-field-group input[type=text]{
+    width:100%; background:var(--panel-2); border:1px solid var(--border); border-radius:7px;
+    color:var(--text); font-family:var(--font-ui); font-size:13.5px; padding:10px 12px; line-height:1.5;
+  }
+  .q-field-group textarea:focus, .q-field-group input:focus{ outline:none; border-color:var(--accent-soft); }
+  .q-lang-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .q-lang-row .lang-tag{ font-size:10px; color:var(--text-faint); margin-bottom:3px; }
+  .dyn-notice{
+    background:rgba(165,69,60,0.12); border:1px solid var(--danger); border-radius:8px;
+    padding:12px 14px; font-size:12.5px; color:#e0b3ae; line-height:1.5; margin-bottom:20px;
+  }
+
+  #import-file{ display:none; }
+</style>
+</head>
+<body>
+
+  <div id="toolbar">
+    <div id="brand">Éditeur des Cryptes<span class="sub">Outil interne — non livré aux joueurs</span></div>
+    <div id="tabs">
+      <button class="tab-btn active" data-tab="hotspots">🗺 Cartes &amp; Boutons</button>
+      <button class="tab-btn" data-tab="quests">📜 Quêtes</button>
+    </div>
+    <select id="screen-select">
+      <option value="inn-room">Auberge</option>
+      <option value="town-screen">Ville</option>
+      <option value="world-map">Région</option>
+      <option value="taverne-screen">Taverne</option>
+    </select>
+    <div class="spacer"></div>
+    <span id="save-state">Chargé depuis data/</span>
+    <input type="file" id="import-file" accept="application/json">
+    <button class="tb-btn" id="btn-import">Importer un JSON</button>
+    <button class="tb-btn primary" id="btn-export">Exporter le JSON</button>
+  </div>
+
+  <div id="view">
+
+    <!-- ── HOTSPOTS TAB ── -->
+    <div class="view-pane active" id="pane-hotspots">
+      <div id="hs-props"></div>
+      <div id="hs-canvas-wrap"><div id="hs-canvas"></div></div>
+      <div id="hs-objects"></div>
+    </div>
+
+    <!-- ── QUESTS TAB ── -->
+    <div class="view-pane" id="pane-quests">
+      <div id="q-list"></div>
+      <div id="q-form-wrap"><div id="q-form"></div></div>
+    </div>
+
+  </div>
+
+<script>
+(function(){
+  'use strict';
+
+  var SCREEN_LABELS = { 'inn-room':'Auberge', 'town-screen':'Ville', 'world-map':'Région', 'taverne-screen':'Taverne' };
+  var hotspotsData = null;   // { screens: { id: { image, hotspots:[...] } } }
+  var questsData = null;     // { quests:[...] }
+  var currentScreen = 'inn-room';
+  var selectedHotspotId = null;
+  var selectedQuestId = null;
+  var activeTab = 'hotspots';
+  var dirty = false;
+
+  function markDirty(){
+    dirty = true;
+    document.getElementById('save-state').textContent = 'Modifications non exportées';
+    document.getElementById('save-state').classList.add('dirty');
+  }
+
+  // ── LOAD ──────────────────────────────────────────────────
+  Promise.all([
+    fetch('../data/hotspots.json').then(function(r){ return r.json(); }),
+    fetch('../data/quests.json').then(function(r){ return r.json(); })
+  ]).then(function(res){
+    hotspotsData = res[0];
+    questsData = res[1];
+    renderHotspotPane();
+    renderQuestList();
+  }).catch(function(e){
+    document.getElementById('save-state').textContent = 'Erreur de chargement : ' + e.message;
+  });
+
+  // ── TABS ──────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activeTab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      document.getElementById('pane-hotspots').classList.toggle('active', activeTab==='hotspots');
+      document.getElementById('pane-quests').classList.toggle('active', activeTab==='quests');
+      document.getElementById('screen-select').style.display = activeTab==='hotspots' ? '' : 'none';
+    });
+  });
+
+  document.getElementById('screen-select').addEventListener('change', function(e){
+    currentScreen = e.target.value;
+    selectedHotspotId = null;
+    renderHotspotPane();
+  });
+
+  // ── HOTSPOT TAB ───────────────────────────────────────────
+  function currentHotspots(){
+    return (hotspotsData.screens[currentScreen] || {}).hotspots || [];
+  }
+
+  function renderHotspotPane(){
+    renderCanvas();
+    renderObjectList();
+    renderProps();
+  }
+
+  function renderCanvas(){
+    var screen = hotspotsData.screens[currentScreen];
+    var canvas = document.getElementById('hs-canvas');
+    canvas.innerHTML = '';
+    canvas.style.backgroundImage = screen ? "url('../" + screen.image + "')" : 'none';
+    canvas.style.aspectRatio = '896/1193';
+
+    var img = new Image();
+    img.onload = function(){
+      canvas.style.aspectRatio = img.naturalWidth + '/' + img.naturalHeight;
+    };
+    if (screen) img.src = '../' + screen.image;
+
+    currentHotspots().forEach(function(h){
+      var marker = document.createElement('div');
+      marker.className = 'marker ' + h.type + (h.id===selectedHotspotId ? ' selected' : '');
+      marker.style.top = (h.anchorV==='bottom' ? (100-h.bottom) : h.top) + '%';
+      marker.style.left = (h.anchorH==='right' ? (100-h.right) : h.left) + '%';
+      marker.dataset.id = h.id;
+
+      var tag = document.createElement('div');
+      tag.className = 'marker-tag';
+      tag.textContent = h.label;
+      marker.appendChild(tag);
+
+      marker.addEventListener('pointerdown', function(ev){
+        ev.preventDefault();
+        selectedHotspotId = h.id;
+        renderObjectList(); renderProps();
+        document.querySelectorAll('.marker').forEach(function(m){ m.classList.toggle('selected', m.dataset.id===h.id); });
+        startDrag(h, marker, canvas);
+      });
+      canvas.appendChild(marker);
+    });
+  }
+
+  function startDrag(h, markerEl, canvas){
+    function onMove(ev){
+      var rect = canvas.getBoundingClientRect();
+      var leftPct = Math.max(0, Math.min(100, (ev.clientX - rect.left) / rect.width * 100));
+      var topPct = Math.max(0, Math.min(100, (ev.clientY - rect.top) / rect.height * 100));
+      markerEl.style.left = leftPct + '%';
+      markerEl.style.top = topPct + '%';
+      if (h.anchorV==='bottom') h.bottom = Math.round((100-topPct)*10)/10; else h.top = Math.round(topPct*10)/10;
+      if (h.anchorH==='right') h.right = Math.round((100-leftPct)*10)/10; else h.left = Math.round(leftPct*10)/10;
+      if (h.id===selectedHotspotId) renderProps();
+      markDirty();
+    }
+    function onUp(){
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
+
+  function renderObjectList(){
+    var el = document.getElementById('hs-objects');
+    var hs = currentHotspots();
+    var html = '<div class="panel-h">Objets — ' + SCREEN_LABELS[currentScreen] + ' (' + hs.length + ')</div>';
+    hs.forEach(function(h){
+      html += '<div class="obj-item' + (h.id===selectedHotspotId?' selected':'') + '" data-id="' + h.id + '">' +
+        '<span class="obj-dot ' + h.type + '"></span>' +
+        '<span class="obj-label">' + escapeHtml(h.label) + '</span>' +
+        '<span class="obj-id">' + h.id + '</span>' +
+      '</div>';
+    });
+    el.innerHTML = html;
+    el.querySelectorAll('.obj-item').forEach(function(item){
+      item.addEventListener('click', function(){
+        selectedHotspotId = item.dataset.id;
+        renderObjectList(); renderProps();
+        document.querySelectorAll('.marker').forEach(function(m){ m.classList.toggle('selected', m.dataset.id===selectedHotspotId); });
+      });
+    });
+  }
+
+  function renderProps(){
+    var el = document.getElementById('hs-props');
+    var h = currentHotspots().find(function(x){ return x.id===selectedHotspotId; });
+    if (!h){
+      el.innerHTML = '<div class="panel-h">Propriétés</div><div class="empty-hint">Sélectionne un objet sur la carte ou dans la liste à droite pour modifier son étiquette et sa position.</div>';
+      return;
+    }
+    var vPos = h.anchorV==='bottom' ? h.bottom : h.top;
+    var hPos = h.anchorH==='right' ? h.right : h.left;
+    el.innerHTML =
+      '<div class="panel-h">Propriétés</div>' +
+      '<div class="field"><label>Identifiant</label><div class="mono-ro">' + h.id + '</div></div>' +
+      '<div class="field"><label>Étiquette</label><input type="text" id="p-label" value="' + escapeAttr(h.label) + '"></div>' +
+      '<div class="field row2">' +
+        '<div><label>' + (h.anchorV==='bottom' ? 'Bas (%)' : 'Haut (%)') + '</label><input type="number" id="p-v" value="' + vPos + '" step="0.5"></div>' +
+        '<div><label>' + (h.anchorH==='right' ? 'Droite (%)' : 'Gauche (%)') + '</label><input type="number" id="p-h" value="' + hPos + '" step="0.5"></div>' +
+      '</div>' +
+      '<div class="field"><label>Action (lecture seule — logique du jeu)</label><div class="mono-ro">' + escapeHtml(h.action) + '</div></div>';
+
+    document.getElementById('p-label').addEventListener('input', function(e){
+      h.label = e.target.value; markDirty(); renderObjectList(); renderCanvasLabel(h);
+    });
+    document.getElementById('p-v').addEventListener('input', function(e){
+      var v = parseFloat(e.target.value)||0;
+      if (h.anchorV==='bottom') h.bottom = v; else h.top = v;
+      markDirty(); renderCanvas();
+    });
+    document.getElementById('p-h').addEventListener('input', function(e){
+      var v = parseFloat(e.target.value)||0;
+      if (h.anchorH==='right') h.right = v; else h.left = v;
+      markDirty(); renderCanvas();
+    });
+  }
+
+  function renderCanvasLabel(h){
+    var marker = document.querySelector('.marker[data-id="' + h.id + '"] .marker-tag');
+    if (marker) marker.textContent = h.label;
+  }
+
+  // ── QUESTS TAB ────────────────────────────────────────────
+  function renderQuestList(){
+    var el = document.getElementById('q-list');
+    var byAct = {};
+    questsData.quests.forEach(function(q){
+      (byAct[q.act] = byAct[q.act] || []).push(q);
+    });
+    var html = '';
+    Object.keys(byAct).sort(function(a,b){ return a-b; }).forEach(function(act){
+      html += '<div class="act-group-h">Acte ' + act + '</div>';
+      byAct[act].forEach(function(q){
+        html += '<div class="q-item' + (q.id===selectedQuestId?' selected':'') + '" data-id="' + q.id + '">' +
+          '<div class="q-item-title">' + escapeHtml(q.title || q.id) + (q.claimTextIsDynamic ? '<span class="q-dyn-badge">dyn.</span>' : '') + '</div>' +
+          '<div class="q-item-npc">' + q.npc + '</div>' +
+        '</div>';
+      });
+    });
+    el.innerHTML = html;
+    el.querySelectorAll('.q-item').forEach(function(item){
+      item.addEventListener('click', function(){
+        selectedQuestId = item.dataset.id;
+        renderQuestList(); renderQuestForm();
+      });
+    });
+  }
+
+  function renderQuestForm(){
+    var el = document.getElementById('q-form');
+    var q = questsData.quests.find(function(x){ return x.id===selectedQuestId; });
+    if (!q){
+      el.innerHTML = '<div class="empty-hint" style="text-align:left;padding:0">Sélectionne une quête dans la liste à gauche.</div>';
+      return;
+    }
+    var html = '<h2>' + escapeHtml(q.title || q.id) + '</h2>' +
+      '<div class="q-meta">' + q.id + ' · pnj: ' + q.npc + ' · acte ' + q.act + (q.unlockAfter ? ' · débloque après: ' + q.unlockAfter : '') + '</div>';
+
+    if (q.hasCheck || q.hasCondition){
+      html += '<div class="dyn-notice">⚠ Les conditions de déblocage/validation de cette quête restent codées en dur dans le jeu (fonctions JS) — non éditables ici.</div>';
+    }
+
+    html += questField('title', 'Titre (FR)', q.title, false) + questField('titleEn', 'Titre (EN)', q.titleEn, false);
+    html += questField('desc', 'Description (FR)', q.desc, true) + questField('descEn', 'Description (EN)', q.descEn, true);
+    html += questField('rewardTxt', 'Texte de récompense (FR)', q.rewardTxt, false) + questField('rewardTxtEn', 'Texte de récompense (EN)', q.rewardTxtEn, false);
+
+    if (q.claimTextIsDynamic){
+      html += '<div class="dyn-notice">⚠ La réplique finale de cette quête est générée dynamiquement par du code (dépend du choix du joueur) — non éditable ici.</div>';
+    } else {
+      html += questField('claimText', 'Réplique de fin de quête (FR)', q.claimText, true);
+    }
+
+    el.innerHTML = html;
+    ['title','titleEn','desc','descEn','rewardTxt','rewardTxtEn','claimText'].forEach(function(f){
+      var input = document.getElementById('qf-'+f);
+      if (!input) return;
+      input.addEventListener('input', function(e){ q[f] = e.target.value; markDirty(); renderQuestList(); });
+    });
+  }
+
+  function questField(key, label, value, isTextarea){
+    var tag = isTextarea ? 'textarea' : 'input type="text"';
+    var closeTag = isTextarea ? 'textarea' : 'input';
+    var rows = isTextarea ? ' rows="5"' : '';
+    var content = isTextarea ? escapeHtml(value||'') : '';
+    var valueAttr = isTextarea ? '' : ' value="' + escapeAttr(value||'') + '"';
+    return '<div class="q-field-group"><label>' + label + '</label>' +
+      '<' + tag + ' id="qf-' + key + '"' + rows + valueAttr + '>' + content + '</' + closeTag + '></div>';
+  }
+
+  // ── IMPORT / EXPORT ───────────────────────────────────────
+  document.getElementById('btn-export').addEventListener('click', function(){
+    var data = activeTab==='hotspots' ? hotspotsData : questsData;
+    var filename = activeTab==='hotspots' ? 'hotspots.json' : 'quests.json';
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    dirty = false;
+    document.getElementById('save-state').textContent = filename + ' exporté — remets-le dans web/data/ pour le publier';
+    document.getElementById('save-state').classList.remove('dirty');
+  });
+
+  document.getElementById('btn-import').addEventListener('click', function(){
+    document.getElementById('import-file').click();
+  });
+  document.getElementById('import-file').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      try {
+        var parsed = JSON.parse(reader.result);
+        if (activeTab==='hotspots'){ hotspotsData = parsed; renderHotspotPane(); }
+        else { questsData = parsed; selectedQuestId = null; renderQuestList(); renderQuestForm(); }
+        document.getElementById('save-state').textContent = 'Importé : ' + file.name;
+        document.getElementById('save-state').classList.remove('dirty');
+      } catch(err){
+        alert('JSON invalide : ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // ── UTILS ─────────────────────────────────────────────────
+  function escapeHtml(s){
+    return String(s==null?'':s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; });
+  }
+  function escapeAttr(s){
+    return escapeHtml(s).replace(/"/g, '&quot;');
+  }
+
+})();
+</script>
+</body>
+</html>
