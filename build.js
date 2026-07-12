@@ -78,13 +78,24 @@ function copyAssets() {
     });
   }
   // web/data/ : fichiers de contenu (ex. positions des hotspots) édités via
-  // l'outil externe web/editor/ (non livré aux joueurs, jamais copié dans dist/).
+  // l'outil externe web/editor/. Lu par le jeu au démarrage.
   const dataSrc = path.join(ROOT, 'web', 'data');
   if (fs.existsSync(dataSrc)) {
     const dataOut = path.join(OUT_DIR, 'data');
     if (!fs.existsSync(dataOut)) fs.mkdirSync(dataOut, { recursive: true });
     fs.readdirSync(dataSrc).forEach(function (f) {
       fs.copyFileSync(path.join(dataSrc, f), path.join(dataOut, f));
+    });
+  }
+  // web/editor/ : outil d'édition interne (non lié depuis le jeu, pas dans les
+  // menus) — copié dans dist/editor/ uniquement pour y avoir un accès web
+  // (ex. depuis mobile), sans lien public ni référence dans l'app du jeu.
+  const editorSrc = path.join(ROOT, 'web', 'editor');
+  if (fs.existsSync(editorSrc)) {
+    const editorOut = path.join(OUT_DIR, 'editor');
+    if (!fs.existsSync(editorOut)) fs.mkdirSync(editorOut, { recursive: true });
+    fs.readdirSync(editorSrc).forEach(function (f) {
+      fs.copyFileSync(path.join(editorSrc, f), path.join(editorOut, f));
     });
   }
 }
