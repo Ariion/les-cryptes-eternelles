@@ -60,16 +60,6 @@
       "image": "images/town.webp",
       "hotspots": [
         {
-          "id": "hs-town-inn",
-          "type": "hotspot",
-          "label": "🛏 Chambre",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 65.7,
-          "left": 38.1,
-          "action": "Nav.go('inn-room')"
-        },
-        {
           "id": "hs-town-forge",
           "type": "hotspot",
           "label": "⚒ Forge",
@@ -248,16 +238,6 @@
           "top": 56.3,
           "left": 71.7,
           "action": "WorldMap.enter('port')"
-        },
-        {
-          "id": "hs-reg-town",
-          "type": "hotspot",
-          "label": "Thornwall",
-          "anchorV": "top",
-          "anchorH": "left",
-          "top": 66.2,
-          "left": 36.6,
-          "action": "Nav.go('town-screen')"
         },
         {
           "id": "hs-reg-peaks",

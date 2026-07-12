@@ -2731,12 +2731,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
   transform:translateX(-50%);
 }
 .hs-ring {
-  width:30px; height:30px; border-radius:50%; margin-top:2px;
+  width:16px; height:16px; border-radius:50%; margin-top:8px;
   background:radial-gradient(circle,#fdf0cf,#C9A550);
   box-shadow:0 0 0 4px rgba(201,165,80,0.16), 0 0 10px rgba(201,165,80,0.55);
   position:relative; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px; line-height:1;
 }
 .hs-ring::after {
   content:''; position:absolute; inset:-6px; border-radius:50%;
@@ -2748,10 +2746,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
   50%    { transform:scale(1.3); opacity:0; }
 }
 .hs-lbl {
-  margin-top:4px; padding:0 2px;
-  color:rgba(232,212,160,0.78);
-  text-shadow:0 1px 3px rgba(0,0,0,0.9);
-  font-family:'Cinzel',serif; font-size:10px; font-weight:500; letter-spacing:0.3px;
+  margin-top:6px; padding:4px 11px;
+  background:rgba(6,5,15,0.8); border:1px solid rgba(201,165,80,0.4);
+  border-radius:20px; color:#e8d4a0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+  text-shadow:0 1px 2px rgba(0,0,0,0.85);
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.4px;
   white-space:nowrap;
 }
 .hotspot:active .hs-ring { box-shadow:0 0 0 6px rgba(201,165,80,0.3), 0 0 14px rgba(201,165,80,0.85); }
@@ -2781,33 +2781,27 @@ body.tut-combat-gate #combat-screen .tut-allow {
   transform:translateX(-50%);
 }
 .npc-hotspot:hover { transform:translateX(-50%) scale(1.15); }
-/* Identité visuelle distincte des lieux/actions (.hs-ring, doré) : les PNJ
-   sont des personnages, pas des boutons — anneau cuivre-rosé chaleureux,
-   plus grand, pour qu'on les repère du premier coup d'œil sur une carte
-   chargée en hotspots. */
+/* Même marqueur que les hotspots de bâtiment (.hs-ring) — un anneau doré qui
+   pulse, plus cohérent sur les cartes peintes qu'un visage en emoji. */
 .npc-avatar {
-  width:34px; height:34px; border-radius:50%; margin-top:0;
-  background:radial-gradient(circle,#ffe6da,#d97e5c);
-  box-shadow:0 0 0 4px rgba(217,126,92,0.22), 0 0 12px rgba(217,126,92,0.6);
+  width:16px; height:16px; border-radius:50%; margin-top:8px;
+  background:radial-gradient(circle,#fdf0cf,#C9A550);
+  box-shadow:0 0 0 4px rgba(201,165,80,0.16), 0 0 10px rgba(201,165,80,0.55);
   position:relative; flex-shrink:0;
-}
-.npc-avatar::before {
-  content:'☺'; position:absolute; inset:0; display:flex; align-items:center;
-  justify-content:center; font-size:15px; color:#5a2c18; opacity:0.55;
 }
 .npc-avatar::after {
   content:''; position:absolute; inset:-6px; border-radius:50%;
-  border:1px solid rgba(217,126,92,0.4);
+  border:1px solid rgba(201,165,80,0.35);
   animation:hs-pulse 2.6s ease-in-out infinite;
 }
 .npc-name-tag {
   margin-top:6px;
-  font-family:'Cinzel',serif; font-size:12px; font-weight:600;
-  color:#ffd9c2; letter-spacing:0.3px; font-style:italic;
-  background:rgba(20,8,5,0.82); border:1px solid rgba(217,126,92,0.5);
+  font-family:'Cinzel',serif; font-size:11px; font-weight:400;
+  color:#e8d4a0; letter-spacing:0.3px;
+  background:rgba(6,5,15,0.8); border:1px solid rgba(201,165,80,0.4);
   box-shadow:0 2px 6px rgba(0,0,0,0.4);
   text-shadow:0 1px 2px rgba(0,0,0,0.85);
-  padding:4px 12px; border-radius:20px; white-space:nowrap;
+  padding:4px 11px; border-radius:20px; white-space:nowrap;
 }
 #npc-bertrand  { bottom:36%; left:10%; }
 #npc-oswin     { bottom:52%; left:42%; }
@@ -2941,7 +2935,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #town-back:active { transform:scale(0.93); }
 #town-title { font-family:'Cinzel',serif; font-size:15px; color:#C9A550; letter-spacing:2px; }
 /* hotspots ville */
-#hs-town-inn        { top:32%; left:17%; }
 #hs-town-forge      { top:63%; left:12%; }
 /* L'armurerie (les deux chevaliers en armure, écusson) est au centre-bas de
    town.webp, pas dans le coin vide en bas à droite. */
@@ -2991,13 +2984,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #hs-reg-forest  { top:40%; left:43%; }
 #hs-reg-ruins   { top:78%; left:63%; }
 #hs-reg-port    { top:57%; left:74%; }
-#hs-reg-town    { top:74%; left:26%; }
 #hs-reg-peaks   { top:32%; left:74%; }
 #hs-reg-marais  { top:62%; left:50%; }
 /* badges danger */
-.hs-lbl.danger { color:#e05050; }
-.hs-lbl.extreme{ color:#c060c0; }
-.hs-lbl.safe   { color:#80d080; }
+.hs-lbl.danger { border-color:rgba(200,60,60,0.6); color:#e05050; }
+.hs-lbl.extreme{ border-color:rgba(160,30,160,0.6); color:#c060c0; }
+.hs-lbl.safe   { border-color:rgba(60,160,60,0.5);  color:#80d080; }
 
 /* ── HUB TAB BAR (persistent nav: auberge/personnage/ville/région) ── */
 #hub-tabbar {
@@ -3115,9 +3107,9 @@ body.tut-combat-gate #combat-screen .tut-allow {
   text-transform:uppercase; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 /* ── ZONE CLEARED ── */
-.hotspot.cleared .hs-ring { background:rgba(80,40,40,0.5); }
+.hotspot.cleared .hs-ring { border-color:rgba(120,80,80,0.4); background:rgba(80,40,40,0.15); }
 .hotspot.cleared .hs-ring::after { animation:none; }
-.hotspot.cleared .hs-lbl { color:rgba(180,120,120,0.5); }
+.hotspot.cleared .hs-lbl { color:rgba(180,120,120,0.5); border-color:rgba(120,80,80,0.3); }
 .hotspot.cleared .hs-lbl::after { content:' ✓'; }
 /* Région 2 */
 #world-map-2 { background:radial-gradient(ellipse at 50% 30%, #0d0520 0%, #06030f 60%, #000 100%); position:relative; }
@@ -4257,11 +4249,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div id="town-header">
         <div id="town-title">Thornwall</div>
       </div>
-      <!-- hotspot chambre (haut gauche) -->
-      <div class="hotspot" id="hs-town-inn" onclick="Nav.go('inn-room')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl safe" data-i18n="town.inn">🛏 Chambre</div>
-      </div>
       <!-- hotspot forge (bas gauche) - armes -->
       <div class="hotspot" id="hs-town-forge" onclick="TownScreen.goShop('forge')">
         <div class="hs-ring"></div>
@@ -4379,11 +4366,6 @@ body.tut-combat-gate #combat-screen .tut-allow {
       <div class="hotspot" id="hs-reg-port" onclick="WorldMap.enter('port')">
         <div class="hs-ring"></div>
         <div class="hs-lbl danger">Port · Nv. 20</div>
-      </div>
-      <!-- ville (bas gauche) -->
-      <div class="hotspot" id="hs-reg-town" onclick="Nav.go('town-screen')">
-        <div class="hs-ring"></div>
-        <div class="hs-lbl safe">Thornwall</div>
       </div>
       <!-- grottes (bas droite) -->
       <div class="hotspot" id="hs-reg-peaks" onclick="WorldMap.enter('grottes')">
@@ -6029,11 +6011,11 @@ var STRINGS = {
     // Town
     'town.title': 'Thornwall',
     'town.inn': 'Chambre',
-    'town.forge': 'Forge',
-    'town.armurerie': 'Armurerie',
-    'town.couturier': 'Couturier',
-    'town.bijoutier': 'Bijoutier',
-    'town.temple': 'Église · Boutique',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armurerie',
+    'town.couturier': '🧵 Couturier',
+    'town.bijoutier': '💍 Bijoutier',
+    'town.temple': '⛪ Église · Boutique',
     'town.guild': 'Guilde',
     'town.adventure': '⚔ Partir à l\'aventure',
     'town.chateau': 'Château',
@@ -6488,11 +6470,11 @@ var STRINGS = {
     // Town
     'town.title': 'Thornwall',
     'town.inn': 'Inn',
-    'town.forge': 'Forge',
-    'town.armurerie': 'Armoury',
-    'town.couturier': 'Tailor',
-    'town.bijoutier': 'Jeweller',
-    'town.temple': 'Church · Shop',
+    'town.forge': '⚒ Forge',
+    'town.armurerie': '🛡 Armoury',
+    'town.couturier': '🧵 Tailor',
+    'town.bijoutier': '💍 Jeweller',
+    'town.temple': '⛪ Church · Shop',
     'town.guild': 'Guild',
     'town.adventure': '⚔ Go adventuring',
     'town.chateau': 'Castle',
@@ -14285,32 +14267,12 @@ var HotspotConfig = (function(){
   return { load:load, apply:apply };
 })();
 
-// Icônes des lieux/actions injectées dans l'anneau (.hs-ring) une fois pour
-// toutes au démarrage — indépendant de la langue/i18n, pour que le libellé
-// sous l'anneau reste un simple nom (plus léger visuellement qu'un bouton
-// icône+texte répété sur chaque hotspot d'un écran chargé comme la Ville).
-var HOTSPOT_ICONS = {
-  'hs-inn-armoire':'🎒', 'hs-inn-talents':'🌟', 'hs-inn-chest':'🧰', 'hs-inn-bed':'🛌',
-  'hs-town-inn':'🛏', 'hs-town-forge':'⚒', 'hs-town-armurerie':'🛡', 'hs-town-couturier':'🧵',
-  'hs-town-bijoutier':'💍', 'hs-town-temple':'⛪', 'hs-town-guild':'🏛', 'hs-town-chateau':'🏰',
-  'hs-town-taverne':'🍺',
-  'hs-reg-forest':'🌲', 'hs-reg-ruins':'🏚', 'hs-reg-port':'🌊', 'hs-reg-town':'🏘',
-  'hs-reg-peaks':'🪨', 'hs-reg-marais':'🌿'
-};
-function applyHotspotIcons(){
-  Object.keys(HOTSPOT_ICONS).forEach(function(id){
-    var ring = document.querySelector('#' + id + ' .hs-ring');
-    if (ring && !ring.textContent) ring.textContent = HOTSPOT_ICONS[id];
-  });
-}
-
 window.addEventListener('load', function(){
   Meta.load();
   ProfileManager.migrate(); // migration depuis ancien système si besoin
   Music.load();
   Sfx.load();
   Sfx.applyToggles();
-  applyHotspotIcons();
   document.getElementById('st-mus-toggle').classList.toggle('on', Music.on);
   WorldMap.updateHotspots();
   HotspotConfig.load();
