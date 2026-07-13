@@ -2796,17 +2796,20 @@ body.tut-combat-gate #combat-screen .tut-allow {
   transform:translateX(-50%);
 }
 .npc-hotspot:hover { transform:translateX(-50%) scale(1.15); }
-/* Même marqueur que les hotspots de bâtiment (.hs-ring) — un anneau doré qui
-   pulse, plus cohérent sur les cartes peintes qu'un visage en emoji. */
+/* Les personnages se distinguent des lieux (.hs-ring, rond doré) par une
+   forme ET une couleur différentes — triangle bleu, pour repérer un PNJ
+   d'un coup d'œil même sur une carte chargée en hotspots. */
 .npc-avatar {
-  width:16px; height:16px; border-radius:50%; margin-top:8px;
-  background:radial-gradient(circle,#fdf0cf,#C9A550);
-  box-shadow:0 0 0 4px rgba(201,165,80,0.16), 0 0 10px rgba(201,165,80,0.55);
+  width:20px; height:18px; margin-top:9px;
+  background:linear-gradient(155deg,#dcedff,#4a86d8 55%,#2d5fa8);
+  clip-path:polygon(50% 4%, 4% 96%, 96% 96%);
+  filter:drop-shadow(0 0 6px rgba(74,134,216,0.75));
   position:relative; flex-shrink:0;
 }
 .npc-avatar::after {
-  content:''; position:absolute; inset:-6px; border-radius:50%;
-  border:1px solid rgba(201,165,80,0.35);
+  content:''; position:absolute; inset:-7px;
+  background:rgba(90,150,225,0.3);
+  clip-path:polygon(50% 4%, 4% 96%, 96% 96%);
   animation:hs-pulse 2.6s ease-in-out infinite;
 }
 .npc-name-tag {
