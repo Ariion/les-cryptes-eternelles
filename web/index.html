@@ -10829,6 +10829,14 @@ var Quests = (function(){
 
   return {
     openNpc: function(npc) {
+      // Marta : si le joueur la touche avant que la Vision I automatique ne se
+      // soit déclenchée, on force la vision tout de suite plutôt que d'ouvrir
+      // son dialogue générique — sinon la vision s'affiche par-dessus quelques
+      // instants plus tard, empilée sur cette boîte de dialogue déjà ouverte.
+      if (npc === 'marta' && State._martaWelcomePending) {
+        if (typeof Story !== 'undefined') Story.showVision('vision1');
+        return;
+      }
       _currentNpc = npc;
       _currentQuest = null;
       if (typeof Tutorial !== 'undefined') Tutorial.notifyNpc(npc);
