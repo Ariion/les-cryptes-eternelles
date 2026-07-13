@@ -6349,7 +6349,7 @@ var STRINGS = {
     'warn.enter.ok': 'Entrer quand même',
     'warn.enter.cancel': 'Reculer',
     'dm.resume.title': 'Expédition en cours',
-    'dm.resume.text': 'Tu as déjà exploré jusqu\'à l\'étage {floor} ici. Continuer où tu en étais, ou repartir de zéro ?',
+    'dm.resume.text': 'Une expédition est en cours ici (étage {floor}). Continuer où tu en étais, ou repartir de zéro ?',
     'dm.resume.continue': 'Continuer',
     'dm.resume.restart': 'Recommencer',
     'warn.zone.locked': '⚠ Zone non recommandée pour ton niveau de progression.',
@@ -6809,7 +6809,7 @@ var STRINGS = {
     'warn.enter.ok': 'Enter anyway',
     'warn.enter.cancel': 'Back off',
     'dm.resume.title': 'Expedition in progress',
-    'dm.resume.text': 'You\'ve already explored up to floor {floor} here. Continue where you left off, or start over?',
+    'dm.resume.text': 'An expedition is already underway here (floor {floor}). Continue where you left off, or start over?',
     'dm.resume.continue': 'Continue',
     'dm.resume.restart': 'Restart',
     'warn.zone.locked': '⚠ Zone not recommended for your progression level.',
@@ -13800,17 +13800,20 @@ var WorldMap = {
     if (!Meta.isZoneUnlocked(zoneId)) warnings.push(T('warn.zone.locked'));
     if (lvl < zone.minLevel) warnings.push(T('warn.zone.level').replace('{rec}', zone.minLevel).replace('{lvl}', lvl));
 
-    function enterAtFloor(floor) {
+    // isResume : on reprend une expédition déjà en cours à cet étage — on ne
+    // retire pas les Présages du Destin déjà tirés (sinon le joueur en cumulerait
+    // un second jeu à chaque aller-retour à l'auberge pour se soigner).
+    function enterAtFloor(floor, isResume) {
       State._currentZone = zoneId;
       State.floor = floor;
       State._runGoldBonus = State._runGoldBonus || 1;
       Nav.go('dungeon-map');
-      if (floor === 1) {
+      if (floor === 1 && !isResume) {
         setTimeout(function(){
           RunMods.roll(function(){ DungeonMap.init(1, State.hp, State.hpMax); });
         }, 350);
       } else {
-        setTimeout(function(){ DungeonMap.init(floor, State.hp, State.hpMax); }, 300);
+        setTimeout(function(){ DungeonMap.init(floor, State.hp, State.hpMax); }, floor===1?350:300);
       }
     }
 
@@ -13824,18 +13827,22 @@ var WorldMap = {
         enemyMod: zone.hpMult||1,
         goldMod:  zone.goldMult||1,
       };
-      var hasProgress = (State._currentZone === zoneId && (State.floor||1) > 1);
+      // Une expédition interrompue (repos à l'auberge, etc.) reste détectable
+      // tant que _currentZone pointe vers cette zone — y compris dès l'étage 1,
+      // pas seulement au-delà (sinon la toute première sortie, la plus fréquente,
+      // ne proposait jamais le choix et repartait de zéro en silence).
+      var hasProgress = (State._currentZone === zoneId);
       if (hasProgress) {
         CGEModal.show({
           title: T('dm.resume.title'),
           text: T('dm.resume.text').replace('{floor}', State.floor),
           okLabel: T('dm.resume.continue'),
           cancelLabel: T('dm.resume.restart'),
-          onOk: function(){ enterAtFloor(State.floor||1); },
-          onCancel: function(){ enterAtFloor(1); }
+          onOk: function(){ enterAtFloor(State.floor||1, true); },
+          onCancel: function(){ enterAtFloor(1, false); }
         });
       } else {
-        enterAtFloor(1);
+        enterAtFloor(1, false);
       }
     }
 
