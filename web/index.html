@@ -10985,7 +10985,7 @@ var Quests = (function(){
           // Bertrand : pas de pastille "quête disponible" (📜) — seulement
           // une fois la quête effectivement acceptée (🗺 / ✅ ci-dessous).
           if (npc === 'bertrand') return;
-          var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]) && (!q.condition || q.condition()); });
+          var next = QUEST_DEFS.find(function(q){ return q.npc===npc && !((Meta.completedQuests||{})[q.id]) && isQuestUnlocked(q) && (!q.condition || q.condition()); });
           if (next) {
             var b = document.createElement('div');
             b.className = 'tav-quest-badge';
