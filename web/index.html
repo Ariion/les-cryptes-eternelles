@@ -9766,26 +9766,17 @@ var Tutorial = (function(){
 
   return {
     // Appelé une fois, juste après la Vision I d'un tout nouveau personnage.
+    // Se lance directement (plus de fenêtre « Guide-moi / Passer ») : ce choix
+    // était trop facile à balayer par réflexe sans le lire, laissant des
+    // joueurs sans le vouloir sans tutoriel et sans comprendre pourquoi. Le
+    // lien « passer » discret de la bannière (#tutorial-skip) reste la porte
+    // de sortie, visible tout du long plutôt qu'un unique instant fragile.
     maybeStart: function() {
-      if (Meta.tutorialPhase) return; // déjà répondu (suivi, sauté, ou terminé) sur ce profil
-      CGEModal.show({
-        title: CGE_LANG==='en' ? 'Follow a guided tutorial?' : 'Suivre un tutoriel guidé ?',
-        text: CGE_LANG==='en'
-          ? 'I can guide you closely — who to talk to, where to go — until you reach level 2. Only one path stays open at each step. You can skip it if you already know the game.'
-          : 'Je peux te guider de très près — qui voir, où aller — jusqu\'au niveau 2. Un seul chemin reste ouvert à chaque étape. Tu peux le sauter si tu connais déjà le jeu.',
-        okLabel: CGE_LANG==='en' ? 'Guide me' : 'Guide-moi',
-        cancelLabel: CGE_LANG==='en' ? 'Skip' : 'Passer',
-        onOk: function() {
-          Meta.tutorialPhase = 'gate';
-          Meta.save();
-          _phase = 'gate'; _steps = GATE_STEPS; _idx = 0;
-          _applyGate();
-        },
-        onCancel: function() {
-          Meta.tutorialPhase = 'skipped';
-          Meta.save();
-        }
-      });
+      if (Meta.tutorialPhase) return; // déjà en cours, sauté ou terminé sur ce profil
+      Meta.tutorialPhase = 'gate';
+      Meta.save();
+      _phase = 'gate'; _steps = GATE_STEPS; _idx = 0;
+      _applyGate();
     },
     // Relance manuelle, accessible tant que la dette envers Marta n'est pas
     // remboursée (bouton dans l'en-tête) — filet de secours si la proposition
