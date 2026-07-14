@@ -14311,12 +14311,14 @@ var App = {
     if (!ProfileManager.getActiveId() || !ProfileManager.getActive() || ProfilesScreen._creating) {
       ProfilesScreen._creating = false;
       ProfileManager.create(heroName, State.race, State.cls);
-      // Réinitialiser la méta pour ce nouveau perso (pas de donjons déjà nettoyés)
-      Meta.clearedZones = {};
-      Meta.chest = [];
-      Meta.totalGold = 0; Meta.totalKills = 0; Meta.totalRuns = 0; Meta.bestFloor = 0; Meta.bestLevel = 1;
-      Meta.levels = {}; Meta.bonuses = {atk:0,def:0,hp:0,potions:0,goldPct:0,crit:0,dodge:0,timerBonus:0,lifesteal:0,regenMeta:0,xpPct:0,startGold:0};
-      Meta.activeQuests = {}; Meta.completedQuests = {};
+      // Réinitialiser TOUTE la méta pour ce nouveau perso, en passant par le même
+      // chemin que activateProfile() sur un profil sans sauvegarde — une liste de
+      // champs entretenue à la main ici avait fini par oublier tutorialPhase et
+      // storyFlags, si bien qu'un perso créé après un autre dans la même session
+      // héritait silencieusement du tutoriel déjà répondu (et de la Vision I déjà
+      // vue) du perso précédent, empêchant le tutoriel de jamais se relancer.
+      localStorage.removeItem('cge_meta');
+      Meta.load();
       Meta.save();
     } else {
       ProfilesScreen._creating = false;
