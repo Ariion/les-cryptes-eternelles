@@ -441,6 +441,23 @@ canvas#particles {
 .cs-sum-val .up { color:#7dd87a; }
 .cs-sum-val .down { color:#e07070; }
 
+/* Bandeau de stats persistant : ne fait PAS partie du corps rendu par
+   étape (#cs-body) — il reste en place d'une étape à l'autre et se
+   contente de mettre ses valeurs à jour à chaque sélection. */
+#cs-stats-bar {
+  width:100%; padding:10px 20px;
+  display:flex; justify-content:space-around; align-items:center;
+  position:relative; z-index:2; flex-shrink:0;
+  background:rgba(18,17,28,0.6); backdrop-filter:blur(6px);
+  border-top:1px solid rgba(201,165,80,0.16);
+}
+.cs-stat { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.cs-stat-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.45); text-transform:uppercase; }
+.cs-stat-val { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:#EDE8DF; line-height:1; transition:color 0.2s ease; }
+.cs-stat-val.up { color:#7dd87a; }
+.cs-stat-val.down { color:#e07070; }
+.cs-stat-sep { width:1px; height:30px; background:rgba(201,165,80,0.15); }
+
 /* Bas : bouton unique (Suivant → / Commencer l'Aventure) */
 #cs-footer {
   width:100%; padding:12px 20px 16px;
@@ -1776,22 +1793,30 @@ canvas#particles {
 }
 #si-choices.show { opacity:1; pointer-events:all; }
 .si-choice {
-  width:100%; padding:13px 16px;
-  background:transparent; border:1px solid rgba(237,232,223,0.12);
-  color:rgba(237,232,223,0.65); font-family:'Crimson Text',serif;
+  width:100%; padding:17px 19px;
+  background:rgba(18,17,28,0.7); backdrop-filter:blur(6px);
+  border:1px solid rgba(201,165,80,0.22); border-radius:14px;
+  color:rgba(237,232,223,0.85); font-family:'Crimson Text',serif;
   font-size:15px; letter-spacing:0.2px;
-  border-radius:5px; cursor:pointer; text-align:left; position:relative; overflow:hidden;
+  cursor:pointer; text-align:left; position:relative; overflow:hidden;
   transition:all 0.18s ease; -webkit-tap-highlight-color:transparent;
-  display:flex; flex-direction:column; gap:4px;
+  display:flex; flex-direction:column; gap:7px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 6px rgba(0,0,0,0.25);
 }
 .si-choice-text { font-style:italic; }
 .si-choice-bonus {
+  align-self:flex-start;
   font-family:system-ui,sans-serif; font-style:normal;
-  font-size:10.5px; letter-spacing:0.4px; text-transform:uppercase;
+  font-size:10px; letter-spacing:0.4px; text-transform:uppercase;
   color:rgba(201,165,80,0.85);
+  background:rgba(201,165,80,0.1); border-radius:6px; padding:3px 8px;
 }
-.si-choice:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.4); color:#C9A550; }
-.si-choice:active .si-choice-bonus { color:#C9A550; }
+.si-choice:active {
+  transform:scale(0.97);
+  border-color:#00D4E8; background:rgba(0,212,232,0.08); color:#EDE8DF;
+  box-shadow:0 0 20px rgba(0,212,232,0.2);
+}
+.si-choice:active .si-choice-bonus { color:#00D4E8; background:rgba(0,212,232,0.14); }
 /* Bouton "Continuer" des scènes narrées (type 'auto') : la lecture ne
    doit plus être chronométrée par un délai fixe — le joueur avance
    lui-même une fois le texte lu, comme pour les choix. */
@@ -3500,6 +3525,14 @@ body.tut-combat-gate #combat-screen .tut-allow {
       </div>
 
       <div id="cs-body"></div>
+
+      <div id="cs-stats-bar">
+        <div class="cs-stat"><div class="cs-stat-label">PV</div><div class="cs-stat-val" id="cs-stat-hp">—</div></div>
+        <div class="cs-stat-sep"></div>
+        <div class="cs-stat"><div class="cs-stat-label">ATQ</div><div class="cs-stat-val" id="cs-stat-atk">—</div></div>
+        <div class="cs-stat-sep"></div>
+        <div class="cs-stat"><div class="cs-stat-label">DEF</div><div class="cs-stat-val" id="cs-stat-def">—</div></div>
+      </div>
 
       <div id="cs-footer">
         <button id="btn-start-run" onclick="csNext()">
@@ -6967,6 +7000,7 @@ function buildCharSelect() {
   updateCharSelectPortrait();
   csRenderDots();
   csRenderBody();
+  csUpdateStatsBar();
 }
 
 function csRenderDots() {
@@ -7003,21 +7037,21 @@ function csOnNameInput() {
   csRefreshNextBtn();
 }
 
-// Ligne de stats compacte affichée sur chaque carte race/classe, pour qu'on
-// voie ce que change chaque choix sans devoir déjà l'avoir sélectionné.
-// signed=true : valeurs relatives avec +/- et couleur (deltas de race,
-// classe pas encore connue). signed=false : valeurs absolues déjà
-// combinées avec la race choisie (étape classe).
-function csStatLine(pairs, signed) {
-  var parts = pairs.map(function(p){
-    var label = p[0], v = p[1];
-    if (signed) {
-      var cls = v>0?'up':v<0?'down':'';
-      return '<span class="'+cls+'">'+label+' '+(v>0?'+':'')+v+'</span>';
-    }
-    return '<span>'+label+' '+v+'</span>';
-  });
-  return '<div class="cs-statline">'+parts.join('<span class="cs-statsep">·</span>')+'</div>';
+// Bandeau de stats persistant (#cs-stats-bar, hors de #cs-body) : montre
+// les stats de base dès l'étape 1, se met à jour à chaque sélection de
+// race/classe et reste affiché à l'identique quand on avance d'étape.
+function csUpdateStatsBar() {
+  var hpEl = document.getElementById('cs-stat-hp');
+  if (!hpEl) return;
+  var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
+  var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
+  var atkEl = document.getElementById('cs-stat-atk');
+  var defEl = document.getElementById('cs-stat-def');
+  hpEl.textContent = c.hp + r.dhp;
+  atkEl.textContent = c.atk + r.datk;
+  atkEl.className = 'cs-stat-val' + (r.datk>0?' up':r.datk<0?' down':'');
+  defEl.textContent = c.def + r.ddef;
+  defEl.className = 'cs-stat-val' + (r.ddef>0?' up':r.ddef<0?' down':'');
 }
 
 function csRenderBody() {
@@ -7042,12 +7076,10 @@ function csRenderBody() {
         '<div class="cs-rule"></div>'+
         '<div class="cs-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>'+
         '<div class="cs-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>'+
-        csStatLine([['PV',r.dhp],['ATQ',r.datk],['DEF',r.ddef]], true)+
         '<div class="cs-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div></div>';
     });
     html += '</div>';
   } else if (step === 'classe') {
-    var pickedRace = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
     html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 3 / 4':'Étape 3 / 4')+'</div>'+
       '<div class="cs-step-title">'+(CGE_LANG==='en'?'Your path':'Ta voie')+'</div>'+
       '<div class="cs-step-sub">'+(CGE_LANG==='en'?'How will you face the Crypts?':'Comment affrontes-tu les Cryptes ?')+'</div>'+
@@ -7057,7 +7089,6 @@ function csRenderBody() {
         '<div class="cs-ico-svg">'+classIconSvg(c.id)+'</div>'+
         '<div class="cs-name">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'+
         '<div class="cs-sub">'+(CGE_LANG==='en'&&c.subEn?c.subEn:c.sub)+'</div>'+
-        csStatLine([['PV',c.hp+pickedRace.dhp],['ATQ',c.atk+pickedRace.datk],['DEF',c.def+pickedRace.ddef]], false)+
         '<div class="cs-bonus">'+(CGE_LANG==='en'&&c.speEn?c.speEn:c.spe)+'</div></div>';
     });
     html += '</div>';
@@ -7094,12 +7125,14 @@ function selectRace(id) {
   State.race = id;
   updateCharSelectPortrait();
   csRenderBody();
+  csUpdateStatsBar();
 }
 
 function selectClass(id) {
   State.cls = id;
   updateCharSelectPortrait();
   csRenderBody();
+  csUpdateStatsBar();
 }
 
 function csBack() {
@@ -9644,6 +9677,12 @@ var Tutorial = (function(){
     text:'J\'ai de quoi rembourser Marta, maintenant. Il est temps de rentrer.',
     textEn:'I have enough to repay Marta now. Time to head back.'
   };
+  // Niveau 2 atteint mais pas encore 50 pièces : simple rappel, sans
+  // verrouiller quoi que ce soit (voir maybeFinishAtLevel plus bas).
+  var EXPLORE_LEVEL_HINT_TEXT = {
+    text:'J\'irai voir Marta une fois que j\'aurai réuni 50 pièces.',
+    textEn:'I\'ll go see Marta once I\'ve gathered 50 coins.'
+  };
 
   // Phase 3 — retour à l'auberge : verrouillage strict à nouveau, étapes
   // conditionnelles (équipement/talents seulement si utiles).
@@ -9877,12 +9916,16 @@ var Tutorial = (function(){
       }
     },
     isGatedNow: _isGated,
-    // Le niveau 2 est le signal de repli : si atteint avant d'avoir 50 pièces,
-    // ça déclenche quand même le retour vers Marta plutôt que de couper court
-    // à la séquence de fin (et donc à la récompense).
+    // Le niveau 2 ne force plus le retour vers Marta : ça verrouillait la
+    // navigation (phase 'return', strict) alors que le joueur n'avait pas
+    // forcément les 50 pièces requises, le laissant bloqué sans pouvoir
+    // continuer à explorer pour les réunir. On ne déclenche le retour que
+    // si l'or est réellement suffisant ; sinon, simple rappel de l'objectif,
+    // sans toucher au verrouillage (l'exploration reste libre).
     maybeFinishAtLevel: function(level) {
       if (level < 2 || _phase !== 'explore') return;
-      _enterReturn();
+      if ((State.gold||0) >= 50) _enterReturn();
+      else _setBanner(EXPLORE_LEVEL_HINT_TEXT);
     },
   };
 })();
@@ -13355,7 +13398,7 @@ var InnRoom = {
         : 'Tu n\'as pas fait un bruit. On se demandait si tu allais te réveiller.');
     var martaText = en
       ? opener + '\n\n"I\'m Marta, the landlady of The Broken Shield. Someone brought you here unconscious three days ago. You owe me 50 coins for the room and care.\n\nIf you want to know where you come from... try the tavern. The people who remember you — if there are any — hang around there."'
-      : opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu dois me 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."';
+      : opener + '\n\n"Je suis Marta, l\'hôtesse de L\'Écu Brisé. Quelqu\'un t\'a amené ici inconscient il y a trois jours. Tu me dois 50 pièces pour la chambre et les soins.\n\nSi tu veux savoir d\'où tu viens... essaie la taverne. Les gens qui se souviennent de toi — si tant est qu\'il y en ait — traînent là-bas."';
     CGEModal.show({
       title: 'Marta',
       text: martaText,
