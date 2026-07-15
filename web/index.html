@@ -9691,6 +9691,23 @@ var Tutorial = (function(){
 
   function _isGated() { return _phase === 'gate'; }
 
+  // _phase ne vit qu'en mémoire pour cette page — un rechargement (PWA mise
+  // en arrière-plan sur mobile, mise à jour du service worker...) le
+  // réinitialise à 'idle' alors que Meta.tutorialPhase, lui, reste persisté
+  // correctement. Sans resynchronisation, tous les notify*() ci-dessous se
+  // basant sur _phase deviennent des no-op silencieux après un rechargement
+  // en pleine phase d'exploration : rembourser Marta ne clôturait alors plus
+  // jamais le tutoriel. Appelée à chaque entrée dans InnRoom, seul point de
+  // passage commun à toutes les reprises de partie.
+  function _syncPhase() {
+    var mp = Meta.tutorialPhase;
+    if (mp === 'gate' && _phase !== 'gate') { _phase = 'gate'; _steps = GATE_STEPS; _idx = 0; }
+    // 'return' : ancienne phase de verrouillage supprimée — la plus proche
+    // équivalence aujourd'hui est simplement 'explore' (navigation libre).
+    else if ((mp === 'explore' || mp === 'return') && _phase !== 'explore') { _phase = 'explore'; }
+    else if ((mp === 'done' || mp === 'skipped') && _phase !== 'done') { _phase = 'done'; }
+  }
+
   function _setBanner(entry, showSkip) {
     var bar = document.getElementById('tutorial-banner');
     document.getElementById('tutorial-text').textContent = CGE_LANG==='en' ? entry.textEn : entry.text;
@@ -9879,6 +9896,7 @@ var Tutorial = (function(){
       }
     },
     isGatedNow: _isGated,
+    syncPhase: _syncPhase,
     // Simple rappel textuel au niveau 2 — jamais de verrouillage ni de
     // retour forcé : XP (et donc le niveau) peut monter n'importe où, y
     // compris en plein donjon loin de toute ville.
@@ -13310,6 +13328,7 @@ var Travel = {
 // ── INN ROOM ───────────────────────────────────────────────────────
 var InnRoom = {
   enter: function() {
+    if (typeof Tutorial !== 'undefined' && Tutorial.syncPhase) Tutorial.syncPhase();
     var r = RACES.find(function(x){ return x.id===State.race; })||RACES[0];
     var c = CLASSES.find(function(x){ return x.id===State.cls; })||CLASSES[0];
     var el = document.getElementById('inn-hero-name');
