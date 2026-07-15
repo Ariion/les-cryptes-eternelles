@@ -9665,17 +9665,18 @@ var Tutorial = (function(){
       textEn:'The Caves of Shadow seem like a good place to start. The rest can wait.' },
   ];
 
-  // Phase 2 — exploration : la barre d'onglets reste cachée (impossible de
-  // filer vers un autre écran), mais les boutons de combat/boutique/repos
-  // restent tous utilisables — les verrouiller un par un casserait la vraie
-  // boucle de jeu (il faut pouvoir se défendre, fuir, se soigner librement).
+  // Phase 2 — exploration, jusqu'à la fin du tutoriel : navigation
+  // entièrement libre (onglets, hotspots, tout). Rembourser Marta se fait
+  // par le circuit normal (lui parler puis Quests.claim(), comme n'importe
+  // quelle autre quête) — aucun verrouillage, aucun retour forcé. Le texte
+  // ci-dessous n'est qu'un rappel d'objectif, jamais un blocage.
   var EXPLORE_TEXT = {
-    text:'Continue d\'explorer ces lieux et gagne de quoi rembourser Marta. Je pourrai toujours retourner à l\'auberge ensuite.',
-    textEn:'Keep exploring and earn enough to repay Marta. I can always head back to the inn afterward.'
+    text:'Continue d\'explorer ces lieux et gagne de quoi rembourser Marta. Je pourrai retourner à l\'auberge quand je le voudrai.',
+    textEn:'Keep exploring and earn enough to repay Marta. I can head back to the inn whenever I want.'
   };
   var EXPLORE_READY_TEXT = {
-    text:'J\'ai de quoi rembourser Marta, maintenant. Il est temps de rentrer.',
-    textEn:'I have enough to repay Marta now. Time to head back.'
+    text:'J\'ai de quoi rembourser Marta. J\'irai la voir quand je le déciderai.',
+    textEn:'I have enough to repay Marta. I\'ll go see her whenever I decide to.'
   };
   // Niveau 2 atteint mais pas encore 50 pièces : simple rappel, sans
   // verrouiller quoi que ce soit (voir maybeFinishAtLevel plus bas).
@@ -9684,35 +9685,11 @@ var Tutorial = (function(){
     textEn:'I\'ll go see Marta once I\'ve gathered 50 coins.'
   };
 
-  // Phase 3 — retour à l'auberge : verrouillage strict à nouveau, étapes
-  // conditionnelles (équipement/talents seulement si utiles).
-  function _returnSteps() {
-    var steps = [
-      { id:'return_marta', allow:['npc-marta'], hub:'auberge',
-        text:'J\'ai de quoi rembourser Marta.',
-        textEn:'I have enough to repay Marta.' }
-    ];
-    if ((State.inventory||[]).length || (Meta.chest||[]).length) {
-      steps.push({ id:'return_equip', allow:['hs-inn-armoire'], hub:'auberge',
-        text:'Un équipement m\'attend — je devrais l\'essayer.',
-        textEn:'Some gear is waiting for me — I should try it on.' });
-    }
-    if ((State.skillPointsClass||0) > 0 || (State.skillPointsRace||0) > 0) {
-      steps.push({ id:'return_talents', allow:['hs-inn-talents'], hub:'auberge',
-        text:'J\'ai gagné en expérience — mes talents m\'attendent.',
-        textEn:'I\'ve grown stronger — my talents await.' });
-    }
-    steps.push({ id:'return_adventure', allow:[], hub:'region',
-      text:'Il est temps de reprendre la route — le bouton « Région », en bas de l\'écran, m\'y mènera.',
-      textEn:'Time to get back on the road — the "Region" button, at the bottom of the screen, will take me there.' });
-    return steps;
-  }
-
-  var _phase = 'idle'; // idle | gate | explore | return | done
+  var _phase = 'idle'; // idle | gate | explore | done
   var _idx = -1;
   var _steps = GATE_STEPS;
 
-  function _isGated() { return _phase === 'gate' || _phase === 'return'; }
+  function _isGated() { return _phase === 'gate'; }
 
   function _setBanner(entry, showSkip) {
     var bar = document.getElementById('tutorial-banner');
@@ -9749,19 +9726,10 @@ var Tutorial = (function(){
     _idx = -1;
     _clearAllow();
     document.body.classList.add('tutorial-active');
-    document.body.classList.remove('tutorial-strict'); // libre d'agir sur cet écran, seule la barre d'onglets reste cachée
+    document.body.classList.remove('tutorial-strict'); // navigation entièrement libre à partir d'ici
     Meta.tutorialPhase = 'explore';
     Meta.save();
     _setBanner(ready ? EXPLORE_READY_TEXT : EXPLORE_TEXT);
-  }
-
-  function _enterReturn() {
-    _phase = 'return';
-    _steps = _returnSteps();
-    _idx = 0;
-    Meta.tutorialPhase = 'return';
-    Meta.save();
-    _applyGate();
   }
 
   function _finish() {
@@ -9801,14 +9769,10 @@ var Tutorial = (function(){
   }
 
   function _advanceGate(stepId) {
-    if (_phase !== 'gate' && _phase !== 'return') return;
+    if (_phase !== 'gate') return;
     if (_steps[_idx].id !== stepId) return;
     _idx++;
-    if (_idx >= _steps.length) {
-      if (_phase === 'gate') _enterExplore(false);
-      else _finish();
-      return;
-    }
+    if (_idx >= _steps.length) { _enterExplore(false); return; }
     _applyGate();
   }
 
@@ -9885,9 +9849,12 @@ var Tutorial = (function(){
       var map = { marta:'marta', bertrand:'bertrand', oswin:'oswin', seraphine:'seraphine' };
       if (map[npcId]) _advanceGate(map[npcId]);
     },
-    // Marta ne peut être remboursée que via Quests.claim() — c'est le vrai signal de fin de retour.
+    // Rembourser Marta se fait par le circuit de quête normal (lui parler,
+    // Quests.claim()) — jamais via un retour forcé. Si ça arrive pendant le
+    // tutoriel, ça y met simplement fin et accorde la récompense, sans le
+    // moindre verrouillage de navigation avant ou après.
     notifyClaim: function(questId) {
-      if (questId === 'marta_debt') _advanceGate('return_marta');
+      if (questId === 'marta_debt' && _phase === 'explore') _finish();
     },
     notifyZoneEnter: function(zoneId) {
       if (zoneId === 'grottes') _advanceGate('zone');
@@ -9903,32 +9870,21 @@ var Tutorial = (function(){
         if (screenId === 'town-screen') _advanceGate('town');
         else if (screenId === 'taverne-screen') _advanceGate('taverne');
         else if (screenId === 'world-map') _advanceGate('adventure');
-      } else if (_phase === 'return') {
-        if (screenId === 'hero-screen') _advanceGate('return_equip');
-        else if (screenId === 'talents-screen') _advanceGate('return_talents');
-        else if (screenId === 'world-map') _advanceGate('return_adventure');
       } else if (_phase === 'explore') {
-        if ((screenId === 'inn-room' || screenId === 'town-screen') && (State.gold||0) >= 50) {
-          _enterReturn();
-        } else if (screenId === 'inn-room' || screenId === 'town-screen') {
-          _setBanner(EXPLORE_TEXT);
+        // Simple rappel textuel — jamais de verrouillage : la navigation
+        // reste entièrement libre une fois cette phase atteinte.
+        if (screenId === 'inn-room' || screenId === 'town-screen') {
+          _setBanner((State.gold||0) >= 50 ? EXPLORE_READY_TEXT : EXPLORE_TEXT);
         }
       }
     },
     isGatedNow: _isGated,
-    // Le niveau 2 ne déclenche plus jamais le retour strict directement :
-    // XP (et donc le niveau) peut monter n'importe où, y compris en plein
-    // donjon très loin de l'auberge — forcer _enterReturn() ici verrouillait
-    // aussitôt la navigation (phase 'return', stricte) au milieu d'un run,
-    // ce qui se vivait comme une téléportation forcée vers l'auberge et
-    // redémarrait la séquence "va voir Marta" à zéro. Le retour ne démarre
-    // désormais que via notifyNav, quand le joueur est déjà de lui-même de
-    // retour à l'auberge/en ville (voir plus haut) — jamais en cours de
-    // route. Ici, on se contente d'un rappel textuel si l'or n'y est pas
-    // encore ; s'il y est déjà, le prochain retour en ville le déclenchera.
+    // Simple rappel textuel au niveau 2 — jamais de verrouillage ni de
+    // retour forcé : XP (et donc le niveau) peut monter n'importe où, y
+    // compris en plein donjon loin de toute ville.
     maybeFinishAtLevel: function(level) {
       if (level < 2 || _phase !== 'explore') return;
-      if ((State.gold||0) < 50) _setBanner(EXPLORE_LEVEL_HINT_TEXT);
+      _setBanner((State.gold||0) >= 50 ? EXPLORE_READY_TEXT : EXPLORE_LEVEL_HINT_TEXT);
     },
   };
 })();
@@ -11239,7 +11195,7 @@ var Meta = {
   dailyQuests: {},    // { date:'YYYY-MM-DD', kills:{prog,claimed}, floor:{prog,claimed}, gold:{prog,claimed} }
   dailyLogin: { streak:0, lastDay:null }, // cadeau de connexion quotidien (cycle 7 jours)
   storyFlags: {},     // one-off narrative beats seen (Aldric's hint, visions, etc.) — { key: true }
-  tutorialPhase: null, // null=not asked, 'gate'|'explore'|'return'|'skipped'|'done'
+  tutorialPhase: null, // null=not asked, 'gate'|'explore'|'skipped'|'done'
   tutorialFirstCombatDone: false,
   tutorialRewardGiven: false,
   ZONE_ORDER: ['grottes','foret','ruines','port','marais','pics','volcan','cryptes'],
