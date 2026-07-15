@@ -292,7 +292,10 @@ canvas#particles {
 .btn-danger { background:rgba(180,40,40,0.12); border:1px solid rgba(220,60,60,0.4); color:rgba(240,140,140,0.85); }
 .btn-danger:hover { box-shadow:0 0 18px rgba(220,60,60,0.2); }
 
-/* ── CHARACTER SELECT ────────────────────────────────────────── */
+/* ── CHARACTER SELECT — pas-à-pas (genre → race → classe → nom) ──────
+   Écran refondu en assistant à une étape à la fois : un portrait plein
+   cadre réagit à chaque choix (race/genre/classe une fois choisie), au
+   lieu d'un mur de grilles à faire défiler. ── */
 #char-select {
   background:#050409;
   justify-content:flex-start;
@@ -300,181 +303,147 @@ canvas#particles {
 }
 #cs-bg {
   position:absolute; inset:0;
+  background-size:cover; background-position:center 18%;
+  filter:saturate(0.8) brightness(0.55);
+  transition:background-image 0.4s ease;
+}
+#cs-bg::after {
+  content:''; position:absolute; inset:0;
   background:
-    radial-gradient(ellipse 80% 45% at 50% 0%,rgba(60,15,90,0.58) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(100,50,0,0.15) 0%,transparent 50%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 42px);
+    linear-gradient(180deg, rgba(5,4,9,0.35) 0%, rgba(5,4,9,0.55) 38%, rgba(5,4,9,0.97) 76%, #050409 100%),
+    radial-gradient(ellipse 80% 40% at 50% 0%,rgba(60,15,90,0.4) 0%,transparent 60%);
 }
 
-/* Header */
-#cs-header {
+/* Barre du haut : retour + pastilles de progression */
+#cs-topbar {
   width:100%; padding:18px 20px 0;
-  display:flex; align-items:center; gap:14px;
+  display:flex; align-items:center; gap:10px;
   position:relative; z-index:2; flex-shrink:0;
 }
 #cs-back {
-  width:38px; height:38px; border-radius:8px;
+  width:34px; height:34px; border-radius:8px;
   background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.2);
-  color:rgba(201,165,80,0.7); font-size:18px;
+  color:rgba(201,165,80,0.7); font-size:16px;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer; flex-shrink:0;
   transition:all 0.15s; -webkit-tap-highlight-color:transparent;
 }
 #cs-back:active { transform:scale(0.93); background:rgba(201,165,80,0.1); }
-#cs-title-wrap { flex:1; }
-#cs-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; text-transform:uppercase; }
-#cs-subtitle { font-family:'Crimson Text',serif; font-style:italic; font-size:12px; color:rgba(201,165,80,0.4); margin-top:1px; }
+#cs-dots { flex:1; display:flex; gap:7px; justify-content:center; }
+.cs-dot { width:7px; height:7px; border-radius:50%; background:rgba(237,232,223,0.2); transition:all 0.3s ease; }
+.cs-dot.done { background:#C9A550; }
+.cs-dot.current { background:#00D4E8; width:22px; border-radius:4px; box-shadow:0 0 10px rgba(0,212,232,0.5); }
+#cs-spacer { width:34px; flex-shrink:0; }
 
-/* Portrait en direct : reflète race + genre choisis, mis à jour à chaque
-   sélection (voir buildCharSelect/selectGender/selectRace). */
-#cs-portrait {
-  width:calc(100% - 32px); margin:6px 16px 0; height:132px; flex-shrink:0;
-  position:relative; overflow:hidden; border-radius:12px;
-  border:1px solid rgba(201,165,80,0.3);
-  background:rgba(255,255,255,0.02);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 14px rgba(0,0,0,0.35);
-}
-#cs-portrait-img {
-  width:100%; height:100%; object-fit:cover; object-position:center 12%;
-  display:block;
-}
-#cs-portrait::after {
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(to bottom, transparent 55%, rgba(5,4,9,0.7) 100%);
-}
-#cs-portrait::before {
-  content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
-  border-radius:12px; box-shadow:inset 0 0 24px rgba(0,212,232,0.12);
-}
-
-/* Sections */
+/* Corps : une étape à la fois */
 #cs-body {
   width:100%; flex:1;
   display:flex; flex-direction:column;
-  padding:8px 16px 6px;
-  gap:7px;
+  padding:22px 20px 6px;
   position:relative; z-index:2;
   overflow-y:auto; overflow-x:hidden;
   scrollbar-width:none;
 }
 #cs-body::-webkit-scrollbar { display:none; }
-/* Voile en bas de la zone défilante : signale qu'il reste du contenu à
-   faire défiler au lieu de laisser la coupure sembler accidentelle /
-   chevaucher le bouton fixe du bas. */
-#cs-body-fade {
-  position: sticky; bottom: -1px; left: 0; right: 0; height: 22px;
-  margin-top: -22px; pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(5,4,9,0.85));
-}
 
-.cs-section-label {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:4px;
-  color:rgba(201,165,80,0.4); text-transform:uppercase;
-  display:flex; align-items:center; gap:8px;
-  margin-bottom:2px;
-}
-.cs-section-label::before {
-  content:'◆'; font-size:6px; color:rgba(201,165,80,0.5);
-}
-.cs-section-label::after {
-  content:''; flex:1; height:1px;
-  background:linear-gradient(90deg,rgba(201,165,80,0.2),transparent);
-}
+.cs-step-eyebrow { font-family:'Cinzel',serif; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:#00D4E8; margin-bottom:6px; }
+.cs-step-title { font-family:'Cinzel',serif; font-weight:700; font-size:23px; color:#EDE8DF; margin:0 0 4px; text-wrap:balance; }
+.cs-step-sub { font-family:'Crimson Text',serif; font-style:italic; font-size:13px; color:rgba(237,232,223,0.55); margin-bottom:20px; }
 
-/* ── Médaillon d'icône partagé : cadre circulaire "métal gravé" pour que les
-   emoji lisent comme des icônes de jeu plutôt que du texte posé à plat.
-   Prêt à devenir une vraie image (art peint) plus tard sans retoucher le
-   reste — il suffira de remplacer le contenu textuel par une balise <img>
-   de même taille. ── */
-.race-icon, .class-icon, .gender-icon {
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 28%, rgba(201,165,80,0.24), rgba(8,6,14,0.94) 72%);
-  border:1px solid rgba(201,165,80,0.4);
-  box-shadow:inset 0 2px 5px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(201,165,80,0.14), 0 1px 3px rgba(0,0,0,0.5);
-  transition:border-color 0.18s, box-shadow 0.18s;
-}
-
-/* Cartes de sélection (genre/race/classe) : même socle "plaque gravée" +
-   halo cyan à la sélection — le cyan est réservé aux choix actifs et à
-   l'action principale, l'or reste la couleur du décor. */
-.gender-card, .race-card, .class-card {
-  position:relative; border-radius:10px;
-  background:linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.014));
-  border:1px solid rgba(201,165,80,0.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 6px rgba(0,0,0,0.3);
-  cursor:pointer; transition:all 0.18s ease;
+/* Cartes de sélection (race/classe) : filet doré discret au repos, halo
+   cyan à la sélection — le cyan reste réservé aux choix actifs et à
+   l'action principale, l'or au décor. Plus de pictogrammes émoji : un
+   simple filet pour race/genre, une icône SVG fine pour la classe. */
+.cs-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+.cs-card {
+  position:relative; border-radius:14px; text-align:center;
+  background:rgba(18,17,28,0.7); backdrop-filter:blur(6px);
+  border:1px solid rgba(201,165,80,0.22);
+  padding:16px 10px; cursor:pointer; transition:all 0.18s ease;
   -webkit-tap-highlight-color:transparent;
-  overflow:hidden;
 }
-.gender-card.selected, .race-card.selected, .class-card.selected {
-  border-color:#00D4E8; background:rgba(0,212,232,0.07);
-  box-shadow:0 0 0 1px rgba(0,212,232,0.45), 0 0 20px rgba(0,212,232,0.3), inset 0 0 20px rgba(0,212,232,0.06);
+.cs-card:active { transform:scale(0.96); }
+.cs-card.selected {
+  border-color:#00D4E8; background:rgba(0,212,232,0.08);
+  box-shadow:0 0 0 1px rgba(0,212,232,0.45), 0 0 20px rgba(0,212,232,0.25);
 }
-.gender-card.selected .gender-icon, .race-card.selected .race-icon, .class-card.selected .class-icon {
-  border-color:rgba(0,212,232,0.6);
-  box-shadow:inset 0 2px 5px rgba(0,0,0,0.5), 0 0 12px rgba(0,212,232,0.5);
-}
-.gender-card:active, .race-card:active, .class-card:active { transform:scale(0.97); }
+.cs-rule { width:22px; height:1px; background:rgba(201,165,80,0.3); margin:0 auto 10px; transition:all 0.18s ease; }
+.cs-card.selected .cs-rule { background:#00D4E8; width:32px; box-shadow:0 0 8px rgba(0,212,232,0.6); }
+.cs-ico-svg { width:26px; height:26px; margin:0 auto 9px; opacity:0.65; transition:opacity 0.18s ease; }
+.cs-ico-svg svg { width:100%; height:100%; fill:rgba(237,232,223,0.7); }
+.cs-card.selected .cs-ico-svg { opacity:1; }
+.cs-card.selected .cs-ico-svg svg { fill:#00D4E8; }
+.cs-card .cs-name { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:#EDE8DF; }
+.cs-card .cs-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.55); margin-top:2px; }
+.cs-card .cs-bonus { font-size:10.5px; color:rgba(150,210,150,0.75); margin-top:6px; font-family:system-ui,sans-serif; }
 
-/* Genre */
-#gender-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+/* Genre : simple bascule typographique, pas d'icône */
+.cs-gender-row { display:flex; gap:12px; }
+.cs-gender-btn {
+  flex:1; padding:24px 12px; text-align:center; cursor:pointer;
+  border-radius:14px; background:rgba(18,17,28,0.7); backdrop-filter:blur(6px);
+  border:1px solid rgba(201,165,80,0.22); transition:all 0.18s ease;
+  -webkit-tap-highlight-color:transparent;
 }
-.gender-card { padding:7px 10px; display:flex; align-items:center; gap:10px; }
-.gender-icon { width:34px; height:34px; font-size:16px; }
-.gender-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
-
-/* Grille races */
-#race-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:7px;
+.cs-gender-btn:active { transform:scale(0.96); }
+.cs-gender-btn.selected {
+  border-color:#00D4E8; background:rgba(0,212,232,0.08);
+  box-shadow:0 0 0 1px rgba(0,212,232,0.45), 0 0 20px rgba(0,212,232,0.25);
 }
-.race-card { padding:9px 12px; }
-.race-icon { width:38px; height:38px; font-size:18px; margin-bottom:4px; }
-.race-name { font-family:'Cinzel',serif; font-size:12px; font-weight:600; color:#EDE8DF; }
-.race-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.5); margin-top:1px; }
-.race-bonus { font-size:10px; color:rgba(150,200,150,0.7); margin-top:3px; font-family:system-ui,sans-serif; }
+.cs-gender-btn .cs-gender-label { font-family:'Cinzel',serif; font-size:15px; font-weight:600; letter-spacing:1px; color:rgba(237,232,223,0.6); }
+.cs-gender-btn.selected .cs-gender-label { color:#00D4E8; }
 
-/* Classes */
-#class-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:6px;
+/* Étape finale : nom + résumé */
+#cs-name-wrap {
+  display:flex; flex-direction:row; align-items:center; gap:8px; margin-bottom:20px;
 }
-.class-card { padding:9px 6px; display:flex; flex-direction:column; align-items:center; gap:3px; }
-.class-icon { width:34px; height:34px; font-size:16px; }
-.class-name { font-family:'Cinzel',serif; font-size:10px; font-weight:600; color:#EDE8DF; text-align:center; }
-.class-sub { font-family:'Crimson Text',serif; font-size:10px; color:rgba(201,165,80,0.45); }
-
-/* Stats panel */
-#cs-stats {
-  background:linear-gradient(160deg, rgba(255,255,255,0.03), rgba(10,8,22,0.85));
-  border:1px solid rgba(201,165,80,0.2);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
-  border-radius:10px; padding:9px 18px;
-  display:flex; justify-content:space-around; align-items:center;
-  flex-shrink:0;
+#cs-name-input {
+  flex:1; min-width:0; height:46px; border-radius:10px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.3);
+  color:#EDE8DF; font-family:'Cinzel',serif; font-size:14px; font-weight:600;
+  padding:0 14px; outline:none; letter-spacing:1px;
+  transition:border-color 0.2s;
 }
-.stat-item { display:flex; flex-direction:column; align-items:center; gap:2px; }
-.stat-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:rgba(201,165,80,0.45); text-transform:uppercase; }
-.stat-value { font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:#EDE8DF; line-height:1; }
-.stat-value.up { color:#7dd87a; }
-.stat-value.down { color:#e07070; }
-.stat-sep { width:1px; height:36px; background:rgba(201,165,80,0.15); }
+#cs-name-input:focus { border-color:#C9A550; background:rgba(201,165,80,0.06); }
+#cs-name-input::placeholder { color:rgba(201,165,80,0.25); font-style:italic; font-family:'Crimson Text',serif; font-size:13px; letter-spacing:0; }
+#cs-name-random {
+  flex-shrink:0; width:46px; height:46px; border-radius:10px;
+  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.3);
+  color:#C9A550; font-size:19px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.18s; -webkit-tap-highlight-color:transparent;
+  animation:cs-dice-glow 2.8s ease-in-out infinite;
+}
+#cs-name-random:active { background:rgba(201,165,80,0.2); transform:scale(0.92) rotate(-12deg); }
+@keyframes cs-dice-glow {
+  0%, 100% { box-shadow:0 0 0 rgba(201,165,80,0); }
+  50% { box-shadow:0 0 14px rgba(201,165,80,0.55); }
+}
 
-/* Bouton lancer — bordure/ombre du haut pour bien le lire comme une barre
-   fixe distincte du contenu défilant au-dessus, plutôt qu'un chevauchement. */
+#cs-summary {
+  background:rgba(18,17,28,0.75); backdrop-filter:blur(8px);
+  border:1px solid rgba(201,165,80,0.3); border-radius:16px; padding:6px 18px;
+}
+.cs-sum-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.cs-sum-row:last-child { border-bottom:none; }
+.cs-sum-label { font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(201,165,80,0.5); }
+.cs-sum-val { font-family:'Cinzel',serif; font-size:14px; font-weight:600; color:#EDE8DF; }
+.cs-sum-val .up { color:#7dd87a; }
+.cs-sum-val .down { color:#e07070; }
+
+/* Bas : bouton unique (Suivant → / Commencer l'Aventure) */
 #cs-footer {
-  width:100%; padding:10px 16px 14px;
-  display:flex; flex-direction:column; gap:8px;
+  width:100%; padding:12px 20px 16px;
   position:relative; z-index:2; flex-shrink:0;
   border-top:1px solid rgba(201,165,80,0.14);
   background:linear-gradient(to bottom, rgba(5,4,9,0.4), rgba(5,4,9,0.15));
 }
 /* Même traitement cyan que le bouton JOUER du menu principal : c'est le même
-   type d'action (lancer la partie/le prochain run), donc le même accent.
+   type d'action (avancer/lancer la partie), donc le même accent.
    Double liseré + reflet balayant en boucle pour un rendu "plaque enchantée"
    plutôt qu'un simple bouton plat. */
 #btn-start-run {
-  position:relative; width:100%; height:60px; border-radius:10px;
+  position:relative; width:100%; height:58px; border-radius:10px;
   background:linear-gradient(135deg,rgba(0,212,232,0.16),rgba(0,212,232,0.05));
   border:1px solid #00D4E8;
   color:#00D4E8; cursor:pointer;
@@ -484,6 +453,7 @@ canvas#particles {
   transition:all 0.18s; -webkit-tap-highlight-color:transparent;
   overflow:hidden;
 }
+#btn-start-run.cs-disabled { opacity:0.35; pointer-events:none; }
 #btn-start-run::before {
   content:''; position:absolute; inset:3px; border-radius:7px;
   border:1px solid rgba(0,212,232,0.28); pointer-events:none;
@@ -501,33 +471,6 @@ canvas#particles {
 }
 #btn-start-run:active { transform:scale(0.97); box-shadow:0 0 50px rgba(0,212,232,0.3); }
 #btn-start-run .ico { font-size:20px; }
-
-/* ── NOM HÉROS ───────────────────────────────────────────────── */
-#cs-name-wrap {
-  display:flex; flex-direction:row; align-items:center; gap:8px; flex-shrink:0;
-}
-#cs-name-input {
-  flex:1; min-width:0; height:44px; border-radius:10px;
-  background:rgba(255,255,255,0.05); border:1px solid rgba(201,165,80,0.3);
-  color:#EDE8DF; font-family:'Cinzel',serif; font-size:14px; font-weight:600;
-  padding:0 14px; outline:none; letter-spacing:1px;
-  transition:border-color 0.2s;
-}
-#cs-name-input:focus { border-color:#C9A550; background:rgba(201,165,80,0.06); }
-#cs-name-input::placeholder { color:rgba(201,165,80,0.25); font-style:italic; font-family:'Crimson Text',serif; font-size:13px; letter-spacing:0; }
-#cs-name-random {
-  flex-shrink:0; width:44px; height:44px; border-radius:10px;
-  background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.3);
-  color:#C9A550; font-size:19px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all 0.18s; -webkit-tap-highlight-color:transparent;
-  animation:cs-dice-glow 2.8s ease-in-out infinite;
-}
-#cs-name-random:active { background:rgba(201,165,80,0.2); transform:scale(0.92) rotate(-12deg); }
-@keyframes cs-dice-glow {
-  0%, 100% { box-shadow:0 0 0 rgba(201,165,80,0); }
-  50% { box-shadow:0 0 14px rgba(201,165,80,0.55); }
-}
 
 /* ── ÉCRAN PROFILS ────────────────────────────────────────────── */
 #profiles-screen {
@@ -3526,69 +3469,17 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="char-select" class="screen">
       <div id="cs-bg"></div>
 
-      <div id="cs-header">
-        <div id="cs-back" onclick="ProfilesScreen.backFromCreate()">←</div>
-        <div id="cs-title-wrap">
-          <div id="cs-title">Ton Héros</div>
-          <div id="cs-subtitle">Choisis ta race et ta classe</div>
-        </div>
+      <div id="cs-topbar">
+        <div id="cs-back" onclick="csBack()">←</div>
+        <div id="cs-dots"></div>
+        <div id="cs-spacer"></div>
       </div>
 
-      <div id="cs-portrait">
-        <img id="cs-portrait-img" src="" alt="">
-      </div>
-
-      <div id="cs-body">
-        <div class="cs-section-label">Nom</div>
-        <div id="cs-name-wrap">
-          <input id="cs-name-input" type="text" maxlength="20" placeholder="Donne un nom à ton héros..." autocomplete="off" autocorrect="off" spellcheck="false">
-          <button id="cs-name-random" type="button" onclick="NameGen.roll('cs-name-input')" title="Nom aléatoire" aria-label="Nom aléatoire">🎲</button>
-        </div>
-        <div class="cs-section-label">Genre</div>
-        <div id="gender-grid">
-          <div class="gender-card" data-id="Homme" onclick="selectGender('Homme')">
-            <span class="gender-icon">👨</span>
-            <div class="gender-name">Homme</div>
-          </div>
-          <div class="gender-card" data-id="Femme" onclick="selectGender('Femme')">
-            <span class="gender-icon">👩</span>
-            <div class="gender-name">Femme</div>
-          </div>
-        </div>
-
-        <div class="cs-section-label">Race</div>
-        <div id="race-grid"></div>
-
-        <div class="cs-section-label">Classe</div>
-        <div id="class-grid"></div>
-
-        <div id="cs-stats">
-          <div class="stat-item">
-            <div class="stat-label">PV</div>
-            <div class="stat-value" id="stat-hp">—</div>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat-item">
-            <div class="stat-label">ATQ</div>
-            <div class="stat-value" id="stat-atk">—</div>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat-item">
-            <div class="stat-label">DEF</div>
-            <div class="stat-value" id="stat-def">—</div>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat-item">
-            <div class="stat-label">SPÉ</div>
-            <div class="stat-value" id="stat-spe" style="font-size:14px;text-align:center;max-width:60px">—</div>
-          </div>
-        </div>
-        <div id="cs-body-fade"></div>
-      </div>
+      <div id="cs-body"></div>
 
       <div id="cs-footer">
-        <button id="btn-start-run" onclick="StoryIntro.startFromPicker()">
-          <span class="ico">⚔</span> Commencer l'Aventure
+        <button id="btn-start-run" onclick="csNext()">
+          <span class="ico">⚔</span> <span id="cs-next-label">Suivant →</span>
         </button>
       </div>
     </div>
@@ -4554,6 +4445,24 @@ var CLASSES = [
   { id:'Prêtre',   icon:'✚',  name:'Prêtre',   nameEn:'Priest',   sub:'Soigneur', subEn:'Healer',   hp:90,  atk:10, def:7,  spe:'Soin 30%',     speEn:'Heal 30%' },
   { id:'Barbare',  icon:'🪓', name:'Barbare',  nameEn:'Barbarian', sub:'Fureur',  subEn:'Fury',     hp:110, atk:15, def:2,  spe:'Frenésie',     speEn:'Frenzy' },
 ];
+// Icônes de classe (écran de création) : tracés rpg-awesome fins, dans le
+// même style que les icônes d'objets (ItemIcons) — pas des émoji. Trois
+// glyphes n'existaient pas encore dans ITEM_ICON_LIB (défini plus bas dans
+// ce script) ; on les stocke ici et on retombe sur ITEM_ICON_LIB pour les
+// trois autres, en lisant la variable au moment de l'appel (donc peu importe
+// que sa déclaration arrive après celle-ci dans le fichier).
+var CLASS_ICON_EXTRA = {
+  'Chasseur': 'M832.253 737.496l16.162-62.098-74.56-14.69c-39.173 113.44-119.684 207.104-230.42 231.755 76.758-65.315 130.506-146.539 162.978-234.549l-272.937-42.363c-0.003-0.007-0.008-0.012-0.012-0.018 12.57 20.949 18.868 49.264 15.801 79.64-5.97 59.11-45.083 103.568-87.361 99.296s-71.712-55.65-65.741-114.76c2.008-19.877 7.776-38.083 16.138-53.352-0.002 0.002-0.002 0.003-0.003 0.007-88.978-2.367-152.71-23.149-185.294-76.351 42.099-39.543 125.422-46.489 190.532-36.171l40.516-110.041-105.427-424.733h68.259l121.988 337.264 220.001-337.264h67.076l-229.326 438.404-9.431 141.34 232.034 45.988c31.042-116.422 27.306-241.121-7.686-354.635 88.672 103.319 104.326 259.501 64.081 392.722l127.075 25.047-3.592 18.227 0.035 0.007 3.593-18.238-53.624-10.566 16.028-61.582 110.65 93.181-147.535 48.534z',
+  'Assassin': 'M683.955 551.865c26.813 9.199 57.291 14.257 91.955 14.257-32.98 132.475-134.313 310.429-268.468 375.726-131.416-61.744-240.663-241.569-268.467-375.726 34.499 0 65.005-4.734 91.955-13.686-65.74-101.663-111.519-269.143-111.519-502.64 94.599-56.094 185.62-86.101 277.603-88.181-104.827 8.691-188.157 147.802-188.157 318.145 0 100.053 28.759 189.311 73.73 247.711 13.837-9.159 26.407-19.82 37.788-31.894l30.55 33.374c-10.357 11.926-22.104 22.89-35.411 33.252 44.642-58.415 73.165-147.331 73.165-246.961 0-170.243-83.236-309.293-187.978-318.127 89.841 2.127 180.926 30.922 277.457 88.163 0.002 232.906-45.779 400.285-111.521 502.074zM400.112 309.969c23.123 7.452 46.601 12.007 70.21 14.126 0.12-100.477 2.549-191.881 38.979-288.056 38.152 93.261 35.285 187.295 35.095 287.149 23.619-2.542 47.136-7.081 70.324-13.22v36.969h-82.658c-13.755 45.013-11.805 90.027 1.644 135.039h-52.58c14.030-45.013 18.225-90.025 1.951-135.039h-82.964v-36.968z',
+  'Prêtre': 'M367.444 885.337v-305.528h-304.24v-282.327h304.24v-304.24h282.327v304.24h305.526v282.327h-305.525v305.528h-282.328z'
+};
+var CLASS_ICON_KEY = { 'Guerrier':'broadsword', 'Mage':'crystal-wand', 'Barbare':'axe' };
+function classIconSvg(clsId) {
+  var d = CLASS_ICON_EXTRA[clsId];
+  if (!d && typeof ITEM_ICON_LIB !== 'undefined') d = ITEM_ICON_LIB[CLASS_ICON_KEY[clsId]];
+  if (!d) return '';
+  return '<svg viewBox="0 0 1024 1024" focusable="false"><path transform="matrix(1,0,0,-1,0,960)" d="'+d+'"/></svg>';
+}
 
 // ── VAULT — couche anti-triche des sauvegardes ───────────────────
 // Signe + obfusque les données persistées. Pas de la crypto militaire
@@ -5402,12 +5311,11 @@ var ProfilesScreen = {
   createNew: function() {
     this._creating = false; // StoryIntro._finish() sets it once the run actually starts
     // Aucune race/classe pré-choisie : le joueur doit les sélectionner
-    // explicitement (le nom l'est déjà, via le champ vidé juste après).
+    // explicitement dans l'assistant pas-à-pas (buildCharSelect réinitialise
+    // aussi le nom saisi, pour ne pas hériter de celui d'un perso précédent).
     State.race = null; State.cls = null;
     Nav.go('char-select');
     buildCharSelect();
-    var inp = document.getElementById('cs-name-input');
-    if (inp) inp.value = '';
   },
 
   render: function() {
@@ -5689,8 +5597,8 @@ var StoryIntro = (function(){
   var SCENES = [
     // 0 — Éveil
     { type:'auto', delay:1100,
-      lines:['Tout est noir autour de moi.','Puis... une sensation.'],
-      linesEn:['Everything around me is black.','Then... a sensation.'] },
+      lines:['Tout est noir autour de moi.','Puis... une sensation.','Mes doigts se referment sur quelque chose. Un bout de papier, semble-t-il. Je ne le lâche pas.'],
+      linesEn:['Everything around me is black.','Then... a sensation.','My fingers close around something. A scrap of paper, it seems. I don\'t let go.'] },
     // 1 — Première sensation
     { type:'choice',
       lines:['La première chose que je ressens...'],
@@ -5705,8 +5613,8 @@ var StoryIntro = (function(){
     // (garbled:true déclenche l'effet de décodage progressif sur les choix)
     // — le temps que la conscience du personnage se règle sur le son.
     { type:'choice', garbled:true,
-      lines:['Hein ? J\'entends une voix... Qui me parle ?'],
-      linesEn:['Huh? I hear a voice... Who\'s talking to me?'],
+      lines:['Au loin, quelqu\'un crie — un nom. Pas le mien, je crois.','Hein ? Une autre voix, tout près cette fois... Qui me parle ?'],
+      linesEn:['Far off, someone shouts — a name. Not mine, I think.','Huh? Another voice, close by this time... Who\'s talking to me?'],
       choices:[
         { text:'"Il respire encore."', textEn:'"He still breathes."', frag:'"... respire ..."', fragEn:'"... breathes ..."', key:'voice', val:'survivor' },
         { text:'"Par les dieux... réveille-toi."', textEn:'"By the gods... wake up."', frag:'"... dieux... ... toi."', fragEn:'"... gods... ... up."', key:'voice', val:'divine' },
@@ -5715,8 +5623,8 @@ var StoryIntro = (function(){
     },
     // 3 — La lumière / le vide
     { type:'auto', delay:1100,
-      lines:['La lumière arrive, brutale.','Un plafond de bois. Je ne reconnais rien.','Je cherche un nom. Il n\'est pas là.'],
-      linesEn:['The light comes, brutal.','A wooden ceiling. I recognize nothing.','I search for a name. It is not there.'] },
+      lines:['La lumière arrive, brutale.','Un plafond de bois. Je ne reconnais rien.','Dans ma main, le papier est noirci sur un bord. Je ne comprends ni le mot qui reste, ni pourquoi j\'y tiens tant.','Je cherche un nom. Il n\'est pas là.'],
+      linesEn:['The light comes, brutal.','A wooden ceiling. I recognize nothing.','In my hand, the paper is charred at one edge. I understand neither the word that remains, nor why I hold onto it so tightly.','I search for a name. It is not there.'] },
     // 4 — Race
     { type:'choice',
       lines:['Une forme se dessine. La mienne ?'],
@@ -5749,13 +5657,15 @@ var StoryIntro = (function(){
     { type:'auto', delay:1400, finish:true,
       lines:[
         'Une voix, dans la pièce. Réelle, cette fois.',
-        '"Enfin réveillé ? Vous avez dormi trois jours."',
-        '"Je suis Marta. Et vous me devez de l\'argent."'
+        '"Enfin réveillé ? Trois jours. Je suis Marta."',
+        '"Quelqu\'un vous a déposé chez moi en pleine nuit, a payé d\'avance sans dire son nom — et a disparu avant l\'aube."',
+        '"Vous, vous me devez le reste."'
       ],
       linesEn:[
         'A voice, in the room. Real, this time.',
-        '"Awake at last? You slept for three days."',
-        '"I am Marta. And you owe me money."'
+        '"Awake at last? Three days. I am Marta."',
+        '"Someone left you at my door in the dead of night, paid in advance without giving a name — and was gone before dawn."',
+        '"You, you owe me the rest."'
       ]
     }
   ];
@@ -6997,104 +6907,153 @@ function tick(){
   requestAnimationFrame(tick);
 }
 
-// ── CHARACTER SELECT ──────────────────────────────────────────────
+// ── CHARACTER SELECT — assistant pas-à-pas ────────────────────────
+// Genre → Race → Classe → Nom (+ résumé), un choix à la fois. Le portrait
+// plein cadre (#cs-bg) réagit à chaque étape via heroPortraitFile(), qui
+// retombe sur le portrait générique race+genre tant qu'aucune illustration
+// dédiée à la classe choisie n'existe.
+var CS_STEPS = ['genre','race','classe','nom'];
+var _csStep = 0;
+var _csName = '';
+
 function updateCharSelectPortrait() {
-  var img = document.getElementById('cs-portrait-img');
-  if (!img) return;
-  var file = heroPortraitFile(State.race, State.gender, State.cls);
-  if (file) img.src = './images/' + file + '.webp';
+  var el = document.getElementById('cs-bg');
+  if (!el) return;
+  var file = heroPortraitFile(State.race || 'Humain', State.gender, State.cls);
+  if (file) el.style.backgroundImage = "url('./images/" + file + ".webp')";
 }
 
 function buildCharSelect() {
-  // Genre
   if (!State.gender) State.gender = 'Homme';
-  document.querySelectorAll('.gender-card').forEach(function(c){
-    c.classList.toggle('selected', c.dataset.id === State.gender);
-  });
+  _csStep = 0;
+  _csName = '';
   updateCharSelectPortrait();
+  csRenderDots();
+  csRenderBody();
+}
 
-  // Races
-  var rg = document.getElementById('race-grid');
-  rg.innerHTML = '';
-  RACES.forEach(function(r) {
-    var card = document.createElement('div');
-    card.className = 'race-card' + (State.race === r.id ? ' selected' : '');
-    card.dataset.id = r.id;
-    card.innerHTML =
-      '<span class="race-icon">'+raceIcon(r, State.gender)+'</span>' +
-      '<div class="race-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>' +
-      '<div class="race-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>' +
-      '<div class="race-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div>';
-    card.addEventListener('click', function(){ selectRace(r.id); });
-    rg.appendChild(card);
+function csRenderDots() {
+  var wrap = document.getElementById('cs-dots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  CS_STEPS.forEach(function(s, i){
+    var d = document.createElement('div');
+    d.className = 'cs-dot' + (i < _csStep ? ' done' : '') + (i === _csStep ? ' current' : '');
+    wrap.appendChild(d);
   });
+}
 
-  // Classes
-  var cg = document.getElementById('class-grid');
-  cg.innerHTML = '';
-  CLASSES.forEach(function(c) {
-    var card = document.createElement('div');
-    card.className = 'class-card' + (State.cls === c.id ? ' selected' : '');
-    card.dataset.id = c.id;
-    card.innerHTML =
-      '<span class="class-icon">'+c.icon+'</span>' +
-      '<div class="class-name">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</div>' +
-      '<div class="class-sub">'+(CGE_LANG==='en'&&c.subEn?c.subEn:c.sub)+'</div>';
-    card.addEventListener('click', function(){ selectClass(c.id); });
-    cg.appendChild(card);
-  });
+function csCanAdvance() {
+  var step = CS_STEPS[_csStep];
+  if (step === 'race') return !!State.race;
+  if (step === 'classe') return !!State.cls;
+  if (step === 'nom') return !!_csName.trim();
+  return true;
+}
 
-  updateStats();
+function csRefreshNextBtn() {
+  var btn = document.getElementById('btn-start-run');
+  var lbl = document.getElementById('cs-next-label');
+  if (!btn || !lbl) return;
+  var last = _csStep === CS_STEPS.length - 1;
+  lbl.textContent = last ? (CGE_LANG==='en' ? "Begin the Adventure" : "Commencer l'Aventure") : (CGE_LANG==='en' ? 'Next →' : 'Suivant →');
+  btn.classList.toggle('cs-disabled', !csCanAdvance());
+}
+
+function csOnNameInput() {
+  var inp = document.getElementById('cs-name-input');
+  _csName = inp ? inp.value : '';
+  csRefreshNextBtn();
+}
+
+function csRenderBody() {
+  var body = document.getElementById('cs-body');
+  var step = CS_STEPS[_csStep];
+  var html = '';
+  if (step === 'genre') {
+    html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 1 / 4':'Étape 1 / 4')+'</div>'+
+      '<div class="cs-step-title">'+(CGE_LANG==='en'?'Who are you?':'Qui es-tu ?')+'</div>'+
+      '<div class="cs-step-sub">'+(CGE_LANG==='en'?'Choose your appearance.':'Choisis ton apparence.')+'</div>'+
+      '<div class="cs-gender-row">'+
+      '<div class="cs-gender-btn'+(State.gender==='Homme'?' selected':'')+'" onclick="selectGender(\'Homme\')"><div class="cs-gender-label">'+(CGE_LANG==='en'?'Male':'Homme')+'</div></div>'+
+      '<div class="cs-gender-btn'+(State.gender==='Femme'?' selected':'')+'" onclick="selectGender(\'Femme\')"><div class="cs-gender-label">'+(CGE_LANG==='en'?'Female':'Femme')+'</div></div>'+
+      '</div>';
+  } else if (step === 'race') {
+    html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 2 / 4':'Étape 2 / 4')+'</div>'+
+      '<div class="cs-step-title">'+(CGE_LANG==='en'?'Your people':'Ton peuple')+'</div>'+
+      '<div class="cs-step-sub">'+(CGE_LANG==='en'?'Each race carries a gift of its own.':'Chaque race porte un don qui lui est propre.')+'</div>'+
+      '<div class="cs-grid2">';
+    RACES.forEach(function(r){
+      html += '<div class="cs-card'+(State.race===r.id?' selected':'')+'" onclick="selectRace(\''+r.id+'\')">'+
+        '<div class="cs-rule"></div>'+
+        '<div class="cs-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>'+
+        '<div class="cs-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>'+
+        '<div class="cs-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div></div>';
+    });
+    html += '</div>';
+  } else if (step === 'classe') {
+    html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 3 / 4':'Étape 3 / 4')+'</div>'+
+      '<div class="cs-step-title">'+(CGE_LANG==='en'?'Your path':'Ta voie')+'</div>'+
+      '<div class="cs-step-sub">'+(CGE_LANG==='en'?'How will you face the Crypts?':'Comment affrontes-tu les Cryptes ?')+'</div>'+
+      '<div class="cs-grid2">';
+    CLASSES.forEach(function(c){
+      html += '<div class="cs-card'+(State.cls===c.id?' selected':'')+'" onclick="selectClass(\''+c.id+'\')">'+
+        '<div class="cs-ico-svg">'+classIconSvg(c.id)+'</div>'+
+        '<div class="cs-name">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'+
+        '<div class="cs-sub">'+(CGE_LANG==='en'&&c.subEn?c.subEn:c.sub)+'</div>'+
+        '<div class="cs-bonus">'+(CGE_LANG==='en'&&c.speEn?c.speEn:c.spe)+'</div></div>';
+    });
+    html += '</div>';
+  } else if (step === 'nom') {
+    var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
+    var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
+    var hp = c.hp + r.dhp, atk = c.atk + r.datk, def = c.def + r.ddef;
+    var genderLabel = CGE_LANG==='en' ? (State.gender==='Femme'?'Female':'Male') : State.gender;
+    html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 4 / 4':'Étape 4 / 4')+'</div>'+
+      '<div class="cs-step-title">'+(CGE_LANG==='en'?'Their name':'Son nom')+'</div>'+
+      '<div class="cs-step-sub">'+(CGE_LANG==='en'?'Last step before the descent.':'Dernière étape avant de descendre.')+'</div>'+
+      '<div id="cs-name-wrap">'+
+      '<input id="cs-name-input" type="text" maxlength="20" placeholder="'+(CGE_LANG==='en'?'Give them a name...':'Donne un nom à ton héros...')+'" autocomplete="off" autocorrect="off" spellcheck="false" value="'+_escHtml(_csName)+'" oninput="csOnNameInput()">'+
+      '<button id="cs-name-random" type="button" onclick="NameGen.roll(\'cs-name-input\');csOnNameInput();" title="'+(CGE_LANG==='en'?'Random name':'Nom aléatoire')+'" aria-label="Nom aléatoire">🎲</button>'+
+      '</div>'+
+      '<div id="cs-summary">'+
+      '<div class="cs-sum-row"><span class="cs-sum-label">'+(CGE_LANG==='en'?'Gender':'Genre')+'</span><span class="cs-sum-val">'+genderLabel+'</span></div>'+
+      '<div class="cs-sum-row"><span class="cs-sum-label">Race</span><span class="cs-sum-val">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</span></div>'+
+      '<div class="cs-sum-row"><span class="cs-sum-label">'+(CGE_LANG==='en'?'Class':'Classe')+'</span><span class="cs-sum-val">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</span></div>'+
+      '<div class="cs-sum-row"><span class="cs-sum-label">PV · ATQ · DEF</span><span class="cs-sum-val">'+hp+' · <span class="'+(atk>c.atk?'up':atk<c.atk?'down':'')+'">'+atk+'</span> · <span class="'+(def>c.def?'up':def<c.def?'down':'')+'">'+def+'</span></span></div>'+
+      '</div>';
+  }
+  body.innerHTML = html;
+  csRefreshNextBtn();
 }
 
 function selectGender(g) {
   State.gender = g;
-  document.querySelectorAll('.gender-card').forEach(function(c){
-    c.classList.toggle('selected', c.dataset.id === g);
-  });
-  // Les icônes de race dépendent du genre — on les rafraîchit sans tout reconstruire.
-  document.querySelectorAll('#race-grid .race-card').forEach(function(card){
-    var r = RACES.find(function(x){ return x.id === card.dataset.id; });
-    var ico = card.querySelector('.race-icon');
-    if (r && ico) ico.textContent = raceIcon(r, g);
-  });
   updateCharSelectPortrait();
+  csRenderBody();
 }
 
 function selectRace(id) {
   State.race = id;
-  document.querySelectorAll('.race-card').forEach(function(c){
-    c.classList.toggle('selected', c.dataset.id === id);
-  });
-  updateStats();
   updateCharSelectPortrait();
+  csRenderBody();
 }
 
 function selectClass(id) {
   State.cls = id;
   updateCharSelectPortrait();
-  document.querySelectorAll('.class-card').forEach(function(c){
-    c.classList.toggle('selected', c.dataset.id === id);
-  });
-  updateStats();
+  csRenderBody();
 }
 
-function updateStats() {
-  var r = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
-  var c = CLASSES.find(function(x){ return x.id===State.cls; }) || CLASSES[0];
-  document.getElementById('stat-hp').textContent  = c.hp  + r.dhp;
-  document.getElementById('stat-atk').textContent = c.atk + r.datk;
-  document.getElementById('stat-def').textContent = c.def + r.ddef;
-  document.getElementById('stat-spe').textContent = (CGE_LANG==='en'&&c.speEn?c.speEn:c.spe);
-  // Couleur selon bonus/malus race
-  ['stat-atk','stat-def'].forEach(function(sid){
-    var el = document.getElementById(sid);
-    el.className = 'stat-value';
-    var v = parseInt(el.textContent);
-    var base = sid==='stat-atk' ? c.atk : c.def;
-    if (v > base) el.classList.add('up');
-    else if (v < base) el.classList.add('down');
-  });
+function csBack() {
+  if (_csStep === 0) { ProfilesScreen.backFromCreate(); return; }
+  _csStep--; csRenderDots(); csRenderBody();
+}
+
+function csNext() {
+  if (!csCanAdvance()) return;
+  if (_csStep === CS_STEPS.length - 1) { StoryIntro.startFromPicker(); return; }
+  _csStep++; csRenderDots(); csRenderBody();
 }
 
 // ── ENNEMIS ───────────────────────────────────────────────────────
