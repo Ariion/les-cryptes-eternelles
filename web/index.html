@@ -376,6 +376,16 @@ canvas#particles {
 .cs-card .cs-name { font-family:'Cinzel',serif; font-size:13px; font-weight:600; color:#EDE8DF; }
 .cs-card .cs-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.55); margin-top:2px; }
 .cs-card .cs-bonus { font-size:10.5px; color:rgba(150,210,150,0.75); margin-top:6px; font-family:system-ui,sans-serif; }
+/* Aperçu stats par carte (race/classe) : ce que change chaque choix,
+   visible avant même de le sélectionner. */
+.cs-statline {
+  font-size:10.5px; font-family:system-ui,sans-serif; letter-spacing:0.2px;
+  color:rgba(237,232,223,0.6); margin-top:8px;
+  display:flex; justify-content:center; gap:5px; flex-wrap:wrap;
+}
+.cs-statline .cs-statsep { color:rgba(237,232,223,0.25); }
+.cs-statline .up { color:#7dd87a; }
+.cs-statline .down { color:#e07070; }
 
 /* Genre : simple bascule typographique, pas d'icône */
 .cs-gender-row { display:flex; gap:12px; }
@@ -1782,6 +1792,19 @@ canvas#particles {
 }
 .si-choice:active { background:rgba(201,165,80,0.08); border-color:rgba(201,165,80,0.4); color:#C9A550; }
 .si-choice:active .si-choice-bonus { color:#C9A550; }
+/* Bouton "Continuer" des scènes narrées (type 'auto') : la lecture ne
+   doit plus être chronométrée par un délai fixe — le joueur avance
+   lui-même une fois le texte lu, comme pour les choix. */
+#si-continue {
+  margin-top:28px; padding:13px 34px;
+  background:transparent; border:1px solid rgba(201,165,80,0.35);
+  color:rgba(201,165,80,0.75); font-family:'Cinzel',serif; font-size:11px;
+  letter-spacing:2px; text-transform:uppercase;
+  border-radius:6px; cursor:pointer; transition:all 0.18s ease;
+  opacity:0; pointer-events:none; -webkit-tap-highlight-color:transparent;
+}
+#si-continue.show { opacity:1; pointer-events:all; }
+#si-continue:active { background:rgba(201,165,80,0.12); color:#C9A550; border-color:#C9A550; transform:scale(0.97); }
 #si-name-wrap {
   width:100%; margin-top:28px; display:flex; flex-direction:column; align-items:center; gap:12px;
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
@@ -3456,6 +3479,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="story-intro" class="screen">
       <div id="si-text"></div>
       <div id="si-choices"></div>
+      <button id="si-continue" onclick="StoryIntro.advance()">Continuer →</button>
       <div id="si-name-wrap">
         <div id="si-name-row">
           <input id="si-name-input" type="text" maxlength="20" placeholder="ton nom..." autocomplete="off" autocorrect="off" spellcheck="false">
@@ -5674,9 +5698,11 @@ var StoryIntro = (function(){
     var t = document.getElementById('si-text');
     var ch = document.getElementById('si-choices');
     var nw = document.getElementById('si-name-wrap');
+    var cont = document.getElementById('si-continue');
     if (t)  t.innerHTML = '';
     if (ch) { ch.innerHTML = ''; ch.classList.remove('show'); }
     if (nw) { nw.classList.remove('show'); document.getElementById('si-name-input').value = ''; }
+    if (cont) cont.classList.remove('show');
   }
 
   // Effet "compréhension progressive" : la voix, encore lointaine, n'est
@@ -5721,9 +5747,13 @@ var StoryIntro = (function(){
     var _lines = (CGE_LANG === 'en' && sc.linesEn) ? sc.linesEn : sc.lines;
     _typeLines(_lines, function() {
       if (sc.type === 'auto') {
-        setTimeout(function(){
-          if (sc.finish) _finish(); else _scene(seqIdx+1);
-        }, sc.delay || 2000);
+        // Plus d'avance automatique chronométrée : le joueur lit à son
+        // rythme et valide lui-même via le bouton "Continuer".
+        var cont = document.getElementById('si-continue');
+        if (cont) {
+          cont.textContent = CGE_LANG==='en' ? 'Continue →' : 'Continuer →';
+          setTimeout(function(){ cont.classList.add('show'); }, 200);
+        }
       } else if (sc.type === 'choice') {
         var ch = document.getElementById('si-choices');
         ch.innerHTML = '';
@@ -5807,6 +5837,13 @@ var StoryIntro = (function(){
       _c.name = val;
       if (typeof Sfx !== 'undefined') Sfx.nav();
       _scene(_idx + 1);
+    },
+    // Bouton "Continuer" des scènes narrées (type 'auto').
+    advance: function() {
+      var sc = SCENES[_seq[_idx]];
+      if (!sc) return;
+      if (typeof Sfx !== 'undefined') Sfx.nav();
+      if (sc.finish) _finish(); else _scene(_idx + 1);
     },
     skip: function() {
       // Le choix de race/classe/genre/nom vient déjà de l'écran de sélection
@@ -6966,6 +7003,23 @@ function csOnNameInput() {
   csRefreshNextBtn();
 }
 
+// Ligne de stats compacte affichée sur chaque carte race/classe, pour qu'on
+// voie ce que change chaque choix sans devoir déjà l'avoir sélectionné.
+// signed=true : valeurs relatives avec +/- et couleur (deltas de race,
+// classe pas encore connue). signed=false : valeurs absolues déjà
+// combinées avec la race choisie (étape classe).
+function csStatLine(pairs, signed) {
+  var parts = pairs.map(function(p){
+    var label = p[0], v = p[1];
+    if (signed) {
+      var cls = v>0?'up':v<0?'down':'';
+      return '<span class="'+cls+'">'+label+' '+(v>0?'+':'')+v+'</span>';
+    }
+    return '<span>'+label+' '+v+'</span>';
+  });
+  return '<div class="cs-statline">'+parts.join('<span class="cs-statsep">·</span>')+'</div>';
+}
+
 function csRenderBody() {
   var body = document.getElementById('cs-body');
   var step = CS_STEPS[_csStep];
@@ -6988,10 +7042,12 @@ function csRenderBody() {
         '<div class="cs-rule"></div>'+
         '<div class="cs-name">'+(CGE_LANG==='en'&&r.nameEn?r.nameEn:r.name)+'</div>'+
         '<div class="cs-sub">'+(CGE_LANG==='en'&&r.subEn?r.subEn:r.sub)+'</div>'+
+        csStatLine([['PV',r.dhp],['ATQ',r.datk],['DEF',r.ddef]], true)+
         '<div class="cs-bonus">'+(CGE_LANG==='en'&&r.bonusEn?r.bonusEn:r.bonus)+'</div></div>';
     });
     html += '</div>';
   } else if (step === 'classe') {
+    var pickedRace = RACES.find(function(x){ return x.id===State.race; }) || RACES[0];
     html += '<div class="cs-step-eyebrow">'+(CGE_LANG==='en'?'Step 3 / 4':'Étape 3 / 4')+'</div>'+
       '<div class="cs-step-title">'+(CGE_LANG==='en'?'Your path':'Ta voie')+'</div>'+
       '<div class="cs-step-sub">'+(CGE_LANG==='en'?'How will you face the Crypts?':'Comment affrontes-tu les Cryptes ?')+'</div>'+
@@ -7001,6 +7057,7 @@ function csRenderBody() {
         '<div class="cs-ico-svg">'+classIconSvg(c.id)+'</div>'+
         '<div class="cs-name">'+(CGE_LANG==='en'&&c.nameEn?c.nameEn:c.name)+'</div>'+
         '<div class="cs-sub">'+(CGE_LANG==='en'&&c.subEn?c.subEn:c.sub)+'</div>'+
+        csStatLine([['PV',c.hp+pickedRace.dhp],['ATQ',c.atk+pickedRace.datk],['DEF',c.def+pickedRace.ddef]], false)+
         '<div class="cs-bonus">'+(CGE_LANG==='en'&&c.speEn?c.speEn:c.spe)+'</div></div>';
     });
     html += '</div>';
