@@ -9916,16 +9916,19 @@ var Tutorial = (function(){
       }
     },
     isGatedNow: _isGated,
-    // Le niveau 2 ne force plus le retour vers Marta : ça verrouillait la
-    // navigation (phase 'return', strict) alors que le joueur n'avait pas
-    // forcément les 50 pièces requises, le laissant bloqué sans pouvoir
-    // continuer à explorer pour les réunir. On ne déclenche le retour que
-    // si l'or est réellement suffisant ; sinon, simple rappel de l'objectif,
-    // sans toucher au verrouillage (l'exploration reste libre).
+    // Le niveau 2 ne déclenche plus jamais le retour strict directement :
+    // XP (et donc le niveau) peut monter n'importe où, y compris en plein
+    // donjon très loin de l'auberge — forcer _enterReturn() ici verrouillait
+    // aussitôt la navigation (phase 'return', stricte) au milieu d'un run,
+    // ce qui se vivait comme une téléportation forcée vers l'auberge et
+    // redémarrait la séquence "va voir Marta" à zéro. Le retour ne démarre
+    // désormais que via notifyNav, quand le joueur est déjà de lui-même de
+    // retour à l'auberge/en ville (voir plus haut) — jamais en cours de
+    // route. Ici, on se contente d'un rappel textuel si l'or n'y est pas
+    // encore ; s'il y est déjà, le prochain retour en ville le déclenchera.
     maybeFinishAtLevel: function(level) {
       if (level < 2 || _phase !== 'explore') return;
-      if ((State.gold||0) >= 50) _enterReturn();
-      else _setBanner(EXPLORE_LEVEL_HINT_TEXT);
+      if ((State.gold||0) < 50) _setBanner(EXPLORE_LEVEL_HINT_TEXT);
     },
   };
 })();
