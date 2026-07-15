@@ -4528,8 +4528,23 @@ var HERO_PORTRAITS = {
   'Nain|Homme':'hero-nain-homme',     'Nain|Femme':'hero-nain-femme',
   'Orc|Homme':'hero-orc-homme',       'Orc|Femme':'hero-orc-femme',
 };
-function heroPortraitFile(race, gender) {
-  return HERO_PORTRAITS[(race||'Humain') + '|' + (gender||'Homme')] || null;
+// Variantes par classe, quand l'illustration existe (sinon on retombe sur
+// le portrait générique race+genre ci-dessus). Clé: race|genre|classe.
+var HERO_PORTRAITS_BY_CLASS = {
+  'Humain|Homme|Guerrier':'hero-humain-homme',
+  'Humain|Homme|Mage':'hero-humain-homme-mage',
+  'Humain|Homme|Chasseur':'hero-humain-homme-chasseur',
+  'Humain|Homme|Assassin':'hero-humain-homme-assassin',
+  'Humain|Homme|Prêtre':'hero-humain-homme-pretre',
+  'Humain|Homme|Barbare':'hero-humain-homme-barbare',
+};
+function heroPortraitFile(race, gender, cls) {
+  race = race || 'Humain'; gender = gender || 'Homme';
+  if (cls) {
+    var byClass = HERO_PORTRAITS_BY_CLASS[race + '|' + gender + '|' + cls];
+    if (byClass) return byClass;
+  }
+  return HERO_PORTRAITS[race + '|' + gender] || null;
 }
 var CLASSES = [
   { id:'Guerrier', icon:'⚔',  name:'Guerrier', nameEn:'Warrior',  sub:'Solide',   subEn:'Sturdy',   hp:100, atk:12, def:6,  spe:'Bouclier',     speEn:'Shield' },
@@ -6986,7 +7001,7 @@ function tick(){
 function updateCharSelectPortrait() {
   var img = document.getElementById('cs-portrait-img');
   if (!img) return;
-  var file = heroPortraitFile(State.race, State.gender);
+  var file = heroPortraitFile(State.race, State.gender, State.cls);
   if (file) img.src = './images/' + file + '.webp';
 }
 
@@ -7057,6 +7072,7 @@ function selectRace(id) {
 
 function selectClass(id) {
   State.cls = id;
+  updateCharSelectPortrait();
   document.querySelectorAll('.class-card').forEach(function(c){
     c.classList.toggle('selected', c.dataset.id === id);
   });
@@ -12841,7 +12857,7 @@ var EquipScreen = (function() {
     var img = document.getElementById('eq-doll-portrait');
     var center = document.getElementById('eq-doll-center');
     if (!img || !center) return;
-    var file = heroPortraitFile(State.race, State.gender);
+    var file = heroPortraitFile(State.race, State.gender, State.cls);
     if (file) {
       img.src = './images/' + file + '.webp';
       img.alt = (State.race||'') + ' ' + (State.gender||'');
