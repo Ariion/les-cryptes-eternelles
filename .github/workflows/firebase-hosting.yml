@@ -29,7 +29,15 @@ jobs:
           projectId: cryptes
           channelId: live
 
+      # continue-on-error: le compte de service FIREBASE_SERVICE_ACCOUNT_CRYPTES
+      # n'a pour l'instant que le rôle Hosting côté IAM Google Cloud, pas le
+      # rôle "Firebase Rules Admin" nécessaire pour publier firestore.rules.
+      # Tant que ce rôle n'est pas ajouté manuellement (IAM & Admin > compte
+      # de service > Ajouter un rôle > Firebase Rules Admin), cette étape
+      # échoue avec une 403 — on ne bloque pas le déploiement du site pour
+      # autant. Une fois le rôle ajouté, cette étape réussira d'elle-même.
       - name: Deploy Firestore rules
+        continue-on-error: true
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
         run: |
