@@ -6840,18 +6840,40 @@ function T(key) { return LangSystem.t(key); }
 var screens = {};
 document.querySelectorAll('.screen').forEach(function(s){ screens[s.id]=s; });
 
+var NAV_MENU_SCREENS = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1,'story-intro':1};
+// Écrans où un rechargement (mise à jour du Service Worker, fusion cloud
+// différée...) serait le plus perturbateur : en plein combat ou en train
+// d'explorer un donjon. Partout ailleurs (auberge, ville, boutique, loot,
+// repos, talents...) tout vient déjà d'être sauvegardé par le changement
+// d'écran lui-même, donc un rechargement n'y coûte rien de réel — seule
+// l'interruption visuelle en pleine action mérite d'être évitée.
+var NAV_UNSAFE_RELOAD_SCREENS = {'combat-screen':1, 'dungeon-map':1};
+
+// Rechargement différé après mise à jour du Service Worker : au lieu de
+// recharger la page dès qu'une nouvelle version est installée (ce qui
+// pouvait couper un combat ou une exploration de donjon en cours), on
+// attend que le joueur ait quitté ces écrans. _maybeReloadForUpdate() est
+// rappelée à chaque navigation ; le rechargement n'a donc lieu qu'au
+// prochain écran qui n'est ni un combat ni un donjon, jamais en pleine
+// action.
+var _swUpdatePending = false;
+function _maybeReloadForUpdate() {
+  if (_swUpdatePending && !NAV_UNSAFE_RELOAD_SCREENS[Nav.current]) window.location.reload();
+}
+
 var Nav = {
   current: null,
   go: function(id, skipFade) {
     var prev = Nav.current;
     if (prev === id) return;
     Nav.current = id;
+    _maybeReloadForUpdate();
+    if (!NAV_UNSAFE_RELOAD_SCREENS[id] && typeof CloudSync !== 'undefined' && CloudSync.flushPendingMerge) CloudSync.flushPendingMerge();
     if (typeof Tutorial !== 'undefined') Tutorial.notifyNav(id);
     if (typeof HUD !== 'undefined') { HUD.update(id); HUD.updateGold(); }
     if (typeof HubNav !== 'undefined') HubNav.update(id);
     // Auto-save à chaque changement d'écran si un run est actif
-    var menuScreens = {'main-menu':1,'title-screen':1,'char-select':1,'profiles-screen':1,'gameover-screen':1,'story-intro':1};
-    if (!menuScreens[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
+    if (!NAV_MENU_SCREENS[id] && typeof State !== 'undefined' && State.hp && typeof State.saveRun === 'function') {
       State.saveRun();
     }
     if (prev && typeof Sfx !== 'undefined') Sfx.nav();
@@ -14196,8 +14218,14 @@ var CloudSync = (function() {
     _db.collection('users').doc(user.uid).collection('data').doc('profiles').get().then(function(doc) {
       var cloud = (doc.exists && doc.data() && Array.isArray(doc.data().profiles)) ? doc.data().profiles : [];
       var cloudActive = (doc.exists && doc.data()) ? doc.data().activeId : null;
-      if (!cloud.length) { _pushProfiles(); if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render(); return; }
+      if (!cloud.length) { _applyMergeWhenSafe(function(){ _pushProfiles(); }); return; }
 
+      // Le calcul de la fusion peut se faire tout de suite (lecture seule) ;
+      // seule l'écriture dans localStorage — qui touche la liste de profils
+      // et le pointeur "actif" partagés avec la partie en cours — est
+      // différée jusqu'à un écran sûr, pour ne jamais interférer avec un
+      // run en cours (donjon, combat...) si la réponse Firestore arrive
+      // pendant que le joueur est déjà en pleine aventure.
       var local = ProfileManager.getAll();
       var byId = {};
       local.forEach(function(p){ if (p && p.id) byId[p.id] = p; });
@@ -14208,17 +14236,39 @@ var CloudSync = (function() {
         if (!ex || (p.lastPlayed||0) >= (ex.lastPlayed||0)) byId[p.id] = p;
       });
       var merged = Object.keys(byId).map(function(k){ return byId[k]; });
-      localStorage.setItem('cge_profiles', Vault.pack(merged));
 
-      // Garde l'actif local s'il existe encore, sinon retombe sur celui du cloud
-      var activeId = localStorage.getItem('cge_active');
-      if ((!activeId || !merged.some(function(p){ return p.id===activeId; })) && cloudActive) {
-        localStorage.setItem('cge_active', cloudActive);
-      }
-      // Repousse l'état fusionné pour faire converger cloud et local
-      _pushProfiles();
-      if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render();
+      _applyMergeWhenSafe(function(){
+        localStorage.setItem('cge_profiles', Vault.pack(merged));
+        // Garde l'actif local s'il existe encore, sinon retombe sur celui du cloud
+        var activeId = localStorage.getItem('cge_active');
+        if ((!activeId || !merged.some(function(p){ return p.id===activeId; })) && cloudActive) {
+          localStorage.setItem('cge_active', cloudActive);
+        }
+        // Repousse l'état fusionné pour faire converger cloud et local
+        _pushProfiles();
+      });
     }).catch(function(e){ console.warn('[CGE] Firestore read error:', e); });
+  }
+
+  // Applique `fn` immédiatement si le joueur est sur un écran sûr (pas de
+  // run en cours), sinon la reporte au prochain retour à un tel écran —
+  // accrochée à Nav.go via un sondage léger, exactement comme le
+  // rechargement différé du Service Worker (_maybeReloadForUpdate).
+  var _pendingMergeFn = null;
+  function _applyMergeWhenSafe(fn) {
+    if (typeof Nav === 'undefined' || typeof NAV_UNSAFE_RELOAD_SCREENS === 'undefined' || !NAV_UNSAFE_RELOAD_SCREENS[Nav.current]) {
+      fn();
+      if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render();
+      return;
+    }
+    _pendingMergeFn = fn;
+  }
+  function _flushPendingMerge() {
+    if (!_pendingMergeFn) return;
+    var fn = _pendingMergeFn;
+    _pendingMergeFn = null;
+    fn();
+    if (typeof ProfilesScreen !== 'undefined') ProfilesScreen.render();
   }
 
   function _onSignOut() {
@@ -14298,6 +14348,7 @@ var CloudSync = (function() {
   return {
     init:init, signIn:signIn, signOut:signOut, getUser:getUser, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI,
     pushLeaderboardEntry:pushLeaderboardEntry, fetchLeaderboard:fetchLeaderboard,
+    flushPendingMerge:_flushPendingMerge,
   };
 })();
 
@@ -14525,10 +14576,15 @@ window.addEventListener('load', function(){
         var sw = reg.installing;
         sw.onstatechange = function() {
           if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-            // Ne pas recharger en pleine partie
-            if (!State || !State._inCombat) {
-              window.location.reload();
-            }
+            // Ne recharge jamais en pleine aventure : _maybeReloadForUpdate()
+            // n'agit que sur un écran sûr (menu, pas de run actif), et sera
+            // rappelée à chaque navigation jusqu'à ce que ce soit le cas —
+            // un simple "!State._inCombat" laissait passer un rechargement
+            // silencieux en plein donjon, entre deux combats, faisant perdre
+            // or/XP non encore sauvegardés et donnant l'impression que le
+            // personnage venait d'être recréé.
+            _swUpdatePending = true;
+            _maybeReloadForUpdate();
           }
         };
       };
@@ -14539,7 +14595,7 @@ window.addEventListener('load', function(){
       // avoir à vider le cache ou réinstaller l'app.
       reg.update();
       document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible') reg.update();
+        if (document.visibilityState === 'visible') { reg.update(); _maybeReloadForUpdate(); }
       });
     }).catch(function(e){ console.warn('[CGE] SW:', e); });
   }
