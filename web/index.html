@@ -5313,6 +5313,7 @@ var Music = (function(){
 var ProfileManager = {
   KEY: 'cge_profiles',
   ACTIVE_KEY: 'cge_active',
+  _myActiveId: undefined, // undefined = pas encore lu depuis localStorage (une seule fois par onglet)
 
   getAll: function() {
     var u = Vault.unpack(localStorage.getItem(this.KEY));
@@ -5322,8 +5323,23 @@ var ProfileManager = {
     try { localStorage.setItem(this.KEY, Vault.pack(list)); } catch(e) {}
     if (typeof CloudSync !== 'undefined') CloudSync.syncProfiles(list, this.getActiveId());
   },
-  getActiveId: function() { return localStorage.getItem(this.ACTIVE_KEY)||null; },
-  setActiveId: function(id) { localStorage.setItem(this.ACTIVE_KEY, id); },
+  // Lit cge_active UNE SEULE FOIS par onglet puis renvoie toujours cette
+  // valeur mise en cache — jamais une relecture ultérieure du localStorage.
+  // cge_active est une clé PARTAGÉE par tous les onglets du même navigateur :
+  // si un second onglet (perso précédent resté ouvert, PWA repris en tâche
+  // de fond sur mobile...) joue un AUTRE personnage en parallèle, il peut la
+  // réécrire à tout moment. Sans ce cache, updateActive() écrirait alors
+  // silencieusement la progression de CE personnage-ci dans la case de
+  // l'AUTRE (et réciproquement) — c'est le mécanisme derrière le bug où
+  // niveau/quêtes semblaient revenir à zéro en pleine partie.
+  getActiveId: function() {
+    if (this._myActiveId === undefined) this._myActiveId = localStorage.getItem(this.ACTIVE_KEY) || null;
+    return this._myActiveId;
+  },
+  setActiveId: function(id) {
+    this._myActiveId = id;
+    localStorage.setItem(this.ACTIVE_KEY, id);
+  },
   getActive: function() {
     var id = this.getActiveId();
     if (!id) return null;
@@ -5353,6 +5369,13 @@ var ProfileManager = {
     list[idx].lastPlayed = Date.now();
     if (State.level) list[idx].level = State.level||1;
     this.saveAll(list);
+    // Réaffirme cge_active vers NOTRE personnage à chaque sauvegarde réelle :
+    // cge_active est une clé PARTAGÉE par tous les onglets du même
+    // navigateur. Si un second onglet resté ouvert (ancien perso, PWA
+    // repris en tâche de fond...) l'a changée entre-temps, l'onglet
+    // réellement en train d'être joué la reprend presque à chaque action —
+    // ce qui réduit fortement la fenêtre de collision entre personnages.
+    localStorage.setItem(this.ACTIVE_KEY, id);
   },
 
   activateProfile: function(id) {
@@ -14530,7 +14553,11 @@ var CloudSync = (function() {
         if (!cloud.length) { _pushProfiles(); return; }
 
         var local = ProfileManager.getAll();
-        var activeId = localStorage.getItem('cge_active');
+        // ProfileManager.getActiveId() (mis en cache par onglet) plutôt qu'une
+        // relecture brute de localStorage : reflète TOUJOURS le personnage que
+        // CET onglet joue, même si un autre onglet/appareil du même compte a
+        // entre-temps réécrit cge_active pour un autre personnage.
+        var activeId = ProfileManager.getActiveId();
         var byId = {};
         local.forEach(function(p){ if (p && p.id) byId[p.id] = p; });
         cloud.forEach(function(p){
@@ -14586,7 +14613,7 @@ var CloudSync = (function() {
   function _pushProfiles() {
     if (!_user || !_db) return;
     var profiles = ProfileManager.getAll();
-    var activeId = localStorage.getItem('cge_active') || null;
+    var activeId = ProfileManager.getActiveId();
     _db.collection('users').doc(_user.uid).collection('data').doc('profiles').set({
       profiles: profiles,
       activeId: activeId,
