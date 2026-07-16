@@ -33,5 +33,35 @@ service cloud.firestore {
         && (!('talents' in request.resource.data) || request.resource.data.talents is map)
         && (!('equipped' in request.resource.data) || request.resource.data.equipped is map);
     }
+
+    // Chat global — un joueur connecté peut lire tous les messages et en
+    // écrire de nouveaux, mais jamais les modifier ni les supprimer
+    // (messages immuables, pas d'édition a posteriori). hasOnly() +
+    // bornes de taille limitent l'abus ; le filtre anti-spam/insultes
+    // réel vit côté client (le serveur ne fait que borner la forme).
+    match /chat/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid','name','text','createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 24
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 240
+        && request.resource.data.createdAt == request.time
+        && ( !exists(/databases/$(database)/documents/chatMeta/$(request.auth.uid))
+             || request.time > get(/databases/$(database)/documents/chatMeta/$(request.auth.uid)).data.lastMessageAt + duration.value(2, 's') );
+      allow update, delete: if false;
+    }
+
+    // Horodatage du dernier message envoyé par joueur — sert uniquement
+    // au throttle serveur ci-dessus (défense en profondeur derrière le
+    // cooldown déjà appliqué côté client).
+    match /chatMeta/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['lastMessageAt'])
+        && request.resource.data.lastMessageAt == request.time;
+    }
   }
 }
