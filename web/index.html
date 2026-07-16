@@ -1601,7 +1601,7 @@ canvas#particles {
   color: rgba(201,165,80,0.55); display: none;
 }
 #gh-btns { display: flex; gap: 6px; }
-#gh-btn-menu, #gh-btn-quests, #gh-btn-carnet, #gh-btn-tuto {
+#gh-btn-menu, #gh-btn-quests, #gh-btn-carnet, #gh-btn-chat, #gh-btn-tuto {
   display: flex; align-items: center; gap: 4px;
   background: rgba(201,165,80,0.1); border: 1px solid rgba(201,165,80,0.3);
   color: #C9A550; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
@@ -1714,6 +1714,54 @@ canvas#particles {
 .carnet-deduction b { color: #C9A550; font-family: 'Cinzel', serif; }
 #gh-carnet-close {
   margin-top: 8px; background: transparent; border: 1px solid rgba(201,165,80,0.3);
+  color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
+  border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
+}
+/* Chat modal (discussion entre joueurs) */
+#gh-chat-modal {
+  display: none; position: absolute; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.75); align-items: center; justify-content: center;
+}
+#gh-chat-modal.show { display: flex; }
+#gh-chat-content {
+  background: #0e0a05; border: 1px solid rgba(201,165,80,0.3);
+  border-radius: 12px; padding: 20px; width: 84%; max-height: 78%; height: 78%;
+  overflow: hidden; display: flex; flex-direction: column; gap: 10px;
+}
+#gh-chat-title { font-family: 'Cinzel Decorative', serif; color: #C9A550; font-size: 15px; text-align: center; flex-shrink: 0; }
+#gh-chat-signedout { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+#gh-chat-signedout.show { display: flex; }
+#gh-chat-signedout-text { font-family: 'Crimson Text', serif; font-size: 13px; color: rgba(237,232,223,0.65); padding: 0 10px; }
+#gh-chat-signin-btn {
+  background: rgba(0,212,232,0.12); border: 1px solid rgba(0,212,232,0.4); color: #00D4E8;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px;
+  border-radius: 8px; padding: 10px 18px; cursor: pointer;
+}
+#gh-chat-body { display: none; flex-direction: column; flex: 1; min-height: 0; gap: 8px; }
+#gh-chat-body.show { display: flex; }
+#gh-chat-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 6px; padding-right: 2px; }
+.chat-msg { display: flex; flex-direction: column; max-width: 82%; padding: 7px 11px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(201,165,80,0.15); align-self: flex-start; }
+.chat-msg.chat-msg-mine { align-self: flex-end; background: rgba(0,212,232,0.08); border-color: rgba(0,212,232,0.3); }
+.chat-msg-name { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; color: #C9A550; }
+.chat-msg.chat-msg-mine .chat-msg-name { color: #00D4E8; }
+.chat-msg-text { font-family: 'Crimson Text', serif; font-size: 13px; color: #EDE8DF; word-break: break-word; margin-top: 1px; }
+.chat-msg-empty { text-align: center; padding: 20px 16px; font-family: 'Crimson Text', serif; font-style: italic; font-size: 12.5px; color: rgba(201,165,80,0.4); }
+#gh-chat-warn { display: none; font-family: 'Crimson Text', serif; font-size: 11.5px; color: #ff8a8a; text-align: center; flex-shrink: 0; }
+#gh-chat-warn.show { display: block; }
+#gh-chat-inputrow { display: flex; gap: 8px; flex-shrink: 0; }
+#gh-chat-input {
+  flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,165,80,0.25);
+  border-radius: 8px; padding: 9px 11px; color: #EDE8DF; font-family: 'Crimson Text', serif; font-size: 13px;
+}
+#gh-chat-input:focus { outline: none; border-color: rgba(0,212,232,0.5); }
+#gh-chat-send {
+  background: rgba(0,212,232,0.12); border: 1px solid rgba(0,212,232,0.4); color: #00D4E8;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px;
+  border-radius: 8px; padding: 0 14px; cursor: pointer; white-space: nowrap;
+}
+#gh-chat-send:disabled { opacity: 0.4; cursor: default; }
+#gh-chat-close {
+  margin-top: 0; background: transparent; border: 1px solid rgba(201,165,80,0.3); flex-shrink: 0;
   color: rgba(201,165,80,0.6); font-family: 'Cinzel', serif; font-size: 10px;
   border-radius: 6px; padding: 8px; cursor: pointer; letter-spacing: 1px;
 }
@@ -1938,6 +1986,7 @@ canvas#particles {
 body.tutorial-active #gh-btn-menu,
 body.tutorial-active #gh-btn-quests,
 body.tutorial-active #gh-btn-carnet,
+body.tutorial-active #gh-btn-chat,
 body.tutorial-active #gh-btn-tuto { display:none !important; }
 body.tutorial-strict .screen.active .hotspot,
 body.tutorial-strict .screen.active .npc-hotspot,
@@ -3380,6 +3429,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <button id="gh-btn-tuto"   onclick="Tutorial.restart()">🎓 Tuto</button>
           <button id="gh-btn-quests" onclick="HUD.showQuests()">📜 Quêtes<span id="gh-quest-badge" class="gh-btn-dot"></span></button>
           <button id="gh-btn-carnet" onclick="CarnetEnquete.open()">🔍 Enquête</button>
+          <button id="gh-btn-chat" onclick="Chat.open()">💬 Chat</button>
         </div>
       </div>
       <div id="gh-row2">
@@ -3423,6 +3473,25 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="gh-carnet-title">🔍 Carnet d'Enquête</div>
         <div id="gh-carnet-list"></div>
         <button id="gh-carnet-close" onclick="document.getElementById('gh-carnet-modal').classList.remove('show')">Fermer</button>
+      </div>
+    </div>
+    <!-- Modal Chat (discussion entre joueurs) -->
+    <div id="gh-chat-modal">
+      <div id="gh-chat-content">
+        <div id="gh-chat-title">💬 <span data-i18n="chat.title">Discussion</span></div>
+        <div id="gh-chat-signedout">
+          <div id="gh-chat-signedout-text" data-i18n="chat.signin.needed">Connecte-toi avec Google pour discuter avec les autres joueurs.</div>
+          <button id="gh-chat-signin-btn" onclick="CloudSync.signIn()" data-i18n="chat.signin.btn">Se connecter</button>
+        </div>
+        <div id="gh-chat-body">
+          <div id="gh-chat-list"></div>
+          <div id="gh-chat-warn"></div>
+          <div id="gh-chat-inputrow">
+            <input id="gh-chat-input" type="text" maxlength="240" data-i18n-placeholder="chat.input.placeholder" placeholder="Écris un message..." onkeydown="if(event.key==='Enter')Chat.send();" />
+            <button id="gh-chat-send" onclick="Chat.send()" data-i18n="chat.send">Envoyer</button>
+          </div>
+        </div>
+        <button id="gh-chat-close" onclick="Chat.close()" data-i18n="misc.close">Fermer</button>
       </div>
     </div>
     <canvas id="particles"></canvas>
@@ -6170,6 +6239,15 @@ var STRINGS = {
     'tal.detail.upgrade': 'Améliorer (✦{n})',
     'tal.detail.locked.prereq': 'Débloque d\'abord : {n}',
     'tal.detail.locked.points': 'Pas assez de points',
+    'chat.title': 'Discussion',
+    'chat.signin.needed': 'Connecte-toi avec Google pour discuter avec les autres joueurs.',
+    'chat.signin.btn': 'Se connecter',
+    'chat.input.placeholder': 'Écris un message...',
+    'chat.send': 'Envoyer',
+    'chat.empty': 'Aucun message pour l\'instant. Sois le premier à écrire !',
+    'chat.warn.cooldown': 'Attends un instant avant d\'envoyer un autre message.',
+    'chat.warn.blocked': 'Message bloqué : merci de rester respectueux.',
+    'chat.warn.spam': 'Message bloqué : évite les répétitions.',
     'gld.title': 'Guilde',
     'gld.rank': 'Rang Social',
     'gld.ach': 'Succès débloqués',
@@ -6632,6 +6710,15 @@ var STRINGS = {
     'tal.detail.upgrade': 'Upgrade (✦{n})',
     'tal.detail.locked.prereq': 'Unlock first: {n}',
     'tal.detail.locked.points': 'Not enough points',
+    'chat.title': 'Chat',
+    'chat.signin.needed': 'Sign in with Google to chat with other players.',
+    'chat.signin.btn': 'Sign in',
+    'chat.input.placeholder': 'Type a message...',
+    'chat.send': 'Send',
+    'chat.empty': 'No messages yet. Be the first to write something!',
+    'chat.warn.cooldown': 'Wait a moment before sending another message.',
+    'chat.warn.blocked': 'Message blocked: please stay respectful.',
+    'chat.warn.spam': 'Message blocked: avoid repetition.',
     'gld.title': 'Guild',
     'gld.rank': 'Social Rank',
     'gld.ach': 'Achievements unlocked',
@@ -14179,6 +14266,164 @@ var CarnetEnquete = {
   }
 };
 
+// ── CHAT — discussion en temps réel entre joueurs ──────────────────
+// Modération : le serveur (firestore.rules) ne borne que la FORME des
+// messages (taille, champs, cooldown minimal 2s) — le vrai filtre
+// anti-spam / anti-insultes tourne ici, côté client, avant tout envoi.
+var Chat = (function(){
+  var _unsub = null;
+  var _lastSendAt = 0;
+  var _lastText = '';
+  var SEND_COOLDOWN_MS = 3000;
+
+  // Liste non exhaustive des insultes/injures les plus courantes (FR/EN) —
+  // un filtre parfait n'existe pas, l'objectif est de dissuader l'abus
+  // évident, pas de traquer chaque contournement possible.
+  var BLOCKLIST = [
+    'connard','connasse','enculé','enculée','enfoiré','enfoirée','pute','putain',
+    'salope','fdp','ntm','nique ta mere','nique ta mère','va te faire foutre',
+    'abruti','debile mental','débile mental','sale con','batard','bâtard',
+    'ta gueule','ferme ta gueule','sous merde',
+    'fuck','shit','bitch','asshole','cunt','faggot','nigger','nigga','retard',
+    'whore','bastard','dumbass','motherfucker',
+  ];
+
+  function _esc(s) {
+    return (s==null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function _containsBlocked(text) {
+    var norm = text.toLowerCase().replace(/[^a-z0-9àâäéèêëïîôöùûüç]+/gi, ' ');
+    for (var i=0; i<BLOCKLIST.length; i++) {
+      if (norm.indexOf(BLOCKLIST[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  function _isSpammy(text) {
+    if (/(.)\1{6,}/.test(text)) return true;
+    if (text === _lastText) return true;
+    return false;
+  }
+
+  function _refreshAuthUI() {
+    var user = (typeof CloudSync !== 'undefined') ? CloudSync.getUser() : null;
+    var signedOut = document.getElementById('gh-chat-signedout');
+    var body = document.getElementById('gh-chat-body');
+    if (signedOut) signedOut.classList.toggle('show', !user);
+    if (body) body.classList.toggle('show', !!user);
+  }
+
+  function _render(rows) {
+    var list = document.getElementById('gh-chat-list');
+    if (!list) return;
+    var user = (typeof CloudSync !== 'undefined') ? CloudSync.getUser() : null;
+    if (!rows.length) {
+      list.innerHTML = '<div class="chat-msg-empty">'+T('chat.empty')+'</div>';
+      return;
+    }
+    var wasAtBottom = (list.scrollTop + list.clientHeight >= list.scrollHeight - 30);
+    list.innerHTML = rows.map(function(m){
+      var mine = !!(user && m.uid === user.uid);
+      return '<div class="chat-msg'+(mine?' chat-msg-mine':'')+'">'
+        + '<div class="chat-msg-name">'+_esc(m.name||'?')+'</div>'
+        + '<div class="chat-msg-text">'+_esc(m.text||'')+'</div>'
+      + '</div>';
+    }).join('');
+    if (wasAtBottom) list.scrollTop = list.scrollHeight;
+  }
+
+  function _subscribe() {
+    if (_unsub) return;
+    if (typeof CloudSync === 'undefined' || !CloudSync.getDb) return;
+    var db = CloudSync.getDb();
+    if (!db) return;
+    _unsub = db.collection('chat').orderBy('createdAt', 'desc').limit(50)
+      .onSnapshot(function(snap){
+        var rows = [];
+        snap.forEach(function(doc){ rows.push(doc.data()); });
+        rows.reverse();
+        _render(rows);
+      }, function(e){ console.warn('[CGE] Chat onSnapshot error:', e); });
+  }
+
+  function _unsubscribe() {
+    if (_unsub) { _unsub(); _unsub = null; }
+  }
+
+  var _warnTimer = null;
+  function _warn(msg) {
+    var el = document.getElementById('gh-chat-warn');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(_warnTimer);
+    _warnTimer = setTimeout(function(){ el.classList.remove('show'); }, 3000);
+  }
+
+  function open() {
+    var modal = document.getElementById('gh-chat-modal');
+    if (modal) modal.classList.add('show');
+    _refreshAuthUI();
+    var user = (typeof CloudSync !== 'undefined') ? CloudSync.getUser() : null;
+    if (user) _subscribe();
+  }
+
+  function close() {
+    var modal = document.getElementById('gh-chat-modal');
+    if (modal) modal.classList.remove('show');
+    _unsubscribe();
+  }
+
+  function onAuthChange() {
+    var modal = document.getElementById('gh-chat-modal');
+    if (!modal || !modal.classList.contains('show')) return;
+    _refreshAuthUI();
+    var user = (typeof CloudSync !== 'undefined') ? CloudSync.getUser() : null;
+    if (user) _subscribe(); else _unsubscribe();
+  }
+
+  function send() {
+    var input = document.getElementById('gh-chat-input');
+    if (!input) return;
+    var text = (input.value||'').trim();
+    if (!text) return;
+    var user = (typeof CloudSync !== 'undefined') ? CloudSync.getUser() : null;
+    if (!user) return;
+
+    var now = Date.now();
+    if (now - _lastSendAt < SEND_COOLDOWN_MS) { _warn(T('chat.warn.cooldown')); return; }
+    if (text.length > 240) text = text.slice(0, 240);
+    if (_containsBlocked(text)) { _warn(T('chat.warn.blocked')); return; }
+    if (_isSpammy(text)) { _warn(T('chat.warn.spam')); return; }
+
+    if (typeof CloudSync === 'undefined' || !CloudSync.getDb) return;
+    var db = CloudSync.getDb();
+    if (!db) return;
+
+    var name = (typeof State !== 'undefined' && State.name && State.name !== 'Aventurier') ? State.name : (user.displayName || 'Aventurier');
+    name = String(name).slice(0, 24);
+
+    _lastSendAt = now;
+    _lastText = text;
+    input.value = '';
+
+    var batch = db.batch();
+    var msgRef = db.collection('chat').doc();
+    batch.set(msgRef, {
+      uid: user.uid,
+      name: name,
+      text: text,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    var metaRef = db.collection('chatMeta').doc(user.uid);
+    batch.set(metaRef, { lastMessageAt: firebase.firestore.FieldValue.serverTimestamp() });
+    batch.commit().catch(function(e){ console.warn('[CGE] Chat send error:', e); });
+  }
+
+  return { open:open, close:close, send:send, onAuthChange:onAuthChange };
+})();
+
 var Embers = (function(){
   var timers = [];
   function spawnEmber(container) {
@@ -14239,6 +14484,7 @@ var CloudSync = (function() {
           _onSignOut();
         }
         _renderAccountUI();
+        if (typeof Chat !== 'undefined' && Chat.onAuthChange) Chat.onAuthChange();
       });
     } catch(e) { console.warn('[CGE] Firebase init error:', e); }
   }
@@ -14255,6 +14501,7 @@ var CloudSync = (function() {
   }
 
   function getUser() { return _user; }
+  function getDb() { return _db; }
 
   function _onSignIn(user) {
     // Fusionne cloud + local SANS écraser : pour chaque profil (par id) on garde
@@ -14391,7 +14638,7 @@ var CloudSync = (function() {
   }
 
   return {
-    init:init, signIn:signIn, signOut:signOut, getUser:getUser, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI,
+    init:init, signIn:signIn, signOut:signOut, getUser:getUser, getDb:getDb, syncProfiles:syncProfiles, renderAccountUI:_renderAccountUI,
     pushLeaderboardEntry:pushLeaderboardEntry, fetchLeaderboard:fetchLeaderboard,
     flushPendingMerge:_flushPendingMerge,
   };
