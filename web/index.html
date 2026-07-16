@@ -13502,13 +13502,18 @@ var InnRoom = {
       var visionPending = !(Meta.storyFlags && Meta.storyFlags['vision1']);
       if (visionPending) State._martaWelcomePending = true;
       else setTimeout(InnRoom._showMartaWelcome, 600);
-    } else if (!Meta.tutorialPhase) {
+    } else if (!Meta.tutorialPhase && !(Meta.completedQuests||{})['marta_debt'] && (State.level||1) <= 1) {
       // Filet de sécurité : sur mobile, la page peut recharger en pleine
       // séquence d'accueil (mise en arrière-plan, mise à jour du service
       // worker, mémoire faible...) et perdre les indicateurs volatils
       // ci-dessus en cours de route, bloquant le tutoriel à "jamais proposé"
       // pour toujours. On relance la scène là où elle a pu s'interrompre à
       // chaque nouvelle visite de l'auberge, tant qu'elle n'a pas abouti.
+      // Double garde-fou : ne JAMAIS rejouer "l'accueil de Marta" (qui remet
+      // la quête à zéro) sur un personnage qui a déjà payé sa dette ou déjà
+      // dépassé le niveau 1 — même si tutorialPhase redevient faux par un
+      // autre bug (ex. fusion de profils entre personnages du même compte),
+      // ce garde-fou empêche la régression la plus visible et la plus grave.
       if (!(Meta.storyFlags && Meta.storyFlags['vision1'])) {
         State._martaWelcomePending = true;
         setTimeout(function(){ if (typeof Story !== 'undefined') Story.showVision('vision1'); }, 700);
@@ -14510,29 +14515,40 @@ var CloudSync = (function() {
     _db.collection('users').doc(user.uid).collection('data').doc('profiles').get().then(function(doc) {
       var cloud = (doc.exists && doc.data() && Array.isArray(doc.data().profiles)) ? doc.data().profiles : [];
       var cloudActive = (doc.exists && doc.data()) ? doc.data().activeId : null;
-      if (!cloud.length) { _applyMergeWhenSafe(function(){ _pushProfiles(); }); return; }
 
-      // Le calcul de la fusion peut se faire tout de suite (lecture seule) ;
-      // seule l'écriture dans localStorage — qui touche la liste de profils
-      // et le pointeur "actif" partagés avec la partie en cours — est
-      // différée jusqu'à un écran sûr, pour ne jamais interférer avec un
-      // run en cours (donjon, combat...) si la réponse Firestore arrive
-      // pendant que le joueur est déjà en pleine aventure.
-      var local = ProfileManager.getAll();
-      var byId = {};
-      local.forEach(function(p){ if (p && p.id) byId[p.id] = p; });
-      cloud.forEach(function(p){
-        if (!p || !p.id) return;
-        var ex = byId[p.id];
-        // Le plus récemment joué gagne ; un profil cloud inconnu en local est ajouté
-        if (!ex || (p.lastPlayed||0) >= (ex.lastPlayed||0)) byId[p.id] = p;
-      });
-      var merged = Object.keys(byId).map(function(k){ return byId[k]; });
-
+      // Tout le calcul de la fusion est fait ICI, à l'intérieur de la fonction
+      // différée — jamais avant. Entre la réponse réseau et le prochain écran
+      // sûr, le joueur peut avoir continué à jouer (montée de niveau, quête
+      // payée, équipement...) ; si `local` était lu une seule fois au moment
+      // de la réponse puis appliqué bien plus tard, cette progression
+      // intermédiaire serait purement écrasée par l'instantané figé dans la
+      // fermeture — exactement le bug vécu (retour en pleine partie à un
+      // état bien plus ancien). En relisant `ProfileManager.getAll()` au
+      // moment de l'écriture, on ne perd jamais rien de ce qui s'est passé
+      // entre-temps.
       _applyMergeWhenSafe(function(){
+        if (!cloud.length) { _pushProfiles(); return; }
+
+        var local = ProfileManager.getAll();
+        var activeId = localStorage.getItem('cge_active');
+        var byId = {};
+        local.forEach(function(p){ if (p && p.id) byId[p.id] = p; });
+        cloud.forEach(function(p){
+          if (!p || !p.id) return;
+          // Le profil actif ne peut jamais être écrasé par le cloud : c'est
+          // celui en cours de partie, toujours plus autoritaire qu'une
+          // lecture réseau prise à un instant passé (même vrai si un autre
+          // onglet/appareil connecté au même compte a poussé une donnée plus
+          // « récente » en horloge murale mais moins avancée en progression).
+          if (p.id === activeId) return;
+          var ex = byId[p.id];
+          // Le plus récemment joué gagne ; un profil cloud inconnu en local est ajouté
+          if (!ex || (p.lastPlayed||0) >= (ex.lastPlayed||0)) byId[p.id] = p;
+        });
+        var merged = Object.keys(byId).map(function(k){ return byId[k]; });
+
         localStorage.setItem('cge_profiles', Vault.pack(merged));
         // Garde l'actif local s'il existe encore, sinon retombe sur celui du cloud
-        var activeId = localStorage.getItem('cge_active');
         if ((!activeId || !merged.some(function(p){ return p.id===activeId; })) && cloudActive) {
           localStorage.setItem('cge_active', cloudActive);
         }
