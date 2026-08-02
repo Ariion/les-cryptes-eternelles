@@ -2935,17 +2935,41 @@ body.tut-combat-gate #combat-screen .tut-allow {
   display:flex; align-items:center; justify-content:center; padding-bottom:60px;
 }
 #npc-box {
-  background:linear-gradient(160deg,#1a140d,#0e0b07); border:1px solid #5a4020;
-  border-radius:16px; padding:18px; width:88%; max-height:64%; overflow-y:auto;
-  display:flex; flex-direction:column; gap:10px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.8);
+  background:
+    radial-gradient(circle at 8px 8px, rgba(201,165,80,0.05) 1px, transparent 1.4px) 0 0/16px 16px,
+    linear-gradient(160deg,#1a140d,#0e0b07);
+  border:1px solid #5a4020; position:relative;
+  border-radius:16px; width:88%; max-height:64%; overflow:visible;
+  display:flex; flex-direction:column;
+  box-shadow:0 10px 40px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(201,165,80,0.08);
 }
-#npc-portrait-deco { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:2px; }
-#npc-portrait-deco .npc-bar { width:34px; height:1px; background:linear-gradient(90deg,transparent,rgba(201,165,80,0.6),transparent); }
-#npc-portrait-deco .npc-gem { color:#C9A550; font-size:11px; text-shadow:0 0 8px rgba(201,165,80,0.55); }
+#npc-box-inner {
+  padding:32px 18px 18px; overflow-y:auto; min-height:0;
+  display:flex; flex-direction:column; gap:10px;
+}
+/* En-tête à cheval sur le bord supérieur de la boîte — portrait + tag de nom,
+   comme les fiches de dialogue à la Grittonia (médaillon + étiquette). */
+#npc-header {
+  position:absolute; top:-20px; left:16px; right:16px;
+  display:flex; align-items:center; gap:10px; pointer-events:none;
+}
+#npc-portrait-badge {
+  width:46px; height:46px; border-radius:50%; flex-shrink:0;
+  background:radial-gradient(circle at 34% 30%, #3a2c18, #14100a 72%);
+  border:2px solid #C9A550;
+  box-shadow:0 4px 10px rgba(0,0,0,0.65), inset 0 0 9px rgba(201,165,80,0.3), 0 0 0 3px rgba(6,5,15,0.9);
+  display:flex; align-items:center; justify-content:center;
+}
+#npc-portrait-initial {
+  font-family:'Cinzel Decorative',serif; font-size:18px; color:#C9A550;
+  text-shadow:0 0 8px rgba(201,165,80,0.65);
+}
 #npc-portrait-name {
-  font-family:'Cinzel',serif; font-size:14px; font-weight:700;
-  color:#C9A550; text-align:center; letter-spacing:2px;
+  font-family:'Cinzel',serif; font-size:12.5px; font-weight:700;
+  color:#C9A550; letter-spacing:1.5px; white-space:nowrap;
+  background:linear-gradient(160deg,#221a10,#0e0b07); border:1px solid #C9A550;
+  border-radius:20px; padding:7px 16px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.55);
 }
 #npc-speech {
   font-family:'Crimson Text',serif; font-size:14px; color:#EDE8DF;
@@ -4275,26 +4299,30 @@ body.tut-combat-gate #combat-screen .tut-allow {
 
     <div id="npc-overlay" class="overlay" style="display:none">
       <div id="npc-box">
-        <div id="npc-portrait-deco"><span class="npc-bar"></span><span class="npc-gem">✦</span><span class="npc-bar"></span></div>
-        <div id="npc-portrait-name"></div>
-        <div id="npc-speech"></div>
-        <div id="npc-quest-info" style="display:none">
-          <div id="npc-quest-title"></div>
-          <div id="npc-quest-desc"></div>
-          <div id="npc-quest-reward"></div>
+        <div id="npc-header">
+          <div id="npc-portrait-badge"><span id="npc-portrait-initial"></span></div>
+          <div id="npc-portrait-name"></div>
         </div>
-        <div id="npc-final-choice" style="display:none">
-          <button class="npc-final-btn" onclick="Quests.chooseFinal('gardien')" data-i18n="final.gardien">🛡 Poser le cristal sur l'autel — renforcer le sceau</button>
-          <button class="npc-final-btn" onclick="Quests.chooseFinal('liberateur')" data-i18n="final.liberateur">🗝 Briser le cristal — libérer ce qui dort</button>
-          <button class="npc-final-btn" onclick="Quests.chooseFinal('vide')" data-i18n="final.vide">💀 Briser le cristal — laisser tout s'effondrer</button>
-        </div>
-        <div id="npc-btns">
-          <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
-          <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
-          <button id="npc-btn-daily" onclick="Quests.openDaily()" style="display:none" data-i18n="npc.daily.btn">💎 Voir les commissions du jour</button>
-          <button id="npc-btn-smalltalk" onclick="Quests.smalltalk()" data-i18n="npc.smalltalk.btn">💬 Comment vas-tu ?</button>
-          <button id="npc-btn-main" onclick="Quests.backToMain()" style="display:none" data-i18n="npc.main.btn">📜 As-tu des quêtes ?</button>
-          <button onclick="Quests.close()" data-i18n="quest.close">👋 Au revoir</button>
+        <div id="npc-box-inner">
+          <div id="npc-speech"></div>
+          <div id="npc-quest-info" style="display:none">
+            <div id="npc-quest-title"></div>
+            <div id="npc-quest-desc"></div>
+            <div id="npc-quest-reward"></div>
+          </div>
+          <div id="npc-final-choice" style="display:none">
+            <button class="npc-final-btn" onclick="Quests.chooseFinal('gardien')" data-i18n="final.gardien">🛡 Poser le cristal sur l'autel — renforcer le sceau</button>
+            <button class="npc-final-btn" onclick="Quests.chooseFinal('liberateur')" data-i18n="final.liberateur">🗝 Briser le cristal — libérer ce qui dort</button>
+            <button class="npc-final-btn" onclick="Quests.chooseFinal('vide')" data-i18n="final.vide">💀 Briser le cristal — laisser tout s'effondrer</button>
+          </div>
+          <div id="npc-btns">
+            <button id="npc-btn-accept" onclick="Quests.accept()" style="display:none" data-i18n="quest.accept">Accepter la quête</button>
+            <button id="npc-btn-claim" onclick="Quests.claim()" style="display:none" data-i18n="quest.claim">Réclamer la récompense</button>
+            <button id="npc-btn-daily" onclick="Quests.openDaily()" style="display:none" data-i18n="npc.daily.btn">💎 Voir les commissions du jour</button>
+            <button id="npc-btn-smalltalk" onclick="Quests.smalltalk()" data-i18n="npc.smalltalk.btn">💬 Comment vas-tu ?</button>
+            <button id="npc-btn-main" onclick="Quests.backToMain()" style="display:none" data-i18n="npc.main.btn">📜 As-tu des quêtes ?</button>
+            <button onclick="Quests.close()" data-i18n="quest.close">👋 Au revoir</button>
+          </div>
         </div>
       </div>
     </div>
@@ -11037,7 +11065,10 @@ var Quests = (function(){
       _currentQuest = null;
       if (typeof Tutorial !== 'undefined') Tutorial.notifyNpc(npc);
       var nd = NPC_DATA[npc];
-      document.getElementById('npc-portrait-name').textContent = T('npc.' + npc);
+      var _npcDispName = T('npc.' + npc);
+      document.getElementById('npc-portrait-name').textContent = _npcDispName;
+      var _npcInitEl = document.getElementById('npc-portrait-initial');
+      if (_npcInitEl) _npcInitEl.textContent = (_npcDispName||'?').trim().charAt(0).toUpperCase();
       document.getElementById('npc-btn-accept').style.display  = 'none';
       document.getElementById('npc-btn-claim').style.display   = 'none';
       document.getElementById('npc-quest-info').style.display  = 'none';
