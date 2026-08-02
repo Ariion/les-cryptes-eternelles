@@ -2624,11 +2624,23 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #st-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
 #st-body { width:100%; flex:1; padding:20px 18px; display:flex; flex-direction:column; gap:18px; }
 .st-row {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px; border-radius:10px;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(201,165,80,0.12);
+  display:flex; align-items:center; gap:14px; justify-content:space-between;
+  padding:14px 18px; border-radius:12px;
+  background:
+    radial-gradient(circle at 8px 8px, rgba(201,165,80,0.04) 1px, transparent 1.4px) 0 0/16px 16px,
+    linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+  border:1px solid rgba(201,165,80,0.14);
+  box-shadow:0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
 }
-.st-row-info { display:flex; flex-direction:column; gap:3px; }
+.st-row-main { display:flex; align-items:center; gap:12px; min-width:0; }
+.st-row-ico {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  background:radial-gradient(circle at 35% 30%, #3a2c18, #14100a 75%);
+  border:1px solid rgba(201,165,80,0.4);
+  box-shadow:0 2px 6px rgba(0,0,0,0.5), inset 0 0 6px rgba(201,165,80,0.2);
+}
+.st-row-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
 .st-row-label { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; }
 .st-row-sub { font-family:'Crimson Text',serif; font-size:11px; color:rgba(201,165,80,0.45); }
 .st-toggle {
@@ -4136,37 +4148,52 @@ body.tut-combat-gate #combat-screen .tut-allow {
       </div>
       <div id="st-body">
         <div class="st-row">
-          <div class="st-row-info">
-            <div class="st-row-label" data-i18n="settings.music">Musique</div>
-            <div class="st-row-sub" data-i18n="settings.music.sub">Ambiance menu, donjon et combat</div>
+          <div class="st-row-main">
+            <div class="st-row-ico">🎵</div>
+            <div class="st-row-info">
+              <div class="st-row-label" data-i18n="settings.music">Musique</div>
+              <div class="st-row-sub" data-i18n="settings.music.sub">Ambiance menu, donjon et combat</div>
+            </div>
           </div>
           <button class="st-toggle on" id="st-mus-toggle" onclick="Music.toggleMusic()"></button>
         </div>
         <div class="st-row">
-          <div class="st-row-info">
-            <div class="st-row-label" data-i18n="settings.sfx">Effets sonores</div>
-            <div class="st-row-sub" data-i18n="settings.sfx.sub">Sons de combat et d'interface</div>
+          <div class="st-row-main">
+            <div class="st-row-ico">🔊</div>
+            <div class="st-row-info">
+              <div class="st-row-label" data-i18n="settings.sfx">Effets sonores</div>
+              <div class="st-row-sub" data-i18n="settings.sfx.sub">Sons de combat et d'interface</div>
+            </div>
           </div>
           <button class="st-toggle on" id="st-sfx-toggle" onclick="Sfx.toggleSfx()"></button>
         </div>
         <div class="st-row">
-          <div class="st-row-info">
-            <div class="st-row-label" data-i18n="settings.vibration">Vibrations</div>
-            <div class="st-row-sub" data-i18n="settings.vibration.sub">Retour haptique sur mobile</div>
+          <div class="st-row-main">
+            <div class="st-row-ico">📳</div>
+            <div class="st-row-info">
+              <div class="st-row-label" data-i18n="settings.vibration">Vibrations</div>
+              <div class="st-row-sub" data-i18n="settings.vibration.sub">Retour haptique sur mobile</div>
+            </div>
           </div>
           <button class="st-toggle on" id="st-vib-toggle" onclick="Sfx.toggleVib()"></button>
         </div>
         <div class="st-row">
-          <div class="st-row-info">
-            <div class="st-row-label" data-i18n="settings.particles">Particules</div>
-            <div class="st-row-sub" data-i18n="settings.particles.sub">Braises en arrière-plan</div>
+          <div class="st-row-main">
+            <div class="st-row-ico">✨</div>
+            <div class="st-row-info">
+              <div class="st-row-label" data-i18n="settings.particles">Particules</div>
+              <div class="st-row-sub" data-i18n="settings.particles.sub">Braises en arrière-plan</div>
+            </div>
           </div>
           <button class="st-toggle on" id="st-par-toggle" onclick="Sfx.toggleParticles()"></button>
         </div>
         <div class="st-row">
-          <div class="st-row-info">
-            <div class="st-row-label" data-i18n="settings.language">Langue / Language</div>
-            <div class="st-row-sub" data-i18n="settings.language.sub">Français · English</div>
+          <div class="st-row-main">
+            <div class="st-row-ico">🌐</div>
+            <div class="st-row-info">
+              <div class="st-row-label" data-i18n="settings.language">Langue / Language</div>
+              <div class="st-row-sub" data-i18n="settings.language.sub">Français · English</div>
+            </div>
           </div>
           <div style="display:flex;gap:8px">
             <button onclick="LangSystem.set('fr')" id="lang-btn-fr" style="padding:6px 14px;border-radius:4px;border:1px solid #C9A550;background:rgba(201,165,80,0.15);color:#C9A550;cursor:pointer;font-size:13px">🇫🇷 FR</button>
