@@ -1577,6 +1577,24 @@ canvas#particles {
 }
 .orig-price { font-size:10px; color:rgba(201,165,80,0.4); text-decoration:line-through; }
 
+/* ── DA v2 — cadre ouvragé (partagée par HUD, boîte de dialogue PNJ,
+   Paramètres et bannière tutoriel) : double liseré biseauté, rivets aux
+   coins, bagues métalliques sur les médaillons, texte gravé en dégradé. ── */
+.orn-frame { position:relative; border:1.5px solid #7a5f2c; outline:1px solid rgba(244,223,160,0.32); outline-offset:-4px; }
+.orn-rivet {
+  position:absolute; width:6px; height:6px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle at 35% 30%, #f4dfa0, #7a5f2c 65%, #382c14 100%);
+  box-shadow:0 1px 2px rgba(0,0,0,0.7), inset 0 0 2px rgba(0,0,0,0.4);
+}
+.orn-rivet.tl { top:5px; left:5px; } .orn-rivet.tr { top:5px; right:5px; }
+.orn-rivet.bl { bottom:5px; left:5px; } .orn-rivet.br { bottom:5px; right:5px; }
+.orn-rivet.teal { background:radial-gradient(circle at 35% 30%, #cdeee0, #3f6a5a 65%, #1c2e28 100%); }
+.text-engraved {
+  background:linear-gradient(180deg,#fff3d0,#f4dfa0 35%,#c9a550 75%,#6a4f20);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(201,165,80,0.3));
+}
+
 /* ── GAME HEADER fixe ─────────────────────────────────────────── */
 #game-header {
   display: none;
@@ -1637,30 +1655,45 @@ canvas#particles {
 #gh-level {
   font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
   color: #e8d4a0; white-space: nowrap; flex-shrink: 0;
-  background: linear-gradient(160deg,#221a10,#0e0b07); border: 1px solid rgba(201,165,80,0.5);
+  background: linear-gradient(160deg,#221a10,#0e0b07); border: 1.5px solid #7a5f2c;
+  outline: 1px solid rgba(244,223,160,0.3); outline-offset: -3px;
   border-radius: 20px; padding: 4px 11px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 0 6px rgba(201,165,80,0.15);
 }
+/* Barre de vie à embouts métal : #gh-hp-wrap encadre la piste (mi-longueur,
+   bordée haut/bas comme la référence) entre deux embouts biseautés. */
+#gh-hp-wrap { flex: 1; display: flex; align-items: center; }
+.gh-hp-cap {
+  width: 4px; height: 8px; flex-shrink: 0;
+  background: linear-gradient(180deg,#4a3a1e,#161009); border: 1px solid #7a5f2c;
+}
+.gh-hp-cap.l { border-radius: 3px 0 0 3px; border-right: none; }
+.gh-hp-cap.r { border-radius: 0 3px 3px 0; border-left: none; }
 #gh-hp-bar-outer {
-  flex: 1; height: 7px; border-radius: 4px;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(200,60,60,0.25);
+  flex: 1; height: 8px;
+  background: rgba(255,255,255,0.06); border-top: 1px solid #7a5f2c; border-bottom: 1px solid #7a5f2c;
   overflow: hidden;
 }
 #gh-hp-bar-inner {
-  height: 100%; border-radius: 4px;
+  height: 100%;
   background: linear-gradient(90deg, #7a1010, #c83030, #e05050);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
   transition: width 0.4s ease;
 }
 #gh-hp-text {
   font-family: 'Cinzel', serif; font-size: 9px; color: rgba(220,140,140,0.8);
   white-space: nowrap; flex-shrink: 0;
 }
-/* Pastilles de ressources (or/gemmes) — médaillon d'icône + valeur, ombre
-   portée pour la profondeur, dans le même esprit que le badge de niveau. */
+/* Pastilles de ressources (or/gemmes) — médaillon à bague métallique
+   (conic-gradient en bordure) + valeur, dans le même esprit que le badge
+   de niveau et les emplacements d'objet de la DA de référence. */
 .gh-res-ico {
   width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 10px;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.25) 75%);
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.25) 75%) padding-box,
+    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
   box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
 }
 #gh-gold, #gh-gems {
@@ -1672,11 +1705,13 @@ canvas#particles {
 }
 #gh-gold {
   color: #f0dca8;
-  background: linear-gradient(160deg,#221a10,#0e0b07); border: 1px solid rgba(201,165,80,0.4);
+  background: linear-gradient(160deg,#221a10,#0e0b07); border: 1.5px solid rgba(201,165,80,0.4);
+  outline: 1px solid rgba(244,223,160,0.25); outline-offset: -3px;
 }
 #gh-gems {
   color: #7ecfff; cursor: pointer;
-  background: linear-gradient(160deg,#101c22,#080d0e); border: 1px solid rgba(126,207,255,0.35);
+  background: linear-gradient(160deg,#101c22,#080d0e); border: 1.5px solid rgba(126,207,255,0.35);
+  outline: 1px solid rgba(180,235,255,0.25); outline-offset: -3px;
 }
 /* Quest modal */
 #gh-quest-modal {
@@ -1984,15 +2019,20 @@ canvas#particles {
   background:
     radial-gradient(circle at 8px 8px, rgba(143,201,180,0.05) 1px, transparent 1.4px) 0 0/16px 16px,
     linear-gradient(160deg,#10160f,#0a0e0c);
-  border:1px solid rgba(143,201,180,0.35);
+  border:1.5px solid #3f6a5a;
+  outline:1px solid rgba(205,238,224,0.28); outline-offset:-4px;
   border-left:3px solid #6f9c8b; border-radius:10px; padding:10px 12px;
   box-shadow:0 8px 24px -8px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.03);
 }
+#tutorial-banner .orn-rivet.teal.tl, #tutorial-banner .orn-rivet.teal.tr { top:4px; }
+#tutorial-banner .orn-rivet.teal.bl, #tutorial-banner .orn-rivet.teal.br { bottom:4px; }
 #tutorial-ico {
   font-size:16px; flex-shrink:0; width:32px; height:32px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(circle at 35% 30%, #1e2c26, #0a0e0c 75%);
-  border:1px solid rgba(143,201,180,0.4);
+  border:3px solid transparent;
+  background:
+    radial-gradient(circle at 35% 30%, #1e2c26, #0a0e0c 75%) padding-box,
+    conic-gradient(from 210deg, #1e2c26, #cdeee0 25%, #3f6a5a 50%, #cdeee0 75%, #1e2c26) border-box;
   box-shadow:0 2px 6px rgba(0,0,0,0.5), inset 0 0 6px rgba(143,201,180,0.2);
 }
 #tutorial-text {
@@ -2002,7 +2042,8 @@ canvas#particles {
 #tutorial-skip {
   flex-shrink:0; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1.5px; text-transform:uppercase;
   color:rgba(143,201,180,0.65); padding:6px 10px; cursor:pointer; white-space:nowrap;
-  background:rgba(143,201,180,0.08); border:1px solid rgba(143,201,180,0.3); border-radius:20px;
+  background:rgba(143,201,180,0.08); border:1.5px solid rgba(143,201,180,0.4); border-radius:20px;
+  outline:1px solid rgba(205,238,224,0.22); outline-offset:-3px;
 }
 #tutorial-skip:active { color:#c8e8dc; background:rgba(143,201,180,0.18); }
 
@@ -2631,23 +2672,26 @@ body.tut-combat-gate #combat-screen .tut-allow {
   cursor:pointer; flex-shrink:0; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
 }
 #st-back:active { transform:scale(0.93); }
-#st-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; color:#C9A550; letter-spacing:2px; }
+#st-title { font-family:'Cinzel',serif; font-size:16px; font-weight:700; letter-spacing:2px; }
 #st-body { width:100%; flex:1; padding:20px 18px; display:flex; flex-direction:column; gap:18px; }
 .st-row {
   display:flex; align-items:center; gap:14px; justify-content:space-between;
-  padding:14px 18px; border-radius:12px;
+  padding:14px 18px; border-radius:12px; position:relative;
   background:
     radial-gradient(circle at 8px 8px, rgba(201,165,80,0.04) 1px, transparent 1.4px) 0 0/16px 16px,
     linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
-  border:1px solid rgba(201,165,80,0.14);
+  border:1.5px solid rgba(201,165,80,0.35);
+  outline:1px solid rgba(244,223,160,0.2); outline-offset:-4px;
   box-shadow:0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .st-row-main { display:flex; align-items:center; gap:12px; min-width:0; }
 .st-row-ico {
   width:34px; height:34px; border-radius:50%; flex-shrink:0;
   display:flex; align-items:center; justify-content:center; font-size:15px;
-  background:radial-gradient(circle at 35% 30%, #3a2c18, #14100a 75%);
-  border:1px solid rgba(201,165,80,0.4);
+  border:3px solid transparent;
+  background:
+    radial-gradient(circle at 35% 30%, #3a2c18, #14100a 75%) padding-box,
+    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
   box-shadow:0 2px 6px rgba(0,0,0,0.5), inset 0 0 6px rgba(201,165,80,0.2);
 }
 .st-row-info { display:flex; flex-direction:column; gap:3px; min-width:0; }
@@ -2981,7 +3025,8 @@ body.tut-combat-gate #combat-screen .tut-allow {
   background:
     radial-gradient(circle at 8px 8px, rgba(201,165,80,0.05) 1px, transparent 1.4px) 0 0/16px 16px,
     linear-gradient(160deg,#1a140d,#0e0b07);
-  border:1px solid #5a4020; position:relative;
+  border:2px solid #7a5f2c; position:relative;
+  outline:1px solid rgba(244,223,160,0.3); outline-offset:-6px;
   border-radius:16px; width:88%; max-height:64%; overflow:visible;
   display:flex; flex-direction:column;
   box-shadow:0 10px 40px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(201,165,80,0.08);
@@ -2998,8 +3043,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
 }
 #npc-portrait-badge {
   width:46px; height:46px; border-radius:50%; flex-shrink:0;
-  background:radial-gradient(circle at 34% 30%, #3a2c18, #14100a 72%);
-  border:2px solid #C9A550;
+  border:3px solid transparent;
+  background:
+    radial-gradient(circle at 34% 30%, #3a2c18, #14100a 72%) padding-box,
+    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
   box-shadow:0 4px 10px rgba(0,0,0,0.65), inset 0 0 9px rgba(201,165,80,0.3), 0 0 0 3px rgba(6,5,15,0.9);
   display:flex; align-items:center; justify-content:center;
 }
@@ -3010,7 +3057,8 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #npc-portrait-name {
   font-family:'Cinzel',serif; font-size:12.5px; font-weight:700;
   color:#C9A550; letter-spacing:1.5px; white-space:nowrap;
-  background:linear-gradient(160deg,#221a10,#0e0b07); border:1px solid #C9A550;
+  background:linear-gradient(160deg,#221a10,#0e0b07); border:1.5px solid #7a5f2c;
+  outline:1px solid rgba(244,223,160,0.3); outline-offset:-3px;
   border-radius:20px; padding:7px 16px;
   box-shadow:0 4px 10px rgba(0,0,0,0.55);
 }
@@ -3023,7 +3071,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   background:rgba(201,165,80,0.08); border:1px solid rgba(201,165,80,0.2);
   border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:4px;
 }
-#npc-quest-title { font-family:'Cinzel',serif; font-size:12px; color:#C9A550; font-weight:700; }
+#npc-quest-title { font-family:'Cinzel',serif; font-size:12px; font-weight:700; }
 #npc-quest-desc  { font-family:'Crimson Text',serif; font-size:13px; color:#EDE8DF; }
 #npc-quest-reward{ font-family:'Crimson Text',serif; font-size:12px; color:#7ec87e; }
 #npc-btns { display:flex; flex-direction:column; gap:6px; }
@@ -3501,7 +3549,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
       </div>
       <div id="gh-row2">
         <div id="gh-level">Niv. 1</div>
-        <div id="gh-hp-bar-outer"><div id="gh-hp-bar-inner" style="width:100%"></div></div>
+        <div id="gh-hp-wrap">
+          <div class="gh-hp-cap l"></div>
+          <div id="gh-hp-bar-outer"><div id="gh-hp-bar-inner" style="width:100%"></div></div>
+          <div class="gh-hp-cap r"></div>
+        </div>
         <div id="gh-hp-text">100/100</div>
         <div id="gh-gold"><span class="gh-res-ico">🪙</span><span id="hud-gold-val">0</span></div>
         <div id="gh-gems" onclick="GemStore.open()"><span class="gh-res-ico">💎</span><span id="hud-gems-val">0</span></div>
@@ -4154,10 +4206,11 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="settings-screen" class="screen">
       <div id="st-header">
         <div id="st-back" onclick="Nav.go('main-menu')">←</div>
-        <div id="st-title" data-i18n="settings.title">Paramètres</div>
+        <div id="st-title" class="text-engraved" data-i18n="settings.title">Paramètres</div>
       </div>
       <div id="st-body">
         <div class="st-row">
+          <div class="orn-rivet tl"></div><div class="orn-rivet tr"></div><div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
           <div class="st-row-main">
             <div class="st-row-ico">🎵</div>
             <div class="st-row-info">
@@ -4168,6 +4221,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <button class="st-toggle on" id="st-mus-toggle" onclick="Music.toggleMusic()"></button>
         </div>
         <div class="st-row">
+          <div class="orn-rivet tl"></div><div class="orn-rivet tr"></div><div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
           <div class="st-row-main">
             <div class="st-row-ico">🔊</div>
             <div class="st-row-info">
@@ -4178,6 +4232,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <button class="st-toggle on" id="st-sfx-toggle" onclick="Sfx.toggleSfx()"></button>
         </div>
         <div class="st-row">
+          <div class="orn-rivet tl"></div><div class="orn-rivet tr"></div><div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
           <div class="st-row-main">
             <div class="st-row-ico">📳</div>
             <div class="st-row-info">
@@ -4188,6 +4243,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <button class="st-toggle on" id="st-vib-toggle" onclick="Sfx.toggleVib()"></button>
         </div>
         <div class="st-row">
+          <div class="orn-rivet tl"></div><div class="orn-rivet tr"></div><div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
           <div class="st-row-main">
             <div class="st-row-ico">✨</div>
             <div class="st-row-info">
@@ -4198,6 +4254,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
           <button class="st-toggle on" id="st-par-toggle" onclick="Sfx.toggleParticles()"></button>
         </div>
         <div class="st-row">
+          <div class="orn-rivet tl"></div><div class="orn-rivet tr"></div><div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
           <div class="st-row-main">
             <div class="st-row-ico">🌐</div>
             <div class="st-row-info">
@@ -4357,6 +4414,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 
     <div id="npc-overlay" class="overlay" style="display:none">
       <div id="npc-box">
+        <div class="orn-rivet bl"></div><div class="orn-rivet br"></div>
         <div id="npc-header">
           <div id="npc-portrait-badge"><span id="npc-portrait-initial"></span></div>
           <div id="npc-portrait-name"></div>
@@ -4364,7 +4422,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="npc-box-inner">
           <div id="npc-speech"></div>
           <div id="npc-quest-info" style="display:none">
-            <div id="npc-quest-title"></div>
+            <div id="npc-quest-title" class="text-engraved"></div>
             <div id="npc-quest-desc"></div>
             <div id="npc-quest-reward"></div>
           </div>
@@ -4598,6 +4656,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
 
     <!-- Bannière tutoriel (voix off du héros) -->
     <div id="tutorial-banner" style="display:none">
+      <div class="orn-rivet teal tl"></div><div class="orn-rivet teal tr"></div><div class="orn-rivet teal bl"></div><div class="orn-rivet teal br"></div>
       <div id="tutorial-ico">💭</div>
       <div id="tutorial-text"></div>
       <div id="tutorial-skip" onclick="Tutorial.confirmSkip()">passer</div>
