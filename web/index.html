@@ -1507,9 +1507,10 @@ canvas#particles {
 #shop-gold-pill {
   flex-shrink:0; display:flex; align-items:center; gap:5px;
   padding:7px 12px; border-radius:20px;
-  background:linear-gradient(135deg,rgba(201,165,80,0.18),rgba(201,165,80,0.06));
-  border:1px solid rgba(201,165,80,0.4);
+  background:linear-gradient(160deg,#221a10,#0e0b07);
+  border:1.5px solid rgba(201,165,80,0.5); outline:1px solid rgba(244,223,160,0.25); outline-offset:-3px;
   font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#f0dca8;
+  box-shadow:0 2px 6px rgba(0,0,0,0.5);
 }
 #shop-cat-tabs {
   display:flex; gap:6px; padding:0 16px; margin-top:12px; flex-shrink:0;
@@ -1561,6 +1562,7 @@ canvas#particles {
   min-height:74px; box-sizing:border-box;
   border-radius:12px; background:rgba(255,255,255,0.025);
   border:1px solid rgba(160,160,160,0.35);
+  outline:1px solid rgba(244,223,160,0.1); outline-offset:-3px;
   cursor:pointer; transition:all 0.15s; -webkit-tap-highlight-color:transparent;
   position:relative; overflow:hidden; contain:layout paint;
   -webkit-text-size-adjust:none; text-size-adjust:none;
@@ -1572,10 +1574,15 @@ canvas#particles {
   0%,100% { box-shadow:0 0 10px rgba(255,200,40,0.25); }
   50%     { box-shadow:0 0 22px rgba(255,200,40,0.55), inset 0 0 14px rgba(255,200,40,0.08); }
 }
+/* Médaillon d'objet en boutique — même bague conic-gradient teintée par
+   rareté que les autres médaillons d'objet de la DA v2. */
 .shop-item .si-ico {
   width:50px; height:50px; border-radius:11px; flex-shrink:0; font-size:25px;
   display:flex; align-items:center; justify-content:center;
-  background:rgba(255,255,255,0.04); border:1px solid rgba(160,160,160,0.4);
+  border:2px solid transparent;
+  background:
+    radial-gradient(circle at 35% 30%, #241f1a, #100d0a 75%) padding-box,
+    conic-gradient(from 210deg, var(--ring-lo,#4a4a46), var(--ring-hi,#cfcfc5) 25%, var(--ring-lo,#4a4a46) 50%, var(--ring-hi,#cfcfc5) 75%, var(--ring-lo,#4a4a46)) border-box;
 }
 .shop-item.featured .si-ico { width:64px; height:64px; font-size:32px; border-radius:14px; }
 .shop-item .si-info { flex:1; min-width:0; overflow:hidden; }
