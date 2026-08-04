@@ -2251,7 +2251,9 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .eq-slot-row:active { transform: scale(0.94); background: rgba(201,165,80,0.1); border-color: rgba(201,165,80,0.35); }
 .eq-slot-row.has-item { border-color: rgba(201,165,80,0.5); background: rgba(201,165,80,0.1); outline-color: rgba(244,223,160,0.28); }
 /* Médaillon d'objet à bague métallique — même trick de bordure double
-   couche (padding-box/border-box) que les autres emplacements de la DA v2. */
+   couche (padding-box/border-box) que les autres emplacements de la DA v2.
+   La teinte de la bague suit la rareté (--ring-lo/--ring-hi, héritées
+   depuis .rarity-* sur le conteneur ; valeurs de repli = or par défaut). */
 .eq-slot-ico {
   width: 24px; height: 24px; margin: 0 auto; border-radius: 50%;
   color: #f4dfa0; font-size: 13px;
@@ -2259,9 +2261,22 @@ body.tut-combat-gate #combat-screen .tut-allow {
   border: 2px solid transparent;
   background:
     radial-gradient(circle at 35% 30%, #3a2c18, #14100a 75%) padding-box,
-    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
+    conic-gradient(from 210deg, var(--ring-lo,#4a3a1e), var(--ring-hi,#f4dfa0) 25%, var(--ring-lo,#4a3a1e) 50%, var(--ring-hi,#f4dfa0) 75%, var(--ring-lo,#4a3a1e)) border-box;
   box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
 }
+/* Teintes de bague par rareté — reprennent les couleurs déjà utilisées par
+   RARITY_COLOR / .rarity-* pour rester cohérent avec le reste du jeu.
+   .rarity-* sert aux conteneurs (.eq-slot-row / .eq-inv-card, qui héritent
+   déjà border-color/background !important pour eux-mêmes — la variable se
+   propage sans conflit à l'icône enfant). .ico-ring-* est la variante sans
+   effet de bord, pour les éléments qui PORTENT eux-mêmes le médaillon
+   (#eq-detail-ico) et ne doivent pas hériter le fond plat !important. */
+.rarity-common,   .ico-ring-common   { --ring-lo:#4a4a46; --ring-hi:#cfcfc5; }
+.rarity-uncommon, .ico-ring-uncommon { --ring-lo:#1f5a1f; --ring-hi:#7ee87e; }
+.rarity-rare,      .ico-ring-rare     { --ring-lo:#1c3a7a; --ring-hi:#9dbcff; }
+.rarity-epic,      .ico-ring-epic     { --ring-lo:#7a1a1a; --ring-hi:#ff9a9a; }
+.rarity-legendary, .ico-ring-legendary{ --ring-lo:#5a1a7a; --ring-hi:#e0b0ff; }
+.rarity-mythic,    .ico-ring-mythic   { --ring-lo:#8a6a10; --ring-hi:#ffe9a8; }
 .eq-slot-info { width: 100%; min-width: 0; text-align: center; }
 /* Étiquette fixe du type d'emplacement ("Chapeau", "Arme"...) — toujours
    visible, équipé ou non, pour que chaque case reste identifiable même
@@ -2298,7 +2313,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   border: 2px solid transparent;
   background:
     radial-gradient(circle at 35% 30%, #3a2c18, #14100a 75%) padding-box,
-    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
+    conic-gradient(from 210deg, var(--ring-lo,#4a3a1e), var(--ring-hi,#f4dfa0) 25%, var(--ring-lo,#4a3a1e) 50%, var(--ring-hi,#f4dfa0) 75%, var(--ring-lo,#4a3a1e)) border-box;
   box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
 }
 .eq-inv-card .card-name {
@@ -2331,7 +2346,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
   border: 4px solid transparent;
   background:
     radial-gradient(circle at 35% 28%, #3a2c18, #0e0b07 75%) padding-box,
-    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
+    conic-gradient(from 210deg, var(--ring-lo,#4a3a1e), var(--ring-hi,#f4dfa0) 25%, var(--ring-lo,#4a3a1e) 50%, var(--ring-hi,#f4dfa0) 75%, var(--ring-lo,#4a3a1e)) border-box;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
 }
 #eq-detail-info { flex: 1; }
@@ -13354,7 +13369,10 @@ var EquipScreen = (function() {
     var panel = document.getElementById('eq-detail-panel');
     var overlay = document.getElementById('eq-detail-overlay');
 
-    document.getElementById('eq-detail-ico').innerHTML  = ItemIcons.svg(item);
+    var detailIco = document.getElementById('eq-detail-ico');
+    detailIco.innerHTML = ItemIcons.svg(item);
+    RARITY_ORDER.forEach(function(r){ detailIco.classList.remove('ico-ring-'+r); });
+    detailIco.classList.add('ico-ring-'+(item.rarity||'common'));
     document.getElementById('eq-detail-name').textContent = item.name || '—';
     document.getElementById('eq-detail-slot').textContent = getSlotLabel(item.slot || ctx.slot);
     document.getElementById('eq-detail-desc').textContent = item.desc || '';
