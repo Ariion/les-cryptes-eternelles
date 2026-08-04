@@ -1620,10 +1620,17 @@ canvas#particles {
 .orn-rivet.tl { top:5px; left:5px; } .orn-rivet.tr { top:5px; right:5px; }
 .orn-rivet.bl { bottom:5px; left:5px; } .orn-rivet.br { bottom:5px; right:5px; }
 .orn-rivet.teal { background:radial-gradient(circle at 35% 30%, #cdeee0, #3f6a5a 65%, #1c2e28 100%); }
+.orn-rivet.cyan { background:radial-gradient(circle at 35% 30%, #cdeeff, #2a5a7a 65%, #14283a 100%); }
 .text-engraved {
   background:linear-gradient(180deg,#fff3d0,#f4dfa0 35%,#c9a550 75%,#6a4f20);
   -webkit-background-clip:text; background-clip:text; color:transparent;
   filter:drop-shadow(0 1px 0 rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(201,165,80,0.3));
+}
+.text-engraved.cyan {
+  /* background-image (pas le raccourci "background") pour ne pas réinitialiser
+     background-clip:text hérité de .text-engraved. */
+  background-image:linear-gradient(180deg,#eaf9ff,#a8e4ff 35%,#4fb8e0 75%,#1c5878);
+  filter:drop-shadow(0 1px 0 rgba(0,0,0,0.85)) drop-shadow(0 0 10px rgba(126,207,255,0.35));
 }
 
 /* ── GAME HEADER fixe ─────────────────────────────────────────── */
@@ -2489,7 +2496,10 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .tal-node-circle {
   width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-size: 24px; cursor: pointer; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
-  border: 2.5px solid rgba(120,90,50,0.35); background: radial-gradient(circle at 32% 28%, #241a0e, #0d0a05 75%);
+  border: 2.5px solid transparent;
+  background:
+    radial-gradient(circle at 32% 28%, #241a0e, #0d0a05 75%) padding-box,
+    conic-gradient(from 210deg, #3a2c18, #6a563a 25%, #241c10 50%, #6a563a 75%, #3a2c18) border-box;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.5);
   transition: transform 0.15s;
 }
@@ -2498,7 +2508,9 @@ body.tut-combat-gate #combat-screen .tut-allow {
 .tal-node-circle.tal-tier-2 { width: 70px; height: 70px; font-size: 30px; border-width: 3px; }
 .tal-node-circle:active { transform: scale(0.92); }
 .tal-node-circle.unlocked {
-  border-color: rgba(201,165,80,0.9); background: radial-gradient(circle at 32% 28%, #4a3a20, #1a1208 75%);
+  background:
+    radial-gradient(circle at 32% 28%, #4a3a20, #1a1208 75%) padding-box,
+    conic-gradient(from 210deg, #4a3a1e, #f4dfa0 25%, #7a5f2c 50%, #f4dfa0 75%, #4a3a1e) border-box;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 4px rgba(0,0,0,0.4), 0 0 14px rgba(201,165,80,0.45);
 }
 .tal-node-circle.available {
@@ -3560,11 +3572,22 @@ body.tut-combat-gate #combat-screen .tut-allow {
 #gem-store-title { font-family:'Cinzel Decorative',serif; font-size:15px; color:#7ecfff; flex:1; text-align:center; }
 #gem-store-current { font-size:13px; color:#7ecfff; }
 #gem-store-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; overflow-y:auto; }
-.gem-pkg { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px; border-radius:12px; background:rgba(126,207,255,0.06); border:1px solid rgba(126,207,255,0.2); cursor:pointer; }
-.gem-pkg:active { background:rgba(126,207,255,0.16); }
+.gem-pkg {
+  display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px 16px;
+  border-radius:12px; position:relative; cursor:pointer;
+  background:linear-gradient(160deg,#0f1c24,#081016);
+  border:1.5px solid rgba(126,207,255,0.5); outline:1px solid rgba(180,235,255,0.25); outline-offset:-4px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.gem-pkg:active { background:linear-gradient(160deg,#152a36,#0a151c); }
 .gem-pkg .gp-amount { font-size:22px; font-family:'Cinzel',serif; color:#7ecfff; }
 .gem-pkg .gp-bonus { font-size:11px; color:#50c870; min-height:14px; }
-.gem-pkg .gp-price { font-size:13px; padding:5px 14px; border-radius:6px; background:rgba(126,207,255,0.12); border:1px solid rgba(126,207,255,0.25); color:#7ecfff; }
+.gem-pkg .gp-price {
+  font-size:13px; padding:6px 16px; border-radius:20px; cursor:pointer;
+  background:linear-gradient(180deg,#123040,#081820 45%,#050e12); border:1.5px solid rgba(126,207,255,0.55);
+  color:#a8e4ff; text-shadow:0 1px 1px rgba(0,0,0,0.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 4px rgba(0,0,0,0.4), 0 3px 8px rgba(0,0,0,0.35);
+}
 #gem-store-debug { font-family:'Crimson Text',serif; font-style:italic; font-size:11px; color:rgba(255,200,80,0.5); text-align:center; padding:8px 16px; }
 
 /* ── CADEAU DE CONNEXION QUOTIDIEN (section dans le modal quêtes) ── */
@@ -4050,7 +4073,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="hero-screen" class="screen has-game-header">
       <div id="eq-header">
         <div id="eq-back" onclick="EquipScreen.close()">←</div>
-        <div id="eq-title">Équipement</div>
+        <div id="eq-title" class="text-engraved">Équipement</div>
         <div style="width:40px"></div>
       </div>
       <div class="perso-subtabs">
@@ -4216,7 +4239,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="talents-screen" class="screen has-game-header">
       <div id="tal-header">
         <div id="tal-back" onclick="TalentsScreen.close()">←</div>
-        <div id="tal-title">🌟 <span data-i18n="tal.title">Talents</span></div>
+        <div id="tal-title">🌟 <span class="text-engraved" data-i18n="tal.title">Talents</span></div>
         <div id="tal-points"><span id="tal-points-label"></span> ✦ <span id="tal-points-val">0</span></div>
       </div>
       <div class="perso-subtabs">
@@ -4725,7 +4748,7 @@ body.tut-combat-gate #combat-screen .tut-allow {
     <div id="gem-store-overlay">
       <div id="gem-store-header">
         <div id="gem-store-close" onclick="GemStore.close()">←</div>
-        <div id="gem-store-title">💎 Boutique de Gemmes</div>
+        <div id="gem-store-title">💎 <span class="text-engraved cyan">Boutique de Gemmes</span></div>
         <div id="gem-store-current">💎 <span id="gs-gems-val">0</span></div>
       </div>
       <div id="gem-store-debug">⚠ Mode test — les achats sont simulés</div>
@@ -15358,6 +15381,7 @@ var GemStore = (function(){
       var card = document.createElement('div');
       card.className = 'gem-pkg';
       card.innerHTML =
+        '<div class="orn-rivet cyan tl"></div><div class="orn-rivet cyan tr"></div><div class="orn-rivet cyan bl"></div><div class="orn-rivet cyan br"></div>'+
         '<div class="gp-amount">💎 '+pkg.gems+'</div>'+
         '<div class="gp-bonus">'+pkg.bonus+'</div>'+
         '<div class="gp-price">'+pkg.price+'</div>';
