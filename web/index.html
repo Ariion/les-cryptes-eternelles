@@ -1007,12 +1007,18 @@ canvas#particles {
 #cb-player-info { display:flex; flex-direction:column; gap:4px; }
 #cb-player-name { font-family:'Cinzel',serif; font-size:12px; font-weight:700; color:#EDE8DF; letter-spacing:1px; }
 #cb-player-hp-wrap { display:flex; align-items:center; gap:8px; }
+/* Barre de vie à embouts métal (DA v2) — même trick que la barre du HUD :
+   .hpbar-capped encadre la piste de deux embouts biseautés flush. */
+.hpbar-capped { display:flex; align-items:stretch; }
+.hpcap { width:4px; height:10px; flex-shrink:0; background:linear-gradient(180deg,#4a3a1e,#161009); border:1px solid #7a5f2c; }
+.hpcap.l { border-radius:3px 0 0 3px; border-right:none; }
+.hpcap.r { border-radius:0 3px 3px 0; border-left:none; }
 .hp-bar-outer {
-  height:10px; border-radius:5px;
-  background:rgba(255,255,255,0.06); border:1px solid rgba(200,60,60,0.3);
+  height:10px;
+  background:rgba(255,255,255,0.06); border-top:1px solid #7a5f2c; border-bottom:1px solid #7a5f2c;
   overflow:hidden; flex:1;
 }
-.hp-bar-inner { height:100%; border-radius:5px; transition:width 0.5s cubic-bezier(.4,0,.2,1); }
+.hp-bar-inner { height:100%; transition:width 0.5s cubic-bezier(.4,0,.2,1); box-shadow:inset 0 1px 2px rgba(255,255,255,0.2); }
 #cb-player-hp-inner { background:linear-gradient(90deg,#7a1010,#c83030,#e05050); }
 #cb-player-hp-text { font-family:'Cinzel',serif; font-size:10px; color:rgba(220,140,140,0.8); white-space:nowrap; }
 #cb-floor-badge {
@@ -1259,33 +1265,37 @@ canvas#particles {
   display:grid; grid-template-columns:1fr 1fr;
   gap:8px; position:relative; z-index:2;
 }
+/* Boutons de combat biseautés (DA v2) : dégradé vertical + relief inset,
+   chaque action garde sa teinte propre (attaque/défense/compétence...). */
 .cb-btn {
-  height:54px; border-radius:10px; border:none; cursor:pointer;
+  height:54px; border-radius:10px; cursor:pointer;
   font-family:'Cinzel',serif; font-size:11px; font-weight:700;
   letter-spacing:1.5px; text-transform:uppercase;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
   transition:all 0.14s ease; position:relative; overflow:hidden;
-  -webkit-tap-highlight-color:transparent;
+  -webkit-tap-highlight-color:transparent; text-shadow:0 1px 1px rgba(0,0,0,0.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 4px rgba(0,0,0,0.4), 0 3px 8px rgba(0,0,0,0.35);
 }
 .cb-btn:active { transform:scale(0.95); filter:brightness(1.2); }
 .cb-btn:disabled { opacity:0.35; pointer-events:none; }
 .cb-btn .cb-ico { font-size:20px; line-height:1; }
 .cb-btn .cb-cd  { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; }
 
-.cb-btn-attack  { background:linear-gradient(135deg,rgba(180,30,30,0.25),rgba(120,15,15,0.15)); border:1px solid rgba(220,80,80,0.5); color:#e08080; }
-.cb-btn-defend  { background:linear-gradient(135deg,rgba(30,80,180,0.2),rgba(15,40,120,0.12)); border:1px solid rgba(80,130,220,0.4); color:#80aae0; }
-.cb-btn-skill   { background:linear-gradient(135deg,rgba(100,30,180,0.2),rgba(60,15,120,0.12)); border:1px solid rgba(150,80,220,0.4); color:#b080e0; }
+.cb-btn-attack  { background:linear-gradient(180deg,#5a2020,#2a1010 55%,#180a0a); border:1.5px solid rgba(220,80,80,0.6); color:#f0a0a0; }
+.cb-btn-defend  { background:linear-gradient(180deg,#1e3a6a,#122040 55%,#0a1428); border:1.5px solid rgba(80,130,220,0.55); color:#a0c0f0; }
+.cb-btn-skill   { background:linear-gradient(180deg,#4a1e6a,#280f3a 55%,#180a24); border:1.5px solid rgba(150,80,220,0.55); color:#c8a0f0; }
 .cb-btn-skill.skill-ready { animation:cb-skill-ready 1.8s ease-in-out infinite; }
 @keyframes cb-skill-ready {
   0%,100% { box-shadow:0 0 10px rgba(160,80,220,0.35), inset 0 0 8px rgba(160,80,220,0.1); }
   50%     { box-shadow:0 0 22px rgba(160,80,220,0.7), inset 0 0 12px rgba(160,80,220,0.18); }
 }
-.cb-btn-potion  { background:linear-gradient(135deg,rgba(30,130,80,0.2),rgba(15,80,40,0.12)); border:1px solid rgba(60,180,120,0.35); color:#80d0a0; }
-.cb-btn-item    { background:linear-gradient(135deg,rgba(60,60,120,0.2),rgba(30,30,80,0.12)); border:1px solid rgba(100,100,200,0.35); color:#a0a0e0; }
+.cb-btn-potion  { background:linear-gradient(180deg,#1e5a3a,#0f3220 55%,#0a1e14); border:1.5px solid rgba(60,180,120,0.5); color:#a0e0c0; }
+.cb-btn-item    { background:linear-gradient(180deg,#2e2e5a,#181832 55%,#0e0e1e); border:1.5px solid rgba(100,100,200,0.5); color:#c0c0f0; }
 .cb-btn-flee    {
   grid-column:1/-1; height:42px;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:rgba(200,190,180,0.5);
+  background:linear-gradient(180deg,#2a2a26,#181614 55%,#0e0d0c); border:1.5px solid rgba(255,255,255,0.15); color:rgba(220,210,200,0.7);
   font-size:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 2px rgba(0,0,0,0.3);
 }
 
 /* Flash rouge écran dégâts reçus */
@@ -3803,15 +3813,19 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="cb-player-info">
           <div id="cb-player-name">Héros</div>
           <div id="cb-player-hp-wrap">
-            <div class="hp-bar-outer" style="width:140px">
-              <div class="hp-bar-inner" id="cb-player-hp-inner" style="width:100%"></div>
+            <div class="hpbar-capped" style="width:140px">
+              <div class="hpcap l"></div>
+              <div class="hp-bar-outer">
+                <div class="hp-bar-inner" id="cb-player-hp-inner" style="width:100%"></div>
+              </div>
+              <div class="hpcap r"></div>
             </div>
             <div id="cb-player-hp-text">100/100</div>
           </div>
         </div>
         <div>
           <div id="cb-floor-badge">Étage</div>
-          <div id="cb-floor-num">I</div>
+          <div id="cb-floor-num" class="text-engraved">I</div>
         </div>
       </div>
 
@@ -3831,8 +3845,12 @@ body.tut-combat-gate #combat-screen .tut-allow {
         <div id="cb-enemy-element"></div>
         <div id="cb-enemy-telegraph" style="display:none"></div>
         <div id="cb-enemy-hp-wrap">
-          <div class="hp-bar-outer" style="flex:1">
-            <div class="hp-bar-inner" id="cb-enemy-hp-inner" style="width:100%"></div>
+          <div class="hpbar-capped" style="flex:1">
+            <div class="hpcap l"></div>
+            <div class="hp-bar-outer">
+              <div class="hp-bar-inner" id="cb-enemy-hp-inner" style="width:100%"></div>
+            </div>
+            <div class="hpcap r"></div>
           </div>
           <div id="cb-enemy-hp-text">50/50</div>
         </div>
